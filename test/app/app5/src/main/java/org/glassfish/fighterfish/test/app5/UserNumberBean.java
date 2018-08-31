@@ -1,0 +1,183 @@
+/*
+ * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v. 2.0, which is available at
+ * http://www.eclipse.org/legal/epl-2.0.
+ *
+ * This Source Code may also be made available under the following Secondary
+ * Licenses when the conditions for such availability set forth in the
+ * Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+ * version 2 with the GNU Classpath Exception, which is available at
+ * https://www.gnu.org/software/classpath/license.html.
+ *
+ * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+ */
+
+package org.glassfish.fighterfish.test.app5;
+
+import javax.faces.component.UIComponent;
+import javax.faces.context.FacesContext;
+import javax.faces.validator.ValidatorException;
+
+import java.util.Random;
+
+/**
+ * @author sanjeeb.sahoo@oracle.com
+ * 
+ */
+public class UserNumberBean {
+    Integer userNumber = null;
+    Integer randomInt = null;
+    String response = null;
+
+    protected String[] status = null;
+
+    private int maximum = 0;
+    private boolean maximumSet = false;
+
+    private int minimum = 0;
+    private boolean minimumSet = false;
+
+    public UserNumberBean() {
+        Random randomGR = new Random();
+        do
+            this.randomInt = new Integer(randomGR.nextInt(10));
+        while (this.randomInt.intValue() == 0);
+        System.out.println("Duke's number: " + this.randomInt);
+    }
+
+    public void setUserNumber(Integer user_number) {
+        this.userNumber = user_number;
+        System.out.println("Set userNumber " + this.userNumber);
+    }
+
+    public Integer getUserNumber() {
+        System.out.println("get userNumber " + this.userNumber);
+        return this.userNumber;
+    }
+
+    public String getResponse() {
+        if ((this.userNumber != null)
+                && (this.userNumber.compareTo(this.randomInt) == 0))
+            return "Yay! You got it!";
+        if (this.userNumber == null) {
+            return "Sorry, " + this.userNumber
+                    + " is incorrect. Try a larger number.";
+        }
+
+        int num = this.userNumber.intValue();
+        if (num > this.randomInt.intValue()) {
+            return "Sorry, " + this.userNumber
+                    + " is incorrect. Try a smaller number.";
+        }
+
+        return "Sorry, " + this.userNumber
+                + " is incorrect. Try a larger number.";
+    }
+
+    public String[] getStatus() {
+        return this.status;
+    }
+
+    public void setStatus(String[] newStatus) {
+        this.status = newStatus;
+    }
+
+    public int getMaximum() {
+        return this.maximum;
+    }
+
+    public void setMaximum(int maximum) {
+        this.maximum = maximum;
+        this.maximumSet = true;
+    }
+
+    public int getMinimum() {
+        return this.minimum;
+    }
+
+    public void setMinimum(int minimum) {
+        this.minimum = minimum;
+        this.minimumSet = true;
+    }
+
+    public void validate(FacesContext context, UIComponent component,
+            Object value) throws ValidatorException {
+        if ((context == null) || (component == null)) {
+            throw new NullPointerException();
+        }
+        if (value != null)
+            try {
+                int converted = intValue(value);
+                if ((this.maximumSet) && (converted > this.maximum)) {
+                    if (this.minimumSet) {
+                        throw new ValidatorException(
+                                MessageFactory
+                                        .getMessage(
+                                                context,
+                                                "javax.faces.validator.LongRangeValidator.NOT_IN_RANGE",
+                                                new Object[] {
+                                                        new Integer(
+                                                                this.minimum),
+                                                        new Integer(
+                                                                this.maximum),
+                                                        MessageFactory
+                                                                .getLabel(
+                                                                        context,
+                                                                        component) }));
+                    }
+
+                    throw new ValidatorException(
+                            MessageFactory
+                                    .getMessage(
+                                            context,
+                                            "javax.faces.validator.LongRangeValidator.MAXIMUM",
+                                            new Object[] {
+                                                    new Integer(this.maximum),
+                                                    MessageFactory.getLabel(
+                                                            context, component) }));
+                }
+
+                if ((this.minimumSet) && (converted < this.minimum)) {
+                    if (this.maximumSet) {
+                        throw new ValidatorException(
+                                MessageFactory
+                                        .getMessage(
+                                                context,
+                                                "javax.faces.validator.LongRangeValidator.NOT_IN_RANGE",
+                                                new Object[] {
+                                                        new Double(this.minimum),
+                                                        new Double(this.maximum),
+                                                        MessageFactory
+                                                                .getLabel(
+                                                                        context,
+                                                                        component) }));
+                    }
+
+                    throw new ValidatorException(
+                            MessageFactory
+                                    .getMessage(
+                                            context,
+                                            "javax.faces.validator.LongRangeValidator.MINIMUM",
+                                            new Object[] {
+                                                    new Integer(this.minimum),
+                                                    MessageFactory.getLabel(
+                                                            context, component) }));
+                }
+
+            } catch (NumberFormatException e) {
+                throw new ValidatorException(MessageFactory.getMessage(context,
+                        "javax.faces.validator.LongRangeValidator.TYPE",
+                        new Object[] { MessageFactory.getLabel(context,
+                                component) }));
+            }
+    }
+
+    private int intValue(Object attributeValue) throws NumberFormatException {
+        if ((attributeValue instanceof Number)) {
+            return ((Number) attributeValue).intValue();
+        }
+        return Integer.parseInt(attributeValue.toString());
+    }
+}

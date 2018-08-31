@@ -1,0 +1,15 @@
+This file contains list of bugs and features that are part of a particular release.
+
+Version 2.0.1
+------------
+Copyright/Licence Header are updated.
+
+Version 2.0.0
+-------------
+GLASSFISH-17253: osgi-ee-resources module does not work with GlassFish 4.0 builds
+GLASSFISH-15787: Administered resource's life cycle mapping to corresponding OSGi service has some issues
+
+Version 1.0.1
+-------------
+GLASSFISH-18839: Extenders are getting stopped with invalid BundleContext
+GLASSFISH-18846: Avoid use of deprecated HK2 API

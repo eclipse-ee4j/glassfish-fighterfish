@@ -1,0 +1,33 @@
+This file contains list of bugs and features that are part of a particular release.
+
+Version 1.0.7
+------------
+Copyright/License headers Updated.
+
+Version 1.0.6
+-------------
+GLASSFISH-18833: [osgi/http] Avoid use of deprecated HK2 API
+GLASSFISH-18842: Extenders are stopped with invalid bundle context
+
+Version 1.0.5
+-------------
+GLASSFISH-18492: [osgi/http] InitParams for Servlets installed via OSGi using HttpService are not 
+correctly processed by web container
+
+Version 1.0.4
+-------------
+GLASSFISH-16880: NPE in Activator.stop() if start() has failed
+
+Version 1.0.3
+-------------
+GLASSFISH-16764: request.getSession().getServletContext() should return the same OSGiServletContext 
+that's used during setAttrbute().
+
+Version 1.0.2
+-------------
+GLASSFISH-16761: Make osg-http use lazy activation policy
+
+Version 1.0.1
+-------------
+GLASSFISH-16538: Switch to using Grizzly API reflectively to be able to use in both Grizzly 1.9 and 2.0.
+

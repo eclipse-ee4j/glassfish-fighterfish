@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Distribution License v. 1.0, which is available at
+    http://www.eclipse.org/org/documents/edl-v10.php.
+
+    SPDX-License-Identifier: BSD-3-Clause
+
+-->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<artifactId>sample.parent-pom</artifactId>
+		<groupId>org.glassfish.fighterfish</groupId>
+		<version>1.0.1</version>
+	</parent>
+
+	<groupId>org.glassfish.fighterfish</groupId>
+	<artifactId>sample.uas.ejbservice</artifactId>
+	<version>1.0.1-SNAPSHOT</version>
+	<packaging>ejb</packaging>
+
+	<name>An EJB based implementation of User Athentication Service. It embeds the JPA classes with itself.</name>
+	<scm>
+	    <connection>scm:git:https://github.com/eclipse-ee4j/glassfish-fighterfish/sample/uas/ejbservice</connection>
+	    <developerConnection>scm:git:https://github.com/eclipse-ee4j/glassfish-fighterfish/sample/uas/ejbservice
+	    </developerConnection>
+	    <url>https://github.com/eclipse-ee4j/glassfish-fighterfish/sample/uas/ejbservice</url>
+	</scm>
+
+	<build>
+		<plugins>
+			<!-- This is where we copy all our JPA classes and configuration from 
+				sample.uas.entities project into our target/classes, so that they can be 
+				embedded in this jar. We copy in process-resources phase so that when maven-bundle-plugin's 
+				manifest goal runs in process-classes phase, it will generate manifest information 
+				for all the copied classes as well. We ignore the Activator that's part of 
+				entities project, as that's not needed in this bundle. -->
+			<plugin>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>copy-entities</id>
+						<phase>process-resources</phase>
+						<goals>
+							<goal>unpack-dependencies</goal>
+						</goals>
+						<configuration>
+							<includeArtifactIds>sample.uas.entities</includeArtifactIds>
+							<excludes>**/EntitiesActivator.class</excludes>
+							<outputDirectory>${project.build.outputDirectory}</outputDirectory>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<!-- This looks like a bug in maven-ejb-plugin. Although I have set the 
+					ejbVersion in parent-pom, it still defaults to 2.1 here. -->
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-ejb-plugin</artifactId>
+				<version>2.3</version>
+				<configuration>
+					<ejbVersion>3.1</ejbVersion>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+	<dependencies>
+		<dependency>
+			<groupId>org.glassfish.fighterfish</groupId>
+			<artifactId>sample.uas.entities</artifactId>
+			<version>1.0.0</version>
+			<type>jar</type>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.glassfish.fighterfish</groupId>
+			<artifactId>sample.uas.api</artifactId>
+			<version>1.0.0</version>
+			<scope>provided</scope>
+		</dependency>
+	</dependencies>
+
+</project>

@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (c) 2010, 2018 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+-->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.glassfish.fighterfish</groupId>
+        <artifactId>module-parent-pom</artifactId>
+        <version>1.0.5</version>
+    </parent>
+    <artifactId>osgi-cdi</artifactId>
+    <version>1.0.6-SNAPSHOT</version>
+    <!-- We don't use bundle packaging as that interfers with other custom packaging types because of a maven bug
+     which is probably fixed in recent maven versions, but I have no time to test them. So, better be safe.-->
+    <packaging>jar</packaging>
+    <name>GlassFish CDI Support for OSGi Bundles</name>
+    
+    <scm>
+        <connection>scm:git:https://github.com/eclipse-ee4j/glassfish-fighterfish.git</connection>
+        <developerConnection>scm:git:git@github.com:eclipse-ee4j/glassfish-fighterfish.git</developerConnection>
+        <url>https://github.com/eclipse-ee4j/glassfish-fighterfish/tree/master/module/osgi-cdi</url>
+
+    </scm>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <configuration>
+                    <supportedProjectTypes>
+                        <!-- Our parent project disables this plugin for jar type, so we have to enable it here -->
+                        <supportedProjectType>jar</supportedProjectType>
+                    </supportedProjectTypes>
+                </configuration>
+                <executions>
+                   <execution>
+                      <id>bundle</id>
+                      <phase>package</phase>
+                      <goals>
+                         <!-- We use bundle goal to be able to include osgi-cdi-api classes in this bundle, so that
+                              we have one self contained bundle. -->
+                         <goal>bundle</goal>
+                      </goals>
+                   </execution>
+                </executions>
+            </plugin>
+	    <plugin>
+  		<groupId>org.apache.maven.plugins</groupId>
+ 		<artifactId>maven-source-plugin</artifactId>
+  		<executions>
+    		<execution>
+      		<id>attach-sources</id>
+      		<goals>
+        	<goal>jar</goal>
+      		</goals>
+    		</execution>
+  		</executions>
+	   </plugin>
+	   <plugin>
+ 		 <groupId>org.apache.maven.plugins</groupId>
+  		<artifactId>maven-javadoc-plugin</artifactId>
+  		<executions>
+  		  <execution>
+   		   <id>attach-javadocs</id>
+      		<goals>
+       		 <goal>jar</goal>
+      		</goals>
+    		</execution>
+  		</executions>
+	   </plugin>
+	   <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-gpg-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>sign-artifacts</id>
+		<phase>verify</phase>
+            <goals>
+              <goal>sign</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+        </plugins>
+    </build>
+    <developers>
+      <developer>
+            <id>ss141213</id>
+            <name>Sahoo</name>
+            <organization>Oracle, Inc.</organization>
+            <roles>
+                <role>developer</role>
+            </roles>
+        </developer>
+       
+        <developer>
+            <id>ankathur</id>
+            <name>Ankur Kathuria</name>
+            <organization>Oracle, Inc.</organization>
+            <roles>
+                <role>developer</role>
+            </roles>
+        </developer> 
+    </developers>   
+    <dependencies>
+        <dependency>
+            <groupId>org.glassfish.fighterfish</groupId>
+            <artifactId>osgi-javaee-base</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.compendium</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>javax</groupId>
+            <artifactId>javaee-web-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.fighterfish</groupId>
+            <artifactId>osgi-cdi-api</artifactId>
+            <version>1.0.0</version>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+</project>

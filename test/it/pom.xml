@@ -1,0 +1,620 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+-->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>test.parent-pom</artifactId>
+        <groupId>org.glassfish.fighterfish</groupId>
+        <version>1.0.0</version>
+        <relativePath>../parent-pom/pom.xml</relativePath>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>test.it</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+    <name>FighterFish integration test suite</name>
+    <dependencies>
+        <dependency>
+            <groupId>org.glassfish.fighterfish</groupId>
+            <artifactId>test.util</artifactId>
+            <version>1.1.7</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>javax</groupId>
+            <artifactId>javaee-web-api</artifactId>
+        </dependency>
+        <!--
+        Our tests use mvn: url scheme to directly reference mvn artifacts.
+        pax-url provides necessary url handler. It internally uses aether
+        to resolve artifacts from remote or local repository.
+        The version of pax-url that we currently use uses default repository only.
+        If we want to test with artifacts in staging repo or promoted repo,
+        pax-url can't handle it. See http://comments.gmane.org/gmane.comp.java.ops4j.general/12460
+        for more details.
+        As a work around, we add all bundles provisioned by tests so that 
+        mvn can download them rather than pax-url.
+        There is no other reason to add these dependencies here.
+        Since these dependencies appear as surefire classpath and can affect test runtime,
+        we also explicitly configure surefire plugin to exclude them from classpath.
+        We should upgrade pax-url instead of doing such work arounds.
+        -->
+        <dependency>
+            <groupId>org.glassfish.fighterfish</groupId>
+            <artifactId>sample.uas.api</artifactId>
+            <version>1.0.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.fighterfish</groupId>
+            <artifactId>sample.uas.simpleservice</artifactId>
+            <version>1.0.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.fighterfish</groupId>
+            <artifactId>sample.uas.advservice</artifactId>
+            <version>1.0.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.fighterfish</groupId>
+            <artifactId>sample.uas.ejbservice</artifactId>
+            <version>1.0.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.fighterfish</groupId>
+            <artifactId>sample.uas.ejbservice2</artifactId>
+            <version>1.0.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.fighterfish</groupId>
+            <artifactId>sample.uas.simplewab</artifactId>
+            <version>1.0.0</version>
+            <scope>test</scope>
+            <type>war</type>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.fighterfish</groupId>
+            <artifactId>sample.uas.simplewabfragment</artifactId>
+            <version>1.0.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.fighterfish</groupId>
+            <artifactId>sample.uas.simplejaxrs</artifactId>
+            <version>1.0.1</version>
+            <scope>test</scope>
+            <type>war</type>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.fighterfish</groupId>
+            <artifactId>sample.uas.entities</artifactId>
+            <version>1.0.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.fighterfish</groupId>
+            <artifactId>sample.osgihttp.helloworld</artifactId>
+            <version>1.0.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.fighterfish</groupId>
+            <artifactId>test.app0</artifactId>
+            <version>1.0.0</version>
+            <scope>test</scope>
+            <type>war</type>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.fighterfish</groupId>
+            <artifactId>test.app1</artifactId>
+            <version>1.0.0</version>
+            <scope>test</scope>
+            <type>war</type>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.fighterfish</groupId>
+            <artifactId>test.app2</artifactId>
+            <version>1.0.0</version>
+            <scope>test</scope>
+            <type>war</type>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.fighterfish</groupId>
+            <artifactId>test.app3</artifactId>
+            <version>1.0.0</version>
+            <scope>test</scope>
+            <type>war</type>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.fighterfish</groupId>
+            <artifactId>test.app4</artifactId>
+            <version>1.0.0</version>
+            <scope>test</scope>
+            <type>war</type>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.fighterfish</groupId>
+            <artifactId>test.app5</artifactId>
+            <version>1.0.0</version>
+            <scope>test</scope>
+            <type>war</type>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.fighterfish</groupId>
+            <artifactId>test.app6</artifactId>
+            <version>1.0.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.fighterfish</groupId>
+            <artifactId>test.app6.entities</artifactId>
+            <version>1.0.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.fighterfish</groupId>
+            <artifactId>test.app7</artifactId>
+            <version>1.0.0</version>
+            <scope>test</scope>
+            <type>war</type>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.fighterfish</groupId>
+            <artifactId>test.app8</artifactId>
+            <version>1.0.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.fighterfish</groupId>
+            <artifactId>test.app8.entities</artifactId>
+            <version>1.0.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.fighterfish</groupId>
+            <artifactId>test.app9</artifactId>
+            <version>1.0.0</version>
+            <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.primefaces</groupId>
+                    <artifactId>primefaces</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.fighterfish</groupId>
+            <artifactId>test.app10.bean</artifactId>
+            <version>1.0.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.fighterfish</groupId>
+            <artifactId>test.app10</artifactId>
+            <version>1.0.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.fighterfish</groupId>
+            <artifactId>test.app11.ejb</artifactId>
+            <version>1.0.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.fighterfish</groupId>
+            <artifactId>test.app11</artifactId>
+            <version>1.0.0</version>
+            <scope>test</scope>
+            <type>war</type>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.fighterfish</groupId>
+            <artifactId>test.app12</artifactId>
+            <version>1.0.0</version>
+            <scope>test</scope>
+            <type>war</type>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.fighterfish</groupId>
+            <artifactId>test.app12.fragment</artifactId>
+            <version>1.0.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.fighterfish</groupId>
+            <artifactId>test.app13</artifactId>
+            <version>1.0.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.fighterfish</groupId>
+            <artifactId>test.app14</artifactId>
+            <version>1.0.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.fighterfish</groupId>
+            <artifactId>test.app15</artifactId>
+            <version>1.0.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.fighterfish</groupId>
+            <artifactId>test.app16</artifactId>
+            <version>1.0.0</version>
+            <scope>test</scope>
+            <type>war</type>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.fighterfish</groupId>
+            <artifactId>test.app16.entities</artifactId>
+            <version>1.0.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.fighterfish</groupId>
+            <artifactId>test.app16.mdb</artifactId>
+            <version>1.0.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.fighterfish</groupId>
+            <artifactId>test.app16.msgproducer</artifactId>
+            <version>1.0.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.fighterfish</groupId>
+            <artifactId>test.app17</artifactId>
+            <version>1.0.0</version>
+            <scope>test</scope>
+            <type>war</type>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.fighterfish</groupId>
+            <artifactId>test.app18</artifactId>
+            <version>1.0.0</version>
+            <scope>test</scope>
+            <type>war</type>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.fighterfish</groupId>
+            <artifactId>test.app19</artifactId>
+            <version>1.0.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.fighterfish</groupId>
+            <artifactId>test.app20</artifactId>
+            <version>1.0.0</version>
+            <scope>test</scope>
+            <type>war</type>
+        </dependency>
+        <!--
+        Adding the following dependency causes Felix to bomb because they introduce
+        incompatible versions of jars in surefire plugin classpath. There does not seem
+        to be an easy way to prevemt transitive dependencies to be excluded from
+        classpath, so we have commented this dependency.
+        <dependency>
+            <groupId>org.apache.felix</groupId>
+            <artifactId>org.apache.felix.webconsole</artifactId>
+            <version>3.1.2</version>
+            <scope>test</scope>
+        </dependency>       
+        -->        
+        <dependency>
+            <groupId>org.glassfish.main.osgi-platforms</groupId>
+            <artifactId>felix-webconsole-extension</artifactId>
+            <version>4.0.1-b02</version>
+            <scope>test</scope>
+            <!-- Exclude the ones that bring in incompatible jars to classpath -->
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.felix</groupId>
+                    <artifactId>org.apache.felix.webconsole</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.glassfish.main.security</groupId>
+                    <artifactId>security-services</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+    </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <systemProperties>
+                        <property>
+                            <name>com.sun.aas.installRoot</name>
+                            <value>${glassfish.home}</value>
+                        </property>
+                        <property>
+                            <name>com.sun.aas.instanceRoot</name>
+                            <value>${glassfish.home}/domains/domain1</value>
+                        </property>
+                        <property>
+                            <name>GlassFish_Platform</name>
+                            <value>${GlassFish_Platform}</value>
+                        </property>
+                        <!-- This disables UC PingService -->
+                        <property>
+                            <name>com.sun.enterprise.registration.PING_TIMER_INTERVAL</name>
+                            <value>-1</value>
+                        </property>
+                        <!-- 
+                        This enables logging of log source which is very handy to trace execution.
+                        This string is defined in nucleus/.../UniformLogFormatter.java
+                        -->
+                        <property>
+                            <name>com.sun.aas.logging.keyvalue.logsource</name>
+                            <value>true</value>
+                        </property>
+                        <!-- Configure Derby dir. When set as an empty value, we use in-memory derby database. -->
+                        <property>
+                            <name>fighterfish.test.DerbyDBRootDir</name>
+                            <value>${fighterfish.test.DerbyDBRootDir}</value>
+                        </property>
+                        <!-- This is what is used by Derby Embedded Driver to decide where to keep the derby log messages -->
+                        <property>
+                            <name>derby.stream.error.file</name>
+                            <value>${project.build.directory}/derby.log</value>
+                        </property>
+                        <property>
+                            <name>org.osgi.framework.storage</name>
+                            <value>${project.build.directory}/osgi-cache/${GlassFish_Platform}</value>
+                        </property>
+                        <!-- How long should we wait for asynchronous operations to finish -->
+                        <property>
+                            <name>fighterfish.test.setup.timeout</name>
+                            <value>200000</value>
+                        </property>
+                        <!-- 
+                        This is needed for pax-url-mvn to read custom settings.xml.
+                        pax-url-mvn tries to locate settings.xml in ~/.m2 or in ${maven.home}/conf
+                        -->
+                        <property>
+                            <name>user.home</name>
+                            <value>${user.home}</value>
+                        </property>
+                        <!-- 
+                        This is needed for pax-url-mvn to reads custom settings.xml.
+                        pax-url-mvn tries to locate settings.xml in ~/.m2 or in ${maven.home}/conf
+                        -->
+                        <property>
+                            <name>maven.home</name>
+                            <value>${maven.home}</value>
+                        </property>
+                        <!--
+                        Implementing GLASSFISH-19794 
+                        -->
+                        <property>
+                            <name>sun.net.http.retryPost</name>
+                            <value>false</value>
+                        </property>
+                    </systemProperties>
+                    <classpathDependencyExcludes>
+                        <!-- 
+                        Felix 4.2.0 uses newer version of APIs than what some of our dependencies use.
+                        If for some reason those older APIs are in classpath ahead of felix or equinox jar,
+                        then we will run into various linkage errors. So, it is better to not have any
+                        api jar in classpath. I am being lazy here and excluding all org.osgi jars from 
+                        classpath since those those jars are typically suppliers of APIs.
+                        -->
+                        <classpathDependencyExcludes>org.osgi</classpathDependencyExcludes>
+                        <!--
+                        These jax api jars are code less fake jars, so they can cause class loading 
+                        problems if they are available in runtime classpath.
+                        -->
+                        <classpathDependencyExcludes>javax:javaee-web-api</classpathDependencyExcludes>
+                        <classpathDependencyExcludes>javax:javaee-api</classpathDependencyExcludes>
+                        <!-- We don't need any of these in classpath. These dependencies are only present
+                             so that maven can ensure they are resolved before tests use them. -->
+                        <classpathDependencyExcludes>org.glassfish.main.osgi-platforms:felix-webconsole-extension</classpathDependencyExcludes>
+                        <classpathDependencyExcludes>org.glassfish.fighterfish:test.app*</classpathDependencyExcludes>
+                        <classpathDependencyExcludes>org.glassfish.fighterfish:sample.*</classpathDependencyExcludes>
+                    </classpathDependencyExcludes>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+    <profiles>
+        <profile>
+            <id>ToolsJar</id>
+            <activation>
+                <os>
+                    <family>!mac</family>
+                </os>
+            </activation>
+            <dependencies>
+                <!-- Add tools.jar to classpath as required by GlassFish. See ASMainHelper#createOSGiFrameworkLauncherCL -->
+                <dependency>
+                    <groupId>com.sun</groupId>
+                    <artifactId>tools</artifactId>
+                    <version>1.6.0</version>
+                    <scope>system</scope>
+                    <systemPath>${java.home}/../lib/tools.jar</systemPath>
+                </dependency>
+            </dependencies>
+        </profile>
+
+        <profile>
+            <id>Felix</id>
+            <activation>
+                <!-- We can't use activeByDefault, as such a profile is not selected when any other profile is selected
+                     because of explicit user request or because of activation rule.
+                     We don't want everyone to pass -PFelix either. So, we activate it using a rule
+                     which will always match. If you want this profile to be inactive (e.g. when running 
+                     using Equinox), then you have to pass -P-Felix.
+                -->
+                <jdk>[1.6,1000)</jdk>
+            </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>org.apache.felix</groupId>
+                    <artifactId>org.apache.felix.framework</artifactId>
+                    <version>4.2.1</version>
+                    <scope>compile</scope>
+                </dependency>
+            </dependencies>
+            <properties>
+                <GlassFish_Platform>Felix</GlassFish_Platform>
+            </properties>
+        </profile>
+
+        <profile>
+            <id>Equinox</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <dependencies>
+                <!--<dependency>-->
+                <!--<groupId>org.eclipse.equinox</groupId>-->
+                <!--<artifactId>org.eclipse.osgi</artifactId>-->
+                <!--<version>3.6.1</version>-->
+                    <!--<scope>system</scope>-->
+                    <!--<systemPath>${glassfish.home}/osgi/equinox/org.eclipse.osgi_3.6.1.R36x_v20100806.jar</systemPath>-->
+                <!--</dependency>-->
+                <dependency>
+                    <groupId>org.sonatype.tycho</groupId>
+                    <artifactId>org.eclipse.osgi</artifactId>
+                    <version>3.6.2.R36x_v20110210</version>
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
+            <properties>
+                <GlassFish_Platform>Equinox</GlassFish_Platform>
+            </properties>
+        </profile>
+
+        <!--
+        A note about extraArgs. I don't know how to have multiple profiles each contributing 
+        jvm command line argument. So, I create a place holder variable called extraArgs.
+        It can be set from outside or from another profile like Proxy profile in the example below.
+        -->
+        <profile>
+            <id>SunJVM</id>
+            <activation>
+                <property>
+                   <!-- We don't use vm.name since it varies for 32bit/64 bit environments.-->
+                   <name>java.vm.vendor</name>
+                   <value>Sun Microsystems Inc.</value>
+                </property>
+            </activation>
+            <properties>
+                <argLine>-Xmx512m -XX:MaxPermSize=256m ${extraArgs}</argLine>
+            </properties>
+        </profile>
+
+        <profile>
+            <id>OracleJVM</id>
+            <activation>
+                <property>
+                   <!-- We don't use vm.name since it varies for 32bit/64 bit environments.-->
+                   <name>java.vm.vendor</name>
+                   <value>Oracle Corporation</value>
+                </property>
+            </activation>
+            <properties>
+                <argLine>-Xmx512m -XX:MaxPermSize=256m ${extraArgs}</argLine>
+            </properties>
+        </profile>
+
+        <profile>
+            <id>AppleJVM</id>
+            <activation>
+                <property>
+                   <name>java.vm.vendor</name>
+                   <value>Apple Inc.</value>
+                </property>
+            </activation>
+            <properties>
+                <argLine>-Xmx1g -XX:MaxPermSize=256m ${extraArgs}</argLine>
+            </properties>
+        </profile>
+
+        <profile>
+            <id>IBM-J9-VM</id>
+            <activation>
+                <property>
+                   <name>java.vm.name</name>
+                   <value>IBM J9 VM</value>
+                </property>
+            </activation>
+            <properties>
+                <argLine>-XX:MaxPermSize=256m -Xverify:none ${extraArgs}</argLine>
+            </properties>
+        </profile>
+
+        <!--
+        pax.url uses aether, but the version of pax.url that we use does not configure
+        aether to mimic maven settings as specified in various maven configuration files.
+        So, we have to set the proxy in brute force way via JVM settings.
+        -->
+        <profile>
+            <id>Proxy</id>
+            <properties>
+                <extraArgs>-Dhttp.proxyHost=www-proxy.us.oracle.com -Dhttp.proxyPort=80 -Dhttps.proxyHost=www-proxy.us.oracle.com -Dhttps.proxyPort=80</extraArgs>
+            </properties>
+        </profile>
+        <profile>
+            <id>Debug</id>
+            <properties>
+                <maven.surefire.debug>-Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=9009</maven.surefire.debug>
+            </properties>
+        </profile>
+
+    </profiles>
+    
+    <properties>
+        <glassfish.home>/home/ss141213/WS/gf/trunk/appserver/distributions/glassfish/target/stage/glassfish4/glassfish</glassfish.home>
+        <!-- By default, we use in-memory Derby database so that we don't get "too many open files" error.
+             Use the following value to use filesystem based database.
+        <fighterfish.test.DerbyDBRootDir>${project.build.directory}/derby-databases</fighterfish.test.DerbyDBRootDir>
+        -->
+        <fighterfish.test.DerbyDBRootDir></fighterfish.test.DerbyDBRootDir>
+        <extraArgs></extraArgs>
+    </properties>
+    
+    <repositories>
+         <!--
+         This is where 4.0.1-b02 exists.
+         -->
+         <repository>
+             <id>jvnet.promoted.repository</id>
+             <name>java.net Maven Repository For Promoted Artifacts</name>
+             <releases>
+                 <enabled>true</enabled>
+             </releases>
+             <snapshots>
+                 <enabled>false</enabled>
+                 <updatePolicy>never</updatePolicy>
+             </snapshots>
+             <url>https://maven.java.net/content/groups/promoted/</url>
+             <layout>default</layout>
+          </repository>
+     </repositories>
+</project>

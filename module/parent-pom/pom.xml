@@ -1,0 +1,400 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+-->
+
+<!-- A parent project inheritted by all FighterFish modules. This project 
+	is set up such that this pom can be released standalone. -->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.eclipse.ee4j</groupId>
+        <artifactId>project</artifactId>
+        <version>1.0</version>
+    </parent>
+
+    <groupId>org.glassfish.fighterfish</groupId>
+    <artifactId>module.parent-pom</artifactId>
+    <version>1.0.6</version>
+    <packaging>pom</packaging>
+    <name>Parent POM for all FighterFish Modules</name>
+
+    <licenses>
+        <license>
+            <name>EPL 2.0</name>
+            <url>http://www.eclipse.org/legal/epl-2.0</url>
+            <distribution>repo</distribution>
+        </license>
+        <license>
+            <name>GPL2 w/ CPE</name>
+            <url>https://www.gnu.org/software/classpath/license.html</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <issueManagement>
+        <system>github</system>
+        <url>https://github.com/eclipse-ee4j/glassfish-fighterfish/issues/</url>
+    </issueManagement>
+
+    <scm>
+        <connection>scm:git:https://github.com/eclipse-ee4j/glassfish-fighterfish.git</connection>
+        <developerConnection>scm:git:git@github.com:eclipse-ee4j/glassfish-fighterfish.git</developerConnection>
+        <url>https://github.com/eclipse-ee4j/glassfish-fighterfish/tree/master/module/parent-pom</url>
+    </scm>
+
+    <developers>
+        <developer>
+            <id>sahoo</id>
+            <name>Sahoo Sanjeeb</name>
+            <url>http://www.java.net/blogs/ss141213/</url>
+            <organization>Oracle Corporation</organization>
+            <roles>
+                <role>lead</role>
+            </roles>
+        </developer>
+    </developers>
+
+    <mailingLists>
+        <mailingList>
+            <name>Glassfish mailing list</name>
+            <post>glassfish-dev@eclipse.org</post>
+            <subscribe>https://dev.eclipse.org/mailman/listinfo/glassfish-dev</subscribe>
+            <unsubscribe>https://dev.eclipse.org/mailman/listinfo/glassfish-dev</unsubscribe>
+            <archive>https://dev.eclipse.org/mhonarc/lists/glassfish-dev</archive>
+        </mailingList>
+    </mailingLists>
+
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.sun.enterprise</groupId>
+                <artifactId>hk2-core</artifactId>
+                <version>${hk2.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.hk2</groupId>
+                <artifactId>osgi-resource-locator</artifactId>
+                <version>1.0.1</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.persistence</groupId>
+                <artifactId>org.eclipse.persistence.jpa</artifactId>
+                <version>${eclipselink.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.persistence</groupId>
+                <artifactId>javax.persistence</artifactId>
+                <version>${javax-persistence-api.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.sun.faces</groupId>
+                <artifactId>jsf-impl</artifactId>
+                <version>${mojarra.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.sun.faces</groupId>
+                <artifactId>jsf-api</artifactId>
+                <version>${mojarra.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.osgi</groupId>
+                <artifactId>org.osgi.compendium</artifactId>
+                <version>4.2.0</version>
+                <!-- This jar should never be part of runtime. -->
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.osgi</groupId>
+                <artifactId>org.osgi.core</artifactId>
+                <version>4.2.0</version>
+                <!-- This jar should never be part of runtime. -->
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.osgi</groupId>
+                <artifactId>org.osgi.enterprise</artifactId>
+                <version>4.2.0</version>
+                <!-- This jar should never be part of runtime. -->
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.common</groupId>
+                <artifactId>glassfish-api</artifactId>
+                <version>${glassfish.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.common</groupId>
+                <artifactId>internal-api</artifactId>
+                <version>${glassfish.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.deployment</groupId>
+                <artifactId>deployment-common</artifactId>
+                <version>${glassfish.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.web</groupId>
+                <artifactId>web-glue</artifactId>
+                <version>${glassfish.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.deployment</groupId>
+                <artifactId>dol</artifactId>
+                <version>${glassfish.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>javax</groupId>
+                <artifactId>javaee-web-api</artifactId>
+                <version>6.0</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish</groupId>
+                <artifactId>javax.jms</artifactId>
+                <version>${glassfish.version}</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish</groupId>
+                <artifactId>javax.transaction</artifactId>
+                <version>${glassfish.version}</version>
+                <scope>provided</scope>
+            </dependency>
+
+        </dependencies>
+    </dependencyManagement>
+    <build>
+        <finalName>${project.artifactId}</finalName>
+        <pluginManagement>
+            <plugins>
+                <!--
+                Needed for those artifacts that don't use hk2-jar packaging.
+                Since our artifacts are compatible with GF 3.x, we use source and target as 1.6
+                -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <configuration>
+                        <source>1.6</source>
+                        <target>1.6</target>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>com.sun.enterprise</groupId>
+                    <artifactId>hk2-maven-plugin</artifactId>
+                    <version>${hk2.version}</version>
+                    <extensions>true</extensions>
+                    <configuration>
+                        <source>1.6</source>
+                        <target>1.6</target>
+                        <archive>
+                            <!-- Use the manifest.mf produced by maven-bundle-plugin:manifest -->
+                            <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF
+                            </manifestFile>
+                        </archive>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-jar-plugin</artifactId>
+                    <configuration>
+                        <archive>
+                            <!-- Use the manifest.mf produced by maven-bundle-plugin:manifest -->
+                            <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF
+                            </manifestFile>
+                        </archive>
+                    </configuration>
+                </plugin>
+
+                <!-- Configure maven-bundle-plugin to generate OSGi manifest. Please note:
+                    we use the manifest goal only and not the bundle goal. The bundle goal can
+                    lead to very surprising results if the package names are not correctly specified.
+                    So, we use the jar plugin to generate the jar. -->
+                <plugin>
+                    <groupId>org.apache.felix</groupId>
+                    <artifactId>maven-bundle-plugin</artifactId>
+                    <version>2.0.1</version>
+                    <configuration>
+                        <!-- By default, we don't export anything. -->
+                        <Export-Package />
+                        <!-- Since, we are in a top level pom and we we don't want it to be
+                            active for plain jar type artifacts, enable the plugin for hk2-jar and bundle
+                            packaging type only, -->
+                        <supportedProjectTypes>
+                            <supportedProjectType>hk2-jar</supportedProjectType>
+                            <supportedProjectType>bundle</supportedProjectType>
+                            <supportedProjectType>jar</supportedProjectType>
+                        </supportedProjectTypes>
+                        <instructions>
+                            <!-- Read all the configuration from osgi.bundle file, if it exists.
+                                See Felix-699 to find out why we use ${basedir}. -->
+                            <_include>-${basedir}/osgi.bundle</_include>
+                        </instructions>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <id>bundle-manifest</id>
+                            <phase>process-classes</phase>
+                            <goals>
+                                <goal>manifest</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+                <plugin>
+                    <groupId>com.sun.enterprise</groupId>
+                    <artifactId>osgiversion-maven-plugin</artifactId>
+                    <version>${hk2.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-release-plugin</artifactId>
+                    <version>2.4</version>
+                    <configuration>
+                        <arguments>-Pjvnet-release -Dgpg.passphrase=${gpg.passphrase}</arguments>
+                        <tagBase>https://svn.java.net/svn/glassfish~svn/tags/fighterfish-releases</tagBase>
+                        <tagNameFormat>@{project.groupId}.@{project.artifactId}-@{project.version}</tagNameFormat>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+    <profiles>
+        <profile>
+            <id>jdk7-tools.jar</id>
+            <activation>
+                <property>
+                    <name>java.vendor</name>
+                    <value>Oracle Corporation</value>
+                </property>
+            </activation>
+            <build>
+                <pluginManagement>
+                    <plugins>
+                        <plugin>
+                            <groupId>com.sun.enterprise</groupId>
+                            <artifactId>hk2-maven-plugin</artifactId>
+                            <dependencies>
+                                <dependency>
+                                    <groupId>com.sun</groupId>
+                                    <artifactId>tools</artifactId>
+                                    <version>1.7.0</version>
+                                    <scope>system</scope>
+                                    <systemPath>${java.home}/../lib/tools.jar</systemPath>
+                                </dependency>
+                            </dependencies>
+                        </plugin>
+                    </plugins>
+                </pluginManagement>
+            </build>
+        </profile>
+        <profile>
+            <id>mac-classes.jar</id>
+            <activation>
+                <property>
+                    <name>java.vendor</name>
+                    <value>Apple Inc.</value>
+                </property>
+            </activation>
+            <build>
+                <pluginManagement>
+                    <plugins>
+                        <plugin>
+                            <groupId>com.sun.enterprise</groupId>
+                            <artifactId>hk2-maven-plugin</artifactId>
+                            <dependencies>
+                                <dependency>
+                                    <groupId>com.sun</groupId>
+                                    <artifactId>tools</artifactId>
+                                    <version>1.4.2</version>
+                                    <scope>system</scope>
+                                    <systemPath>${java.home}/../Classes/classes.jar</systemPath>
+                                </dependency>
+                            </dependencies>
+                        </plugin>
+                    </plugins>
+                </pluginManagement>
+            </build>
+        </profile>
+    </profiles>
+
+    <properties>
+        <glassfish.version>3.1-b41</glassfish.version>
+        <hk2.version>1.1.0</hk2.version>
+        <eclipselink.version>2.7.0</eclipselink.version>
+        <mojarra.version>2.1.0-b11</mojarra.version>
+        <javax-persistence-api.version>2.2.0</javax-persistence-api.version>
+    </properties>
+    <repositories>
+        <!--
+        This is where some additional GlassFish specific dependencies exist. Although we don't
+        use any of the artifacts from this repo directly, some of our dependencies depend on eclipselink and netbeans
+        artifacts which come from these repositories. Unless this is added, build will fail to locate those transtive
+        dependencies. Earlier we were able to work around this by just adding the public glassfish nexus repo, but
+        since that's no longer available, we are having to add all these repos in our list of repos.
+        -->
+        <repository>
+            <id>eclipselink.repository</id>
+            <name>Eclipse Maven Repository</name>
+            <url>http://download.eclipse.org/rt/eclipselink/maven.repo/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+                <updatePolicy>never</updatePolicy>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>netbeans.repository</id>
+            <name>NetBeans Maven Repository</name>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+                <updatePolicy>never</updatePolicy>
+            </snapshots>
+            <url>http://dev.nightlabs.org/maven-repository/repo/</url>
+            <layout>default</layout>
+        </repository>
+        <repository>
+            <id>jvnet.promoted.repository</id>
+            <name>java.net Maven Repository For Promoted Artifacts</name>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+                <updatePolicy>never</updatePolicy>
+            </snapshots>
+            <url>https://maven.java.net/content/groups/promoted/</url>
+            <layout>default</layout>
+        </repository>
+
+    </repositories>
+</project>
+
