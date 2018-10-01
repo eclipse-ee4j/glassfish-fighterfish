@@ -59,7 +59,7 @@
         <dependency>
             <groupId>org.glassfish.main.web</groupId>
             <artifactId>web-glue</artifactId>
-            <version>4.0.1-b01</version>
+            <version>5.0</version>
             <optional>true</optional>
         </dependency>
         <dependency>
@@ -79,6 +79,13 @@
         <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.enterprise</artifactId>
+        </dependency>
+        <dependency>
+            <!-- defining this here ensures it can resolved -->
+            <groupId>javax.transaction</groupId>
+            <artifactId>javax.transaction-api</artifactId>
+            <version>1.2.1</version>
+            <optional>true</optional>
         </dependency>
     </dependencies>
     <repositories>

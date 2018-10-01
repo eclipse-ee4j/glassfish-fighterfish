@@ -329,9 +329,9 @@
                                 <dependency>
                                     <groupId>com.sun</groupId>
                                     <artifactId>tools</artifactId>
-                                    <version>1.4.2</version>
+                                    <version>${hk2.version}</version>
                                     <scope>system</scope>
-                                    <systemPath>${java.home}/../Classes/classes.jar</systemPath>
+                                    <systemPath>${java.home}/../lib/tools.jar</systemPath>
                                 </dependency>
                             </dependencies>
                         </plugin>
@@ -342,8 +342,8 @@
     </profiles>
 
     <properties>
-        <glassfish.version>3.1-b41</glassfish.version>
-        <hk2.version>1.1.0</hk2.version>
+        <glassfish.version>4.1.2</glassfish.version>
+        <hk2.version>1.6.9</hk2.version>
         <eclipselink.version>2.7.0</eclipselink.version>
         <mojarra.version>2.1.0-b11</mojarra.version>
         <javax-persistence-api.version>2.2.0</javax-persistence-api.version>
@@ -372,7 +372,8 @@
             <id>netbeans.repository</id>
             <name>NetBeans Maven Repository</name>
             <releases>
-                <enabled>true</enabled>
+                <enabled>false</enabled>
+                <updatePolicy>never</updatePolicy>
             </releases>
             <snapshots>
                 <enabled>false</enabled>
@@ -397,4 +398,3 @@
 
     </repositories>
 </project>
-
