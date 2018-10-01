@@ -35,47 +35,6 @@
         <url>https://github.com/eclipse-ee4j/glassfish-fighterfish/tree/master/module/osgi-web-container</url>
   </scm>
 
-    <build>
-        <plugins>
-	    <plugin>
-  		<groupId>org.apache.maven.plugins</groupId>
- 		<artifactId>maven-source-plugin</artifactId>
-  		<executions>
-    		<execution>
-      		<id>attach-sources</id>
-      		<goals>
-        	<goal>jar</goal>
-      		</goals>
-    		</execution>
-  		</executions>
-	   </plugin>
-	   <plugin>
- 		 <groupId>org.apache.maven.plugins</groupId>
-  		<artifactId>maven-javadoc-plugin</artifactId>
-  		<executions>
-  		  <execution>
-   		   <id>attach-javadocs</id>
-      		<goals>
-       		 <goal>jar</goal>
-      		</goals>
-    		</execution>
-  		</executions>
-	   </plugin>
-	   <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-gpg-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>sign-artifacts</id>
-		<phase>verify</phase>
-            <goals>
-              <goal>sign</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-        </plugins>
-    </build>
     <developers>
         <developer>
             <id>ss141213</id>
@@ -100,9 +59,9 @@
         <dependency>
             <groupId>org.glassfish.main.web</groupId>
             <artifactId>web-glue</artifactId>
-            <version>4.0.1-b01</version>
+            <version>5.0</version>
             <optional>true</optional>
-        </dependency>        
+        </dependency>
         <dependency>
             <!-- This is to provide a custom AnnotationProvider. See issue #11636. -->
             <groupId>com.sun.faces</groupId>
@@ -120,6 +79,13 @@
         <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.enterprise</artifactId>
+        </dependency>
+        <dependency>
+            <!-- defining this here ensures it can resolved -->
+            <groupId>javax.transaction</groupId>
+            <artifactId>javax.transaction-api</artifactId>
+            <version>1.2.1</version>
+            <optional>true</optional>
         </dependency>
     </dependencies>
     <repositories>

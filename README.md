@@ -10,7 +10,7 @@ then you should look at [our user's guide](http://glassfish.java.net/public/GF-O
 You can use Maven 3.0 or Maven 2, you must use version 2.2.1, as previous versions of MAVEN have led to issues building FighterFish modules. We recommend using maven 3.0.4 or higher as we internally use this version. If you don't have Maven installed, download it [here][41]. 
 
 **Java:**  
-You must use JDK 1.6 Update Release 4 or above to build FighterFish and make sure that it's in the PATH. Even if you use JDK 1.7, FighterFish modules are built with a target=1.6 to remain compatible with GlassFish 3.x series. 
+You must use JDK 1.6 Update Release 4 or JDK 1.7 to build FighterFish and make sure that it's in the PATH. Even if you use JDK 1.7, FighterFish modules are built with a target=1.6 to remain compatible with GlassFish 3.x series. 
 
 ### Workspace Details 
 
