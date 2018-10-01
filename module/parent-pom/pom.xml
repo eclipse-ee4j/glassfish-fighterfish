@@ -280,6 +280,19 @@
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <version>1.4.1</version>
+                <configuration>
+                    <rules>
+                        <requireJavaVersion>
+                            <version>[1.6.4,1.8)</version>
+                            <message>You need JDK6 or JDK7</message>
+                        </requireJavaVersion>
+                    </rules>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
     <profiles>
@@ -331,7 +344,7 @@
                                     <artifactId>tools</artifactId>
                                     <version>${hk2.version}</version>
                                     <scope>system</scope>
-                                    <systemPath>${java.home}/../lib/tools.jar</systemPath>
+                                    <systemPath>${java.home}/lib/tools.jar</systemPath>
                                 </dependency>
                             </dependencies>
                         </plugin>
