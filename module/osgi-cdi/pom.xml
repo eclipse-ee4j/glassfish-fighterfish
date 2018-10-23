@@ -107,4 +107,11 @@
             <scope>provided</scope>
         </dependency>
     </dependencies>
+    <repositories>
+        We depend on 4.0-b01 which is available in following repository
+        <repository>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
+    </repositories>
+
 </project>
