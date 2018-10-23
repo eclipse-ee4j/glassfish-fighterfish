@@ -22,7 +22,7 @@
     <parent>
         <groupId>org.glassfish.fighterfish</groupId>
         <artifactId>module-parent-pom</artifactId>
-        <version>1.0.7-SNAPSHOT</version>
+        <version>1.0.7</version>
     </parent>
     <artifactId>osgi-cdi</artifactId>
     <version>1.0.6-SNAPSHOT</version>
