@@ -22,7 +22,8 @@
     <parent>
         <groupId>org.glassfish.fighterfish</groupId>
         <artifactId>module-parent-pom</artifactId>
-        <version>1.0.5</version>
+        <version>1.0.7-SNAPSHOT</version>
+        <relativePath>../parent-pom/pom.xml</relativePath>
     </parent>
     <artifactId>osgi-http</artifactId>
     <version>1.0.8-SNAPSHOT</version>
@@ -89,16 +90,14 @@
     </build>
     <dependencies>
         <dependency>
-            <groupId>org.glassfish.web</groupId>
+            <groupId>org.glassfish.main.web</groupId>
             <artifactId>web-glue</artifactId>
-            <!-- We need to use 3.1.1-b07 or above because that's where ContextFacade extends WebModule -->
-            <version>3.1.1-b07</version>
             <scope>provided</scope>
         </dependency>        
         <dependency>
             <groupId>org.glassfish.fighterfish</groupId>
             <artifactId>osgi-javaee-base</artifactId>
-            <version>1.0.2</version>
+            <version>1.0.9-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
