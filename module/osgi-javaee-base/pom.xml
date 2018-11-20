@@ -22,7 +22,8 @@
     <parent>
         <groupId>org.glassfish.fighterfish</groupId>
         <artifactId>module-parent-pom</artifactId>
-        <version>1.0.5</version>
+        <version>1.0.7-SNAPSHOT</version>
+        <relativePath>../parent-pom/pom.xml</relativePath>
     </parent>
     <artifactId>osgi-javaee-base</artifactId>
     <version>1.0.9-SNAPSHOT</version>
@@ -48,22 +49,22 @@
     
     <dependencies>
         <dependency>
-            <groupId>org.glassfish</groupId>
+            <groupId>org.glassfish.main.common</groupId>
             <artifactId>simple-glassfish-api</artifactId>
             <version>${glassfish.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.glassfish.common</groupId>
+            <groupId>org.glassfish.main.common</groupId>
             <artifactId>glassfish-api</artifactId>
             <version>${glassfish.version}</version>
         </dependency>        
         <dependency>
-            <groupId>org.glassfish.common</groupId>
+            <groupId>org.glassfish.main.common</groupId>
             <artifactId>internal-api</artifactId>
             <version>${glassfish.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.glassfish.deployment</groupId>
+            <groupId>org.glassfish.main.deployment</groupId>
             <artifactId>deployment-common</artifactId>
             <version>${glassfish.version}</version>
         </dependency>

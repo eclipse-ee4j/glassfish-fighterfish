@@ -25,12 +25,12 @@
     <parent>
         <groupId>org.eclipse.ee4j</groupId>
         <artifactId>project</artifactId>
-        <version>1.0.1</version>
+        <version>1.0.4</version>
     </parent>
 
     <groupId>org.glassfish.fighterfish</groupId>
-    <artifactId>module.parent-pom</artifactId>
-    <version>1.0.6</version>
+    <artifactId>module-parent-pom</artifactId>
+    <version>1.0.7-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>Parent POM for all FighterFish Modules</name>
 
@@ -135,27 +135,27 @@
                 <scope>provided</scope>
             </dependency>
             <dependency>
-                <groupId>org.glassfish.common</groupId>
+                <groupId>org.glassfish.main.common</groupId>
                 <artifactId>glassfish-api</artifactId>
                 <version>${glassfish.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.glassfish.common</groupId>
+                <groupId>org.glassfish.main.common</groupId>
                 <artifactId>internal-api</artifactId>
                 <version>${glassfish.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.glassfish.deployment</groupId>
+                <groupId>org.glassfish.main.deployment</groupId>
                 <artifactId>deployment-common</artifactId>
                 <version>${glassfish.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.glassfish.web</groupId>
+                <groupId>org.glassfish.main.web</groupId>
                 <artifactId>web-glue</artifactId>
                 <version>${glassfish.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.glassfish.deployment</groupId>
+                <groupId>org.glassfish.main.deployment</groupId>
                 <artifactId>dol</artifactId>
                 <version>${glassfish.version}</version>
             </dependency>
