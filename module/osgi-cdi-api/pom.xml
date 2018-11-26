@@ -22,8 +22,7 @@
     <parent>
         <groupId>org.glassfish.fighterfish</groupId>
         <artifactId>module-parent-pom</artifactId>
-        <version>1.0.7</version>
-        <relativePath>../parent-pom/pom.xml</relativePath>
+	<version>1.0.7</version>
     </parent>
     <artifactId>osgi-cdi-api</artifactId>
     <version>1.0.2-SNAPSHOT</version>
@@ -107,4 +106,38 @@
             <artifactId>javaee-web-api</artifactId>
         </dependency>
     </dependencies>
+    <profiles>
+	        <profile>
+            <id>staging</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <repositories>
+                <repository>
+                    <id>sonatype-nexus-staging</id>
+                    <name>Sonatype Nexus Staging</name>
+                    <url>https://oss.sonatype.org/content/repositories/staging</url>
+                    <releases>
+                        <enabled>true</enabled>
+                    </releases>
+                    <snapshots>
+                        <enabled>false</enabled>
+                    </snapshots>
+                </repository>
+            </repositories>
+            <pluginRepositories>
+                <pluginRepository>
+                    <id>sonatype-nexus-staging</id>
+                    <name>Sonatype Nexus Staging</name>
+                    <url>https://oss.sonatype.org/content/repositories/staging</url>
+                    <releases>
+                        <enabled>true</enabled>
+                    </releases>
+                    <snapshots>
+                        <enabled>false</enabled>
+                    </snapshots>
+                </pluginRepository>
+            </pluginRepositories>
+        </profile>
+    </profiles>
 </project>
