@@ -83,7 +83,11 @@ public class OSGiContainer {
 
     private synchronized OSGiApplicationInfo redeploy(Bundle b) throws Exception {
         if (isShutdown()) return null;
-        if (isDeployed(b)) {
+        OSGiApplicationInfo appInfo = applications.get(b);
+        if (appInfo != null) {
+            ServiceReference newDeployer = selectDeployer(b), oldDeployer = appInfo.getDeployer();
+            if (newDeployer == oldDeployer || newDeployer != null && newDeployer.equals(oldDeployer))
+                return appInfo;
             undeploy(b);
         }
         return deploy(b);
