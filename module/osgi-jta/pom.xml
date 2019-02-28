@@ -69,4 +69,38 @@
         </dependency>
 
     </dependencies>
+    <profiles>
+                <profile>
+            <id>staging</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <repositories>
+                <repository>
+                    <id>sonatype-nexus-staging</id>
+                    <name>Sonatype Nexus Staging</name>
+                    <url>https://oss.sonatype.org/content/repositories/staging</url>
+                    <releases>
+                        <enabled>true</enabled>
+                    </releases>
+                    <snapshots>
+                        <enabled>false</enabled>
+                    </snapshots>
+                </repository>
+            </repositories>
+            <pluginRepositories>
+                <pluginRepository>
+                    <id>sonatype-nexus-staging</id>
+                    <name>Sonatype Nexus Staging</name>
+                    <url>https://oss.sonatype.org/content/repositories/staging</url>
+                    <releases>
+                        <enabled>true</enabled>
+                    </releases>
+                    <snapshots>
+                        <enabled>false</enabled>
+                    </snapshots>
+                </pluginRepository>
+            </pluginRepositories>
+        </profile>
+    </profiles>
 </project>
