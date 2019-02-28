@@ -56,7 +56,7 @@ spec:
         memory: "1Gi"
         cpu: "1"
   - name: build-container
-    image: ee4jglassfish/ci:jdk-8.181
+    image: ee4jglassfish/ci:jdk-7.221
     args:
     - cat
     tty: true
