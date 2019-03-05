@@ -14,7 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.glassfish.fighterfish.sample.embeddedgf.webosgibridge;
 
 import java.util.Enumeration;
@@ -26,33 +25,34 @@ import java.util.Properties;
  * @author Sanjeeb.Sahoo@Sun.COM
  */
 public class Util {
+
     private static final String DELIM_START = "${";
     private static final String DELIM_STOP = "}";
 
     /**
      * <p>
-     * This method performs property variable substitution on the
-     * specified value. If the specified value contains the syntax
+     * This method performs property variable substitution on the specified
+     * value. If the specified value contains the syntax
      * <tt>${&lt;prop-name&gt;}</tt>, where <tt>&lt;prop-name&gt;</tt>
-     * refers to either a configuration property or a system property,
-     * then the corresponding property value is substituted for the variable
-     * placeholder. Multiple variable placeholders may exist in the
-     * specified value as well as nested variable placeholders, which
-     * are substituted from inner most to outer most. Configuration
-     * properties override system properties.
+     * refers to either a configuration property or a system property, then the
+     * corresponding property value is substituted for the variable placeholder.
+     * Multiple variable placeholders may exist in the specified value as well
+     * as nested variable placeholders, which are substituted from inner most to
+     * outer most. Configuration properties override system properties.
      * </p>
      *
-     * @param val         The string on which to perform property substitution.
-     * @param currentKey  The key of the property being evaluated used to
-     *                    detect cycles.
-     * @param cycleMap    Map of variable references used to detect nested cycles.
+     * @param val The string on which to perform property substitution.
+     * @param currentKey The key of the property being evaluated used to detect
+     * cycles.
+     * @param cycleMap Map of variable references used to detect nested cycles.
      * @param configProps Set of configuration properties.
-     * @return The value of the specified string after system property substitution.
+     * @return The value of the specified string after system property
+     * substitution.
      * @throws IllegalArgumentException If there was a syntax error in the
-     *                                  property placeholder syntax or a recursive variable reference.
+     * property placeholder syntax or a recursive variable reference.
      */
     private static String substVars(String val, String currentKey,
-                                    Map cycleMap, Properties configProps)
+            Map<String,String> cycleMap, Properties configProps)
             throws IllegalArgumentException {
         /*
          * THIS METHOD HAS BEEN COPIED FROM FELIX
@@ -60,7 +60,7 @@ public class Util {
         // If there is currently no cycle map, then create
         // one for detecting cycles for this invocation.
         if (cycleMap == null) {
-            cycleMap = new HashMap();
+            cycleMap = new HashMap<String, String>();
         }
 
         // Put the current key in the cycle map.
@@ -68,7 +68,6 @@ public class Util {
 
         // Assume we have a value that is something like:
         // "leading ${foo.${bar}} middle ${baz} trailing"
-
         // Find the first ending '}' variable delimiter, which
         // will correspond to the first deepest nested variable
         // placeholder.
@@ -99,15 +98,14 @@ public class Util {
                     startDelim = idx;
                 }
             }
-        }
-        while ((startDelim > stopDelim) && (stopDelim >= 0));
+        } while ((startDelim > stopDelim) && (stopDelim >= 0));
 
         // At this point, we have found a variable placeholder so
         // we must perform a variable substitution on it.
         // Using the start and stop delimiter indices, extract
         // the first, deepest nested variable placeholder.
-        String variable =
-                val.substring(startDelim + DELIM_START.length(), stopDelim);
+        String variable
+                = val.substring(startDelim + DELIM_START.length(), stopDelim);
 
         // Verify that this is not a recursive variable reference.
         if (cycleMap.get(variable) != null) {
@@ -144,7 +142,6 @@ public class Util {
         // Return the value.
         return val;
     }
-
 
     public static void substVars(Properties props) {
         // Perform variable substitution for system properties.

@@ -13,7 +13,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  */
-
 package org.glassfish.osgijavaeebase;
 
 import com.sun.enterprise.deploy.shared.AbstractReadableArchive;
@@ -29,15 +28,15 @@ import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 
 /**
- * This is a very important class in our implementation of hybrid applications. This class maps a bundle and its
- * attached fragments to Java EE archive format.
+ * This is a very important class in our implementation of hybrid applications.
+ * This class maps a bundle and its attached fragments to Java EE archive
+ * format.
  *
  * @author Sanjeeb.Sahoo@Sun.COM
  */
 public abstract class OSGiJavaEEArchive extends AbstractReadableArchive implements ReadableArchive {
 
     // TODO(Sahoo): Lazy population of entries
-
     protected Bundle host;
     protected Bundle[] fragments;
     private Map<String, ArchiveEntry> entries = new HashMap<String, ArchiveEntry>();
@@ -46,25 +45,32 @@ public abstract class OSGiJavaEEArchive extends AbstractReadableArchive implemen
     protected final Map<Bundle, OSGiBundleArchive> archives;
 
     public OSGiJavaEEArchive(Bundle[] fragments, Bundle host) {
-        this.fragments = fragments!=null ? fragments : new Bundle[0];
-        archives = new HashMap<Bundle, OSGiBundleArchive>(this.fragments.length + 1);
+        this.fragments = fragments != null ? fragments : new Bundle[0];
+        archives = new HashMap<Bundle, OSGiBundleArchive>(
+                this.fragments.length + 1);
         this.host = host;
         init();
-        // ensure that we replace the MANIFEST.MF by host's manifest. If host does not have a manifest,
-        // then this archive will also not have a manifest.
-        final URI hostManifestURI = getArchive(host).getEntryURI(JarFile.MANIFEST_NAME);
+        // ensure that we replace the MANIFEST.MF by host's manifest. If host
+        // does not have a manifest, then this archive will also not have a
+        // manifest.
+        final URI hostManifestURI = getArchive(host)
+                .getEntryURI(JarFile.MANIFEST_NAME);
         if (hostManifestURI == null) {
             getEntries().remove(JarFile.MANIFEST_NAME);
         } else {
             getEntries().put(JarFile.MANIFEST_NAME, new ArchiveEntry() {
+
+                @Override
                 public String getName() {
                     return JarFile.MANIFEST_NAME;
                 }
 
+                @Override
                 public URI getURI() {
                     return hostManifestURI;
                 }
 
+                @Override
                 public InputStream getInputStream() throws IOException {
                     return getURI().toURL().openStream();
                 }
@@ -72,7 +78,7 @@ public abstract class OSGiJavaEEArchive extends AbstractReadableArchive implemen
         }
     }
 
-    protected synchronized OSGiBundleArchive getArchive(Bundle b) {
+    protected final synchronized OSGiBundleArchive getArchive(Bundle b) {
         OSGiBundleArchive archive = archives.get(b);
         if (archive == null) {
             archive = new OSGiBundleArchive(b);
@@ -81,7 +87,7 @@ public abstract class OSGiJavaEEArchive extends AbstractReadableArchive implemen
         return archive;
     }
 
-    protected Map<String, ArchiveEntry> getEntries() {
+    protected final Map<String, ArchiveEntry> getEntries() {
         return entries;
     }
 
@@ -96,61 +102,79 @@ public abstract class OSGiJavaEEArchive extends AbstractReadableArchive implemen
         return builder.build();
     }
 
+    @Override
     public InputStream getEntry(String name) throws IOException {
         final ArchiveEntry archiveEntry = entries.get(name);
-        return archiveEntry!= null ? archiveEntry.getInputStream() : null;
+        return archiveEntry != null ? archiveEntry.getInputStream() : null;
     }
 
+    @Override
     public boolean exists(String name) throws IOException {
         return entries.containsKey(name);
     }
 
+    @Override
     public long getEntrySize(String name) {
-        return 0; // can't determine
+        // can't determine
+        return 0;
     }
 
+    @Override
     public void open(URI uri) throws IOException {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public ReadableArchive getSubArchive(String name) throws IOException {
-        return null;  //TODO(Sahoo): Not Yet Implemented
+        //TODO(Sahoo): Not Yet Implemented
+        return null; 
     }
 
+    @Override
     public boolean exists() {
         return true;
     }
 
+    @Override
     public boolean delete() {
         return false;
     }
 
+    @Override
     public boolean renameTo(String name) {
         return false; // can't rename
     }
 
+    @Override
     public void setParentArchive(ReadableArchive parentArchive) {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public ReadableArchive getParentArchive() {
         return null;
     }
 
+    @Override
     public void close() throws IOException {
         // nothing to do
     }
 
+    @Override
     public Enumeration<String> entries() {
-        final Enumeration<String> all = Collections.enumeration(entries.keySet());
+        final Enumeration<String> all = Collections
+                .enumeration(entries.keySet());
 
         // return only file entries as per the conract of this method
-        return new Enumeration<String> () {
+        return new Enumeration<String>() {
             String next = getNext();
+
+            @Override
             public boolean hasMoreElements() {
-                return next!= null;
+                return next != null;
             }
 
+            @Override
             public String nextElement() {
                 if (hasMoreElements()) {
                     String result = next;
@@ -172,14 +196,18 @@ public abstract class OSGiJavaEEArchive extends AbstractReadableArchive implemen
         };
     }
 
+    @Override
     public Enumeration<String> entries(final String prefix) {
         final Enumeration<String> all = entries();
-        return new Enumeration<String> (){
+        return new Enumeration<String>() {
             String next = getNext();
+
+            @Override
             public boolean hasMoreElements() {
-                return next!= null;
+                return next != null;
             }
 
+            @Override
             public String nextElement() {
                 if (hasMoreElements()) {
                     String result = next;
@@ -201,20 +229,26 @@ public abstract class OSGiJavaEEArchive extends AbstractReadableArchive implemen
         };
     }
 
+    @Override
     public Collection<String> getDirectories() throws IOException {
         Collection<String> dirEntries = new ArrayList<String>();
         Enumeration<String> all = entries();
-        while(all.hasMoreElements()) {
+        while (all.hasMoreElements()) {
             final String s = all.nextElement();
-            if (s.endsWith("/")) dirEntries.add(s);
+            if (s.endsWith("/")) {
+                dirEntries.add(s);
+            }
         }
         return dirEntries;
     }
 
+    @Override
     public boolean isDirectory(String name) {
-        return name.endsWith("/"); // TODO(Sahoo): Check if this is correct.
+        // TODO(Sahoo): Check if this is correct.
+        return name.endsWith("/");
     }
 
+    @Override
     public Manifest getManifest() throws IOException {
         final InputStream is = getEntry(JarFile.MANIFEST_NAME);
         if (is != null) {
@@ -231,19 +265,24 @@ public abstract class OSGiJavaEEArchive extends AbstractReadableArchive implemen
         }
     }
 
+    @Override
     public URI getURI() {
-        return null; // this represents a collection, so return null
+        // this represents a collection, so return null
+        return null;
     }
 
+    @Override
     public long getArchiveSize() throws SecurityException {
         return 0;
     }
 
+    @Override
     public String getName() {
         return getArchive(host).getName();
     }
 
     protected interface ArchiveEntry {
+
         String getName();
 
         URI getURI() throws URISyntaxException;
@@ -259,66 +298,76 @@ public abstract class OSGiJavaEEArchive extends AbstractReadableArchive implemen
         String getName();
 
         /**
-         * @return the bundle this entry belongs to. Please note, a host bundle can insert a classpath entry
-         *         into a fragment bundle.
+         * @return the bundle this entry belongs to. Please note, a host bundle
+         * can insert a class-path entry into a fragment bundle.
          */
         Bundle getBundle();
 
         void accept(OSGiJavaEEArchive.BCPEntry.BCPEntryVisitor visitor);
 
         interface BCPEntryVisitor {
+
             void visitDir(OSGiJavaEEArchive.DirBCPEntry bcpEntry);
 
             void visitJar(OSGiJavaEEArchive.JarBCPEntry bcpEntry);
         }
     }
 
-    protected class DirBCPEntry implements BCPEntry {
-        private String name;
-        private Bundle bundle;
+    protected static class DirBCPEntry implements BCPEntry {
+
+        private final String name;
+        private final Bundle bundle;
 
         public DirBCPEntry(String name, Bundle bundle) {
             this.name = name;
             this.bundle = bundle;
         }
 
+        @Override
         public String getName() {
             return name;
         }
 
+        @Override
         public Bundle getBundle() {
             return bundle;
         }
 
+        @Override
         public void accept(BCPEntryVisitor visitor) {
             visitor.visitDir(this);
         }
     }
 
-    protected class JarBCPEntry implements BCPEntry {
-        private String name;
-        private Bundle bundle;
+    protected static class JarBCPEntry implements BCPEntry {
+
+        private final String name;
+        private final Bundle bundle;
 
         public JarBCPEntry(String name, Bundle bundle) {
             this.name = name;
             this.bundle = bundle;
         }
 
+        @Override
         public String getName() {
             return name;
         }
 
+        @Override
         public Bundle getBundle() {
             return bundle;
         }
 
+        @Override
         public void accept(BCPEntryVisitor visitor) {
             visitor.visitJar(this);
         }
     }
 
     protected class EffectiveBCP {
-        private List<BCPEntry> bcpEntries = new ArrayList<BCPEntry>();
+
+        private final List<BCPEntry> bcpEntries = new ArrayList<BCPEntry>();
 
         public List<BCPEntry> getBCPEntries() {
             return bcpEntries;
@@ -337,12 +386,14 @@ public abstract class OSGiJavaEEArchive extends AbstractReadableArchive implemen
     }
 
     class EffectiveBCPBuilder {
-        private EffectiveBCP result = new EffectiveBCP();
+
+        private final EffectiveBCP result = new EffectiveBCP();
 
         public EffectiveBCP build() {
             return result;
         }
 
+        @SuppressWarnings("unchecked")
         void createForHost() {
             List<Bundle> bundles = new ArrayList(Arrays.asList(fragments));
             bundles.add(0, host); // search in host first
@@ -355,7 +406,9 @@ public abstract class OSGiJavaEEArchive extends AbstractReadableArchive implemen
                     } else if (archive.exists(s)) {
                         if (archive.isDirectory(s)) {
                             if (!s.endsWith("/")) {
-                                s = s.concat("/"); // This ensures that entries from subarchive won't have leading /
+                                // This ensures that entries from subarchive
+                                // won't have leading /
+                                s = s.concat("/");
                             }
                             result.add(createDirBCPEntry(s, b));
                         } else {
@@ -378,7 +431,9 @@ public abstract class OSGiJavaEEArchive extends AbstractReadableArchive implemen
                 } else if (archive.exists(s)) {
                     if (archive.isDirectory(s)) {
                         if (!s.endsWith("/")) {
-                            s = s.concat("/"); // This ensures that entries from subarchive won't have leading /
+                            // This ensures that entries from subarchive
+                            // won't have leading /
+                            s = s.concat("/");
                         }
                         result.add(createDirBCPEntry(s, bundle));
                     } else {
@@ -389,20 +444,28 @@ public abstract class OSGiJavaEEArchive extends AbstractReadableArchive implemen
 
         }
 
-        private JarBCPEntry createJarBCPEntry(String entryPath, Bundle bundle) {
+        private JarBCPEntry createJarBCPEntry(String entryPath,
+                Bundle bundle) {
+
             return new JarBCPEntry(entryPath, bundle);
         }
 
-        private DirBCPEntry createDirBCPEntry(String entryPath, Bundle bundle) {
+        private DirBCPEntry createDirBCPEntry(String entryPath,
+                Bundle bundle) {
+
             return new DirBCPEntry(entryPath, bundle);
         }
 
         /**
-         * Parses Bundle-ClassPath of a bundle and returns it as a sequence of String tokens.
+         * Parses Bundle-ClassPath of a bundle and returns it as a sequence of
+         * String tokens.
          */
         private String[] tokenizeBCP(Bundle b) {
-            String bcp = (String) b.getHeaders().get(org.osgi.framework.Constants.BUNDLE_CLASSPATH);
-            if (bcp == null || bcp.isEmpty()) bcp = DOT;
+            String bcp = (String) b.getHeaders()
+                    .get(org.osgi.framework.Constants.BUNDLE_CLASSPATH);
+            if (bcp == null || bcp.isEmpty()) {
+                bcp = DOT;
+            }
             return bcp.split(";|,");
         }
     }

@@ -13,7 +13,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  */
-
 package org.glassfish.fighterfish.test.app20;
 
 import java.io.PrintWriter;
@@ -28,31 +27,33 @@ import org.glassfish.osgicdi.OSGiService;
 
 /**
  * A simple Servlet to test GLASSFISH-18370
- * 
+ *
  * @author Tang Yong
  */
 @WebServlet(urlPatterns = "/")
 public class StockQuoteServlet extends HttpServlet {
-	// Inject the OSGi service by specifying the OSGiService qualifier
-	@Inject
-	@OSGiService
-	StockQuoteService sqs;
+    // Inject the OSGi service by specifying the OSGiService qualifier
 
-	public void service(HttpServletRequest req, HttpServletResponse resp)
-			throws ServletException, java.io.IOException {
-		resp.setContentType("text/html");
-		PrintWriter out = resp.getWriter();
+    @Inject
+    @OSGiService
+    StockQuoteService sqs;
 
-		if (sqs != null) {
-			// get the list of symbols and print their current quotes
-			out.println("Stock Symbol Service is available!");
-			try{
-			   sqs.getNullSymbols();
-			}catch(NullPointerException ex){
-				out.println("GLASSFISH-18370 has been fixed!");
-			}
-		} else {
-			out.println("Stock Symbol Service is not yet available");
-		}
-	}
+    @Override
+    public void service(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, java.io.IOException {
+        resp.setContentType("text/html");
+        PrintWriter out = resp.getWriter();
+
+        if (sqs != null) {
+            // get the list of symbols and print their current quotes
+            out.println("Stock Symbol Service is available!");
+            try {
+                sqs.getNullSymbols();
+            } catch (NullPointerException ex) {
+                out.println("GLASSFISH-18370 has been fixed!");
+            }
+        } else {
+            out.println("Stock Symbol Service is not yet available");
+        }
+    }
 }

@@ -13,7 +13,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  */
-
 package org.glassfish.osgiweb;
 
 import org.glassfish.osgijavaeebase.DeploymentException;
@@ -26,18 +25,25 @@ import java.util.Arrays;
  * @author Sanjeeb.Sahoo@Sun.COM
  */
 class ContextPathCollisionException extends DeploymentException {
+
     private final String contextPath;
     private final Long[] collidingWabIds;
 
     /**
      * @param contextPath Context-Path for which collision is detected
-     * @param collidingWabIds bundle id of the WABs that have same context path. The last entry denotes the
-     * current bundle being deployed
+     * @param collidingWabIds bundle id of the WABs that have same context path.
+     * The last entry denotes the current bundle being deployed
      */
-    public ContextPathCollisionException(String contextPath, Long[] collidingWabIds) {
-        if (collidingWabIds.length < 2) throw new IllegalArgumentException("At least two WAB ids are needed");
+    public ContextPathCollisionException(String contextPath,
+            Long[] collidingWabIds) {
+
+        if (collidingWabIds.length < 2) {
+            throw new IllegalArgumentException(
+                    "At least two WAB ids are needed");
+        }
         this.contextPath = contextPath;
-        this.collidingWabIds = Arrays.copyOf(collidingWabIds, collidingWabIds.length);
+        this.collidingWabIds = Arrays.copyOf(collidingWabIds,
+                collidingWabIds.length);
         Arrays.sort(this.collidingWabIds);
     }
 
@@ -46,15 +52,17 @@ class ContextPathCollisionException extends DeploymentException {
     }
 
     public Long[] getCollidingWabIds() {
-        return Arrays.copyOfRange(collidingWabIds, 0, collidingWabIds.length); // return a new copy
+        // return a new copy
+        return Arrays.copyOfRange(collidingWabIds, 0, collidingWabIds.length);
     }
 
     @Override
     public String getMessage() {
-        StringBuilder sb = new StringBuilder("context path [" + contextPath + "] is same for following bundles: [");
-        for(int i = 0; i < collidingWabIds.length; i++) {
+        StringBuilder sb = new StringBuilder("context path [" + contextPath
+                + "] is same for following bundles: [");
+        for (int i = 0; i < collidingWabIds.length; i++) {
             sb.append(collidingWabIds[i]);
-            if (i != collidingWabIds.length-1) {
+            if (i != collidingWabIds.length - 1) {
                 sb.append(", ");
             }
         }

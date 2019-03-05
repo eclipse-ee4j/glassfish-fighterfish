@@ -27,7 +27,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
- * Servlet implementation class TestServlet
+ * Servlet implementation class TestServlet.
  */
 @WebServlet("/*")
 public class TestServlet extends HttpServlet {
@@ -36,6 +36,7 @@ public class TestServlet extends HttpServlet {
     @Inject
     private Instance<Pojo> pojoInstance;
 
+    @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
         Pojo pojo = (Pojo) this.pojoInstance.get();

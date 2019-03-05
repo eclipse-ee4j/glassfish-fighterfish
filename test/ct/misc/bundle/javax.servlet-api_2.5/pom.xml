@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (c) 2013, 2018 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2018, 2019 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0, which is available at
@@ -20,20 +20,10 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <artifactId>sample.parent-pom</artifactId>
         <groupId>org.glassfish.fighterfish</groupId>
-        <version>1.0.2</version>
+        <artifactId>fighterfish-test-ct-misc-bundle-parent</artifactId>
+        <version>3.0.0-SNAPSHOT</version>
     </parent>
-    <groupId>org.glassfish.fighterfish</groupId>
     <artifactId>test.ct.misc.bundle.javax.servlet-api_2.5</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
-    <name>A bundle rexporting javax.servlet 3.0 as javax.servlet 2.5</name>
-    <description>${project.name}</description>
-    <scm>
-        <connection>scm:svn:https://github.com/eclipse-ee4j/glassfish-fighterfish/test/ct/misc/bundle/javax.servlet-api_2.5</connection>
-        <developerConnection>scm:svn:https://github.com/eclipse-ee4j/glassfish-fighterfish/test/ct/misc/bundle/javax.servlet-api_2.5
-        </developerConnection>
-        <url>https://github.com/eclipse-ee4j/glassfish-fighterfish/test/ct/misc/bundle/javax.servlet-api_2.5</url>
-    </scm>
+    <name>FighterFish Test OSGi CT Misc Bundle Servlet 2.5</name>
 </project>
-

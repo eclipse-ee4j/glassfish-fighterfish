@@ -13,25 +13,21 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  */
-
 package org.glassfish.fighterfish.test.util;
 
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.BundleException;
 import org.osgi.framework.ServiceReference;
 import org.osgi.util.tracker.ServiceTracker;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * @author Sanjeeb.Sahoo@Sun.COM
  */
 public class OSGiUtil {
-    // TODO(Sahoo): Move the functionality to TestContext so that the service references can be closed upon end of test
+
+    // TODO(Sahoo): Move the functionality to TestContext so that the service
+    // references can be closed upon end of test
+    @SuppressWarnings("unchecked")
     public static <T> T getService(BundleContext ctx, Class<T> type) {
         ServiceTracker st = new ServiceTracker(ctx, type.getName(), null);
         st.open();
@@ -42,8 +38,12 @@ public class OSGiUtil {
         }
     }
 
-    public static <T> T getService(BundleContext ctx, Class<T> type, long timeout) throws InterruptedException {
-        ServiceTracker st = new ServiceTracker(ctx, type.getName(), null);
+    @SuppressWarnings("unchecked")
+    public static <T> T getService(BundleContext ctx, Class<T> type,
+            long timeout)
+            throws InterruptedException {
+
+        ServiceTracker<T,T> st = new ServiceTracker(ctx, type.getName(), null);
         st.open();
         try {
             return type.cast(st.waitForService(timeout));
@@ -53,17 +53,23 @@ public class OSGiUtil {
     }
 
     /**
-     * Wait for a specified amount of time for a service of a given type to be made available by a given bundle.
+     * Wait for a specified amount of time for a service of a given type to be
+     * made available by a given bundle.
      *
      * @param ctx BundleContext that should be used to track the service
      * @param b Bundle registering the service
      * @param service FQN of the service type
-     * @param timeout no of milliseconds to wait for the service to be available before returning null
+     * @param timeout no of milliseconds to wait for the service to be available
+     * before returning null
      * @return a reference to the service being tracked
      * @throws InterruptedException
      */
-    public static Object waitForService(BundleContext ctx, final Bundle b, String service, long timeout) throws InterruptedException {
-        ServiceTracker st = new ServiceTracker(ctx, service, null){
+    @SuppressWarnings("unchecked")
+    public static Object waitForService(BundleContext ctx, final Bundle b,
+            String service, long timeout)
+            throws InterruptedException {
+
+        ServiceTracker st = new ServiceTracker(ctx, service, null) {
             @Override
             public Object addingService(ServiceReference reference) {
                 if (reference.getBundle() == b) {
@@ -74,8 +80,10 @@ public class OSGiUtil {
             }
 
             @Override
-            public void removedService(ServiceReference reference, Object service) {
-                // no need to unget, as we don't get the service in addingService
+            public void removedService(ServiceReference reference,
+                    Object service) {
+                // no need to unget, as we don't get the service
+                // in addingService
             }
         };
         st.open(false);

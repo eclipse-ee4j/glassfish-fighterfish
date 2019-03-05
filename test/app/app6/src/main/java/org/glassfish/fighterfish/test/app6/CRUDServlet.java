@@ -13,7 +13,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  */
-
 package org.glassfish.fighterfish.test.app6;
 
 import org.glassfish.fighterfish.test.app6.entities.Department;
@@ -33,83 +32,85 @@ import javax.transaction.UserTransaction;
 import java.io.PrintWriter;
 
 /**
- * Servlet implementation class CRUDServlet
+ * Servlet implementation class CRUDServlet.
  */
 @WebServlet("/crud")
-public class CRUDServlet extends HttpServlet
-{
-    /**
-     * 
-     */
+public class CRUDServlet extends HttpServlet {
+
     private static final long serialVersionUID = 9133422911516243972L;
 
-    EntityManagerFactory emf;
+    @Resource
+    UserTransaction utx;
 
-    @Resource UserTransaction utx;
-
+    @Override
     public void service(HttpServletRequest req, HttpServletResponse resp)
-            throws ServletException, java.io.IOException
-    {
+            throws ServletException, java.io.IOException {
+
         resp.setContentType("text/html");
         PrintWriter out = resp.getWriter();
-        out.print("<HTML> <HEAD> <TITLE> Employee-Department CRUD" +
-                "</TITLE> </HEAD> <BODY BGCOLOR=white>");
+        out.print("<HTML> <HEAD> <TITLE> Employee-Department CRUD"
+                + "</TITLE> </HEAD> <BODY BGCOLOR=white>");
         out.print("\n");
 
         try {
-           EntityManagerFactory emf = Persistence.createEntityManagerFactory("em1");
-           utx.begin();
-           EntityManager em = emf.createEntityManager();
-           out.print(em);
-           out.print("\n");
-           String action = (String)req.getParameter("action");
-           out.print("action = " + action);
-           out.print("\n");
-           if ("createEmployee".equals(action)) {
-              String departmentName = (String)req.getParameter("departmentName");
-              Department d = em.find(Department.class, departmentName);
-              Employee e = new Employee();
-              e.setDepartment(d);
-              em.persist(e);
-              out.print("Created " + e);
-              out.print("\n");
-           } else if ("readEmployee".equals(action)) {
-              String employeeId = (String)req.getParameter("employeeId");
-              Employee e = em.find(Employee.class, Integer.parseInt(employeeId));
-              out.print("Found " + e);
-              out.print("\n");
-           } else if ("deleteEmployee".equals(action)) {
-              String employeeId = (String)req.getParameter("employeeId");
-              Employee e = em.find(Employee.class, Integer.parseInt(employeeId));
-              if (e != null) em.remove(e);
-              out.print("Deleted " + e);
-              out.print("\n");
-           } else if ("createDepartment".equals(action)) {
-              String name = (String)req.getParameter("departmentName");
-              Department d = new Department(name);
-              em.persist(d);
-              out.print("Created " + d);
-              out.print("\n");
-           } else if ("readDepartment".equals(action)) {
-              String name = (String)req.getParameter("departmentName");
-              Department d = em.find(Department.class, name);
-              out.print("Found " + d);
-              out.print("\n");
-           } else if ("deleteDepartment".equals(action)) {
-              String name = (String)req.getParameter("departmentName");
-              Department d = em.find(Department.class, name);
-              if (d != null) em.remove(d);
-              out.print("Deleted " + d);
-              out.print("\n");
-           }
-           utx.commit();
-           emf.close();
-        }
-        catch (Exception e)
-        {
+            EntityManagerFactory emf = Persistence
+                    .createEntityManagerFactory("em1");
+            utx.begin();
+            EntityManager em = emf.createEntityManager();
+            out.print(em);
+            out.print("\n");
+            String action = (String) req.getParameter("action");
+            out.print("action = " + action);
+            out.print("\n");
+            if ("createEmployee".equals(action)) {
+                String departmentName =
+                        (String) req.getParameter("departmentName");
+                Department d = em.find(Department.class,departmentName);
+                Employee e = new Employee();
+                e.setDepartment(d);
+                em.persist(e);
+                out.print("Created " + e);
+                out.print("\n");
+            } else if ("readEmployee".equals(action)) {
+                String employeeId = (String) req.getParameter("employeeId");
+                Employee e = em.find(Employee.class,
+                        Integer.parseInt(employeeId));
+                out.print("Found " + e);
+                out.print("\n");
+            } else if ("deleteEmployee".equals(action)) {
+                String employeeId = (String) req.getParameter("employeeId");
+                Employee e = em.find(Employee.class,
+                        Integer.parseInt(employeeId));
+                if (e != null) {
+                    em.remove(e);
+                }
+                out.print("Deleted " + e);
+                out.print("\n");
+            } else if ("createDepartment".equals(action)) {
+                String name = (String) req.getParameter("departmentName");
+                Department d = new Department(name);
+                em.persist(d);
+                out.print("Created " + d);
+                out.print("\n");
+            } else if ("readDepartment".equals(action)) {
+                String name = (String) req.getParameter("departmentName");
+                Department d = em.find(Department.class, name);
+                out.print("Found " + d);
+                out.print("\n");
+            } else if ("deleteDepartment".equals(action)) {
+                String name = (String) req.getParameter("departmentName");
+                Department d = em.find(Department.class, name);
+                if (d != null) {
+                    em.remove(d);
+                }
+                out.print("Deleted " + d);
+                out.print("\n");
+            }
+            utx.commit();
+            emf.close();
+        } catch (Exception e) {
             e.printStackTrace(out);
         }
         out.println("</BODY> </HTML> ");
-
     }
 }

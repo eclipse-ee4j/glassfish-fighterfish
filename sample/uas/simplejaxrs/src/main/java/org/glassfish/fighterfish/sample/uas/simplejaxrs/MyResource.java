@@ -7,7 +7,6 @@
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
-
 package org.glassfish.fighterfish.sample.uas.simplejaxrs;
 
 import javax.enterprise.context.RequestScoped;
@@ -29,48 +28,52 @@ import org.glassfish.fighterfish.sample.uas.api.UserAuthService;
 import org.glassfish.osgicdi.OSGiService;
 import org.osgi.framework.ServiceException;
 
-/** Example resource class hosted at the URI path "/login"
+/**
+ * Example resource class hosted at the URI path "/login"
  */
 @Path("/login")
 @RequestScoped
 public class MyResource {
-	
-	@Context
-	UriInfo uriInfo;
-	@Context
-	Request request;
-	
-    @Inject @OSGiService(dynamic=true)
+
+    @Context
+    UriInfo uriInfo;
+    @Context
+    Request request;
+
+    @Inject
+    @OSGiService(dynamic = true)
     private UserAuthService uas;
-    
-    /** Method processing HTTP GET requests, producing "text/plain" MIME media
+
+    /**
+     * Method processing HTTP GET requests, producing "text/plain" MIME media
      * type.
+     *
      * @return String that will be send back as a response of type "text/plain".
      */
-    @POST 
+    @POST
     @Produces("text/plain")
     public String getIt() {
         return "Hi there!";
     }
-    
+
     @GET
-	@Produces(MediaType.TEXT_HTML)
-	@Consumes(MediaType.TEXT_PLAIN)
-	public String getLogin(
-			@Context HttpServletRequest request,
-			@Context HttpServletResponse response
-	) throws ServletException {
-    	
-	       String name = request.getParameter("name");
-	       String password = request.getParameter("password");
-	        try {
-	            if (uas.login(name, password)) {
-                return "Logged in";	  
-	            } else {
-                return "Fail";	        
-	            }
-	        } catch (ServiceException e) {
-	        }
-       	return "none";
-		}
+    @Produces(MediaType.TEXT_HTML)
+    @Consumes(MediaType.TEXT_PLAIN)
+    public String getLogin(
+            @Context HttpServletRequest request,
+            @Context HttpServletResponse response
+    ) throws ServletException {
+
+        String name = request.getParameter("name");
+        String password = request.getParameter("password");
+        try {
+            if (uas.login(name, password)) {
+                return "Logged in";
+            } else {
+                return "Fail";
+            }
+        } catch (ServiceException e) {
+        }
+        return "none";
+    }
 }

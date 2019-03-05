@@ -19,7 +19,7 @@ package org.glassfish.fighterfish.test.app13;
 import javax.ejb.Stateless;
 
 /**
- * Session Bean implementation class DummySessionBean
+ * Session Bean implementation class DummySessionBean.
  */
 @Stateless
 public class DummySessionBean implements DummySessionBeanLocal {
@@ -28,16 +28,9 @@ public class DummySessionBean implements DummySessionBeanLocal {
      * Default constructor. 
      */
     public DummySessionBean() {
-        // TODO Auto-generated constructor stub
     }
 
-    /* (non-Javadoc)
-     * @see org.glassfish.fighterfish.test.app13.DummySessionBeanLocal#test()
-     */
     @Override
     public void test() {
-        // TODO Auto-generated method stub
-        
     }
-
 }

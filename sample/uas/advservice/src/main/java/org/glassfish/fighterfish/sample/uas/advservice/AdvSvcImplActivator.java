@@ -7,7 +7,6 @@
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
-
 package org.glassfish.fighterfish.sample.uas.advservice;
 
 import javax.persistence.EntityManagerFactory;
@@ -17,44 +16,41 @@ import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
 import org.osgi.framework.Filter;
-import org.osgi.framework.InvalidSyntaxException;
-import org.osgi.framework.ServiceReference;
 import org.osgi.util.tracker.ServiceTracker;
-import org.osgi.util.tracker.ServiceTrackerCustomizer;
 
 import org.glassfish.fighterfish.sample.uas.api.UserAuthService;
 
 public class AdvSvcImplActivator implements BundleActivator {
 
-	private volatile ServiceTracker txTracker;
-	private volatile ServiceTracker emfTracker;
-	private static String PUNAME = "sample.uas.entities"; // should be a configuration property
-	
-	@Override
-	public void start(BundleContext context) throws Exception {
-		txTracker = new ServiceTracker(context, UserTransaction.class.getName(), null);
-		txTracker.open();
-		Filter filter = context.createFilter("(&" +
-				"(" + Constants.OBJECTCLASS + "=" + EntityManagerFactory.class.getName() + ")" +
-			    "(persistence-unit=" + PUNAME +")" +
-			")");
-		emfTracker = new ServiceTracker(context, filter, null);
-		emfTracker.open();
-                AdvUserAuthServiceImpl uas = new AdvUserAuthServiceImpl(this);
-                context.registerService(UserAuthService.class.getName(), uas, null);
-	}
+    private volatile ServiceTracker txTracker;
+    private volatile ServiceTracker emfTracker;
+    private static String PUNAME = "sample.uas.entities"; // should be a configuration property
 
-	@Override
-	public void stop(BundleContext context) throws Exception {
-		txTracker.close();
-		emfTracker.close();
-	}
+    @Override
+    public void start(BundleContext context) throws Exception {
+        txTracker = new ServiceTracker(context, UserTransaction.class.getName(), null);
+        txTracker.open();
+        Filter filter = context.createFilter("(&"
+                + "(" + Constants.OBJECTCLASS + "=" + EntityManagerFactory.class.getName() + ")"
+                + "(persistence-unit=" + PUNAME + ")"
+                + ")");
+        emfTracker = new ServiceTracker(context, filter, null);
+        emfTracker.open();
+        AdvUserAuthServiceImpl uas = new AdvUserAuthServiceImpl(this);
+        context.registerService(UserAuthService.class.getName(), uas, null);
+    }
 
-	public UserTransaction getUTX() {
-		return (UserTransaction) txTracker.getService();
-	}
+    @Override
+    public void stop(BundleContext context) throws Exception {
+        txTracker.close();
+        emfTracker.close();
+    }
 
-	public EntityManagerFactory getEMF() {
-		return (EntityManagerFactory) emfTracker.getService();
-	}
+    public UserTransaction getUTX() {
+        return (UserTransaction) txTracker.getService();
+    }
+
+    public EntityManagerFactory getEMF() {
+        return (EntityManagerFactory) emfTracker.getService();
+    }
 }

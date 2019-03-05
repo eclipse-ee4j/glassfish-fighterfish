@@ -13,7 +13,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  */
-
 package org.glassfish.osgihttp;
 
 import com.sun.enterprise.web.WebModule;
@@ -25,37 +24,43 @@ import org.osgi.service.http.HttpContext;
 
 import javax.servlet.ServletException;
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Since OSGi/HTTP service spec does not a notion of a unique path per http context,
- * we register all the OSGi servlets with the same {@link org.apache.catalina.Context} object.
- * We still need to demultiplex the OSGi servlet context which is separate for each {@link HttpContext}.
- * This valve helps in demultiplexing. It performs following tasks:
- * a) Sets the current WebModule in {@link InvocationContext}
- * b) Sets the current WebModule as the Context of the Request object.
- * c) Reset unsuccessfulSessionFind flag in Request object.
+ * Since OSGi/HTTP service spec does not a notion of a unique path per http
+ * context, we register all the OSGi servlets with the same
+ * {@link org.apache.catalina.Context} object. We still need to demultiplex the
+ * OSGi servlet context which is separate for each {@link HttpContext}. This
+ * valve helps in demultiplexing. It performs following tasks: a) Sets the
+ * current WebModule in {@link InvocationContext} b) Sets the current WebModule
+ * as the Context of the Request object. c) Reset unsuccessfulSessionFind flag
+ * in Request object.
  * <p/>
  * See GLASSFISH-16764 for more details.
  *
  * @author Sanjeeb.Sahoo@Oracle.COM
  */
 public class OSGiHttpContextValve extends ValveBase {
-    private Logger logger = Logger.getLogger(getClass().getPackage().getName());
+
+    private static final Logger LOGGER = Logger.getLogger(
+            OSGiHttpContextValve.class.getPackage().getName());
 
     public OSGiHttpContextValve() {
     }
 
     @Override
-    public int invoke(Request request, Response response) throws IOException, ServletException {
-        logger.entering("OSGiHttpContextValve", "invoke", new Object[]{request});
+    public int invoke(Request request, Response response)
+            throws IOException, ServletException {
+
+        LOGGER.entering("OSGiHttpContextValve", "invoke",
+                new Object[]{request});
         Wrapper wrapper = request.getWrapper();
         if (wrapper instanceof OSGiServletWrapper) {
             final OSGiServletWrapper osgiWrapper = (OSGiServletWrapper) wrapper;
             final WebModule osgiWebModule = osgiWrapper.getWebModule();
-            InvocationContextMgr.getInvocationContext().setWebModule(osgiWebModule);
+            InvocationContextMgr.getInvocationContext()
+                    .setWebModule(osgiWebModule);
             request.setContext(osgiWebModule);
             resetSessionFindAttr(request);
         }
@@ -63,18 +68,22 @@ public class OSGiHttpContextValve extends ValveBase {
     }
 
     /**
-     * Since we switch the Session Manager midway in the request processing cycle, we have to
-     * reset a flag called unsuccessfulSessionFind that's maintained inside the Request object.
-     * If we don't reset it, no session corresponding to this OSGi Http Context will be found.
+     * Since we switch the Session Manager midway in the request processing
+     * cycle, we have to reset a flag called unsuccessfulSessionFind that's
+     * maintained inside the Request object. If we don't reset it, no session
+     * corresponding to this OSGi Http Context will be found.
      *
      * @param request
      */
     private void resetSessionFindAttr(Request request) {
         if (request instanceof org.apache.catalina.connector.Request) {
-            org.apache.catalina.connector.Request.class.cast(request).setUnsuccessfulSessionFind(false);
+            org.apache.catalina.connector.Request.class.cast(request)
+                    .setUnsuccessfulSessionFind(false);
         } else {
-            logger.logp(Level.FINE, "OSGiHttpContextValve", "resetSessionFindAttr", "request {0} is not of type {1} ",
-                    new Object[]{request, org.apache.catalina.connector.Request.class});
+            LOGGER.logp(Level.FINE, "OSGiHttpContextValve",
+                    "resetSessionFindAttr", "request {0} is not of type {1} ",
+                    new Object[]{request,
+                        org.apache.catalina.connector.Request.class});
         }
     }
 }

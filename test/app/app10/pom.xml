@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0, which is available at
@@ -20,33 +20,19 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <artifactId>sample.parent-pom</artifactId>
         <groupId>org.glassfish.fighterfish</groupId>
-        <version>1.0.2</version>
+        <artifactId>fighterfish-test-app-parent</artifactId>
+        <version>3.0.0-SNAPSHOT</version>
     </parent>
-
-    <groupId>org.glassfish.fighterfish</groupId>
-    <artifactId>test.app10</artifactId>
-    <version>1.0.1-SNAPSHOT</version>
-    <packaging>bundle</packaging>
-
-    <name>test.app10: JSF WAB - contains JSF annotated beans - regression test case for 11636</name>
-
-    <scm>
-        <connection>scm:svn:https://github.com/eclipse-ee4j/glassfish-fighterfish/test/app/app10</connection>
-        <developerConnection>scm:svn:https://github.com/eclipse-ee4j/glassfish-fighterfish/test/app/app10
-        </developerConnection>
-        <url>https://github.com/eclipse-ee4j/glassfish-fighterfish/test/app/app10</url>
-    </scm>
+    <artifactId>fighterfish-test-app-10</artifactId>
+    <name>FighterFish Test App 10</name>
+    <packaging>war</packaging>
 
     <dependencies>
         <dependency>
             <groupId>org.glassfish.fighterfish</groupId>
-            <artifactId>test.app10.bean</artifactId>
-            <version>1.0.0</version>
-            <type>jar</type>
-            <scope>compile</scope>
+            <artifactId>fighterfish-test-app-10-bean</artifactId>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
-
 </project>

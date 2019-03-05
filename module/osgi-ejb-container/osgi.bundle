@@ -16,4 +16,3 @@
 
 -exportcontents: !*
 Bundle-Activator: org.glassfish.osgiejb.OSGiEJBContainerActivator
-

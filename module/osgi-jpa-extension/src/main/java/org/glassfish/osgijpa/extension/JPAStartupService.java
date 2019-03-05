@@ -13,25 +13,23 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  */
-
 package org.glassfish.osgijpa.extension;
 
-import org.glassfish.api.Startup;
+import org.glassfish.api.StartupRunLevel;
+import org.glassfish.hk2.runlevel.RunLevel;
 import org.jvnet.hk2.annotations.Service;
 
 /**
- * This is a dummy startup service. This is only present to ensure that jpa-connector bundle is activated when
- * server starts up so that jpa-connector bundle's activator can do some initialisation that's only needed in
- * OSGi environment.
+ * This is a dummy startup service. This is only present to ensure that
+ * jpa-connector bundle is activated when server starts up so that jpa-connector
+ * bundle's activator can do some initialization that's only needed in OSGi
+ * environment.
  *
  * @see OSGiJPAExtnBundleActivator
- * 
+ *
  * @author Sanjeeb.Sahoo@Sun.COM
  */
 @Service
-public class JPAStartupService implements Startup
-{
-    public Lifecycle getLifecycle() {
-        return Lifecycle.START;
-    }
+@RunLevel(value=StartupRunLevel.VAL)
+public class JPAStartupService {
 }

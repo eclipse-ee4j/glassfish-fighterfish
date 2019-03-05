@@ -17,6 +17,7 @@
 package org.glassfish.osgiweb;
 
 import com.sun.enterprise.web.WebModuleDecorator;
+import java.util.Dictionary;
 import org.glassfish.osgijavaeebase.Extender;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
@@ -33,9 +34,11 @@ import java.util.logging.Logger;
  * @author Sanjeeb.Sahoo@Sun.COM
  */
 public class WebExtender implements Extender {
-    private static final Logger logger =
+
+    private static final Logger LOGGER =
             Logger.getLogger(WebExtender.class.getPackage().getName());
-    private BundleContext context;
+
+    private final BundleContext context;
     private ServiceRegistration urlHandlerService;
     private OSGiWebModuleDecorator wmd;
     private OSGiWebDeployer deployer;
@@ -45,6 +48,7 @@ public class WebExtender implements Extender {
         this.context = context;
     }
 
+    @Override
     public synchronized void start() {
         ContextPathCollisionDetector.get();
         registerWmd();
@@ -52,8 +56,10 @@ public class WebExtender implements Extender {
         addURLHandler();
     }
 
+    @Override
     public synchronized void stop() {
-        // Stop CollisionDetector first so that when we undeploy as part of shutting down, it won't try to deploy bundles
+        // Stop CollisionDetector first so that when we undeploy as part of
+        // shutting down, it won't try to deploy bundles
         ContextPathCollisionDetector.get().stop();
         removeURLHandler();
         unregisterDeployer();
@@ -72,8 +78,9 @@ public class WebExtender implements Extender {
         }
     }
 
+    @SuppressWarnings("unchecked")
     private void addURLHandler() {
-        Properties p = new Properties();
+        Dictionary p = new Properties();
         p.put(URLConstants.URL_HANDLER_PROTOCOL,
                 new String[]{Constants.WEB_BUNDLE_SCHEME});
         urlHandlerService = context.registerService(
@@ -90,19 +97,22 @@ public class WebExtender implements Extender {
 
     private void registerWmd() {
         wmd = new OSGiWebModuleDecorator();
-        // By registering this is OSGi service registry, it will automatically make it into HK2 service registry
+        // By registering this is OSGi service registry, it will automatically
+        // make it into HK2 service registry
         // by OSGi->HK2 service mapper.
-        wmdReg = this.context.registerService(WebModuleDecorator.class.getName(), wmd, null);
+        wmdReg = this.context.registerService(
+                WebModuleDecorator.class.getName(), wmd, null);
     }
 
     private void unregisterWmd() {
         if (wmdReg == null) return;
         wmdReg.unregister();
-        // When we unregister the WebModuleDecorator from OSGi service registry, it also gets removed from
-        // HK2 service registry. But, I am not sure if web container is able to handle dynamic services, so
-        // I am making our custom decorator useless by deactivationg it which nullifies all its fields.
+        // When we unregister the WebModuleDecorator from OSGi service registry,
+        // it also gets removed from
+        // HK2 service registry. But, I am not sure if web container is able to
+        // handle dynamic services, so
+        // I am making our custom decorator useless by deactivationg it which
+        // nullifies all its fields.
         wmd.deActivate();
     }
-
 }
-

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (c) 2009, 2018 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2018, 2019 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0, which is available at
@@ -21,37 +21,17 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.glassfish.fighterfish</groupId>
-        <artifactId>module-parent-pom</artifactId>
-        <version>1.0.7-SNAPSHOT</version>
-        <relativePath>../parent-pom/pom.xml</relativePath>
+        <artifactId>fighterfish-module-parent</artifactId>
+        <version>3.0.0-SNAPSHOT</version>
     </parent>
     <artifactId>osgi-ejb-container</artifactId>
-    <version>1.0.5-SNAPSHOT</version>
-    <packaging>jar</packaging>
-    <name>GlassFish EJB Container for OSGi Enabled EJB Applications</name>
+    <name>FighterFish OSGi EJB Support</name>
 
-    <scm>
-        <connection>scm:git:https://github.com/eclipse-ee4j/glassfish-fighterfish.git</connection>
-        <developerConnection>scm:git:git@github.com:eclipse-ee4j/glassfish-fighterfish.git</developerConnection>
-        <url>https://github.com/eclipse-ee4j/glassfish-fighterfish/tree/master/module/osgi-ejb-container</url>
-  </scm>
-
-    <developers>
-        <developer>
-            <id>ss141213</id>
-            <name>Sahoo</name>
-            <organization>Oracle, Inc.</organization>
-            <roles>
-                <role>developer</role>
-            </roles>
-        </developer>
-    </developers>
-    
     <dependencies>
         <dependency>
             <groupId>org.glassfish.fighterfish</groupId>
             <artifactId>osgi-javaee-base</artifactId>
-            <version>1.0.9-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.main.deployment</groupId>
@@ -60,12 +40,12 @@
         <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.core</artifactId>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.compendium</artifactId>
+            <artifactId>org.osgi.enterprise</artifactId>
+            <scope>provided</scope>
         </dependency>
-
     </dependencies>
-
 </project>

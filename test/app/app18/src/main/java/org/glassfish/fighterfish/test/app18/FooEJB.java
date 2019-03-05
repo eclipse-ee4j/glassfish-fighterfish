@@ -13,12 +13,10 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  */
-
 package org.glassfish.fighterfish.test.app18;
 
 import javax.ejb.DependsOn;
 import javax.ejb.Singleton;
-import javax.ejb.Stateless;
 
 /**
  * Session Bean implementation class FooEJB
@@ -26,5 +24,8 @@ import javax.ejb.Stateless;
 @Singleton
 @DependsOn("ServiceListenerEJB")
 public class FooEJB implements Foo {
-    public void bar() {}
+
+    @Override
+    public void bar() {
+    }
 }

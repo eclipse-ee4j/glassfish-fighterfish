@@ -13,7 +13,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  */
-
 package org.glassfish.fighterfish.test.app1;
 
 import javax.ejb.EJB;
@@ -26,14 +25,17 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.PrintWriter;
 
 /**
- * Servlet implementation class LoginServlet
+ * Servlet implementation class LoginServlet.
  */
 @WebServlet("/LoginServlet")
 public class LoginServlet extends HttpServlet {
+
     private static final long serialVersionUID = 1L;
+
     @EJB
     UserAuthServiceEJB userAuthService;
 
+    @Override
     public void service(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, java.io.IOException {
         resp.setContentType("text/html");
@@ -56,5 +58,4 @@ public class LoginServlet extends HttpServlet {
         }
         out.println("</BODY> </HTML> ");
     }
-
 }

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (c) 2010, 2018 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2018, 2019 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0, which is available at
@@ -21,92 +21,60 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.glassfish.fighterfish</groupId>
-        <artifactId>module-parent-pom</artifactId>
-        <version>1.0.7-SNAPSHOT</version>
-        <relativePath>../parent-pom/pom.xml</relativePath>
+        <artifactId>fighterfish-module-parent</artifactId>
+        <version>3.0.0-SNAPSHOT</version>
     </parent>
     <artifactId>osgi-cdi</artifactId>
-    <version>1.0.6-SNAPSHOT</version>
-    <!-- We don't use bundle packaging as that interfers with other custom packaging types because of a maven bug
-     which is probably fixed in recent maven versions, but I have no time to test them. So, better be safe.-->
-    <packaging>jar</packaging>
-    <name>GlassFish CDI Support for OSGi Bundles</name>
-    
-    <scm>
-        <connection>scm:git:https://github.com/eclipse-ee4j/glassfish-fighterfish.git</connection>
-        <developerConnection>scm:git:git@github.com:eclipse-ee4j/glassfish-fighterfish.git</developerConnection>
-        <url>https://github.com/eclipse-ee4j/glassfish-fighterfish/tree/master/module/osgi-cdi</url>
-
-    </scm>
+    <name>Fishterfish OSGi CDI Support</name>
 
     <build>
         <plugins>
             <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-                <configuration>
-                    <supportedProjectTypes>
-                        <!-- Our parent project disables this plugin for jar type, so we have to enable it here -->
-                        <supportedProjectType>jar</supportedProjectType>
-                    </supportedProjectTypes>
-                </configuration>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
                 <executions>
-                   <execution>
-                      <id>bundle</id>
-                      <phase>package</phase>
-                      <goals>
-                         <!-- We use bundle goal to be able to include osgi-cdi-api classes in this bundle, so that
-                              we have one self contained bundle. -->
-                         <goal>bundle</goal>
-                      </goals>
-                   </execution>
+                    <execution>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>unpack-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <excludes>META-INF/</excludes>
+                            <includeArtifactIds>osgi-cdi-api</includeArtifactIds>
+                            <outputDirectory>${project.build.outputDirectory}</outputDirectory>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
         </plugins>
     </build>
-    <developers>
-      <developer>
-            <id>ss141213</id>
-            <name>Sahoo</name>
-            <organization>Oracle, Inc.</organization>
-            <roles>
-                <role>developer</role>
-            </roles>
-        </developer>
-       
-        <developer>
-            <id>ankathur</id>
-            <name>Ankur Kathuria</name>
-            <organization>Oracle, Inc.</organization>
-            <roles>
-                <role>developer</role>
-            </roles>
-        </developer> 
-    </developers>   
+
     <dependencies>
         <dependency>
             <groupId>org.glassfish.fighterfish</groupId>
             <artifactId>osgi-javaee-base</artifactId>
-            <version>1.0.0</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.core</artifactId>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.compendium</artifactId>
+            <artifactId>org.osgi.enterprise</artifactId>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>javax</groupId>
             <artifactId>javaee-web-api</artifactId>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.glassfish.fighterfish</groupId>
             <artifactId>osgi-cdi-api</artifactId>
-            <version>1.0.0</version>
+            <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
-
 </project>

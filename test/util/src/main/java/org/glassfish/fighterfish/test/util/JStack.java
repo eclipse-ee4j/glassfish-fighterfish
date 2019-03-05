@@ -13,7 +13,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  */
-
 package org.glassfish.fighterfish.test.util;
 
 import java.io.*;
@@ -21,13 +20,15 @@ import java.lang.management.*;
 import java.util.Date;
 
 /**
- * This object represents the current stack traces of all threads in the system - very much similar to
- * the output of jstack command line tool. Its {@link #toString()} returns the stack traces of all the threads
- * by calling underlying {@link ThreadMXBean}.
+ * This object represents the current stack traces of all threads in the system
+ * similar to the output of jstack command line tool.
+ * Its {@link #toString()} returns the stack traces of all the threads by
+ * calling underlying {@link ThreadMXBean}.
  *
  * @author Sanjeeb.Sahoo@Sun.COM
  */
 public class JStack {
+
     @Override
     public String toString() {
         ThreadMXBean threadMXBean = ManagementFactory.getThreadMXBean();
@@ -35,29 +36,34 @@ public class JStack {
     }
 
     private static String getAllStack(ThreadInfo[] tis) {
-        if (tis == null) return "null";
+        if (tis == null) {
+            return "null";
+        }
         StringBuilder b = new StringBuilder("[");
         for (ThreadInfo ti : tis) {
-            b.append("\n [" + getStack(ti) + " ]");
-            if (ti != tis[tis.length -1]) b.append(",");
+            b.append("\n [").append(getStack(ti)).append(" ]");
+            if (ti != tis[tis.length - 1]) {
+                b.append(",");
+            }
         }
         b.append("\n]");
         return b.toString();
     }
 
     private static String getStack(ThreadInfo ti) {
-        /*
-         * This method has been largely copied from ThreadInfo.java as toString() of ThreadInfo
-         */
-        StringBuilder sb = new StringBuilder("\"" + ti.getThreadName() + "\"" +
-                                             " Id=" + ti.getThreadId() + " " +
-                                             ti.getThreadState());
+        // This method has been largely copied from ThreadInfo.java as
+        // toString() of ThreadInfo
+        StringBuilder sb = new StringBuilder("\"" + ti.getThreadName() + "\""
+                + " Id=" + ti.getThreadId() + " "
+                + ti.getThreadState());
         if (ti.getLockName() != null) {
-            sb.append(" on " + ti.getLockName());
+            sb.append(" on ").append(ti.getLockName());
         }
         if (ti.getLockOwnerName() != null) {
-            sb.append(" owned by \"" + ti.getLockOwnerName() +
-                      "\" Id=" + ti.getLockOwnerId());
+            sb.append(" owned by \"")
+                    .append(ti.getLockOwnerName())
+                    .append("\" Id=")
+                    .append(ti.getLockOwnerId());
         }
         if (ti.isSuspended()) {
             sb.append(" (suspended)");
@@ -70,22 +76,26 @@ public class JStack {
         StackTraceElement[] stackTrace = ti.getStackTrace();
         for (; i < stackTrace.length; i++) {
             StackTraceElement ste = stackTrace[i];
-            sb.append("\t\tat " + ste.toString());
-            sb.append('\n');
+            sb.append("\t\tat ")
+                    .append(ste.toString())
+                    .append('\n');
             if (i == 0 && ti.getLockInfo() != null) {
                 Thread.State ts = ti.getThreadState();
                 switch (ts) {
                     case BLOCKED:
-                        sb.append("\t-  blocked on " + ti.getLockInfo());
-                        sb.append('\n');
+                        sb.append("\t-  blocked on ")
+                                .append(ti.getLockInfo())
+                                .append('\n');
                         break;
                     case WAITING:
-                        sb.append("\t-  waiting on " + ti.getLockInfo());
-                        sb.append('\n');
+                        sb.append("\t-  waiting on ")
+                                .append(ti.getLockInfo())
+                                .append('\n');
                         break;
                     case TIMED_WAITING:
-                        sb.append("\t-  waiting on " + ti.getLockInfo());
-                        sb.append('\n');
+                        sb.append("\t-  waiting on ")
+                                .append(ti.getLockInfo())
+                                .append('\n');
                         break;
                     default:
                 }
@@ -93,23 +103,26 @@ public class JStack {
 
             for (MonitorInfo mi : ti.getLockedMonitors()) {
                 if (mi.getLockedStackDepth() == i) {
-                    sb.append("\t-  locked " + mi);
-                    sb.append('\n');
+                    sb.append("\t-  locked ")
+                            .append(mi)
+                            .append('\n');
                 }
             }
-       }
+        }
 
-       LockInfo[] locks = ti.getLockedSynchronizers();
-       if (locks.length > 0) {
-           sb.append("\n\tNumber of locked synchronizers = " + locks.length);
-           sb.append('\n');
-           for (LockInfo li : locks) {
-               sb.append("\t- " + li);
-               sb.append('\n');
-           }
-       }
-       sb.append('\n');
-       return sb.toString();
+        LockInfo[] locks = ti.getLockedSynchronizers();
+        if (locks.length > 0) {
+            sb.append("\n\tNumber of locked synchronizers = ")
+                    .append(locks.length)
+                    .append('\n');
+            for (LockInfo li : locks) {
+                sb.append("\t- ")
+                        .append(li)
+                        .append('\n');
+            }
+        }
+        sb.append('\n');
+        return sb.toString();
 
     }
 
@@ -121,14 +134,16 @@ public class JStack {
             printStackTrace(out);
             out.close();
         } catch (IOException e) {
-            throw new RuntimeException(e); // TODO(Sahoo): Proper Exception Handling
+            // TODO(Sahoo): Proper Exception Handling
+            throw new RuntimeException(e);
         }
     }
 
     public void printStackTrace(OutputStream out) {
         final String s = toString();
         final PrintWriter printWriter = new PrintWriter(out);
-        printWriter.println("Stack trace generated at " + new Date() + "\n" + s);
+        printWriter.println("Stack trace generated at " + new Date()
+                + "\n" + s);
         printWriter.flush();
     }
 
@@ -137,13 +152,15 @@ public class JStack {
             {
                 setDaemon(false);
             }
+
             @Override
             public void run() {
                 synchronized (this) {
                     try {
                         wait();
                     } catch (InterruptedException e) {
-                        throw new RuntimeException(e); // TODO(Sahoo): Proper Exception Handling
+                        // TODO(Sahoo): Proper Exception Handling
+                        throw new RuntimeException(e);
                     }
                 }
             }

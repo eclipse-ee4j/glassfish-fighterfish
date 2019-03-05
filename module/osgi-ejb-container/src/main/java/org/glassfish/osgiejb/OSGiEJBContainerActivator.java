@@ -13,7 +13,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  */
-
 package org.glassfish.osgiejb;
 
 import org.osgi.framework.BundleActivator;
@@ -24,18 +23,21 @@ import org.osgi.framework.ServiceRegistration;
 /**
  * @author Sanjeeb.Sahoo@Sun.COM
  */
-public class OSGiEJBContainerActivator implements BundleActivator
-{
+public class OSGiEJBContainerActivator implements BundleActivator {
+
     private ServiceRegistration ejbExtenderReg;
 
-    public void start(BundleContext context) throws Exception
-    {
+    @Override
+    public void start(BundleContext context) throws Exception {
         EJBExtender ejbExtender = new EJBExtender(context);
-        ejbExtenderReg = context.registerService(Extender.class.getName(), ejbExtender, null);
+        ejbExtenderReg = context.registerService(Extender.class.getName(),
+                ejbExtender, null);
     }
 
-    public void stop(BundleContext context) throws Exception
-    {
-        ejbExtenderReg.unregister(); // Unregister so that ExtenderManager can stop Extender with an active bundle ctx
+    @Override
+    public void stop(BundleContext context) throws Exception {
+        // Unregister so that ExtenderManager can stop Extender with an active
+        // bundle ctx
+        ejbExtenderReg.unregister();
     }
 }

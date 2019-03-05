@@ -13,15 +13,15 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  */
-
 package org.glassfish.osgijavaeebase;
 
 /**
  * @see ExtenderManager
  * @author Sanjeeb.Sahoo@Sun.COM
  */
-public interface Extender
-{
+public interface Extender {
+
     void start();
+
     void stop();
 }

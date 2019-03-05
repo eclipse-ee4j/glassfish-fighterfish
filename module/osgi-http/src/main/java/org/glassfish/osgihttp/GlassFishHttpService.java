@@ -13,7 +13,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  */
-
 package org.glassfish.osgihttp;
 
 import com.sun.enterprise.web.WebModule;
@@ -29,21 +28,21 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * This contains most of the implementation of {@link org.osgi.service.http.HttpService}.
+ * This contains most of the implementation of
+ * {@link org.osgi.service.http.HttpService}.
  *
  * @author Sanjeeb.Sahoo@Sun.COM
  */
 public class GlassFishHttpService {
 
     // TODO(Sahoo): Improve synchronization of this object
-
     /**
      * Root context with which all wrappers are registered.
      */
-    private WebModule context;
+    private final WebModule context;
 
-    private Map<HttpContext, OSGiServletContext> servletContextMap =
-            new HashMap<HttpContext, OSGiServletContext>();
+    private final Map<HttpContext, OSGiServletContext> servletContextMap
+            = new HashMap<HttpContext, OSGiServletContext>();
 
     public GlassFishHttpService(WebModule context) {
         this.context = context;
@@ -51,15 +50,18 @@ public class GlassFishHttpService {
 
     /**
      * This method behaves the same way as
-     * {@link org.osgi.service.http.HttpService#registerServlet}
-     * except that it expects a non-null HttpContext object.
+     * {@link org.osgi.service.http.HttpService#registerServlet} except that it
+     * expects a non-null HttpContext object.
      */
-    public synchronized void registerServlet(String alias, Servlet servlet, Dictionary initParams, HttpContext httpContext) throws NamespaceException, ServletException {
+    public synchronized void registerServlet(String alias, Servlet servlet,
+            Dictionary initParams, HttpContext httpContext)
+            throws NamespaceException, ServletException {
+
         validateAlias(alias);
         validateServlet(servlet);
 
-        OSGiServletContext servletContext =
-                servletContextMap.get(httpContext);
+        OSGiServletContext servletContext
+                = servletContextMap.get(httpContext);
         if (servletContext == null) {
             servletContext = new OSGiServletContext(context,
                     httpContext);
@@ -69,11 +71,13 @@ public class GlassFishHttpService {
         // Unlike web.xml, here there is no notion of Servlet name,
         // so we use the alias as the servlet name. It is unique, so no issues.
         String wrapperName = alias;
-        OSGiServletConfig servletConfig =
-                new OSGiServletConfig(wrapperName, servletContext.getServletContext(), initParams);
+        OSGiServletConfig servletConfig
+                = new OSGiServletConfig(wrapperName, servletContext
+                        .getServletContext(), initParams);
         OSGiServletWrapper wrapper = new OSGiServletWrapper(
-                wrapperName, servlet, servletConfig, convert(alias), servletContext);
-        wrapper.addValve((GlassFishValve)new OSGiSecurityValve(httpContext));
+                wrapperName, servlet, servletConfig, convert(alias),
+                servletContext);
+        wrapper.addValve((GlassFishValve) new OSGiSecurityValve(httpContext));
         context.addChild(wrapper);
         try {
             wrapper.initializeServlet();
@@ -82,12 +86,15 @@ public class GlassFishHttpService {
         }
     }
 
-    public synchronized void registerResources(String alias, String name, HttpContext httpContext) throws NamespaceException {
+    public synchronized void registerResources(String alias, String name,
+            HttpContext httpContext) throws NamespaceException {
+
         validateAlias(alias);
         validateName(name);
-        OSGiResourceServlet servlet = new OSGiResourceServlet(alias, name, httpContext);
-        OSGiServletContext servletContext =
-                servletContextMap.get(httpContext);
+        OSGiResourceServlet servlet =
+                new OSGiResourceServlet(alias, name, httpContext);
+        OSGiServletContext servletContext
+                = servletContextMap.get(httpContext);
         if (servletContext == null) {
             servletContext = new OSGiServletContext(context,
                     httpContext);
@@ -97,11 +104,13 @@ public class GlassFishHttpService {
         // Unlike web.xml, here there is no notion of Servlet name,
         // so we use the alias as the servlet name. It is unique, so no issues.
         String wrapperName = alias;
-        OSGiServletConfig servletConfig =
-                new OSGiServletConfig(wrapperName, servletContext.getServletContext(), null);
+        OSGiServletConfig servletConfig
+                = new OSGiServletConfig(wrapperName, servletContext
+                        .getServletContext(), null);
         OSGiServletWrapper wrapper = new OSGiServletWrapper(
-                wrapperName, servlet, servletConfig, convert(alias), servletContext);
-        wrapper.addValve((GlassFishValve)new OSGiSecurityValve(httpContext));
+                wrapperName, servlet, servletConfig, convert(alias),
+                servletContext);
+        wrapper.addValve((GlassFishValve) new OSGiSecurityValve(httpContext));
         context.addChild(wrapper);
         try {
             wrapper.initializeServlet();
@@ -140,8 +149,8 @@ public class GlassFishHttpService {
 //        }
 //        return wrapperName;
         String wrapperName = alias;// we internally use alias as wrapper name.
-        OSGiServletWrapper wrapper =
-                (OSGiServletWrapper) context.findChild(wrapperName);
+        OSGiServletWrapper wrapper
+                = (OSGiServletWrapper) context.findChild(wrapperName);
         return wrapper;
     }
 
@@ -153,7 +162,9 @@ public class GlassFishHttpService {
      */
     private void validateServlet(Servlet servlet) throws ServletException {
         for (Container c : context.findChildren()) {
-            if (!(c instanceof OSGiServletWrapper)) continue;
+            if (!(c instanceof OSGiServletWrapper)) {
+                continue;
+            }
             if (servlet == OSGiServletWrapper.class.cast(c).getServlet()) {
                 throw new ServletException("servlet is already registered");
             }
@@ -161,18 +172,19 @@ public class GlassFishHttpService {
     }
 
     /**
-     * Check if the alias s valid as per the spec. The spec requires that:
-     * an alias must begin with slash ('/') and must not end with slash ('/'),
-     * with the exception that an alias of the form "/" is used to denote
-     * the root alias.
+     * Check if the alias s valid as per the spec. The spec requires that: an
+     * alias must begin with slash ('/') and must not end with slash ('/'), with
+     * the exception that an alias of the form "/" is used to denote the root
+     * alias.
      *
-     * @param alias The alias is the name in the URI namespace of
-     *              the Http Service at which the registration will be mapped
+     * @param alias The alias is the name in the URI namespace of the Http
+     * Service at which the registration will be mapped
      * @throws IllegalArgumentException if the alias is malformed.
-     * @throws NamespaceException       if the alias is already registered.
+     * @throws NamespaceException if the alias is already registered.
      */
     private void validateAlias(String alias) throws NamespaceException {
-        if (!alias.equals("/") && (!alias.startsWith("/") || alias.endsWith("/"))) {
+        if (!alias.equals("/") && (!alias.startsWith("/")
+                || alias.endsWith("/"))) {
             throw new IllegalArgumentException("malformed alias");
         }
         if (getWrapper(alias) != null) {
@@ -187,16 +199,20 @@ public class GlassFishHttpService {
      * @return servlet pattern used by Tomcat/GlassFish
      */
     private String convert(String alias) {
-        if (alias.equals("/")) return "/*";
-        else return alias + "/*";
+        if (alias.equals("/")) {
+            return "/*";
+        } else {
+            return alias + "/*";
+        }
     }
 
     /**
-     * Check if the internal name of a resource is valid or not.
-     * The spec requires that the name parameter in registerResources method
-     * must not end with slash ('/').
+     * Check if the internal name of a resource is valid or not. The spec
+     * requires that the name parameter in registerResources method must not end
+     * with slash ('/').
      *
-     * @param name the base name of the resource as used in registerResources method
+     * @param name the base name of the resource as used in registerResources
+     * method
      * @throws IllegalArgumentException if the alias is malformed.
      */
     private void validateName(String name) {

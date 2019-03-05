@@ -23,7 +23,8 @@ import org.osgi.service.event.Event;
 import org.osgi.service.event.EventConstants;
 import org.osgi.service.event.EventHandler;
 
-import java.util.Hashtable;
+import java.util.Properties;
+import java.util.Dictionary;
 
 /**
  * Listens to OSGi Event Admin Service generated events generated for a WAB and calls back a registered handler
@@ -50,14 +51,15 @@ public class WABDeploymentEventHandler implements EventHandler {
      * @param b        Bundle whose deployment related events we are interested in
      * @param callback object that will be called back when appropriate events are received
      */
+    @SuppressWarnings("unchecked")
     public WABDeploymentEventHandler(BundleContext context, Bundle b, Callback callback) {
         this.callback = callback;
         String[] topics = new String[]{"org/osgi/service/web/*"};
-        Hashtable ht = new Hashtable();
+        Properties ht = new Properties();
         ht.put(EventConstants.EVENT_TOPIC, topics);
         final String filterString = "(" + EventConstants.BUNDLE_ID + "=" + b.getBundleId() + ")";
         ht.put(EventConstants.EVENT_FILTER, filterString);
-        registration = context.registerService(EventHandler.class.getName(), this, ht);
+        registration = context.registerService(EventHandler.class.getName(), this, (Dictionary)ht);
     }
 
     @Override

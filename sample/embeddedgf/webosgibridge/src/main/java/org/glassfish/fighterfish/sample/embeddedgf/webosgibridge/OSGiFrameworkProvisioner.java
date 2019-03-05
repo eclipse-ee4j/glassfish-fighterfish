@@ -162,7 +162,7 @@ public class OSGiFrameworkProvisioner {
     }
 
     private Context getInitialContext() throws NamingException {
-        Hashtable ht = new Hashtable();
+        Properties ht = new Properties();
         ht.put("weblogic.jndi.replicateBindings", "false"); // we want this object to be local only.
         return new InitialContext(ht);
     }

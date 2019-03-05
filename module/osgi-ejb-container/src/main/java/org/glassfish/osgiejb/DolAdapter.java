@@ -13,7 +13,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  */
-
 package org.glassfish.osgiejb;
 
 import java.lang.reflect.InvocationHandler;
@@ -24,18 +23,25 @@ import java.util.Collection;
 import java.util.Set;
 
 /**
- * We need this class to encapsulate our dependency on EJB DOL. They have changed binary incompatibly between
- * GlassFish 3.1.x and 4.x, so we write this class to use those objects using reflection.
+ * We need this class to encapsulate our dependency on EJB DOL. They have
+ * changed binary incompatibly between GlassFish 3.1.x and 4.x, so we write this
+ * class to use those objects using reflection.
  *
  * @author sanjeeb.sahoo@oracle.com
  */
-/*package*/final class DolAdapter {
-    static Collection<EjbDescriptor> convert(Collection<com.sun.enterprise.deployment.EjbDescriptor> ejbDescriptors) {
-        Collection<EjbDescriptor> result = new ArrayList<EjbDescriptor>(ejbDescriptors.size());
-        for (com.sun.enterprise.deployment.EjbDescriptor ejbDescriptor : ejbDescriptors) {
-            Class[] interfaces = (ejbDescriptor instanceof com.sun.enterprise.deployment.EjbSessionDescriptor) ?
-                    new Class[] {EjbSessionDescriptor.class} :
-                    new Class[] {EjbDescriptor.class};
+/*package*/ final class DolAdapter {
+
+    static Collection<EjbDescriptor> convert(
+            Collection<com.sun.enterprise.deployment.EjbDescriptor> ejbDescriptors) {
+
+        Collection<EjbDescriptor> result =
+                new ArrayList<EjbDescriptor>(ejbDescriptors.size());
+        for (com.sun.enterprise.deployment.EjbDescriptor ejbDescriptor
+                : ejbDescriptors) {
+            Class[] interfaces = (ejbDescriptor instanceof
+                    com.sun.enterprise.deployment.EjbSessionDescriptor)
+                    ? new Class[]{EjbSessionDescriptor.class}
+                    : new Class[]{EjbDescriptor.class};
             final EjbDescriptor proxy = (EjbDescriptor) Proxy.newProxyInstance(
                     EjbDescriptor.class.getClassLoader(),
                     interfaces,
@@ -46,6 +52,7 @@ import java.util.Set;
     }
 
     static interface EjbDescriptor {
+
         String getName();
 
         String getType();
@@ -53,6 +60,7 @@ import java.util.Set;
     }
 
     static interface EjbSessionDescriptor extends EjbDescriptor {
+
         String getSessionType();
 
         Set<String> getLocalBusinessClassNames();
@@ -61,15 +69,20 @@ import java.util.Set;
     }
 
     static class EJbDolInvocationHandler implements InvocationHandler {
+
         protected final com.sun.enterprise.deployment.EjbDescriptor delegate;
 
-        public EJbDolInvocationHandler(com.sun.enterprise.deployment.EjbDescriptor delegate) {
+        public EJbDolInvocationHandler(
+                com.sun.enterprise.deployment.EjbDescriptor delegate) {
             this.delegate = delegate;
         }
 
         @Override
-        public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-            Method m = delegate.getClass().getMethod(method.getName(), method.getParameterTypes());
+        public Object invoke(Object proxy, Method method, Object[] args)
+                throws Throwable {
+
+            Method m = delegate.getClass().getMethod(method.getName(),
+                    method.getParameterTypes());
             return m.invoke(delegate, args);
         }
     }

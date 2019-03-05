@@ -13,7 +13,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  */
-
 package org.glassfish.osgiweb;
 
 import org.glassfish.osgijavaeebase.OSGiUndeploymentRequest;
@@ -33,12 +32,21 @@ import java.util.logging.Logger;
  */
 public class OSGiWebUndeploymentRequest extends OSGiUndeploymentRequest {
 
-    public OSGiWebUndeploymentRequest(Deployment deployer, ServerEnvironmentImpl env, ActionReport reporter, OSGiApplicationInfo osgiAppInfo) {
+    public OSGiWebUndeploymentRequest(Deployment deployer,
+            ServerEnvironmentImpl env, ActionReport reporter,
+            OSGiApplicationInfo osgiAppInfo) {
+
         super(deployer, env, reporter, osgiAppInfo);
     }
 
-    protected OSGiDeploymentContext getDeploymentContextImpl(ActionReport reporter, Logger logger, ReadableArchive source, UndeployCommandParameters undeployParams, ServerEnvironmentImpl env, Bundle bundle) throws Exception {
-        return new OSGiWebDeploymentContext(reporter, logger, source, undeployParams, env, bundle);
+    @Override
+    protected OSGiDeploymentContext getDeploymentContextImpl(
+            ActionReport reporter, Logger logger, ReadableArchive source,
+            UndeployCommandParameters undeployParams, ServerEnvironmentImpl env,
+            Bundle bundle) throws Exception {
+
+        return new OSGiWebDeploymentContext(reporter, logger, source,
+                undeployParams, env, bundle);
     }
 
     @Override
@@ -48,7 +56,8 @@ public class OSGiWebUndeploymentRequest extends OSGiUndeploymentRequest {
     }
 
     private void deployCollidingBundle() {
-        ContextPathCollisionDetector.get().postUndeploy(getOsgiAppInfo().getBundle());
+        ContextPathCollisionDetector.get()
+                .postUndeploy(getOsgiAppInfo().getBundle());
     }
 
     private void unregisterService() {

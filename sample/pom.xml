@@ -1,34 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2018, 2019 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
-    terms of the Eclipse Distribution License v. 1.0, which is available at
-    http://www.eclipse.org/org/documents/edl-v10.php.
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
 
-    SPDX-License-Identifier: BSD-3-Clause
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
 
 -->
-
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<groupId>org.glassfish.fighterfish</groupId>
-	<artifactId>sample.build-aggregator-pom</artifactId>
-	<version>1.0.0-SNAPSHOT</version>
-	<name>FighterFish Samples Build Aggregator POM</name>
-	<packaging>pom</packaging>
-	<!-- This is just a build aggregator POM, so we don't configure anything 
-		here. All modules extend parent-pom. So, you will find all kinds of common 
-		rules and configurations in parent-pom/pom.xml -->
-	<modules>
-		<module>parent-pom</module>
-		<module>uas</module>
-		<module>osgijdbc</module>
-		<module>osgijta</module>
-		<module>osgihttp</module>
-		<module>embeddedgf</module>
-                <module>testing</module>
-	</modules>
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.glassfish.fighterfish</groupId>
+        <artifactId>fighterfish-parent</artifactId>
+        <version>3.0.0-SNAPSHOT</version>
+    </parent>
+    <artifactId>fighterfish-sample-parent</artifactId>
+    <name>FighterFish Samples Parent</name>
+    <packaging>pom</packaging>
+
+    <properties>
+        <maven.deploy.skip>true</maven.deploy.skip>
+        <maven.javadoc.skip>true</maven.javadoc.skip>
+        <osgi.includefile>${basedir}/osgi.properties</osgi.includefile>
+    </properties>
+
+    <modules>
+        <module>uas</module>
+        <module>osgijdbc</module>
+        <module>osgijta</module>
+        <module>osgihttp</module>
+        <module>embeddedgf</module>
+        <module>testing</module>
+    </modules>
 </project>

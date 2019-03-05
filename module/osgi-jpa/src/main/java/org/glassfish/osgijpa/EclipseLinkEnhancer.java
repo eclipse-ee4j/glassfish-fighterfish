@@ -44,24 +44,31 @@ import com.sun.enterprise.util.io.FileUtils;
  * @author Sanjeeb.Sahoo@Sun.COM
  */
 class EclipseLinkEnhancer implements JPAEnhancer {
-    private static Logger logger =
+
+    private static final Logger LOGGER =
             Logger.getLogger(EclipseLinkEnhancer.class.getPackage().getName());
 
     ArchiveFactory archiveFactory = Globals.get(ArchiveFactory.class);
     private static final String elPackage = "org.eclipse.persistence.*";
 
-    public InputStream enhance(Bundle b, List<Persistence> persistenceXMLs) throws IOException {
+    @Override
+    public InputStream enhance(Bundle b, List<Persistence> persistenceXMLs)
+            throws IOException {
 
-        // We need to explode the bundle if it is not a directory based deployment.
-        // This is because, eclipselink enhancer can only scan file system artifacts.
+        // We need to explode the bundle if it is not a directory based
+        // deployment.
+        // This is because, eclipselink enhancer can only scan file system
+        // artifacts.
         File explodedDir = makeFile(b);
-        boolean dirDeployment = (explodedDir != null) ? explodedDir.isDirectory() : false;
+        boolean dirDeployment = (explodedDir != null) ?
+                explodedDir.isDirectory() : false;
         try {
             if (!dirDeployment) {
                 explodedDir = explode(b);
             }
 
-            // We need to make a copy of the exploded direactory where the enhanced bytes will be written to.
+            // We need to make a copy of the exploded direactory where the
+            // enhanced bytes will be written to.
             final File enhancedDir = makeTmpDir("enhanced-osgiapp");
             FileUtils.copyTree(explodedDir, enhancedDir);
 
@@ -73,34 +80,48 @@ class EclipseLinkEnhancer implements JPAEnhancer {
                 File target = new File(enhancedDir, puRoot);
                 try {
                     enhance(source, target, cl, persistenceXML);
-                    // TODO(Sahoo): Update persistence.xml with eclipselink.weaving=static
+                    // TODO(Sahoo): Update persistence.xml
+                    // with eclipselink.weaving=static
                 } catch (URISyntaxException e) {
-                    throw new RuntimeException(e); // TODO(Sahoo): Proper Exception Handling
+                    // TODO(Sahoo): Proper Exception Handling
+                    throw new RuntimeException(e);
                 }
             }
             updateManifest(new File(enhancedDir, JarFile.MANIFEST_NAME));
             return JarHelper.makeJar(enhancedDir, new Runnable() {
+                @Override
                 public void run() {
                     if (FileUtils.whack(enhancedDir)) {
-                        logger.logp(Level.INFO, "EclipseLinkEnhancer", "enhance", "Deleted {0} ", new Object[]{enhancedDir});
+                        LOGGER.logp(Level.INFO, "EclipseLinkEnhancer",
+                                "enhance", "Deleted {0} ",
+                                new Object[]{enhancedDir});
                     } else {
-                        logger.logp(Level.INFO, "EclipseLinkEnhancer", "enhance", "Unable to delete {0} ", new Object[]{enhancedDir});
+                        LOGGER.logp(Level.INFO, "EclipseLinkEnhancer",
+                                "enhance", "Unable to delete {0} ",
+                                new Object[]{enhancedDir});
                     }
                 }
             });
         } finally {
             if (!dirDeployment) {
                 if (FileUtils.whack(explodedDir)) {
-                    logger.logp(Level.INFO, "EclipseLinkEnhancer", "enhance", "Deleted {0} ", new Object[]{explodedDir});
+                    LOGGER.logp(Level.INFO, "EclipseLinkEnhancer",
+                            "enhance", "Deleted {0} ",
+                            new Object[]{explodedDir});
                 } else {
-                    logger.logp(Level.WARNING, "EclipseLinkEnhancer", "enhance", "Unable to delete " + explodedDir);
+                    LOGGER.logp(Level.WARNING, "EclipseLinkEnhancer",
+                            "enhance", "Unable to delete " + explodedDir);
                 }
             }
         }
     }
 
-    private void enhance(File source, File target, ClassLoader cl, Persistence persistenceXML) throws IOException, URISyntaxException {
-        logger.logp(Level.INFO, "EclipseLinkEnhancer", "enhance", "Source = {0}, Target = {1}",
+    private void enhance(File source, File target, ClassLoader cl,
+            Persistence persistenceXML)
+            throws IOException,URISyntaxException {
+
+        LOGGER.logp(Level.INFO, "EclipseLinkEnhancer", "enhance",
+                "Source = {0}, Target = {1}",
                 new Object[]{source, target});
         StaticWeaveProcessor proc = new StaticWeaveProcessor(source, target);
         proc.setClassLoader(cl);
@@ -115,7 +136,8 @@ class EclipseLinkEnhancer implements JPAEnhancer {
         } finally {
             is.close();
         }
-        String value = m.getMainAttributes().getValue(Constants.DYNAMICIMPORT_PACKAGE);
+        String value = m.getMainAttributes()
+                .getValue(Constants.DYNAMICIMPORT_PACKAGE);
         if (value != null) {
             // TODO(Sahoo): Don't add if org.eclipselink.* is already specified
             value = value.concat(", " + elPackage);
@@ -125,7 +147,8 @@ class EclipseLinkEnhancer implements JPAEnhancer {
         m.getMainAttributes().putValue(Constants.DYNAMICIMPORT_PACKAGE, value);
 
         // Mark the bundle as weaved to avoid infinite updates
-        m.getMainAttributes().putValue(JPABundleProcessor.STATICALLY_WEAVED, "true");
+        m.getMainAttributes().putValue(JPABundleProcessor.STATICALLY_WEAVED,
+                "true");
         FileOutputStream os = new FileOutputStream(mf);
         try {
             m.write(os);
@@ -173,11 +196,12 @@ class EclipseLinkEnhancer implements JPAEnhancer {
 
     private File explode(Bundle b) throws IOException {
         File explodedDir = makeTmpDir("osgiapp");
-        WritableArchive targetArchive = archiveFactory.createArchive(explodedDir);
-        new OSGiArchiveHandler().expand(new OSGiBundleArchive(b), targetArchive, null);
-        logger.logp(Level.INFO, "EclipseLinkEnhancer", "explode",
+        WritableArchive targetArchive = archiveFactory
+                .createArchive(explodedDir);
+        new OSGiArchiveHandler().expand(new OSGiBundleArchive(b),
+                targetArchive, null);
+        LOGGER.logp(Level.INFO, "EclipseLinkEnhancer", "explode",
                 "Exploded bundle {0} at {1} ", new Object[]{b, explodedDir});
         return explodedDir;
     }
-
 }

@@ -13,7 +13,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  */
-
 package org.glassfish.osgijavaeebase;
 
 import java.io.BufferedInputStream;
@@ -24,71 +23,60 @@ import java.net.URL;
 import java.util.Enumeration;
 
 /**
- * This class loader only provides a new class loading namespace
- * It is useful during annotation scanning classes get loaded in that separate
- * namespace. This class loader delegates all stream handling (i.e. reading
- * actual class/resource data) operations to a delegate Bundle.
- * It only defines the Class using the byte codes.
+ * This class loader only provides a new class loading namespace It is useful
+ * during annotation scanning classes get loaded in that separate namespace.
+ * This class loader delegates all stream handling (i.e. reading actual
+ * class/resource data) operations to a delegate Bundle. It only defines the
+ * Class using the byte codes.
  *
  * @author Sanjeeb.Sahoo@Sun.COM
  */
-public class TempBundleClassLoader extends ClassLoader
-{
-    private BundleClassLoader delegate;
+public class TempBundleClassLoader extends ClassLoader {
 
-    public TempBundleClassLoader(BundleClassLoader delegate)
-    {
+    private final BundleClassLoader delegate;
+
+    public TempBundleClassLoader(BundleClassLoader delegate) {
         // Set our parent same as delegate's
         super(delegate.getParent());
         this.delegate = delegate;
     }
 
     /**
-     * This method uses the delegate to use class bytes and then defines
-     * the class using this class loader
+     * This method uses the delegate to use class bytes and then defines the
+     * class using this class loader
+     * @return 
+     * @throws java.lang.ClassNotFoundException
      */
-    protected Class findClass(String name) throws ClassNotFoundException
-    {
+    @Override
+    protected Class findClass(String name) throws ClassNotFoundException {
+
         String entryName = name.replace('.', '/') + ".class";
         URL url = delegate.getResource(entryName);
-        if (url == null)
-        {
+        if (url == null) {
             throw new ClassNotFoundException(name);
         }
         InputStream inputStream = null;
         byte[] bytes = null;
-        try
-        {
+        try {
             inputStream = url.openStream();
             bytes = getClassData(inputStream);
-        }
-        catch (IOException e)
-        {
+        } catch (IOException e) {
             throw new ClassNotFoundException(name, e);
-        }
-        finally
-        {
-            try
-            {
-                if (inputStream != null)
-                {
+        } finally {
+            try {
+                if (inputStream != null) {
                     inputStream.close();
                 }
-            }
-            catch (IOException e)
-            {
+            } catch (IOException e) {
                 // ignore
             }
         }
         // Define package information if necessary
         int lastPackageSep = name.lastIndexOf('.');
-        if (lastPackageSep != -1)
-        {
+        if (lastPackageSep != -1) {
             String packageName = name.substring(0, lastPackageSep);
-            if (getPackage(packageName) == null)
-            {
-                try
-                {
+            if (getPackage(packageName) == null) {
+                try {
                     // There's a small chance that one of our parents
                     // could define the same package after getPackage
                     // returns null but before we call definePackage,
@@ -102,34 +90,31 @@ public class TempBundleClassLoader extends ClassLoader
                     // JDK code that does the same.
                     definePackage(packageName, null, null, null,
                             null, null, null, null);
-                }
-                catch (IllegalArgumentException iae)
-                {
+                } catch (IllegalArgumentException iae) {
                     // duplicate attempt to define same package.
                     // safe to ignore.
                 }
             }
         }
         Class clazz = null;
-        try
-        {
-            clazz = defineClass(name, bytes, 0, bytes.length, null); // TODO(Sahoo): Set appropriate protection domain
+        try {
+            // TODO(Sahoo): Set appropriate protection domain
+            clazz = defineClass(name, bytes, 0, bytes.length, null);
             return clazz;
-        }
-        catch (UnsupportedClassVersionError ucve)
-        {
-            throw new UnsupportedClassVersionError(name + " can't be defined as we are running in Java version" +
-                    System.getProperty("java.version"));
+        } catch (UnsupportedClassVersionError ucve) {
+            throw new UnsupportedClassVersionError(name
+                    + " can't be defined as we are running in Java version"
+                    + System.getProperty("java.version"));
         }
     }
 
-    public URL getResource(String name)
-    {
+    @Override
+    public URL getResource(String name) {
         return delegate.getResource(name);
     }
 
-    public Enumeration<URL> findResources(String name) throws IOException
-    {
+    @Override
+    public Enumeration<URL> findResources(String name) throws IOException {
         return delegate.getResources(name);
     }
 
@@ -139,29 +124,22 @@ public class TempBundleClassLoader extends ClassLoader
      * @param istream input stream to the class or resource
      * @throws IOException if an i/o error
      */
-    private byte[] getClassData(InputStream istream) throws IOException
-    {
+    private byte[] getClassData(InputStream istream) throws IOException {
         BufferedInputStream bstream = new BufferedInputStream(istream);
         byte[] buf = new byte[4096];
         ByteArrayOutputStream bout = new ByteArrayOutputStream();
         int num = 0;
-        try
-        {
-            while ((num = bstream.read(buf)) != -1)
-            {
+        try {
+            while ((num = bstream.read(buf)) != -1) {
                 bout.write(buf, 0, num);
             }
-        }
-        finally
-        {
-            if (bstream != null)
-            {
+        } finally {
+            if (bstream != null) {
                 bstream.close();
             }
         }
 
         return bout.toByteArray();
     }
-
 
 }

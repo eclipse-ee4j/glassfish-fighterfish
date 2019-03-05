@@ -13,7 +13,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  */
-
 package org.glassfish.osgi.ee.resources;
 
 import org.glassfish.osgijavaeebase.Extender;
@@ -24,25 +23,29 @@ import org.osgi.framework.ServiceRegistration;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-
 public class ResourcesActivator implements BundleActivator {
 
-    private static final Logger logger = Logger.getLogger(ResourcesActivator.class.getPackage().getName());
+    private static final Logger LOGGER = Logger.getLogger(
+            ResourcesActivator.class.getPackage().getName());
     private ServiceRegistration extenderReg;
 
+    @Override
     public void start(BundleContext bundleContext) throws Exception {
         ResourcesExtender extender = new ResourcesExtender(bundleContext);
-        extenderReg = bundleContext.registerService(Extender.class.getName(), extender, null);
+        extenderReg = bundleContext.registerService(Extender.class.getName(),
+                extender, null);
         debug("Bundle activated");
     }
 
+    @Override
     public void stop(BundleContext bundleContext) throws Exception {
         debug("Bundle de-activated");
         extenderReg.unregister();
     }
 
-   private void debug(String s) {
-        if (logger.isLoggable(Level.FINEST)) {
-            logger.finest("[osgi-ee-resources] : " + s);
+    private void debug(String s) {
+        if (LOGGER.isLoggable(Level.FINEST)) {
+            LOGGER.log(Level.FINEST, "[osgi-ee-resources] : {0}", s);
         }
-    }}
+    }
+}

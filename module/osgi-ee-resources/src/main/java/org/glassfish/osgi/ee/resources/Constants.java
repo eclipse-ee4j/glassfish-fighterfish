@@ -13,7 +13,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  */
-
 package org.glassfish.osgi.ee.resources;
 
 /**
@@ -41,6 +40,5 @@ public interface Constants {
     String QUEUE = "javax.jms.Queue";
     String TOPIC = "javax.jms.Topic";
     String DESTINATION = "javax.jms.Destination";
-
 
 }

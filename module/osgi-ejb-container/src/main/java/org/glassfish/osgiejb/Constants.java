@@ -13,13 +13,13 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  */
-
 package org.glassfish.osgiejb;
 
 /**
  * @author Sanjeeb.Sahoo@Sun.COM
  */
 public class Constants {
+
     public static final String EXPORT_EJB = "Export-EJB";
     public static final String EXPORT_EJB_ALL = "ALL";
     public static final String EXPORT_EJB_NONE = "NONE";

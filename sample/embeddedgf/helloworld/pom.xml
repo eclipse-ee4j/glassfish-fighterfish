@@ -10,25 +10,31 @@
     SPDX-License-Identifier: BSD-3-Clause
 
 -->
-
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <artifactId>sample.parent-pom</artifactId>
-    <groupId>org.glassfish.fighterfish</groupId>
-    <version>1.0.0</version>
-  </parent>
-  <groupId>org.glassfish.fighterfish</groupId>
-  <artifactId>sample.embeddedgf.helloworld</artifactId>
-  <version>1.0.0-SNAPSHOT</version>
-  <name>Using Embedded GlassFish API in an OSGi environment</name>
-  <dependencies>
-  <dependency>
-  <groupId>org.glassfish</groupId>
-  <artifactId>simple-glassfish-api</artifactId>
-  <version>3.1.1</version>
-  <scope>provided</scope>
-  </dependency>
-  </dependencies>
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.glassfish.fighterfish</groupId>
+        <artifactId>fighterfish-sample-embeddedgf-parent</artifactId>
+        <version>3.0.0-SNAPSHOT</version>
+    </parent>
+    <artifactId>fighterfish-sample-embeddedgf-helloworld</artifactId>
+    <name>FighterFish Sample Embedded GF HelloWorld</name>
 
+    <dependencies>
+        <dependency>
+            <groupId>org.glassfish.main.common</groupId>
+            <artifactId>simple-glassfish-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.core</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.enterprise</artifactId>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
 </project>

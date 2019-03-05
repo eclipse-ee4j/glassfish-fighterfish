@@ -1,6 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0, which is available at
@@ -19,54 +20,43 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <artifactId>sample.parent-pom</artifactId>
         <groupId>org.glassfish.fighterfish</groupId>
-        <version>1.0.2</version>
+        <artifactId>fighterfish-test-app-parent</artifactId>
+        <version>3.0.0-SNAPSHOT</version>
     </parent>
-    <groupId>org.glassfish.fighterfish</groupId>
-    <artifactId>test.app13</artifactId>
-    <version>1.0.1-SNAPSHOT</version>
-    <name>test.app13: EJB bundle with Bundle-ClassPath - regression test case for GLASSFISH-14123</name>
-    <scm>
-        <connection>scm:svn:https://github.com/eclipse-ee4j/glassfish-fighterfish/test/app/app13</connection>
-        <developerConnection>scm:svn:https://github.com/eclipse-ee4j/glassfish-fighterfish/test/app/app13
-        </developerConnection>
-        <url>https://github.com/eclipse-ee4j/glassfish-fighterfish/test/app/app13</url>
-    </scm>
+    <artifactId>fighterfish-test-app-13</artifactId>
+    <name>FighterFish Test App 13</name>
 
     <build>
         <plugins>
             <plugin>
-                <!-- Let's move the content to a dir called bin/ -->
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-antrun-plugin</artifactId>
-                <version>1.6</version>
                 <executions>
                     <execution>
-                        <id>move-target-classes-to-bin</id>
+                        <id>zz-post-compile</id>
                         <goals>
                             <goal>run</goal>
                         </goals>
-                        <phase>prepare-package</phase>
+                        <phase>compile</phase>
                         <configuration>
-                            <tasks>
-                                <move todir="${basedir}/target/classes/bin" file="${basedir}/target/classes/org">
-                                </move>
-                            </tasks>
+                            <target>
+                                <move todir="${basedir}/target/classes/bin"
+                                      file="${basedir}/target/classes/org"
+                                />
+                            </target>
                         </configuration>
                     </execution>
                 </executions>
             </plugin>
-            <plugin>
-                <artifactId>maven-jar-plugin</artifactId>
-                <configuration>
-                    <archive>
-                        <manifestEntries>
-                            <Bundle-ClassPath>bin</Bundle-ClassPath>
-                        </manifestEntries>
-                    </archive>
-                </configuration>
-            </plugin>
         </plugins>
     </build>
 
+    <dependencies>
+        <dependency>
+            <groupId>javax</groupId>
+            <artifactId>javaee-web-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
 </project>

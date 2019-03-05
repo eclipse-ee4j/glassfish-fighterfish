@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (c) 2018 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Distribution License v. 1.0, which is available at
@@ -10,37 +10,39 @@
     SPDX-License-Identifier: BSD-3-Clause
 
 -->
-
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.glassfish.fighterfish</groupId>
-        <artifactId>sample.parent-pom</artifactId>
-        <version>1.0.0</version>
-        <relativePath>../../parent-pom/pom.xml</relativePath>
+        <artifactId>fighterfish-sample-embeddedgf-parent</artifactId>
+        <version>3.0.0-SNAPSHOT</version>
     </parent>
-    <groupId>org.glassfish.fighterfish</groupId>
-    <artifactId>sample.embeddedgf.provisionerwebapp</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
-    <name>FighterFish Embedded GlassFish Sample - Web/GlassFish Bootstrapper</name>
-    <description>A web application that embeds GlassFish inside an existing OSGi runtime</description>
+    <artifactId>fighterfish-sample-embeddedgf-provisionerwebapp</artifactId>
+    <name>FighterFish Sample Embedded GF Provisioner Webapp</name>
     <packaging>war</packaging>
 
     <dependencies>
         <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.core</artifactId>
-            <version>4.3.0</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.glassfish</groupId>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.enterprise</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.main.common</groupId>
             <artifactId>simple-glassfish-api</artifactId>
-            <version>3.1.1</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
             <scope>provided</scope>
         </dependency>
     </dependencies>
-
 </project>

@@ -18,157 +18,122 @@
 -->
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<parent>
-		<groupId>org.glassfish.main</groupId>
-		<artifactId>glassfish-nucleus-parent</artifactId>
-		<version>4.0.1-SNAPSHOT</version>
-	</parent>
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.glassfish.fighterfish</groupId>
+        <artifactId>fighterfish-experimental-parent</artifactId>
+        <version>3.0.0-SNAPSHOT</version>
+    </parent>
+    <artifactId>glassfish-obr-builder</artifactId>
+    <name>FighterFish Experiment OBR Builder</name>
 
-	<artifactId>glassfish-obr-builder</artifactId>
-	<version>4.0.1-SNAPSHOT</version>
-	<name>Builds OBR from a set of OSGi bundles</name>
-	<packaging>glassfish-jar</packaging>
+    <dependencies>
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.core</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.enterprise</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.felix</groupId>
+            <artifactId>org.apache.felix.bundlerepository</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>javax.ws.rs</groupId>
+            <artifactId>javax.ws.rs-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.jersey.core</groupId>
+            <artifactId>jersey-server</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.jersey.containers</groupId>
+            <artifactId>jersey-container-grizzly2-http</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.jersey.containers</groupId>
+            <artifactId>jersey-container-servlet-core</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.hk2</groupId>
+            <artifactId>hk2-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
 
-	<dependencies>
-		<dependency>
-			<groupId>org.osgi</groupId>
-			<artifactId>org.osgi.core</artifactId>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.osgi</groupId>
-			<artifactId>org.osgi.compendium</artifactId>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.felix</groupId>
-			<artifactId>org.apache.felix.bundlerepository</artifactId>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.glassfish.hk2</groupId>
-			<artifactId>core</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>javax.ws.rs</groupId>
-			<artifactId>javax.ws.rs-api</artifactId>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.glassfish.jersey.core</groupId>
-			<artifactId>jersey-server</artifactId>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.glassfish.jersey.containers</groupId>
-			<artifactId>jersey-container-grizzly2-http</artifactId>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.glassfish.jersey.containers</groupId>
-			<artifactId>jersey-container-servlet-core</artifactId>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>javax.servlet-api</artifactId>
-			<scope>provided</scope>
-		</dependency>
-	</dependencies>
-
-	<build>
-		<plugins>
-			<!-- Configure maven-bundle-plugin to generate OSGi manifest. Please note: 
-				we use the manifest goal only and not the bundle goal. The bundle goal can 
-				lead to very surprising results if the package names are not correctly specified. 
-				So, we use the jar plugin to generate the jar. -->
-			<plugin>
-				<groupId>org.apache.felix</groupId>
-				<artifactId>maven-bundle-plugin</artifactId>
-				<extensions>true</extensions>
-				<configuration>
-					<!-- By default, we don't export anything. -->
-					<Export-Package />
-					<!-- Since, we are in a top level pom and we we don't want it to be 
-						active for plain jar type artifacts, enable the plugin for hk2-jar and bundle 
-						packaging type only, -->
-					<supportedProjectTypes>
-						<supportedProjectType>glassfish-jar</supportedProjectType>
-						<supportedProjectType>bundle</supportedProjectType>
-						<supportedProjectType>jar</supportedProjectType>
-					</supportedProjectTypes>
-					<instructions>
-						<!-- Read all the configuration from osgi.bundle file, if it exists. 
-							See Felix-699 to find out why we use ${basedir}. -->
-						<_include>-${basedir}/osgi.bundle</_include>
-					</instructions>
-				</configuration>
-				<executions>
-					<execution>
-						<id>bundle-manifest</id>
-						<phase>process-classes</phase>
-						<goals>
-							<goal>manifest</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-dependency-plugin</artifactId>
-				<version>2.7</version>
-				<configuration>
-					<stripVersion>true</stripVersion>
-					<excludeTransitive>true</excludeTransitive>
-					<overWriteReleases>true</overWriteReleases>
-					<overWriteSnapshots>true</overWriteSnapshots>
-				</configuration>
-				<executions>
-					<execution>
-						<id>unpack-dependencies</id>
-						<phase>process-resources</phase>
-						<goals>
-							<goal>unpack-dependencies</goal>
-						</goals>
-						<configuration>
-							<includeGroupIds>org.apache.felix</includeGroupIds>
-							<includeArtifactIds>org.apache.felix.bundlerepository</includeArtifactIds>
-							<includeTypes>jar</includeTypes>
-							<outputDirectory>${project.build.outputDirectory}</outputDirectory>
-							<includes>
-								org/apache/felix/bundlerepository/**/*.class,
-								org/apache/felix/utils/**/*.class,
-								org/kxml2/**/*.class,
-								org/xmlpull/**/*.class
-							</includes>
-
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-		</plugins>
-	</build>
-	<developers>
-		<developer>
-			<id>ss141213</id>
-			<name>Sahoo</name>
-			<url>http://weblogs.java.net/blog/ss141213</url>
-			<organization>Oracle, Inc.</organization>
-			<roles>
-				<role>leader</role>
-			</roles>
-		</developer>
-		<developer>
-			<id>codeprince</id>
-			<name>Tang Yong</name>
-			<url>http://osgizone.typepad.com/tangyong/</url>
-			<organization>Nanjing Fujitsu NanDa Software Tec CO.,LTD.</organization>
-			<roles>
-				<role>developer</role>
-			</roles>
-		</developer>
-	</developers>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <extensions>true</extensions>
+                <configuration>
+                    <Export-Package />
+                    <supportedProjectTypes>
+                        <supportedProjectType>glassfish-jar</supportedProjectType>
+                        <supportedProjectType>bundle</supportedProjectType>
+                        <supportedProjectType>jar</supportedProjectType>
+                    </supportedProjectTypes>
+                    <instructions>
+                        <_include>-${basedir}/osgi.bundle</_include>
+                    </instructions>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>bundle-manifest</id>
+                        <phase>process-classes</phase>
+                        <goals>
+                            <goal>manifest</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <configuration>
+                    <stripVersion>true</stripVersion>
+                    <excludeTransitive>true</excludeTransitive>
+                    <overWriteReleases>true</overWriteReleases>
+                    <overWriteSnapshots>true</overWriteSnapshots>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>unpack-dependencies</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>unpack-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <includeGroupIds>org.apache.felix</includeGroupIds>
+                            <includeArtifactIds>org.apache.felix.bundlerepository</includeArtifactIds>
+                            <includeTypes>jar</includeTypes>
+                            <outputDirectory>${project.build.outputDirectory}</outputDirectory>
+                            <includes>
+                                org/apache/felix/bundlerepository/**/*.class,
+                                org/apache/felix/utils/**/*.class,
+                                org/kxml2/**/*.class,
+                                org/xmlpull/**/*.class
+                            </includes>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>

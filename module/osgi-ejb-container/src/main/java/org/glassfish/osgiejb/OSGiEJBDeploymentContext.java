@@ -43,43 +43,53 @@ import com.sun.enterprise.module.common_impl.CompositeEnumeration;
  */
 public class OSGiEJBDeploymentContext extends OSGiDeploymentContext {
 
-    public OSGiEJBDeploymentContext(ActionReport actionReport, Logger logger, ReadableArchive source, OpsParams params, ServerEnvironment env, Bundle bundle) throws Exception {
+    public OSGiEJBDeploymentContext(ActionReport actionReport, Logger logger,
+            ReadableArchive source, OpsParams params, ServerEnvironment env,
+            Bundle bundle) throws Exception {
+
         super(actionReport, logger, source, params, env, bundle);
-        // ArchiveHandler must correctly return the ArchiveType for DOL processing to succeed,
+        // ArchiveHandler must correctly return the ArchiveType for DOL
+        // processing to succeed,
         setArchiveHandler(new OSGiArchiveHandler(){
             @Override
             public String getArchiveType() {
-                // Since I am not able to reference GF 4.0 APIs as they are not yet staged in a maven repo,
+                // Since I am not able to reference GF 4.0 APIs as they are not
+                // yet staged in a maven repo,
                 // I am accessing the value in a round about way.
-                return javax.enterprise.deploy.shared.ModuleType.EJB.toString(); // EjbType.ARCHIVE_TYPE;
+                // EjbType.ARCHIVE_TYPE;
+                return javax.enterprise.deploy.shared.ModuleType.EJB.toString();
             }
         });
 
     }
 
+    @Override
     protected void setupClassLoader() throws Exception {
         final BundleClassLoader delegate1 = new BundleClassLoader(bundle);
         final ClassLoader delegate2 =
                 Globals.get(ClassLoaderHierarchy.class).getAPIClassLoader();
-
-        ClassLoader cl = new DelegatingInstrumentableClassLoader(delegate1, delegate2);
-        
+        ClassLoader cl = new DelegatingInstrumentableClassLoader(delegate1,
+                delegate2);
         shareableTempClassLoader = cl;
         finalClassLoader = cl;
     }
 
-    private static class DelegatingInstrumentableClassLoader extends ClassLoader implements InstrumentableClassLoader {
+    private static class DelegatingInstrumentableClassLoader extends ClassLoader
+            implements InstrumentableClassLoader {
 
-        private BundleClassLoader delegate1;
-        private ClassLoader delegate2;
+        private final BundleClassLoader delegate1;
+        private final ClassLoader delegate2;
 
-        private DelegatingInstrumentableClassLoader(BundleClassLoader delegate1, ClassLoader delegate2) {
+        private DelegatingInstrumentableClassLoader(BundleClassLoader delegate1,
+                ClassLoader delegate2) {
             this.delegate1 = delegate1;
             this.delegate2 = delegate2;
         }
 
         @Override
-        protected synchronized Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
+        protected synchronized Class<?> loadClass(String name, boolean resolve)
+                throws ClassNotFoundException {
+
             Class c = findLoadedClass(name);
             if (c == null) {
                 try {
@@ -111,15 +121,19 @@ public class OSGiEJBDeploymentContext extends OSGiDeploymentContext {
             return new CompositeEnumeration(enumerators);
         }
 
+        @Override
         public ClassLoader copy() {
-            // do nothing, since we don't expect any transformation to take place because of the way we implement
+            // do nothing, since we don't expect any transformation to take
+            // place because of the way we implement
             // our JPA support. We actually do static enhancement.
             return this;
         }
 
+        @Override
         public void addTransformer(ClassFileTransformer transformer) {
             System.out.println("addTransformer called " + transformer);
-            // do nothing, since we don't expect any transformation to take place because of the way we implement
+            // do nothing, since we don't expect any transformation to take
+            // place because of the way we implement
             // our JPA support. We actually do static enhancement.
         }
     }

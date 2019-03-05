@@ -10,19 +10,19 @@
     SPDX-License-Identifier: BSD-3-Clause
 
 -->
-
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<groupId>org.glassfish.fighterfish</groupId>
-	<artifactId>sample.osgihttp.build-aggregator-pom</artifactId>
-	<version>1.0.0-SNAPSHOT</version>
-	<name>FighterFish OSGi/HTTP Samples Build Aggregator POM</name>
-	<packaging>pom</packaging>
-	<!-- This is just a build aggregator POM, so we don't configure anything 
-		here. All modules extend parent-pom. So, you will find all kinds of common 
-		rules and configurations in parent-pom/pom.xml -->
-	<modules>
-		<module>helloworld</module>
-	</modules>
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.glassfish.fighterfish</groupId>
+        <artifactId>fighterfish-sample-parent</artifactId>
+        <version>3.0.0-SNAPSHOT</version>
+    </parent>
+    <artifactId>fighterfish-sample-osgihttp-parent</artifactId>
+    <name>FighterFish Sample OSGi/HTTP Parent</name>
+    <packaging>pom</packaging>
+
+    <modules>
+        <module>helloworld</module>
+    </modules>
 </project>

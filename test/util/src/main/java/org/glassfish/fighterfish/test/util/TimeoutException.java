@@ -13,26 +13,27 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  */
-
 package org.glassfish.fighterfish.test.util;
 
 /**
- * This exception has the additional role of printing equivalent of JStack
- * so that we can analyse any locking issues easily.
+ * This exception has the additional role of printing equivalent of JStack so
+ * that we can analyze any locking issues easily.
  *
  * @author Sanjeeb.Sahoo@Sun.COM
  */
 public class TimeoutException extends RuntimeException {
+
     String msg;
+
     public TimeoutException() {
         collectStackTrace();
     }
 
     private void collectStackTrace() {
-        msg = "Stack traces of all threads are given below:\n" +
-                "[StackTraceBegin]\n" +
-                new JStack() +
-                "\n[StackTraceEnd]";
+        msg = "Stack traces of all threads are given below:\n"
+                + "[StackTraceBegin]\n"
+                + new JStack()
+                + "\n[StackTraceEnd]";
     }
 
     public TimeoutException(String message) {

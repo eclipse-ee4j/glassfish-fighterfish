@@ -13,7 +13,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  */
-
 package org.glassfish.osgihttp;
 
 import com.sun.enterprise.web.WebModule;
@@ -29,28 +28,31 @@ import java.util.logging.Logger;
 public class InvocationContextMgr {
 
     private static final InvocationContext invCtx = new InvocationContext() {
-        private final Logger logger = Logger.getLogger(getClass().getPackage().getName());
+        private final Logger logger = Logger.getLogger(
+                getClass().getPackage().getName());
 
-        private ThreadLocal<WeakReference<ServletContext>> currentSC =
-                new InheritableThreadLocal<WeakReference<ServletContext>>();
+        private final ThreadLocal<WeakReference<ServletContext>> currentSC
+                = new InheritableThreadLocal<WeakReference<ServletContext>>();
 
-        private ThreadLocal<WeakReference<WebModule>> currentWM =
-                new InheritableThreadLocal<WeakReference<WebModule>>();
+        private final ThreadLocal<WeakReference<WebModule>> currentWM
+                = new InheritableThreadLocal<WeakReference<WebModule>>();
 
         @Override
         public WebModule getWebModule() {
             WeakReference<WebModule> current = currentWM.get();
             WebModule result = current != null ? current.get() : null;
-            logger.logp(Level.FINE, "InvocationContextMgr", "getWebModule", "result = {0}", new Object[]{result});
+            logger.logp(Level.FINE, "InvocationContextMgr", "getWebModule",
+                    "result = {0}", new Object[]{result});
             return result;
         }
 
         @Override
         public void setWebModule(WebModule webModule) {
-            logger.logp(Level.FINE, "InvocationContextMgr", "setWebModule", "webModule = {0}", new Object[]{webModule});
-            currentWM.set(webModule != null ? new WeakReference<WebModule>(webModule) : null);
+            logger.logp(Level.FINE, "InvocationContextMgr", "setWebModule",
+                    "webModule = {0}", new Object[]{webModule});
+            currentWM.set(webModule != null
+                    ? new WeakReference<WebModule>(webModule) : null);
         }
-        
     };
 
     public static InvocationContext getInvocationContext() {

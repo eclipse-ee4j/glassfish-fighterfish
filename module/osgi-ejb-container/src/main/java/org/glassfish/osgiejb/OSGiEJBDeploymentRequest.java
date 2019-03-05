@@ -28,33 +28,50 @@ import org.osgi.framework.Bundle;
 import java.util.logging.Logger;
 
 import com.sun.enterprise.deploy.shared.ArchiveFactory;
+import java.util.ArrayList;
+import java.util.List;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleReference;
-import org.osgi.service.packageadmin.PackageAdmin;
+import org.osgi.framework.namespace.HostNamespace;
+import org.osgi.framework.wiring.BundleWire;
+import org.osgi.framework.wiring.BundleWiring;
 
 /**
  * @author Sanjeeb.Sahoo@Sun.COM
  */
 public class OSGiEJBDeploymentRequest extends OSGiDeploymentRequest {
 
-    public OSGiEJBDeploymentRequest(Deployment deployer, ArchiveFactory archiveFactory, ServerEnvironmentImpl env, ActionReport reporter, Bundle b) {
+    public OSGiEJBDeploymentRequest(Deployment deployer,
+            ArchiveFactory archiveFactory, ServerEnvironmentImpl env,
+            ActionReport reporter, Bundle b) {
+
         super(deployer, archiveFactory, env, reporter, b);
     }
 
-    protected OSGiDeploymentContext getDeploymentContextImpl(ActionReport reporter, Logger logger, ReadableArchive archive, OpsParams opsParams, ServerEnvironmentImpl env, Bundle b) throws Exception {
-        return new OSGiEJBDeploymentContext(reporter, logger, archive, opsParams, env, b);
+    @Override
+    protected OSGiDeploymentContext getDeploymentContextImpl(
+            ActionReport reporter, Logger logger, ReadableArchive archive,
+            OpsParams opsParams, ServerEnvironmentImpl env, Bundle b)
+            throws Exception {
+
+        return new OSGiEJBDeploymentContext(reporter, logger, archive,
+                opsParams, env, b);
     }
 
     @Override
     protected EJBBundle makeArchive() {
         Bundle host = getBundle();
-        Bundle[] fragments = getPackageAdmin().getFragments(host);
+        Bundle[] fragments = getFragments(host);
         return new EJBBundle(fragments, host);
     }
 
-    private PackageAdmin getPackageAdmin() {
-        BundleContext ctx = BundleReference.class.cast(getClass().getClassLoader()).getBundle().getBundleContext();
-        return PackageAdmin.class.cast(ctx.getService(ctx.getServiceReference(PackageAdmin.class.getName())));
+    private static Bundle[] getFragments(Bundle host) {
+        List<Bundle> fragments = new ArrayList<Bundle>();
+        BundleWiring hostWiring = host.adapt(BundleWiring.class);
+        for (BundleWire wire : hostWiring.getProvidedWires(
+                HostNamespace.HOST_NAMESPACE)) {
+            fragments.add(wire.getRequirerWiring().getBundle());
+        }
+        return fragments.toArray(new Bundle[fragments.size()]);
     }
-
 }

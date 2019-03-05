@@ -23,6 +23,7 @@ import org.junit.Test;
  * @author Sanjeeb.Sahoo@Sun.COM
  */
 public class VersionTest {
+
     @Test
     public void test() {
         final String version = Version.getVersion();

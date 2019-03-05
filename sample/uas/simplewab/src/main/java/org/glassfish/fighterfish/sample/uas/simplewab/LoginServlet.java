@@ -7,7 +7,6 @@
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
-
 package org.glassfish.fighterfish.sample.uas.simplewab;
 
 import java.io.IOException;
@@ -25,44 +24,41 @@ import org.glassfish.osgicdi.OSGiService;
 import org.osgi.framework.ServiceException;
 
 /**
- * Servlet implementation class LoginServlet
+ * Servlet implementation class LoginServlet.
  */
 @WebServlet("/LoginServlet")
 public class LoginServlet extends HttpServlet {
-	private static final long serialVersionUID = 1L;
-       
-	@Inject @OSGiService(dynamic=true)
-	private UserAuthService uas;
 
-	/**
-     * @see HttpServlet#HttpServlet()
-     */
+    private static final long serialVersionUID = 1L;
+
+    @Inject
+    @OSGiService(dynamic = true)
+    private UserAuthService uas;
+
     public LoginServlet() {
         super();
-        // TODO Auto-generated constructor stub
     }
 
-	/**
-	 * @see HttpServlet#service(HttpServletRequest request, HttpServletResponse response)
-	 */
-	protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-	       response.setContentType("text/html");
-	       PrintWriter out = response.getWriter();
-	       out.println("<HTML> <HEAD> <TITLE> Login "
-		            + "</TITLE> </HEAD> <BODY BGCOLOR=white>");
+    @Override
+    protected void service(HttpServletRequest request,
+            HttpServletResponse response) throws ServletException, IOException {
 
-	       String name = request.getParameter("name");
-	       String password = request.getParameter("password");
-	        try {
-	            if (uas.login(name, password)) {
-	                out.println("Welcome " + name);
-	            } else {
-	                out.println("Incorrect user name or password. Try again");
-	            }
-	        } catch (ServiceException e) {
-	            out.println("Service is not yet available");
-	        }
-	        out.println("</BODY> </HTML> ");
-	}
+        response.setContentType("text/html");
+        PrintWriter out = response.getWriter();
+        out.println("<HTML> <HEAD> <TITLE> Login "
+                + "</TITLE> </HEAD> <BODY BGCOLOR=white>");
 
+        String name = request.getParameter("name");
+        String password = request.getParameter("password");
+        try {
+            if (uas.login(name, password)) {
+                out.println("Welcome " + name);
+            } else {
+                out.println("Incorrect user name or password. Try again");
+            }
+        } catch (ServiceException e) {
+            out.println("Service is not yet available");
+        }
+        out.println("</BODY> </HTML> ");
+    }
 }

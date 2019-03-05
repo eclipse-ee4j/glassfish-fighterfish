@@ -13,7 +13,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  */
-
 package org.glassfish.osgijavaeebase;
 
 import org.glassfish.api.deployment.archive.Archive;
@@ -28,36 +27,37 @@ import com.sun.enterprise.deploy.shared.AbstractReadableArchive;
 import java.io.*;
 import java.net.*;
 import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
 import java.util.*;
 import java.util.jar.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 /**
- * Adapts a {@link Bundle} to {@link Archive}.
- * It uses JAR File space of the bundle (via getEntry and getEntryPaths APIs),
- * so a bundle does not have to be in resolved state.
- * Since it represents JAR File space of the bundle, it does not
- * consider resources from any fragments.
+ * Adapts a {@link Bundle} to {@link Archive}. It uses JAR File space of the
+ * bundle (via getEntry and getEntryPaths APIs), so a bundle does not have to be
+ * in resolved state. Since it represents JAR File space of the bundle, it does
+ * not consider resources from any fragments.
  *
  * @author Sanjeeb.Sahoo@Sun.COM
  */
-public class OSGiBundleArchive extends AbstractReadableArchive implements URIable, Iterable<BundleResource> {
-    private Bundle b;
+public class OSGiBundleArchive extends AbstractReadableArchive
+        implements URIable, Iterable<BundleResource> {
 
+
+    private final Bundle bundle;
     private String name;
-
     private URI uri;
+    private final Map<String, ReadableArchive> subArchives =
+            new HashMap<String, ReadableArchive>();
 
-    private Map<String, ReadableArchive> subArchives = new HashMap<String, ReadableArchive>();
-
-    public OSGiBundleArchive(Bundle b) {
-        this.b = b;
+    public OSGiBundleArchive(Bundle bundle) {
+        this.bundle = bundle;
         init();
     }
 
     /**
-     * This method initializes {@link #uri} and {@link #name}
+     * This method initializes {@link #uri} and {@link #name}.
      */
     private void init() {
         // The only time we can rely on a bundle's location is when the
@@ -66,24 +66,31 @@ public class OSGiBundleArchive extends AbstractReadableArchive implements URIabl
         // In no other case, we can use rely on bundle.getLocation()
         // to arrive at the URI of the underlying archive.
         // e.g., user can install like this:
-        // bundleContext.install ("file:/a/b.jar", new URL("file:/c/d.jar").openStream));
-        // In the above case, although location returns a.jar, the actual archive
-        // is read from d.jar.
+        // bundleContext.install ("file:/a/b.jar",
+        // new URL("file:/c/d.jar").openStream));
+        // In the above case, although location returns a.jar, the actual
+        // archive is read from d.jar.
         // So, we return a valid URI only for reference: scheme and in all
         // cases, we prefer to return null as opposed to throwing an exception
         // to keep the behavior same as MemoryMappedArchive.
-        String location = b.getLocation();
+        String location = bundle.getLocation();
         if (location != null && location.startsWith(REFERENCE_PROTOCOL)) {
             location = location.substring(REFERENCE_PROTOCOL.length());
 
             // We only know how to handle reference:file: type urls.
             if (location.startsWith(FILE_PROTOCOL)) {
 
-                // Decode any URL escaped sequences.
-                location = URLDecoder.decode(location);
+                try {
+                    // Decode any URL escaped sequences.
+                    location = URLDecoder.decode(location,
+                            Charset.defaultCharset().name());
+                } catch (UnsupportedEncodingException ex) {
+                    throw new RuntimeException(ex);
+                }
 
                 // Return iff referenced file exists.
-                File file = new File(location.substring(FILE_PROTOCOL.length()));
+                File file = new File(location.substring(
+                        FILE_PROTOCOL.length()));
                 if (file.exists()) {
                     uri = file.toURI();
                 }
@@ -98,20 +105,22 @@ public class OSGiBundleArchive extends AbstractReadableArchive implements URIabl
         // See if there is a symbolic name & version. Use them,
         // else use location. Either symbolic name or location must exist
         // in a bundle.
-        String symName = b.getSymbolicName();
-        String version = (String) b.getHeaders().get(BUNDLE_VERSION);
+        String symName = bundle.getSymbolicName();
+        String version = (String) bundle.getHeaders().get(BUNDLE_VERSION);
         if (symName != null) {
-            name = version == null ?
-                    symName : symName.concat("_").concat(version);
+            name = version == null
+                    ? symName : symName.concat("_").concat(version);
         } else {
             name = location;
         }
 //        }
     }
 
+    @Override
     public void close() throws IOException {
     }
 
+    @Override
     public Enumeration<String> entries() {
         ArrayList<String> entries = new ArrayList<String>();
         getEntryPaths(entries, "/");
@@ -127,34 +136,40 @@ public class OSGiBundleArchive extends AbstractReadableArchive implements URIabl
     }
 
     /**
-     * Returns the enumeration of first level directories in this
-     * archive
+     * Returns the enumeration of first level directories in this archive
      *
      * @return enumeration of directories under the root of this archive
+     * @throws java.io.IOException
      */
+    @Override
     public Collection<String> getDirectories() throws IOException {
         return getSubDiretcories("/");
     }
 
     /**
-     * Return subdirectories under a given path. This returns only result from one level, i.e., non-recurssive
+     * Return subdirectories under a given path. This returns only result from
+     * one level, i.e., non-recursive
      *
      * @param path
      * @return
      */
     private Collection<String> getSubDiretcories(String path) {
-        final Enumeration firstLevelEntries = b.getEntryPaths(path);
-        if (firstLevelEntries == null) return Collections.EMPTY_LIST;
+        final Enumeration firstLevelEntries = bundle.getEntryPaths(path);
+        if (firstLevelEntries == null) {
+            return Collections.emptyList();
+        }
         Collection<String> firstLevelDirs = new ArrayList<String>();
         while (firstLevelEntries.hasMoreElements()) {
             String firstLevelEntry = (String) firstLevelEntries.nextElement();
-            if (firstLevelEntry.endsWith("/")) firstLevelDirs.add(firstLevelEntry);
+            if (firstLevelEntry.endsWith("/")) {
+                firstLevelDirs.add(firstLevelEntry);
+            }
         }
         return firstLevelDirs;
     }
 
     private void getEntryPaths(Collection<String> entries, String path) {
-        Enumeration<String> subPaths = b.getEntryPaths(path);
+        Enumeration<String> subPaths = bundle.getEntryPaths(path);
         if (subPaths != null) {
             while (subPaths.hasMoreElements()) {
                 String next = subPaths.nextElement();
@@ -166,18 +181,22 @@ public class OSGiBundleArchive extends AbstractReadableArchive implements URIabl
                 getEntryPaths(entries, next);
             }
         }
-//        BECAUSE OF A BUG IN FELIX (FELIX-1210), THE CODE ABOVE DOES NOT WORK
-//        WHEN THERE ARE NO DIRECTORY ENTRIES IN THE JAR FILE.
-//        IF WE CONSISTENTLY FACE THE ISSUE, THEN WE CAN USE AN ALTERNATIVE IMPL BASED ON findEntries.
-//        OF COURSE, IT WILL HAVE THE UNDESIRED SIDE EFFECT OF FINDINDG ENTRIES FROM FRAGMENTS AS WELL.
-//        WE HAVE NASTY SIDE EFFECTS WHEN THAT HAPPENS. e.g. NPE. SO, WE DON'T USE THE ALTERNATIVE
-//        IMPLEMENTATION ANY MORE. WE EXPECT JAR TO HAVE PROPER DIRECTORY ENTRIES.        
-//        getEntryPaths2(entries, path); // call the new implementation
+        // BECAUSE OF A BUG IN FELIX (FELIX-1210), THE CODE ABOVE DOES NOT WORK
+        // WHEN THERE ARE NO DIRECTORY ENTRIES IN THE JAR FILE.
+        // IF WE CONSISTENTLY FACE THE ISSUE, THEN WE CAN USE AN ALTERNATIVE IMPL
+        // BASED ON findEntries.
+        // OF COURSE, IT WILL HAVE THE UNDESIRED SIDE EFFECT OF FINDINDG ENTRIES
+        // FROM FRAGMENTS AS WELL.
+        // WE HAVE NASTY SIDE EFFECTS WHEN THAT HAPPENS. e.g. NPE. SO, WE DON'T
+        // USE THE ALTERNATIVE
+        // IMPLEMENTATION ANY MORE. WE EXPECT JAR TO HAVE PROPER DIRECTORY
+        // ENTRIES.
+        // getEntryPaths2(entries, path); // call the new implementation
     }
 
     private void getEntryPaths2(Collection<String> entries, String path) {
         // findEntries expect the path to begin with "/"
-        Enumeration e = b.findEntries(
+        Enumeration e = bundle.findEntries(
                 path.startsWith("/") ? path : "/".concat(path), "*", true);
         if (e != null) {
             while (e.hasMoreElements()) {
@@ -194,24 +213,26 @@ public class OSGiBundleArchive extends AbstractReadableArchive implements URIabl
         }
     }
 
+    @Override
     public Enumeration<String> entries(String prefix) {
         Collection<String> entries = new ArrayList<String>();
         getEntryPaths(entries, prefix);
         return Collections.enumeration(entries);
     }
 
+    @Override
     public boolean isDirectory(String name) {
-        return b.getEntry(name.endsWith("/") ? name : name + "/") != null;
+        return bundle.getEntry(name.endsWith("/") ? name : name + "/") != null;
     }
 
+    @Override
     public Manifest getManifest() throws IOException {
-        URL url = b.getEntry(JarFile.MANIFEST_NAME);
+        URL url = bundle.getEntry(JarFile.MANIFEST_NAME);
         if (url != null) {
             InputStream is = url.openStream();
             try {
                 return new Manifest(is);
-            }
-            finally {
+            } finally {
                 is.close();
             }
 
@@ -225,82 +246,102 @@ public class OSGiBundleArchive extends AbstractReadableArchive implements URIabl
      *
      * @return
      */
+    @Override
     public URI getURI() {
         return uri;
     }
 
+    @Override
     public long getArchiveSize() throws SecurityException {
-        return -1; // Don't know how to calculate the size.
+        // Don't know how to calculate the size.
+        return -1;
     }
 
+    @Override
     public String getName() {
         return name;
     }
 
+    @Override
     public InputStream getEntry(String name) throws IOException {
-        URL entry = b.getEntry(name);
+        URL entry = bundle.getEntry(name);
         return entry != null ? entry.openStream() : null;
     }
 
+    @Override
     public boolean exists(String name) {
-        return b.getEntry(name) != null;
+        return bundle.getEntry(name) != null;
     }
 
+    @Override
     public long getEntrySize(String name) {
         return 0;
     }
 
+    @Override
     public void open(URI uri) throws IOException {
         throw new UnsupportedOperationException("Not applicable method");
     }
 
+    @Override
     public ReadableArchive getSubArchive(String name) throws IOException {
         if (!exists(name)) {
             return null;
         }
         synchronized (this) {
             if (!subArchives.containsKey(name)) {
-                ReadableArchive subArchive =
-                        isDirectory(name) ? new EmbeddedDirectoryArchive(name) : new EmbeddedJarArchive(name);
+                ReadableArchive subArchive
+                        = isDirectory(name) ?
+                        new EmbeddedDirectoryArchive(name)
+                        : new EmbeddedJarArchive(name);
                 subArchives.put(name, subArchive);
             }
             return subArchives.get(name);
         }
     }
 
+    @Override
     public boolean exists() {
         return true;
     }
 
+    @Override
     public boolean delete() {
         return false;
     }
 
+    @Override
     public boolean renameTo(String name) {
         return false;
     }
 
+    @Override
     public void setParentArchive(ReadableArchive parentArchive) {
         // Not needed until we support ear file containing bundles.
         throw new UnsupportedOperationException("Not supported");
     }
 
+    @Override
     public ReadableArchive getParentArchive() {
         return null;
     }
 
+    @Override
     public URI getEntryURI(String name) {
         try {
-            return b.getEntry(name).toURI();
+            return bundle.getEntry(name).toURI();
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);
         }
     }
 
+    @Override
     public String getDistanceFromTop() {
-        return ""; // this is the top level archive
+        // this is the top level archive
+        return "";
     }
 
+    @Override
     public Iterator<BundleResource> iterator() {
         return new BundleResourceIterator();
     }
@@ -308,24 +349,29 @@ public class OSGiBundleArchive extends AbstractReadableArchive implements URIabl
     /**
      *
      * @return a Jar format InputStream for this bundle's content
+     * @throws java.io.IOException
      */
     public InputStream getInputStream() throws IOException {
-    	 //[TangYong]fixing GLASSFISH-19662  
+        //[TangYong]fixing GLASSFISH-19662  
         if (uri != null && !new File(uri).isDirectory()) {
             return uri.toURL().openStream();
         } else {
             // create a JarOutputStream on the fly from the bundle's content
-            // Can we optimize by reading off Felix's cache? Investigate in future.
+            // Can we optimize by reading off Felix's cache? Investigate in
+            // future.
             PipedInputStream is = new PipedInputStream();
             final PipedOutputStream os = new PipedOutputStream(is);
             new Thread() {
                 @Override
                 public void run() {
                     try {
-                        JarOutputStream jos = new JarOutputStream(os, getManifest());
+                        JarOutputStream jos = new JarOutputStream(os,
+                                getManifest());
                         ByteBuffer buf = ByteBuffer.allocate(1024);
                         for (String s : Collections.list(entries())) {
-                            if (s.equals(JarFile.MANIFEST_NAME)) continue; // we have already inserted manifest
+                            if (s.equals(JarFile.MANIFEST_NAME)) {
+                                continue; // we have already inserted manifest
+                            }
                             jos.putNextEntry(new JarEntry(s));
                             if (!isDirectory(s)) {
                                 InputStream in = getEntry(s);
@@ -344,9 +390,9 @@ public class OSGiBundleArchive extends AbstractReadableArchive implements URIabl
                         jos.close();
                         os.close();
                     } catch (IOException e) {
-                        throw new RuntimeException(e); // TODO(Sahoo): Proper Exception Handling
+                        // TODO(Sahoo): Proper Exception Handling
+                        throw new RuntimeException(e);
                     }
-
                 }
             }.start();
             return is;
@@ -354,73 +400,92 @@ public class OSGiBundleArchive extends AbstractReadableArchive implements URIabl
     }
 
     /**
-     * A directory (typically a bundle classpath) in the bundle represented as an archive.
+     * A directory (typically a bundle classpath) in the bundle represented as
+     * an archive.
      */
-    private class EmbeddedDirectoryArchive extends AbstractReadableArchive implements ReadableArchive, URIable {
+    private class EmbeddedDirectoryArchive extends AbstractReadableArchive
+            implements ReadableArchive, URIable {
 
         /**
-         * This is the entry name by which this is identified in the bundle space.
+         * This is the entry name by which this is identified in the bundle
+         * space.
          */
-        private String distanceFromTop;
+        private final String distanceFromTop;
 
         public EmbeddedDirectoryArchive(String distanceFromTop) {
             this.distanceFromTop = distanceFromTop;
         }
 
+        @Override
         public InputStream getEntry(String name) throws IOException {
-            if (!exists(name)) return null;
+            if (!exists(name)) {
+                return null;
+            }
             String bundleEntry = distanceFromTop + name;
-            return b.getEntry(bundleEntry).openStream();
+            return bundle.getEntry(bundleEntry).openStream();
         }
 
+        @Override
         public boolean exists(String name) {
             return OSGiBundleArchive.this.exists(distanceFromTop + name);
         }
 
+        @Override
         public long getEntrySize(String name) {
             return OSGiBundleArchive.this.getEntrySize(distanceFromTop + name);
         }
 
+        @Override
         public void open(URI uri) throws IOException {
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public ReadableArchive getSubArchive(String name) throws IOException {
             return null;
         }
 
+        @Override
         public boolean exists() {
             return true;
         }
 
+        @Override
         public boolean delete() {
             return false;
         }
 
+        @Override
         public boolean renameTo(String name) {
             return false;
         }
 
+        @Override
         public void setParentArchive(ReadableArchive parentArchive) {
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public ReadableArchive getParentArchive() {
             return OSGiBundleArchive.this;
         }
 
+        @Override
         public void close() throws IOException {
         }
 
+        @Override
         public Enumeration<String> entries() {
             return entries("");
         }
 
+        @Override
         public Enumeration<String> entries(String prefix) {
             Collection<String> entries = new ArrayList<String>();
             getEntryPaths(entries, distanceFromTop + prefix);
 
-            // entries contains path names which is with respect to bundle root.
+            // entries contains path names which is with respect to bundle
+            // root.
             // We need names with respect to this directory root.
             // So, we need to strip entryName from the entries.
             Collection<String> subEntries = stripEntryName(entries);
@@ -429,11 +494,13 @@ public class OSGiBundleArchive extends AbstractReadableArchive implements URIabl
 
         /**
          * This method strips off entryName from collection of entries.
+         *
          * @param entries
          * @return
          */
         private Collection<String> stripEntryName(Collection<String> entries) {
-            Collection<String> subEntries = new ArrayList<String>(entries.size());
+            Collection<String> subEntries = new ArrayList<String>(
+                    entries.size());
             final int idx = distanceFromTop.length();
             for (String entry : entries) {
                 subEntries.add(entry.substring(idx));
@@ -441,50 +508,61 @@ public class OSGiBundleArchive extends AbstractReadableArchive implements URIabl
             return subEntries;
         }
 
+        @Override
         public Collection<String> getDirectories() throws IOException {
             return stripEntryName(getSubDiretcories(distanceFromTop));
         }
 
+        @Override
         public boolean isDirectory(String name) {
             return exists(name.endsWith("/") ? name : name + "/");
         }
 
+        @Override
         public Manifest getManifest() throws IOException {
             return null;  //TODO(Sahoo): Not Yet Implemented
         }
 
+        @Override
         public URI getURI() {
             try {
-                return b.getEntry(distanceFromTop).toURI();
+                return bundle.getEntry(distanceFromTop).toURI();
             } catch (URISyntaxException e) {
                 throw new RuntimeException(e);
             }
         }
 
+        @Override
         public long getArchiveSize() throws SecurityException {
             return 0;
         }
 
+        @Override
         public String getName() {
             return distanceFromTop;
         }
 
+        @Override
         public URI getEntryURI(String name) {
             return OSGiBundleArchive.this.getEntryURI(distanceFromTop + name);
         }
 
+        @Override
         public String getDistanceFromTop() {
             return distanceFromTop;
         }
     }
 
     /**
-     * A jar (typically a bundle classpath) in the bundle represented as an archive.
+     * A jar (typically a bundle class-path) in the bundle represented as an
+     * archive.
      */
-    private class EmbeddedJarArchive extends AbstractReadableArchive implements URIable {
+    private class EmbeddedJarArchive extends AbstractReadableArchive
+            implements URIable {
 
         /**
-         * This is the entry name by which this is identified in the bundle space.
+         * This is the entry name by which this is identified in the bundle
+         * space.
          */
         private String distanceFromTop;
 
@@ -499,7 +577,9 @@ public class OSGiBundleArchive extends AbstractReadableArchive implements URIabl
             try {
                 while (true) {
                     ZipEntry ze = zis.getNextEntry();
-                    if (ze == null) break;
+                    if (ze == null) {
+                        break;
+                    }
                     entries.add(ze.getName());
                 }
             } finally {
@@ -508,31 +588,43 @@ public class OSGiBundleArchive extends AbstractReadableArchive implements URIabl
         }
 
         private ZipInputStream getZIS() throws IOException {
-            // Since user can supply random entry and ask for an embedded archive, propagate the exception to user.
-            return new ZipInputStream(b.getEntry(distanceFromTop).openStream());
+            // Since user can supply random entry and ask for an embedded
+            // archive, propagate the exception to user.
+            return new ZipInputStream(bundle.getEntry(distanceFromTop).openStream());
         }
 
         private Collection<String> getEntries() {
             return entries;
         }
 
+        @Override
         public InputStream getEntry(String name) throws IOException {
-            if (!exists(name)) return null;
+            if (!exists(name)) {
+                return null;
+            }
             final ZipInputStream zis = getZIS();
             while (true) {
                 ZipEntry ze = zis.getNextEntry();
-                if (ze == null) break; // end of stream, which is unlikely because the entry exists.
-                if (ze.getName().equals(name)) return zis;
+                if (ze == null) {
+                    // end of stream, which is unlikely because the
+                    // entry exists.
+                    break;
+                }
+                if (ze.getName().equals(name)) {
+                    return zis;
+                }
             }
             // don't close the stream, as we are returning it to caller
             assert (false);
             return null;
         }
 
+        @Override
         public boolean exists(String name) {
             return getEntries().contains(name);
         }
 
+        @Override
         public long getEntrySize(String name) {
             if (exists(name)) {
                 ZipInputStream zis = null;
@@ -546,7 +638,7 @@ public class OSGiBundleArchive extends AbstractReadableArchive implements URIabl
                     }
                 } catch (IOException e) {
                     throw new RuntimeException(e);
-                }  finally {
+                } finally {
                     if (zis != null) {
                         closeZIS(zis);
                     }
@@ -555,42 +647,54 @@ public class OSGiBundleArchive extends AbstractReadableArchive implements URIabl
             return 0;
         }
 
+        @Override
         public void open(URI uri) throws IOException {
             throw new UnsupportedOperationException("Not Applicable");
         }
 
+        @Override
         public ReadableArchive getSubArchive(String name) throws IOException {
             return null;  // Only one level embedding allowed in a bundle
         }
 
+        @Override
         public boolean exists() {
             return true;
         }
 
+        @Override
         public boolean delete() {
-            return false;  //TODO(Sahoo): Not Yet Implemented
+            //TODO(Sahoo): Not Yet Implemented
+            return false;
         }
 
+        @Override
         public boolean renameTo(String name) {
-            return false;  //TODO(Sahoo): Not Yet Implemented
+            //TODO(Sahoo): Not Yet Implemented
+            return false;
         }
 
+        @Override
         public void setParentArchive(ReadableArchive parentArchive) {
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public ReadableArchive getParentArchive() {
             return OSGiBundleArchive.this;
         }
 
+        @Override
         public void close() throws IOException {
             // noop
         }
 
+        @Override
         public Enumeration<String> entries() {
             return Collections.enumeration(getEntries());
         }
 
+        @Override
         public Enumeration<String> entries(String prefix) {
             List<String> result = new ArrayList<String>();
             for (String entry : getEntries()) {
@@ -601,47 +705,59 @@ public class OSGiBundleArchive extends AbstractReadableArchive implements URIabl
             return Collections.enumeration(result);
         }
 
+        @Override
         public Collection<String> getDirectories() throws IOException {
             List<String> result = new ArrayList<String>();
             for (String entry : getEntries()) {
                 final int idx = entry.indexOf('/');
-                if (idx != -1 && idx == entry.length() - 1) result.add(entry);
+                if (idx != -1 && idx == entry.length() - 1) {
+                    result.add(entry);
+                }
             }
             return result;
         }
 
+        @Override
         public boolean isDirectory(String name) {
-            // directory entries always end with "/", so unless we append a "/" when not there, we are not going
+            // directory entries always end with "/", so unless we append a
+            // "/" when not there, we are not going
             // to find it in our entry list.
             return exists(name.endsWith("/") ? name : (name + "/"));
         }
 
+        @Override
         public Manifest getManifest() throws IOException {
             String name = JarFile.MANIFEST_NAME;
             return exists(name) ? new Manifest(getEntry(name)) : null;
         }
 
+        @Override
         public URI getURI() {
             try {
-                return b.getEntry(distanceFromTop).toURI();
+                return bundle.getEntry(distanceFromTop).toURI();
             } catch (URISyntaxException e) {
                 throw new RuntimeException(e);
             }
         }
 
+        @Override
         public long getArchiveSize() throws SecurityException {
             return 0; // unknown
         }
 
+        @Override
         public String getName() {
             return distanceFromTop;
         }
 
+        @Override
         public URI getEntryURI(String name) {
-            return URI.create(EmbeddedJarURLStreamHandlerService.EMBEDDED_JAR_SCHEME + ":" + getURI() +
-                    EmbeddedJarURLStreamHandlerService.SEPARATOR + name);
+            return URI.create(EmbeddedJarURLStreamHandlerService
+                    .EMBEDDED_JAR_SCHEME + ":" + getURI()
+                    + EmbeddedJarURLStreamHandlerService.SEPARATOR + name);
         }
 
+        @Override
         public String getDistanceFromTop() {
             return distanceFromTop;
         }
@@ -658,19 +774,26 @@ public class OSGiBundleArchive extends AbstractReadableArchive implements URIabl
 
         private static final String DOT = ".";
         private final Iterator<BundleResource> delegate;
-        private final Collection<BundleResource> bundleResources = new ArrayList<BundleResource>();
+        private final Collection<BundleResource> bundleResources =
+                new ArrayList<BundleResource>();
 
         private BundleResourceIterator() {
             // for each bundle classpath entry, get the subarchive
-            String bcp = (String) b.getHeaders().get(org.osgi.framework.Constants.BUNDLE_CLASSPATH);
-            if (bcp == null || bcp.isEmpty()) bcp = DOT;
+            String bcp = (String) bundle.getHeaders().get(
+                    org.osgi.framework.Constants.BUNDLE_CLASSPATH);
+            if (bcp == null || bcp.isEmpty()) {
+                bcp = DOT;
+            }
             String seps = ";,";
             StringTokenizer bcpes = new StringTokenizer(bcp, seps);
             List<ReadableArchive> archives = new ArrayList<ReadableArchive>();
             while (bcpes.hasMoreTokens()) {
                 String bcpe = bcpes.nextToken();
                 bcpe = bcpe.trim();
-                if (bcpe.startsWith("/")) bcpe = bcpe.substring(1); // it is always relative to bundle root
+                if (bcpe.startsWith("/")) {
+                    // it is always relative to bundle root
+                    bcpe = bcpe.substring(1);
+                }
                 if (bcpe.equals(DOT)) {
                     archives.add(OSGiBundleArchive.this);
                 } else {
@@ -679,7 +802,9 @@ public class OSGiBundleArchive extends AbstractReadableArchive implements URIabl
                     }
                     try {
                         ReadableArchive archive = getSubArchive(bcpe);
-                        if (archive != null) archives.add(archive);
+                        if (archive != null) {
+                            archives.add(archive);
+                        }
                     } catch (IOException e1) {
                         e1.printStackTrace(); // ignore and continue
                     }
@@ -693,21 +818,25 @@ public class OSGiBundleArchive extends AbstractReadableArchive implements URIabl
                     String entry = entries.nextElement();
                     URI uri = urIable.getEntryURI(entry);
                     final String archivePath = urIable.getDistanceFromTop();
-                    BundleResource bundleResource = new BundleResource(uri, entry, archivePath);
+                    BundleResource bundleResource = new BundleResource(uri,
+                            entry, archivePath);
                     bundleResources.add(bundleResource);
                 }
             }
             delegate = bundleResources.iterator();
         }
 
+        @Override
         public boolean hasNext() {
             return delegate.hasNext();
         }
 
+        @Override
         public BundleResource next() {
             return delegate.next();
         }
 
+        @Override
         public void remove() {
             throw new UnsupportedOperationException();
         }
@@ -715,35 +844,43 @@ public class OSGiBundleArchive extends AbstractReadableArchive implements URIabl
 
     static class EmbeddedJarURLStreamHandlerService extends
             AbstractURLStreamHandlerService {
+
         /**
          * URI scheme used for resource embedded in a jar in a bundle
          */
         static final String EMBEDDED_JAR_SCHEME = "embeddedjar";
 
         /**
-         * Separator used by embeddedjar scheme.
+         * Separator used by embedded jar scheme.
          */
         static final String SEPARATOR = "!/";
 
+        @Override
         public URLConnection openConnection(URL u) throws IOException {
             assert (u.getProtocol().equals(EMBEDDED_JAR_SCHEME));
             try {
                 String schemeSpecificPart = u.toURI().getSchemeSpecificPart();
                 int idx = schemeSpecificPart.indexOf(SEPARATOR);
                 assert (idx > 0);
-                URL embeddedURL = URI.create(schemeSpecificPart.substring(0, idx)).toURL();
+                URL embeddedURL = URI.create(schemeSpecificPart.substring(0,
+                        idx)).toURL();
                 final URLConnection con = embeddedURL.openConnection();
                 final String entryPath = schemeSpecificPart.substring(idx + 2);
                 assert (entryPath.length() > 0);
                 return new URLConnection(u) {
+
+                    @Override
                     public void connect() throws IOException {
                         con.connect();
                     }
 
                     @Override
                     public InputStream getInputStream() throws IOException {
-                        JarInputStream jis = new JarInputStream(con.getInputStream());
-                        for (JarEntry je = jis.getNextJarEntry(); je != null; je = jis.getNextJarEntry()) {
+                        JarInputStream jis = new JarInputStream(
+                                con.getInputStream());
+                        for (JarEntry je = jis.getNextJarEntry(); je != null;
+                                je = jis.getNextJarEntry()) {
+
                             if (je.getName().equals(entryPath)) {
                                 return jis;
                             }

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2018, 2019 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0, which is available at
@@ -19,11 +19,21 @@
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>org.glassfish.fighterfish</groupId>
-    <artifactId>test.app-build-aggregator</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <parent>
+        <groupId>org.glassfish.fighterfish</groupId>
+        <artifactId>fighterfish-test-parent</artifactId>
+        <version>3.0.0-SNAPSHOT</version>
+    </parent>
+    <artifactId>fighterfish-test-app-parent</artifactId>
+    <name>FighterFish Test App Parent</name>
     <packaging>pom</packaging>
-    <name>Build aggregator for test applications </name>
+
+    <properties>
+        <maven.deploy.skip>true</maven.deploy.skip>
+        <maven.javadoc.skip>true</maven.javadoc.skip>
+        <osgi.includefile>${basedir}/osgi.properties</osgi.includefile>
+    </properties>
+
     <modules>
         <module>app0</module>
         <module>app1</module>
@@ -31,23 +41,24 @@
         <module>app3</module>
         <module>app4</module>
         <module>app5</module>
-        <module>app6.entities</module>
+        <module>app6-entities</module>
         <module>app6</module>
         <module>app7</module>
-        <module>app8.entities</module>
+        <module>app8-entities</module>
         <module>app8</module>
-        <module>app10.bean</module>
+        <module>app10-bean</module>
+        <module>app9</module>
         <module>app10</module>
         <module>app11</module>
-        <module>app11.ejb</module>
-        <module>app12.fragment</module>
+        <module>app11-ejb</module>
+        <module>app12-fragment</module>
         <module>app12</module>
         <module>app13</module>
         <module>app14</module>
         <module>app15</module>
-        <module>app16.entities</module>
-        <module>app16.msgproducer</module>
-        <module>app16.mdb</module>
+        <module>app16-entities</module>
+        <module>app16-msgproducer</module>
+        <module>app16-mdb</module>
         <module>app16</module>
         <module>app17</module>
         <module>app18</module>

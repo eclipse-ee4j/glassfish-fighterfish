@@ -16,4 +16,3 @@
 
 -exportcontents: !*
 Bundle-Activator: org.glassfish.osgijta.OSGiJTAActivator
-

@@ -13,7 +13,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  */
-
 package org.glassfish.osgi.ee.resources;
 
 import javax.naming.InitialContext;
@@ -21,23 +20,26 @@ import javax.naming.NamingException;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 
-
 /**
  * ResourceProxy that can delegate to actual objects upon usage.<br>
- * Does not cache the actual object as the actual object can be re-configured<br>
+ * Does not cache the actual object as the actual object can be
+ * re-configured<br>
  *
  * @author Jagadish Ramu
  */
 public class ResourceProxy implements InvocationHandler, Invalidate {
 
-    private String jndiName;
+    private final String jndiName;
     private boolean invalidated = false;
 
     public ResourceProxy(String jndiName) {
         this.jndiName = jndiName;
     }
 
-    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+    @Override
+    public Object invoke(Object proxy, Method method, Object[] args)
+            throws Throwable {
+
         Object result = null;
         if (method.getName().equals("invalidate")) {
             invalidate();
@@ -59,13 +61,15 @@ public class ResourceProxy implements InvocationHandler, Invalidate {
                 throw new RuntimeException(e.getMessage(), e);
             }
         } else {
-            throw new RuntimeException("Resource [" + jndiName + "] is invalidated");
+            throw new RuntimeException(
+                    "Resource [" + jndiName + "] is invalidated");
         }
     }
 
     /**
-     * Sets the state of the proxy as invalid<br>
+     * Sets the state of the proxy as invalid.
      */
+    @Override
     public void invalidate() {
         invalidated = true;
     }

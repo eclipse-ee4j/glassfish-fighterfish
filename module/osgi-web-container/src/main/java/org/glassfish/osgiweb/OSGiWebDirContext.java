@@ -13,7 +13,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  */
-
 package org.glassfish.osgiweb;
 
 import org.apache.naming.resources.WebDirContext;
@@ -23,21 +22,24 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * As per WAB spec, resources must not be allowed from OSGI-INF or OSGI-OPT dirs.
- * So, we install a special dir context that takes care of this requirement.
+ * As per WAB spec, resources must not be allowed from OSGI-INF or OSGI-OPT
+ * dirs. So, we install a special dir context that takes care of this
+ * requirement.
  *
  * @author sanjeeb.sahoo@oracle.com
  */
 class OSGiWebDirContext extends WebDirContext {
 
-    private static Logger logger = Logger.getLogger(OSGiWebDirContext.class.getPackage().getName());
+    private static final Logger LOGGER = Logger.getLogger(
+            OSGiWebDirContext.class.getPackage().getName());
 
     @Override
     protected File file(String name) {
         final String s = name.toUpperCase();
         if (s.startsWith("/OSGI-INF/") || s.startsWith("/OSGI-OPT/")) {
-            logger.logp(Level.FINE, getClass().getSimpleName(), "file",
-                    "Forbidding access to resource called {0}", new Object[]{name});
+            LOGGER.logp(Level.FINE, getClass().getSimpleName(), "file",
+                    "Forbidding access to resource called {0}",
+                    new Object[]{name});
             return null;
         } else {
             return super.file(name);

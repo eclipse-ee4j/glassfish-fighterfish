@@ -13,7 +13,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  */
-
 package org.glassfish.fighterfish.test.app1;
 
 import java.sql.Connection;
@@ -29,73 +28,62 @@ import org.osgi.framework.BundleContext;
 public class TestApp1Activator implements BundleActivator {
 
     // We should configure this using Config Admin service
-    public static final String dsName = "jdbc/__default";
-    public static final String tableName = "USERINFO";
+    public static final String DS_NAME = "jdbc/__default";
+    public static final String TABLE_NAME = "USERINFO";
 
     private DataSource ds;
 
-    public void start(BundleContext context) throws Exception
-    {
+    @Override
+    public void start(BundleContext context) throws Exception {
         InitialContext ctx = new InitialContext();
         Connection c = null;
         Statement s = null;
-        try
-        {
-            ds = (DataSource) ctx.lookup(dsName);
+        try {
+            ds = (DataSource) ctx.lookup(DS_NAME);
             c = ds.getConnection();
             s = c.createStatement();
-            String sql = "create table " + tableName +
-                    " (NAME VARCHAR(10) NOT NULL, PASSWORD VARCHAR(10) NOT NULL," +
-                    " PRIMARY KEY(NAME))";
+            String sql = "create table " + TABLE_NAME
+                    + " (NAME VARCHAR(10) NOT NULL, PASSWORD VARCHAR(10) NOT NULL,"
+                    + " PRIMARY KEY(NAME))";
             System.out.println("sql = " + sql);
             s.executeUpdate(sql);
-        }
-        catch (SQLException e)
-        {
+        } catch (SQLException e) {
             e.printStackTrace();
-        }
-        finally
-        {
-            try
-            {
-                if (c!= null) c.close();
-                if (s!=null) s.close();
-            }
-            catch (Exception e)
-            {
+        } finally {
+            try {
+                if (c != null) {
+                    c.close();
+                }
+                if (s != null) {
+                    s.close();
+                }
+            } catch (Exception e) {
             }
         }
     }
 
-    public void stop(BundleContext context) throws Exception
-    {
+    @Override
+    public void stop(BundleContext context) throws Exception {
         Connection c = null;
         Statement s = null;
-        try
-        {
+        try {
             c = ds.getConnection();
             s = c.createStatement();
-            String sql = "drop table " + tableName;
+            String sql = "drop table " + TABLE_NAME;
             System.out.println("sql = " + sql);
             s.executeUpdate(sql);
-        }
-        catch (SQLException e)
-        {
+        } catch (SQLException e) {
             e.printStackTrace();
-        }
-        finally
-        {
-            try
-            {
-                if (c!= null) c.close();
-                if (s!=null) s.close();
+        } finally {
+            try {
+                if (c != null) {
+                    c.close();
+                }
+                if (s != null) {
+                    s.close();
+                }
+            } catch (Exception e) {
             }
-            catch (Exception e)
-            {
-            }
         }
-
     }
-
-
 }

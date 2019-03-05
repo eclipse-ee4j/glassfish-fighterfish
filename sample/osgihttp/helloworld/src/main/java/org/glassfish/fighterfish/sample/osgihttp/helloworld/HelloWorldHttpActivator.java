@@ -7,7 +7,6 @@
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
-
 package org.glassfish.fighterfish.sample.osgihttp.helloworld;
 
 import org.osgi.framework.BundleActivator;
@@ -18,55 +17,60 @@ import org.osgi.service.http.NamespaceException;
 import org.osgi.util.tracker.ServiceTracker;
 
 /**
- * This activator demonstrates how to use HttpService using a ServiceTracker.
- * It demonstrates registerReosurce method of HttpService.
- * 
- * The secondary reason for having this activator is that it causes HttpService class to be loaded
- * which in turn activates osgi-http bundle of GlassFish, which uses lazy activation policy.
- *  
+ * This activator demonstrates how to use HttpService using a ServiceTracker. It
+ * demonstrates registerReosurce method of HttpService.
+ *
+ * The secondary reason for having this activator is that it causes HttpService
+ * class to be loaded which in turn activates osgi-http bundle of GlassFish,
+ * which uses lazy activation policy.
+ *
  * @author Sanjeeb.Sahoo@Oracle.com
  *
  */
 public class HelloWorldHttpActivator implements BundleActivator {
 
-	volatile ServiceTracker tracker;
-	
-	@Override
-	public void start(BundleContext context) throws Exception {
-		tracker = new ServiceTracker(context, HttpService.class.getName(), null) {
+    volatile ServiceTracker tracker;
 
-			@Override
-			public Object addingService(ServiceReference reference) {
-				HttpService http = HttpService.class.cast(context.getService(reference));
-				try {
-					// maps hello.html to helloworld.html
-					http.registerResources("/hello.html", "helloworld.html", null);
-				} catch (NamespaceException e) {
-					e.printStackTrace();
-				}
-				return super.addingService(reference);
-			}
+    @Override
+    @SuppressWarnings("unchecked")
+    public void start(BundleContext context) throws Exception {
+        tracker = new ServiceTracker(context, HttpService.class.getName(),
+                null) {
 
-			@Override
-			public void removedService(ServiceReference reference,
-					Object service) {
-				HttpService http = HttpService.class.cast(context.getService(reference));
-				try {
-					http.unregister("/hello.html");
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-				super.removedService(reference, service);
-			}
-		};
-		tracker.open();
-		System.out.println("HelloWorldHttpActivator.start()");
-	}
+            @Override
+            public Object addingService(ServiceReference reference) {
+                HttpService http = HttpService.class.cast(
+                        context.getService(reference));
+                try {
+                    // maps hello.html to helloworld.html
+                    http.registerResources("/hello.html", "helloworld.html",
+                            null);
+                } catch (NamespaceException e) {
+                    e.printStackTrace();
+                }
+                return super.addingService(reference);
+            }
 
-	@Override
-	public void stop(BundleContext context) throws Exception {
-		tracker.close();
-		tracker = null;
-	}
+            @Override
+            public void removedService(ServiceReference reference,
+                    Object service) {
+                HttpService http = HttpService.class.cast(
+                        context.getService(reference));
+                try {
+                    http.unregister("/hello.html");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                super.removedService(reference, service);
+            }
+        };
+        tracker.open();
+        System.out.println("HelloWorldHttpActivator.start()");
+    }
 
+    @Override
+    public void stop(BundleContext context) throws Exception {
+        tracker.close();
+        tracker = null;
+    }
 }

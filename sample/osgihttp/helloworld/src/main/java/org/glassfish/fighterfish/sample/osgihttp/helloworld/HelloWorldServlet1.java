@@ -7,7 +7,6 @@
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
-
 package org.glassfish.fighterfish.sample.osgihttp.helloworld;
 
 import java.io.IOException;
@@ -22,48 +21,52 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 /**
- * This servlet is very similar to {@link HelloWorldServlet2} except that it uses
- * {@link HttpServlet#getServletConfig()#getServletContext()} to retrieve the
- * ServletContext and from there it reads the attribute values to demonstrate that it does 
- * not mater how you retrieve the ServletContext, they are all functionally equivalent.
- * 
+ * This servlet is very similar to {@link HelloWorldServlet2} except that it
+ * uses {@link HttpServlet#getServletConfig()#getServletContext()} to retrieve
+ * the ServletContext and from there it reads the attribute values to
+ * demonstrate that it does not mater how you retrieve the ServletContext, they
+ * are all functionally equivalent.
+ *
  * @author sanjeeb.sahoo@oracle.com
  *
  */
 public class HelloWorldServlet1 extends HttpServlet {
 
-	final static String AttrName = "count";
+    final static String AttrName = "count";
 
-	public void init(ServletConfig sc) throws ServletException {
-		System.out.println(this + ".init(" + sc + ")");
-		super.init(sc);
-	}
+    @Override
+    public void init(ServletConfig sc) throws ServletException {
+        System.out.println(this + ".init(" + sc + ")");
+        super.init(sc);
+    }
 
-	public void destroy() {
-		System.out.println(this + ".destroy()");
-	}
+    @Override
+    public void destroy() {
+        System.out.println(this + ".destroy()");
+    }
 
-	protected void service(HttpServletRequest req, HttpServletResponse resp)
-			throws ServletException, IOException {
-		resp.setContentType("text/html");
-		PrintWriter writer = resp.getWriter();
-		writer.write("<html><body><p>Hello World -- sample servlet #1: </p>");
-		ServletContext sc = getServletConfig().getServletContext();
-		Integer count = (Integer) sc.getAttribute(AttrName);
-		writer.write("<p>servlet context counter = " + count + "</p>");
-		if (count == null) {
-			count = 0;
-		}
-		sc.setAttribute(AttrName, new Integer(++count));
+    @Override
+    protected void service(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
+        resp.setContentType("text/html");
+        PrintWriter writer = resp.getWriter();
+        writer.write("<html><body><p>Hello World -- sample servlet #1: </p>");
+        ServletContext sc = getServletConfig().getServletContext();
+        Integer count = (Integer) sc.getAttribute(AttrName);
+        writer.write("<p>servlet context counter = " + count + "</p>");
+        if (count == null) {
+            count = 0;
+        }
+        sc.setAttribute(AttrName, new Integer(++count));
 
-		HttpSession session = req.getSession(true);
-		Integer sessionCount = (Integer)session.getAttribute(AttrName);
-		writer.write("<p>http session counter = " + sessionCount + "</p>");
-		if (sessionCount == null) {
-			sessionCount = 0;
-		}
-		session.setAttribute(AttrName, new Integer(++sessionCount));
-		writer.print("</body></html>");
-	}
+        HttpSession session = req.getSession(true);
+        Integer sessionCount = (Integer) session.getAttribute(AttrName);
+        writer.write("<p>http session counter = " + sessionCount + "</p>");
+        if (sessionCount == null) {
+            sessionCount = 0;
+        }
+        session.setAttribute(AttrName, new Integer(++sessionCount));
+        writer.print("</body></html>");
+    }
 
 }

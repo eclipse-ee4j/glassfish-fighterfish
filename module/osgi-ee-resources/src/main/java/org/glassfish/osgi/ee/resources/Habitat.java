@@ -13,19 +13,19 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  */
-
 package org.glassfish.osgi.ee.resources;
 
 import org.glassfish.embeddable.GlassFish;
 import org.glassfish.embeddable.GlassFishException;
 
 /**
- * Adapter for old Habitat's getComponent method
- * We keep the class name same to reduce the no of lines that we have to change.
+ * Adapter for old Habitat's getComponent method We keep the class name same to
+ * reduce the no of lines that we have to change.
  *
  * @author sanjeeb.sahoo@oracle.com
  */
-/*package*/ class Habitat {
+public class Habitat {
+
     private final GlassFish gf;
 
     Habitat(GlassFish gf) {
@@ -36,7 +36,8 @@ import org.glassfish.embeddable.GlassFishException;
         try {
             return gf.getService(type);
         } catch (GlassFishException e) {
-            throw new RuntimeException(e); // TODO(Sahoo): Proper Exception Handling
+            // TODO(Sahoo): Proper Exception Handling
+            throw new RuntimeException(e);
         }
     }
 }

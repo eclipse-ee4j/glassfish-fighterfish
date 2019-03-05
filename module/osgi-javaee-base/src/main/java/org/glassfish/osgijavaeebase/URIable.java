@@ -13,7 +13,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  */
-
 package org.glassfish.osgijavaeebase;
 
 import java.net.URI;
@@ -22,6 +21,7 @@ import java.net.URI;
  * @author Sanjeeb.Sahoo@Sun.COM
  */
 public interface URIable {
+
     /**
      * @param name the entry name relative to the root of the archive
      * @return the URI corresponding to the entry, null if no such entry found
@@ -29,7 +29,9 @@ public interface URIable {
     URI getEntryURI(String name);
 
     /**
-     * When this archive is embedded in another archive, this method returns the distance from top.
+     * When this archive is embedded in another archive, this method returns the
+     * distance from top.
+     *
      * @return
      */
     String getDistanceFromTop();

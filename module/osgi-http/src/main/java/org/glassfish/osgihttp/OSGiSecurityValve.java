@@ -35,18 +35,24 @@ import java.security.Principal;
  * @author Sanjeeb.Sahoo@Sun.COM
  */
 public class OSGiSecurityValve extends ValveBase {
-    private HttpContext httpContext;
+
+    private final HttpContext httpContext;
 
     public OSGiSecurityValve(HttpContext httpContext) {
         this.httpContext = httpContext;
     }
 
-    public int invoke(Request request, Response response) throws IOException, ServletException {
+    @Override
+    public int invoke(Request request, Response response)
+            throws IOException, ServletException {
+
         if (httpContext.handleSecurity(HttpServletRequest.class.cast(request),
                 HttpServletResponse.class.cast(response))) {
 
-            // Issue #13283: If user has set username and auth type, we need to map it to appropriate catalina apis
-            // so that HttpServletRequest.getRemoteUser() and getAuthenticationType() will return appropriate values.
+            // Issue #13283: If user has set username and auth type, we need to
+            // map it to appropriate catalina apis
+            // so that HttpServletRequest.getRemoteUser() and
+            // getAuthenticationType() will return appropriate values.
             mapUser((HttpRequest) request);
             mapAuthType((HttpRequest) request);
 
@@ -56,18 +62,19 @@ public class OSGiSecurityValve extends ValveBase {
 //                    HttpServletResponse.SC_FORBIDDEN);
             return END_PIPELINE;
         }
-
     }
 
     private void mapAuthType(HttpRequest httpRequest) {
-        String authType = (String) httpRequest.getRequest().getAttribute(HttpContext.AUTHENTICATION_TYPE);
+        String authType = (String) httpRequest.getRequest()
+                .getAttribute(HttpContext.AUTHENTICATION_TYPE);
         if (authType != null) {
             httpRequest.setAuthType(authType);
         }
     }
 
     private void mapUser(HttpRequest httpRequest) {
-        String userName = (String) httpRequest.getRequest().getAttribute(HttpContext.REMOTE_USER);
+        String userName = (String) httpRequest.getRequest()
+                .getAttribute(HttpContext.REMOTE_USER);
         if (userName != null) {
             Principal principal = new PrincipalImpl(userName);
             httpRequest.setUserPrincipal(principal);

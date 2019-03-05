@@ -61,9 +61,9 @@ public class Activator implements BundleActivator {
     }
 
     private void startGlassFishBundle(BundleContext context) throws BundleException {
-        Bundle bundle = context.installBundle(new File(dest, "glassfish3/glassfish/modules/glassfish.jar").toURI().toString());
-        System.setProperty("com.sun.aas.installRoot", new File(dest, "glassfish3/glassfish/").getAbsolutePath());
-        System.setProperty("com.sun.aas.instanceRoot", new File(dest, "glassfish3/glassfish/domains/domain1/").getAbsolutePath());
+        Bundle bundle = context.installBundle(new File(dest, "glassfish5/glassfish/modules/glassfish.jar").toURI().toString());
+        System.setProperty("com.sun.aas.installRoot", new File(dest, "glassfish5/glassfish/").getAbsolutePath());
+        System.setProperty("com.sun.aas.instanceRoot", new File(dest, "glassfish5/glassfish/domains/domain1/").getAbsolutePath());
         bundle.start(Bundle.START_TRANSIENT);
     }
 

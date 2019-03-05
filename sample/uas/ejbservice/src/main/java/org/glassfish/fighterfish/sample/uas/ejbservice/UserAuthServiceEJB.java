@@ -7,7 +7,6 @@
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
-
 package org.glassfish.fighterfish.sample.uas.ejbservice;
 
 import org.glassfish.fighterfish.sample.uas.api.UserAuthService;
@@ -21,7 +20,7 @@ import javax.persistence.PersistenceContext;
 import java.util.List;
 
 /**
- * Session Bean implementation class UserAuthServiceEJB
+ * Session Bean implementation class UserAuthServiceEJB.
  */
 @Stateless
 @Local({UserAuthService.class})
@@ -34,7 +33,6 @@ public class UserAuthServiceEJB implements UserAuthService {
      * Default constructor.
      */
     public UserAuthServiceEJB() {
-        // TODO Auto-generated constructor stub
     }
 
     @Override
@@ -47,7 +45,8 @@ public class UserAuthServiceEJB implements UserAuthService {
             LoginAttempt attempt = new LoginAttempt();
             attempt.setSuccessful(result);
             attempt.setUserCredential(uc);
-            // set both sides of relationships because stupid JPA providers don't even update their second level cache
+            // set both sides of relationships because stupid JPA providers
+            // don't even update their second level cache
             // with relationships in database.
             uc.getLoginAttempts().add(attempt);
             em.persist(attempt);
@@ -59,7 +58,9 @@ public class UserAuthServiceEJB implements UserAuthService {
     public boolean register(String name, String password) {
         log("Registering (" + name + ", " + password + ")");
         UserCredential uc = em.find(UserCredential.class, name);
-        if (uc != null) return false;
+        if (uc != null) {
+            return false;
+        }
         uc = new UserCredential();
         uc.setName(name);
         uc.setPassword(password);
@@ -71,14 +72,19 @@ public class UserAuthServiceEJB implements UserAuthService {
     public boolean unregister(String name) {
         log("Unregistering (" + name + ")");
         UserCredential uc = em.find(UserCredential.class, name);
-        if (uc == null) return false;
+        if (uc == null) {
+            return false;
+        }
         em.remove(uc);
         return true;
     }
 
     @Override
     public String getReport() {
-        List<LoginAttempt> attempts = em.createNamedQuery("LoginAttempt.findAll").getResultList();
+        @SuppressWarnings("unchecked")
+        List<LoginAttempt> attempts = em
+                .createNamedQuery("LoginAttempt.findAll")
+                .getResultList();
         log("Number of entries found: " + attempts.size());
         StringBuilder report = new StringBuilder("Login Attempt Report:\n");
         for (LoginAttempt attempt : attempts) {

@@ -13,7 +13,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  */
-
 package org.glassfish.osgijpa.extension;
 
 import org.osgi.framework.BundleActivator;
@@ -25,35 +24,43 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * This activator is responsible for setting persistence provider resolver that enables discovery of providers
- * even if thread's context class loader is not properly set.
+ * This activator is responsible for setting persistence provider resolver that
+ * enables discovery of providers even if thread's context class loader is not
+ * properly set.
  *
  * @author Sanjeeb.Sahoo@Sun.COM
  */
 public class OSGiJPAExtnBundleActivator implements BundleActivator {
 
-    private Logger logger = Logger.getLogger(getClass().getPackage().getName());
+    private static final Logger LOGGER = Logger.getLogger(
+            OSGiJPAExtnBundleActivator.class.getPackage().getName());
 
-    private static final String USE_OSGI_PROVIDER_RESOLVER =
-            "org.glassfish.osgjpa.extension.useHybridPersistenceProviderResolver";
-    private static final String OSGI_PROVIDER_RESOLVER_CACHING_ENABLED =
-            "org.glassfish.osgjpa.extension.hybridPersistenceProviderResolver.cachingEnabled";
+    private static final String USE_OSGI_PROVIDER_RESOLVER
+            = "org.glassfish.osgjpa.extension.useHybridPersistenceProviderResolver";
+    private static final String OSGI_PROVIDER_RESOLVER_CACHING_ENABLED
+            = "org.glassfish.osgjpa.extension.hybridPersistenceProviderResolver.cachingEnabled";
 
+    @Override
     public void start(BundleContext context) throws Exception {
-        boolean useOSGiProviderResolver = Boolean.parseBoolean(context.getProperty(USE_OSGI_PROVIDER_RESOLVER));
+        boolean useOSGiProviderResolver = Boolean.parseBoolean(context
+                .getProperty(USE_OSGI_PROVIDER_RESOLVER));
         if (useOSGiProviderResolver) {
-            boolean cachingEnabled = Boolean.parseBoolean(context.getProperty(OSGI_PROVIDER_RESOLVER_CACHING_ENABLED));
-            final javax.persistence.spi.PersistenceProviderResolver oldResolver =
-                    PersistenceProviderResolverHolder.getPersistenceProviderResolver();
-            final PersistenceProviderResolver newResolver = new HybridPersistenceProviderResolver(cachingEnabled);
+            boolean cachingEnabled = Boolean.parseBoolean(context
+                    .getProperty(OSGI_PROVIDER_RESOLVER_CACHING_ENABLED));
+            final PersistenceProviderResolver oldResolver
+                    = PersistenceProviderResolverHolder
+                            .getPersistenceProviderResolver();
+            final PersistenceProviderResolver newResolver
+                    = new HybridPersistenceProviderResolver(cachingEnabled);
             PersistenceProviderResolverHolder.setPersistenceProviderResolver(
                     newResolver);
-            logger.logp(Level.FINE, "OSGiJPAExtnBundleActivator", "start", "Old resolver = {0}, New Reoslver = {1} ",
+            LOGGER.logp(Level.FINE, "OSGiJPAExtnBundleActivator", "start",
+                    "Old resolver = {0}, New Reoslver = {1} ",
                     new Object[]{oldResolver, newResolver});
-
         }
     }
 
+    @Override
     public void stop(BundleContext context) throws Exception {
         PersistenceProviderResolverHolder.setPersistenceProviderResolver(null);
     }

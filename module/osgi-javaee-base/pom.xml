@@ -21,61 +21,43 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.glassfish.fighterfish</groupId>
-        <artifactId>module-parent-pom</artifactId>
-        <version>1.0.7-SNAPSHOT</version>
-        <relativePath>../parent-pom/pom.xml</relativePath>
+        <artifactId>fighterfish-module-parent</artifactId>
+        <version>3.0.0-SNAPSHOT</version>
     </parent>
     <artifactId>osgi-javaee-base</artifactId>
-    <version>1.0.9-SNAPSHOT</version>
-    <packaging>jar</packaging>
-    <name>Base module for providing support for OSGi in Java EE applications</name>
-    
-    <scm>
-        <connection>scm:git:https://github.com/eclipse-ee4j/glassfish-fighterfish.git</connection>
-        <developerConnection>scm:git:git@github.com:eclipse-ee4j/glassfish-fighterfish.git</developerConnection>
-        <url>https://github.com/eclipse-ee4j/glassfish-fighterfish/tree/master/module/osgi-javaee-base</url>
-    </scm>
+    <name>FighterFish OSGi JavaEE Base Module</name>
 
-    <developers>
-        <developer>
-            <id>ss141213</id>
-            <name>Sahoo</name>
-            <organization>Oracle, Inc.</organization>
-            <roles>
-                <role>developer</role>
-            </roles>
-        </developer>
-    </developers>
-    
     <dependencies>
         <dependency>
             <groupId>org.glassfish.main.common</groupId>
             <artifactId>simple-glassfish-api</artifactId>
-            <version>${glassfish.version}</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.main.common</groupId>
             <artifactId>glassfish-api</artifactId>
-            <version>${glassfish.version}</version>
-        </dependency>        
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.main.core</groupId>
+            <artifactId>kernel</artifactId>
+            <version>5.1.0</version>
+        </dependency>
         <dependency>
             <groupId>org.glassfish.main.common</groupId>
             <artifactId>internal-api</artifactId>
-            <version>${glassfish.version}</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.main.deployment</groupId>
             <artifactId>deployment-common</artifactId>
-            <version>${glassfish.version}</version>
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.core</artifactId>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.compendium</artifactId>
+            <artifactId>org.osgi.enterprise</artifactId>
+            <scope>provided</scope>
         </dependency>
-
     </dependencies>
 </project>

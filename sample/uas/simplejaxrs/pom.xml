@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (c) 2012, 2018 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Distribution License v. 1.0, which is available at
@@ -10,34 +10,49 @@
     SPDX-License-Identifier: BSD-3-Clause
 
 -->
-
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-    <parent>
-	<artifactId>sample.parent-pom</artifactId>
-	<groupId>org.glassfish.fighterfish</groupId>
-	<version>1.0.3</version>
-    </parent>
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>sample.uas.simplejaxrs</artifactId>
+    <parent>
+        <groupId>org.glassfish.fighterfish</groupId>
+        <artifactId>fighterfish-sample-uas-parent</artifactId>
+        <version>3.0.0-SNAPSHOT</version>
+    </parent>
+    <artifactId>fighterfish-sample-uas-simplejaxrs</artifactId>
     <packaging>war</packaging>
-    <version>1.0.2-SNAPSHOT</version>
-    <name>sample.uas.simplejaxrs Jersey Webapp</name>
-    <scm>
-        <connection>scm:git:https://github.com/eclipse-ee4j/glassfish-fighterfish/sample/uas/simplejaxrs</connection>
-        <developerConnection>scm:git:https://github.com/eclipse-ee4j/glassfish-fighterfish/sample/uas/simplejaxrs
-        </developerConnection>
-        <url>https://github.com/eclipse-ee4j/glassfish-fighterfish/sample/uas/simplejaxrs</url>
-    </scm>
+    <name>FighterFish Sample UAS Simple JAXRS Webapp</name>
 
     <dependencies>
         <dependency>
-  	    <groupId>org.glassfish.fighterfish</groupId>
-  	    <artifactId>sample.uas.api</artifactId>
-  	    <version>1.0.0</version>
-  	    <type>jar</type>
+            <groupId>org.glassfish.fighterfish</groupId>
+            <artifactId>fighterfish-sample-uas-api</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.fighterfish</groupId>
+            <artifactId>osgi-cdi</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>javax.enterprise</groupId>
+            <artifactId>cdi-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>javax.ws.rs</groupId>
+            <artifactId>javax.ws.rs-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.core</artifactId>
             <scope>provided</scope>
         </dependency>
     </dependencies>
-    <repositories>
-    </repositories>
 </project>

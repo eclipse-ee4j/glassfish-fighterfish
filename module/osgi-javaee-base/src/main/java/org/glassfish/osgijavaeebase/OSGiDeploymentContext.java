@@ -13,7 +13,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  */
-
 package org.glassfish.osgijavaeebase;
 
 import org.glassfish.api.ActionReport;
@@ -23,7 +22,6 @@ import org.glassfish.api.deployment.archive.ArchiveHandler;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.deployment.common.DeploymentContextImpl;
 import org.glassfish.internal.api.ClassLoaderHierarchy;
-import org.glassfish.osgijavaeebase.OSGiArchiveHandler;
 import org.osgi.framework.Bundle;
 
 import java.net.MalformedURLException;
@@ -33,21 +31,18 @@ import java.util.logging.Logger;
 /**
  * @author Sanjeeb.Sahoo@Sun.COM
  */
-public abstract class OSGiDeploymentContext extends DeploymentContextImpl
-{
-    private static final Logger logger =
-            Logger.getLogger(OSGiDeploymentContext.class.getPackage().getName());
+public abstract class OSGiDeploymentContext extends DeploymentContextImpl {
 
     protected ClassLoader shareableTempClassLoader;
     protected ClassLoader finalClassLoader;
     protected Bundle bundle;
+
     public OSGiDeploymentContext(ActionReport actionReport,
-                                     Logger logger,
-                                     ReadableArchive source,
-                                     OpsParams params,
-                                     ServerEnvironment env,
-                                     Bundle bundle) throws Exception
-    {
+            Logger logger,
+            ReadableArchive source,
+            OpsParams params,
+            ServerEnvironment env,
+            Bundle bundle) throws Exception {
         super(actionReport, logger, source, params, env);
         this.bundle = bundle;
         setupClassLoader();
@@ -61,24 +56,20 @@ public abstract class OSGiDeploymentContext extends DeploymentContextImpl
 
     @Override
     public void createDeploymentClassLoader(ClassLoaderHierarchy clh,
-                                   ArchiveHandler handler)
-            throws URISyntaxException, MalformedURLException
-    {
+            ArchiveHandler handler)
+            throws URISyntaxException, MalformedURLException {
         // do nothing as we override getClassLoader methods.
     }
 
     @Override
     public void createApplicationClassLoader(ClassLoaderHierarchy clh,
-                                   ArchiveHandler handler)
-            throws URISyntaxException, MalformedURLException
-    {
+            ArchiveHandler handler)
+            throws URISyntaxException, MalformedURLException {
         // do nothing as we override getClassLoader methods.
     }
 
-
     @Override
-    public ClassLoader getClassLoader()
-    {
+    public ClassLoader getClassLoader() {
         if (getPhase() != Phase.PREPARE) {
             // we return the final class loader
             return finalClassLoader;
@@ -87,16 +78,13 @@ public abstract class OSGiDeploymentContext extends DeploymentContextImpl
     }
 
     @Override
-    public ClassLoader getFinalClassLoader()
-    {
+    public ClassLoader getFinalClassLoader() {
         return finalClassLoader;
     }
 
     @Override
-    public synchronized ClassLoader getClassLoader(boolean sharable)
-    {
-        throw new RuntimeException("Assertion Failure: " +
-                "This method should not be called");
+    public synchronized ClassLoader getClassLoader(boolean sharable) {
+        throw new RuntimeException("Assertion Failure: "
+                + "This method should not be called");
     }
-
 }

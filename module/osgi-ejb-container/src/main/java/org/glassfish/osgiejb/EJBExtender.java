@@ -13,13 +13,10 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  */
-
 package org.glassfish.osgiejb;
 
 import org.glassfish.osgijavaeebase.Extender;
 import org.osgi.framework.BundleContext;
-
-import java.util.logging.Logger;
 
 /**
  * An extender that registers a deployer capable of deploying/undeploying
@@ -28,25 +25,25 @@ import java.util.logging.Logger;
  * @author Sanjeeb.Sahoo@Sun.COM
  */
 public class EJBExtender implements Extender {
-    private static final Logger logger =
-            Logger.getLogger(EJBExtender.class.getPackage().getName());
-    private BundleContext context;
+
+    private final BundleContext context;
     private OSGiEJBDeployer deployer;
 
     public EJBExtender(BundleContext context) {
         this.context = context;
     }
 
+    @Override
     public synchronized void start() {
         deployer = new OSGiEJBDeployer(context);
         deployer.register();
     }
 
+    @Override
     public synchronized void stop() {
         if (deployer != null) {
             deployer.unregister();
             deployer = null;
         }
     }
-
 }

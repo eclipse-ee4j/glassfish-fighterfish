@@ -26,7 +26,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * Servlet implementation class RegistrationServlet
+ * Servlet implementation class RegistrationServlet.
  */
 @WebServlet("/RegistrationServlet")
 public class RegistrationServlet extends HttpServlet {
@@ -35,6 +35,7 @@ public class RegistrationServlet extends HttpServlet {
     @EJB
     UserAuthServiceEJB userAuthService;
 
+    @Override
     public void service(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, java.io.IOException {
         resp.setContentType("text/html");
@@ -56,6 +57,5 @@ public class RegistrationServlet extends HttpServlet {
             e.printStackTrace();
         }
         out.println("</BODY> </HTML> ");
-
     }
 }

@@ -14,6 +14,5 @@
 # SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
 #
 
-# Yes, we are currently at 1.0 version of the package
--exportcontents: org.glassfish.osgicdi; version=1.0
+-exportcontents: org.glassfish.osgicdi
 Import-Package: javax.inject; version="[1.0, 2.0)", org.osgi.framework

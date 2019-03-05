@@ -13,7 +13,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  */
-
 package org.glassfish.osgijavaeebase;
 
 import org.glassfish.internal.data.ApplicationInfo;
@@ -22,16 +21,19 @@ import org.osgi.framework.ServiceReference;
 
 /**
  * @author Sanjeeb.Sahoo@Sun.COM
-*/
-public class OSGiApplicationInfo
-{
+ */
+public class OSGiApplicationInfo {
+
     private ApplicationInfo appInfo;
     private boolean isDirectoryDeployment;
     private Bundle bundle;
     private final ClassLoader classLoader;
     private ServiceReference osgiDeployerRef;
 
-    public OSGiApplicationInfo(ApplicationInfo appInfo, boolean directoryDeployment, Bundle bundle, ClassLoader classLoader) {
+    public OSGiApplicationInfo(ApplicationInfo appInfo,
+            boolean directoryDeployment, Bundle bundle,
+            ClassLoader classLoader) {
+
         this.appInfo = appInfo;
         isDirectoryDeployment = directoryDeployment;
         this.bundle = bundle;

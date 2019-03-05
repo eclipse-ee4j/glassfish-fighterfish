@@ -10,43 +10,25 @@
     SPDX-License-Identifier: BSD-3-Clause
 
 -->
-
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <artifactId>sample.parent-pom</artifactId>
-    <groupId>org.glassfish.fighterfish</groupId>
-    <version>1.0.1</version>
-  </parent>
-  <groupId>org.glassfish.fighterfish</groupId>
-  <artifactId>sample.uas.entities</artifactId>
-  <name>JPA entities for User Authentication Service</name>
-  <version>1.0.1-SNAPSHOT</version>
-  <scm>
-    <connection>scm:git:https://github.com/eclipse-ee4j/glassfish-fighterfish/sample/uas/entities</connection>
-    <developerConnection>scm:git:https://github.com/eclipse-ee4j/glassfish-fighterfish/sample/uas/entities
-    </developerConnection>
-    <url>https://github.com/eclipse-ee4j/glassfish-fighterfish/sample/uas/entities</url>
-  </scm>
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.glassfish.fighterfish</groupId>
+        <artifactId>fighterfish-sample-uas-parent</artifactId>
+        <version>3.0.0-SNAPSHOT</version>
+    </parent>
+    <artifactId>fighterfish-sample-uas-entities</artifactId>
+    <name>FighterFish Sample UAS Entities</name>
 
-  <build>
-  <resources>
-  			<resource>
-  			    <!--  Work around for Eclipse Utility Project with JPA facet. It creates
-  			          META-INF/persistence.xml in root dir instead of src/main/resources/ -->
-				<directory>${basedir}</directory>
-				<excludes>
-					<exclude>*</exclude>
-				</excludes>
-				<includes>
-					<include>META-INF/persistence.xml</include>
-				</includes>
-			</resource>
-			<resource>
-			<directory>src/main/resources/</directory>
-			</resource>
-  </resources>
-  </build>
-  
-
+    <dependencies>
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.core</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>javax.persistence</artifactId>
+        </dependency>
+    </dependencies>
 </project>

@@ -16,4 +16,5 @@
 
 -exportcontents: org.osgi.service.jdbc;version="1"
 Bundle-Activator: org.glassfish.osgijdbc.JDBCActivator
-
+Export-Package: org.osgi.service.jdbc
+Private-Package: org.glassfish.osgijdbc.*

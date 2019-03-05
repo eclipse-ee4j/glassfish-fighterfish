@@ -33,29 +33,31 @@ import java.util.logging.Logger;
 
 public class JDBCExtender implements Extender {
 
-    private BundleContext bundleContext;
-
-    private ServiceRegistration urlHandlerService;
-
-    private Set<DataSourceFactoryImpl> dataSourceFactories = new HashSet<DataSourceFactoryImpl>();
-
-    private BundleTracker bundleTracker;
-
-    private static final Logger logger = Logger.getLogger(
+    private static final Logger LOGGER = Logger.getLogger(
             JDBCExtender.class.getPackage().getName());
+
+    private final BundleContext bundleContext;
+    private ServiceRegistration urlHandlerService;
+    private final Set<DataSourceFactoryImpl> dataSourceFactories =
+            new HashSet<DataSourceFactoryImpl>();
+    private BundleTracker bundleTracker;
 
     public JDBCExtender(BundleContext context) {
         this.bundleContext = context;
     }
 
+    @Override
+    @SuppressWarnings("unchecked")
     public void start() {
         debug("begin start()");
-        bundleTracker = new BundleTracker(bundleContext, Bundle.ACTIVE, new JDBCBundleTrackerCustomizer());
+        bundleTracker = new BundleTracker(bundleContext, Bundle.ACTIVE,
+                new JDBCBundleTrackerCustomizer());
         bundleTracker.open();
         addURLHandler();
         debug("completed start()");
     }
 
+    @Override
     public void stop() {
         removeURLHandler();
         if (bundleTracker != null) {
@@ -68,23 +70,27 @@ public class JDBCExtender implements Extender {
     }
 
     private <T> T getService(Class<T> type){
-        GlassFish gf = (GlassFish) bundleContext.getService(bundleContext.getServiceReference(GlassFish.class.getName()));
+        GlassFish gf = (GlassFish) bundleContext.getService(bundleContext
+                .getServiceReference(GlassFish.class.getName()));
         try {
             return gf.getService(type);
         } catch (GlassFishException e) {
-            throw new RuntimeException(e); // TODO(Sahoo): Proper Exception Handling
+            // TODO(Sahoo): Proper Exception Handling
+            throw new RuntimeException(e);
         }
     }
 
+    @SuppressWarnings("unchecked")
     private void addURLHandler() {
-
         //create parent class-loader (API ClassLoader to access Java EE API)
         ClassLoaderHierarchy clh = getService(ClassLoaderHierarchy.class);
         ClassLoader apiClassLoader = clh.getAPIClassLoader();
 
-        Properties p = new Properties();
-        p.put(URLConstants.URL_HANDLER_PROTOCOL, new String[]{Constants.JDBC_DRIVER_SCHEME});
-        urlHandlerService = bundleContext.registerService(URLStreamHandlerService.class.getName(),
+        Dictionary p = new Properties();
+        p.put(URLConstants.URL_HANDLER_PROTOCOL, new String[]{Constants
+                .JDBC_DRIVER_SCHEME});
+        urlHandlerService = bundleContext.registerService(
+                URLStreamHandlerService.class.getName(),
                 new JDBCDriverURLStreamHandlerService(apiClassLoader), p);
     }
 
@@ -96,7 +102,8 @@ public class JDBCExtender implements Extender {
     }
 
     private boolean isJdbcDriverBundle(Bundle b) {
-        String osgiRFC = (String) b.getHeaders().get(Constants.OSGI_RFC_122);
+        String osgiRFC = (String) b.getHeaders()
+                .get(Constants.OSGI_RFC_122);
         if (osgiRFC != null && Boolean.valueOf(osgiRFC)) {
             return true;
         } else {
@@ -105,45 +112,62 @@ public class JDBCExtender implements Extender {
     }
 
     private void debug(String s) {
-        if(logger.isLoggable(Level.FINEST)){
-            logger.finest("[osgi-jdbc] : " + s);
+        if(LOGGER.isLoggable(Level.FINEST)){
+            LOGGER.log(Level.FINEST, "[osgi-jdbc] : {0}", s);
         }
     }
 
-    private class JDBCBundleTrackerCustomizer implements BundleTrackerCustomizer {
+    private class JDBCBundleTrackerCustomizer implements
+            BundleTrackerCustomizer {
+
+        @Override
+        @SuppressWarnings("unchecked")
         public Object addingBundle(Bundle bundle, BundleEvent event) {
             if (isJdbcDriverBundle(bundle)) {
                 debug("Starting JDBC Bundle : " + bundle.getSymbolicName());
 
-                DataSourceFactoryImpl dsfi = new DataSourceFactoryImpl(bundle.getBundleContext());
+                DataSourceFactoryImpl dsfi = new DataSourceFactoryImpl(
+                        bundle.getBundleContext());
                 dataSourceFactories.add(dsfi);
 
-                Properties serviceProperties = new Properties();
+                Dictionary serviceProperties = new Properties();
                 Dictionary header = bundle.getHeaders();
-                serviceProperties.put(DataSourceFactory.OSGI_JDBC_DRIVER_CLASS,
+                serviceProperties.put(
+                        DataSourceFactory.OSGI_JDBC_DRIVER_CLASS,
                         header.get(Constants.DRIVER.replace(".", "_")));
 
-                String implVersion = (String) header.get(Constants.IMPL_VERSION);
+                String implVersion = (String) header
+                        .get(Constants.IMPL_VERSION);
                 if (implVersion != null) {
-                    serviceProperties.put(DataSourceFactory.OSGI_JDBC_DRIVER_VERSION, implVersion);
+                    serviceProperties.put(
+                            DataSourceFactory.OSGI_JDBC_DRIVER_VERSION,
+                            implVersion);
                 }
 
                 String implTitle = (String) header.get(Constants.IMPL_TITLE);
                 if (implTitle != null) {
-                    serviceProperties.put(DataSourceFactory.OSGI_JDBC_DRIVER_NAME, implTitle);
+                    serviceProperties.put(
+                            DataSourceFactory.OSGI_JDBC_DRIVER_NAME,
+                            implTitle);
                 }
                 debug(" registering service for driver [" +
                         header.get(Constants.DRIVER.replace(".", "_")) + "]");
-                bundle.getBundleContext().registerService(DataSourceFactory.class.getName(),
+                bundle.getBundleContext()
+                        .registerService(DataSourceFactory.class.getName(),
                         dsfi, serviceProperties);
             }
-            return null; // no need to track this any more
+            // no need to track this any more
+            return null;
         }
 
-        public void modifiedBundle(Bundle bundle, BundleEvent event, Object object) {
+        @Override
+        public void modifiedBundle(Bundle bundle, BundleEvent event,
+                Object object) {
         }
 
-        public void removedBundle(Bundle bundle, BundleEvent event, Object object) {
+        @Override
+        public void removedBundle(Bundle bundle, BundleEvent event,
+                Object object) {
         }
     }
 }

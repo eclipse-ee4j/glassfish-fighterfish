@@ -7,9 +7,7 @@
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
-
 package org.glassfish.fighterfish.sample.uas.simpleservice;
-
 
 import org.glassfish.fighterfish.sample.uas.api.UserAuthService;
 import org.osgi.framework.BundleActivator;
@@ -17,19 +15,19 @@ import org.osgi.framework.BundleContext;
 
 public class SimpleActivator implements BundleActivator {
 
-	@Override
-	public void start(BundleContext context) throws Exception {
-		context.registerService(UserAuthService.class.getName(), new UserAuthServiceImpl(), null);
-		log("Registered service");
-	}
+    @Override
+    public void start(BundleContext context) throws Exception {
+        context.registerService(UserAuthService.class.getName(), new UserAuthServiceImpl(), null);
+        log("Registered service");
+    }
 
-	@Override
-	public void stop(BundleContext context) throws Exception {
-		// No need to unregister, as the service gets unregistered automatically when bundle stops.
-	}
-	
-	static void log(String string) {
-		System.out.println("UserAuthService: " + string);
-	}
+    @Override
+    public void stop(BundleContext context) throws Exception {
+        // No need to unregister, as the service gets unregistered automatically when bundle stops.
+    }
+
+    static void log(String string) {
+        System.out.println("UserAuthService: " + string);
+    }
 
 }

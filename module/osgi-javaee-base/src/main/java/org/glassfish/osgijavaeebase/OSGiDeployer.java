@@ -13,13 +13,8 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  */
-
 package org.glassfish.osgijavaeebase;
 
-import com.sun.enterprise.deploy.shared.ArchiveFactory;
-import org.glassfish.api.ActionReport;
-import org.glassfish.internal.deployment.Deployment;
-import org.glassfish.server.ServerEnvironmentImpl;
 import org.osgi.framework.Bundle;
 
 /**

@@ -13,7 +13,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  */
-
 package org.glassfish.fighterfish.test.util;
 
 import org.junit.Assert;
@@ -28,26 +27,31 @@ import javax.inject.Inject;
  */
 @RunWith(FighterFishJUnitRunner.class)
 public class T2_FFRunnerIT {
+
     @Inject
     private BundleContext ctx;
-	@Test
-	public void test() throws Exception {
+
+    @Test
+    public void test() throws Exception {
         Assert.assertNotNull(ctx);
-		TestContext tc = TestContext.create(getClass());
-		try {
+        TestContext tc = TestContext.create(getClass());
+        try {
             Assert.assertSame(tc.getBundleContext(), ctx);
-            System.out.println("tc.getBundleContext() = " + tc.getBundleContext());
-			System.out.println(tc.getGlassFish());
-		} finally {
-			tc.destroy();
-		}
-	}
+            System.out.println("tc.getBundleContext() = "
+                    + tc.getBundleContext());
+            System.out.println(tc.getGlassFish());
+        } finally {
+            tc.destroy();
+        }
+    }
+
     @Test
     public void test2() throws Exception {
         TestContext tc = TestContext.create(getClass());
         try {
             Assert.assertSame(tc.getBundleContext(), ctx);
-            System.out.println("tc.getBundleContext() = " + tc.getBundleContext());
+            System.out.println("tc.getBundleContext() = "
+                    + tc.getBundleContext());
             System.out.println(tc.getGlassFish());
         } finally {
             tc.destroy();

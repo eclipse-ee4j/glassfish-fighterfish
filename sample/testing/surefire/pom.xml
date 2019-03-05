@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (c) 2012, 2018 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Distribution License v. 1.0, which is available at
@@ -10,136 +10,93 @@
     SPDX-License-Identifier: BSD-3-Clause
 
 -->
-
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>org.glassfish.fighterfish</groupId>
-    <artifactId>sample.testing.surefire</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
-    <name>Sample to show use of PAX-EXAM/Maven Surefire plugin/JUnit in GlassFish to test enterprise Java applications</name>
-    <scm>
-        <connection>scm:git:https://github.com/eclipse-ee4j/glassfish-fighterfish/sample/testing/surefire</connection>
-        <developerConnection>scm:git:https://github.com/eclipse-ee4j/glassfish-fighterfish/sample/testing/surefire
-        </developerConnection>
-        <url>https://github.com/eclipse-ee4j/glassfish-fighterfish/sample/testing/surefire</url>
-    </scm>
-    <dependencies>
-        <dependency>
-            <!--
-            This is a small junit extension developed in FighterFish project to make the task of writing
-            test cases using maven/glassfish/junit much easier. It in turn leverages pax-exam test framework.
-            -->
-            <groupId>org.glassfish.fighterfish</groupId>
-            <artifactId>test.util</artifactId>
-            <version>1.1.1</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <!--
-            This is where you can decide whether GlassFish would use Felix or Equinox or other OSGi runtime.
-            We are using Felix in this example.
-            -->
-            <groupId>org.apache.felix</groupId>
-            <artifactId>org.apache.felix.framework</artifactId>
-            <scope>test</scope>
-            <version>4.2.1</version>
-        </dependency>
-        <!--
-        This is needed if you want to use javax.inject.Inject to inject services into your tests.
-        -->
-        <dependency>
-            <groupId>javax</groupId>
-            <artifactId>javaee-web-api</artifactId>
-            <version>6.0</version>
-        </dependency>
-    </dependencies>
-    <profiles>
-        <profile>
-            <id>ToolsJar</id>
-            <activation>
-                <os>
-                    <family>!mac</family>
-                </os>
-            </activation>
-            <dependencies>
-                <!-- Add tools.jar to classpath as required by GlassFish's monitoring code. -->
-                <dependency>
-                    <groupId>com.sun</groupId>
-                    <artifactId>tools</artifactId>
-                    <version>${java.version}</version>
-                    <scope>system</scope>
-                    <systemPath>${java.home}/../lib/tools.jar</systemPath>
-                </dependency>
-            </dependencies>
-        </profile>
-    </profiles>
+    <parent>
+        <groupId>org.glassfish.fighterfish</groupId>
+        <artifactId>fighterfish-sample-testing-parent</artifactId>
+        <version>3.0.0-SNAPSHOT</version>
+    </parent>
+    <artifactId>fighterfish-sample-testing-surefire</artifactId>
+    <name>FighterFish Sample Testing Surefire</name>
+
+    <properties>
+        <stage.dir>${project.build.directory}/stage</stage.dir>
+        <glassfish.install.dir>${stage.dir}/glassfish5/glassfish</glassfish.install.dir>
+    </properties>
+
     <build>
         <plugins>
             <plugin>
-                <!--
-                We need to configure the JVM that's going to be used to run the
-                test. Since surefire forks a new JVM, we have to set the properties here.
-                -->
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>install-glassfish</id>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <phase>process-test-resources</phase>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>org.glassfish.main.distributions</groupId>
+                                    <artifactId>glassfish</artifactId>
+                                    <version>${glassfish.version}</version>
+                                    <type>zip</type>
+                                </artifactItem>
+                            </artifactItems>
+                            <outputDirectory>${stage.dir}/</outputDirectory>
+                            <overWriteReleases>true</overWriteReleases>
+                            <overWriteSnapshots>true</overWriteSnapshots>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.12</version>
                 <configuration>
+                    <argLine>-Dfile.encoding=UTF-8 -Djava.endorsed.dirs=${glassfish.install.dir}/modules/endorsed</argLine>
                     <systemPropertyVariables>
-                        <!--
-                        FighterFish test framework can be configured to run with or without an existing
-                        GlassFish installation. When there is no existing GlassFish installation, the
-                        test framework can download and install GlassFish. fighterfish.provisioner.url is
-                        used to specify the download URL. com.sun.aas.installRoot is used to specify the
-                        installation location. This kind of automatic installation is very handy for unit testing
-                        which does not have a pre-integration-test/post-installation test phase. More over,
-                        if you are using maven protocol, then maven will cache it
-                        in a local repo, hence subsequent test runs won't download from a remote location.
-                        Furthermore, once GlassFish is installed, unless you remove the installation,
-                        it gets reused during subsequent invocation of the tests.
-
-                        The following example downloads GlassFish web distribution version 4.0-SNAPSHOT from maven repo.
-
-                        <fighterfish.provisioner.url>mvn:org.glassfish.distributions/web/4.0-SNAPSHOT/zip</fighterfish.provisioner.url>
-                        -->
-
-                        <!--
-                        Use this system property called com.sun.aas.installRoot to inform the test framework
-                        where to locate GlassFish installation. The value is glassfish3/glassfish in
-                        an installation. When this property is not specified, the test framework
-                        will use a temporary location. If there is no preexisting installation in the
-                        specified or derived directory, then the test framework will install GlassFish
-                        provided a download URL has been specified using fighterfish.provisioner.url system property.
-
-                        <com.sun.aas.installRoot>/tmp/glassfish3/glassfish/</com.sun.aas.installRoot>
-                        -->
-
-                        <!-- This is where we configure asynchronous operation to complete -->
-                        <fighterfish.test.setup.timeout>100000</fighterfish.test.setup.timeout>
-
-                        <org.osgi.framework.storage>${project.build.directory}/osgi-cache/</org.osgi.framework.storage>
-
-                        <!-- This is what is used by Derby Embedded Driver to decide where to keep the derby log messages -->
+                        <project.version>${project.version}</project.version>
                         <derby.stream.error.file>${project.build.directory}/derby.log</derby.stream.error.file>
+                        <org.glassfish.startupThreadPolicy>FULLY_THREADED</org.glassfish.startupThreadPolicy>
+                        <com.sun.aas.installRoot>${glassfish.install.dir}</com.sun.aas.installRoot>
+                        <com.sun.aas.instanceRoot>${glassfish.install.dir}/domains/domain1</com.sun.aas.instanceRoot>
+                        <org.osgi.framework.storage>${project.build.directory}/osgi-cache</org.osgi.framework.storage>
+                        <com.sun.enterprise.registration.PING_TIMER_INTERVAL>-1</com.sun.enterprise.registration.PING_TIMER_INTERVAL>
+                        <com.sun.aas.logging.keyvalue.logsource>true</com.sun.aas.logging.keyvalue.logsource>
+                        <fighterfish.test.DerbyDBRootDir></fighterfish.test.DerbyDBRootDir>
+                        <derby.stream.error.file>${project.build.directory}/derby.log</derby.stream.error.file>
+                        <fighterfish.test.setup.timeout>200000</fighterfish.test.setup.timeout>
                     </systemPropertyVariables>
-                    <!--
-                    Maven chooses to make provided dependencies part of test classpath.
-                    The javaee-api and javaee-web-api jars can't be used in runtime, for they
-                    don't contain proper classes, so we exclude them from test classpath.
-                    -->
                     <classpathDependencyExcludes>
+                        <classpathDependencyExclude>javax:javaee-api</classpathDependencyExclude>
                         <classpathDependencyExclude>javax:javaee-web-api</classpathDependencyExclude>
                     </classpathDependencyExcludes>
                 </configuration>
             </plugin>
-            <plugin>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>1.6</source>
-                    <target>1.6</target>
-                </configuration>
-            </plugin>
         </plugins>
     </build>
-    <properties>
-    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.glassfish.fighterfish</groupId>
+            <artifactId>fighterfish-test-util</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.felix</groupId>
+            <artifactId>org.apache.felix.framework</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>javax</groupId>
+            <artifactId>javaee-web-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
 </project>

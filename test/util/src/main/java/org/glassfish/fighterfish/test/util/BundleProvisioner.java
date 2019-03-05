@@ -29,14 +29,16 @@ import java.util.logging.Logger;
  * @author Sanjeeb.Sahoo@Sun.COM
  */
 public class BundleProvisioner {
+
     /**
-     * List of bundles installed by a test method
+     * List of bundles installed by a test method.
      */
-    private List<Bundle> testBundles = new ArrayList<Bundle>();
+    private final List<Bundle> testBundles = new ArrayList<Bundle>();
 
-    private BundleContext ctx;
+    private final BundleContext ctx;
 
-    private Logger logger = Logger.getLogger(getClass().getPackage().getName());
+    private static final Logger LOGGER = Logger.getLogger(
+            BundleProvisioner.class.getPackage().getName());
 
     public BundleProvisioner(BundleContext ctx) {
         this.ctx = ctx;
@@ -46,13 +48,19 @@ public class BundleProvisioner {
      * Install a bundle and add it to the list of bundles.
      *
      * @param location
+     * @return
      * @throws BundleException
      */
-    protected Bundle installTestBundle(String location) throws BundleException {
-        logger.logp(Level.INFO, "AbstractTestObject", "installBundle", "Installing bundle = {0}", new Object[]{location});
+    protected Bundle installTestBundle(String location)
+            throws BundleException {
+
+        LOGGER.logp(Level.INFO, "AbstractTestObject", "installBundle",
+                "Installing bundle = {0}", new Object[]{location});
         final Bundle bundle = ctx.installBundle(location);
         testBundles.add(bundle);
-        logger.logp(Level.INFO, "AbstractTestObject", "installBundle", "Installed bundle = {0} from {1} ", new Object[]{bundle, location});
+        LOGGER.logp(Level.INFO, "AbstractTestObject", "installBundle",
+                "Installed bundle = {0} from {1} ",
+                new Object[]{bundle, location});
         return bundle;
     }
 
@@ -65,11 +73,18 @@ public class BundleProvisioner {
     protected void uninstallTestBundle(Bundle bundle) throws BundleException {
         if (testBundles.remove(bundle)) {
             if (bundle.getState() != Bundle.UNINSTALLED) {
-                logger.logp(Level.INFO, "AbstractTestObject", "uninstallTestBundle", "Uninstalling bundle = {0}", new Object[]{bundle});
+                LOGGER.logp(Level.INFO, "AbstractTestObject",
+                        "uninstallTestBundle", "Uninstalling bundle = {0}",
+                        new Object[]{bundle});
                 bundle.uninstall();
-                logger.logp(Level.INFO, "AbstractTestObject", "uninstallTestBundle", "Uninstalled bundle = {0}", new Object[]{bundle});
+                LOGGER.logp(Level.INFO, "AbstractTestObject",
+                        "uninstallTestBundle", "Uninstalled bundle = {0}",
+                        new Object[]{bundle});
             } else {
-                logger.logp(Level.INFO, "AbstractTestObject", "uninstallTestBundle", "Bundle Already Uninstalled = {0}", new Object[]{bundle});
+                LOGGER.logp(Level.INFO, "AbstractTestObject",
+                        "uninstallTestBundle",
+                        "Bundle Already Uninstalled = {0}",
+                        new Object[]{bundle});
             }
         } else {
             throw new RuntimeException(bundle + " is not a test bundle");
@@ -82,5 +97,4 @@ public class BundleProvisioner {
             uninstallTestBundle(b);
         }
     }
-
 }

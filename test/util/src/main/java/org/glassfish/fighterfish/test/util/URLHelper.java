@@ -26,6 +26,7 @@ import java.net.URLConnection;
  * @author Sanjeeb.Sahoo@Sun.COM
  */
 public class URLHelper {
+
     public static String getResponse(URL request) throws IOException {
         URLConnection yc = request.openConnection();
         BufferedReader in = new BufferedReader(

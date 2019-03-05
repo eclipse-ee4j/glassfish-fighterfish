@@ -7,7 +7,6 @@
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
-
 package org.glassfish.fighterfish.sample.uas.simplewabfragment;
 
 import java.io.IOException;
@@ -29,33 +28,38 @@ import org.osgi.framework.ServiceException;
  */
 @WebServlet("/ReportServlet")
 public class ReportServlet extends HttpServlet {
-	private static final long serialVersionUID = 1L;
 
-	@Inject
-	@OSGiService(dynamic=true)
-	private UserAuthService uas;
+    private static final long serialVersionUID = 1L;
+
+    @Inject
+    @OSGiService(dynamic = true)
+    private UserAuthService uas;
+
     /**
-     * Default constructor. 
+     * Default constructor.
      */
     public ReportServlet() {
         // TODO Auto-generated constructor stub
     }
 
-	/**
-	 * @see HttpServlet#service(HttpServletRequest request, HttpServletResponse response)
-	 */
-	protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-	       response.setContentType("text/html");
-	       PrintWriter out = response.getWriter();
-	       out.println("<HTML> <HEAD> <TITLE> Report "
-		            + "</TITLE> </HEAD> <BODY BGCOLOR=white>");
+    /**
+     * @param request
+     * @param response
+     * @throws java.io.IOException
+     * @see HttpServlet#service(HttpServletRequest request, HttpServletResponse
+     * response)
+     */
+    protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        response.setContentType("text/html");
+        PrintWriter out = response.getWriter();
+        out.println("<HTML> <HEAD> <TITLE> Report "
+                + "</TITLE> </HEAD> <BODY BGCOLOR=white>");
 
-	        try {
-	        	out.println(uas.getReport());
-	        } catch (ServiceException e) {
-	            out.println("Service is not yet available");
-	        }
-	        out.println("</BODY> </HTML> ");
-	}
-
+        try {
+            out.println(uas.getReport());
+        } catch (ServiceException e) {
+            out.println("Service is not yet available");
+        }
+        out.println("</BODY> </HTML> ");
+    }
 }

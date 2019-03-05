@@ -13,7 +13,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  */
-
 package org.glassfish.fighterfish.test.util;
 
 import org.glassfish.embeddable.GlassFish;
@@ -22,16 +21,22 @@ import org.osgi.framework.BundleContext;
 import org.osgi.util.tracker.ServiceTracker;
 
 /**
- * When GlassFish bundles are deployed, the server does a lot of background operation, so this class help test cases
- * track availability of GlassFish. It provides a convenient mechanism for tests to wait for GlassFish server
- * to start.
+ * When GlassFish bundles are deployed, the server does a lot of background
+ * operation, so this class help test cases track availability of GlassFish. It
+ * provides a convenient mechanism for tests to wait for GlassFish server to
+ * start.
  *
  * @author Sanjeeb.Sahoo@Sun.COM
  */
 public class GlassFishTracker {
 
-    public static GlassFish waitForGfToStart(BundleContext context, long timeout) throws InterruptedException, GlassFishException {
-        ServiceTracker st = new ServiceTracker(context, GlassFish.class.getName(), null);
+    @SuppressWarnings("unchecked")
+    public static GlassFish waitForGfToStart(BundleContext context,
+            long timeout)
+            throws InterruptedException, GlassFishException {
+
+        ServiceTracker st = new ServiceTracker(context,
+                GlassFish.class.getName(), null);
         st.open();
         GlassFish gf;
         long currentTime = System.currentTimeMillis();
@@ -41,14 +46,18 @@ public class GlassFishTracker {
             st.close();
         }
         if (gf == null) {
-            throw new TimeoutException("GlassFish service is still not available after " + timeout + " ms.");
+            throw new TimeoutException(
+                    "GlassFish service is still not available after "
+                    + timeout + " ms.");
         }
         long endTime = currentTime + timeout;
-        while (gf.getStatus() != GlassFish.Status.STARTED && System.currentTimeMillis() < endTime) {
+        while (gf.getStatus() != GlassFish.Status.STARTED
+                && System.currentTimeMillis() < endTime) {
             Thread.sleep(100);
         }
         if (gf.getStatus() != GlassFish.Status.STARTED) {
-            throw new TimeoutException("GlassFish has not started after " + timeout + " ms.");
+            throw new TimeoutException("GlassFish has not started after "
+                    + timeout + " ms.");
         }
         return gf;
     }

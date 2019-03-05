@@ -47,20 +47,25 @@ public class DefaultHttpContext implements HttpContext {
     /**
      * Bundle for which this context is created.
      */
-    private Bundle registeringBundle;
+    private final Bundle registeringBundle;
 
     public DefaultHttpContext(Bundle registeringBundle) {
         this.registeringBundle = registeringBundle;
     }
 
-    public boolean handleSecurity(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws IOException {
-        return true;// TODO(Sahoo):
+    @Override
+    public boolean handleSecurity(HttpServletRequest httpServletRequest,
+            HttpServletResponse httpServletResponse) throws IOException {
+
+        // TODO(Sahoo):
+        return true;
     }
 
     /**
      * @param s
      * @return URL
      */
+    @Override
     public URL getResource(String s) {
         /*
          * As per the spec (OSGi R4 Compendium, section #102.4):
@@ -70,9 +75,11 @@ public class DefaultHttpContext implements HttpContext {
          * containing the resource files in the bundle. No automatic prefixing
          * of the package name is done.
          */
-        return registeringBundle.getResource(s); // TODO(Sahoo): doPrivileged()
+        // TODO(Sahoo): doPrivileged()
+        return registeringBundle.getResource(s);
     }
 
+    @Override
     public String getMimeType(String s) {
         return null;
     }

@@ -18,5 +18,6 @@
 Bundle-Activator: org.glassfish.osgiweb.OSGiWebContainerActivator
 Import-Package: !com.sun.faces.spi, !javax.faces.*, *
 # We depend on Grizzly using Class.forName. See GLASSFISH-16538
-DynamicImport-Package:com.sun.faces.spi, javax.faces.*, com.sun.grizzly.config.dom; version=1.9, org.glassfish.grizzly.config.dom; version=2.0
-
+DynamicImport-Package: com.sun.faces.spi, javax.faces.*, \
+                       com.sun.grizzly.config.dom; version=1.9, \
+                       org.glassfish.grizzly.config.dom; version=2.0

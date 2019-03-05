@@ -16,10 +16,6 @@
 
 package org.glassfish.fighterfish.test.app7;
 
-/**
- * @author sanjeeb.sahoo@oracle.com
- *
- */
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -28,9 +24,7 @@ import javax.persistence.ManyToOne;
 
 @Entity
 public class Employee implements java.io.Serializable {
-    /**
-     * 
-     */
+
     private static final long serialVersionUID = -6829839191194419668L;
     int id;
     Department department;

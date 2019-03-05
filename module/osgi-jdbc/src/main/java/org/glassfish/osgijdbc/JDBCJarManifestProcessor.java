@@ -13,7 +13,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  */
-
 package org.glassfish.osgijdbc;
 
 import org.osgi.service.jdbc.DataSourceFactory;
@@ -30,14 +29,15 @@ import java.util.logging.Logger;
 import static org.osgi.framework.Constants.*;
 
 public class JDBCJarManifestProcessor {
-    private static Logger logger =
-            Logger.getLogger(JDBCJarManifestProcessor.class.getPackage().getName());
-    private static final String DEFAULT_MAN_VERSION = "2";
-    private static final String DEFAULT_IMPORT_PACKAGE = "";
-    private static final String IMPLEMENTATION_VERSION = "Implementation-Version";
-    public static final String OSGI_RFC_122="OSGI_RFC_122";
 
-    private static final Locale locale = Locale.getDefault();
+    private static final Logger LOGGER = Logger.getLogger(
+            JDBCJarManifestProcessor.class.getPackage().getName());
+    private static final String DEFAULT_MAN_VERSION = "2";
+    private static final String IMPLEMENTATION_VERSION =
+            "Implementation-Version";
+    private static final Locale LOCALE = Locale.getDefault();
+
+    public static final String OSGI_RFC_122 = "OSGI_RFC_122";
 
     /**
      * Reads content of the given URL, uses it to come up with a new Manifest.
@@ -46,7 +46,9 @@ public class JDBCJarManifestProcessor {
      * @return a new Manifest
      * @throws java.io.IOException
      */
-    public static Manifest processManifest(URL url, ClassLoader cl) throws IOException {
+    public static Manifest processManifest(URL url, ClassLoader cl)
+            throws IOException {
+
         final JarInputStream jis = new JarInputStream(url.openStream());
 
         try {
@@ -55,7 +57,7 @@ public class JDBCJarManifestProcessor {
 
             List<String> embeddedJars = getEmbeddedJarsList(file);
             StringBuffer bundleClassPath = deriveBundleClassPath(embeddedJars);
-            
+
             JDBCDriverLoader loader = new JDBCDriverLoader(cl);
             Properties properties = loader.loadDriverInformation(file);
 
@@ -71,7 +73,8 @@ public class JDBCJarManifestProcessor {
                 attrs.putValue(key, value);
             }
 
-            attrs.putValue((DataSourceFactory.OSGI_JDBC_DRIVER_CLASS.replace('.', '_')),
+            attrs.putValue((DataSourceFactory.OSGI_JDBC_DRIVER_CLASS
+                    .replace('.', '_')),
                     (String) properties.get(Constants.DRIVER));
 
             attrs.putValue(OSGI_RFC_122, "TRUE");
@@ -83,22 +86,24 @@ public class JDBCJarManifestProcessor {
             process(queryParams, attrs, BUNDLE_SYMBOLICNAME,
                     defaultSymName);
 
-            String version = oldManifest.getMainAttributes().getValue(IMPLEMENTATION_VERSION);
-            if(isOSGiCompatibleVersion(version)){
+            String version = oldManifest.getMainAttributes()
+                    .getValue(IMPLEMENTATION_VERSION);
+            if (isOSGiCompatibleVersion(version)) {
                 process(queryParams, attrs, BUNDLE_VERSION, version);
             }
 
-            process(queryParams, attrs, BUNDLE_CLASSPATH, bundleClassPath.toString());
+            process(queryParams, attrs, BUNDLE_CLASSPATH,
+                    bundleClassPath.toString());
 
-            //process(queryParams, attrs, IMPORT_PACKAGE, DEFAULT_IMPORT_PACKAGE);
+            //process(queryParams, attrs, IMPORT_PACKAGE,
+            // DEFAULT_IMPORT_PACKAGE);
             process(queryParams, attrs, EXPORT_PACKAGE, "*");
 
             // We add this attribute until we have added support for
             // scanning class bytes to figure out import dependencies.
             attrs.putValue(DYNAMICIMPORT_PACKAGE, "*");
             return newManifest;
-        }
-        catch (URISyntaxException e) {
+        } catch (URISyntaxException e) {
             throw new RuntimeException(e);
         } finally {
             jis.close();
@@ -107,35 +112,42 @@ public class JDBCJarManifestProcessor {
 
     private static boolean isOSGiCompatibleVersion(String version) {
         boolean isCompatible = false;
-        try{
-            if(version != null){
+        try {
+            if (version != null) {
                 Double.parseDouble(version);
                 isCompatible = true;
             }
-        }catch(NumberFormatException nfe){
-            if(logger.isLoggable(Level.FINEST)){
-                logger.finest("Not a OSGi compatible bundle-version ["+version+"] : " + nfe);
+        } catch (NumberFormatException nfe) {
+            if (LOGGER.isLoggable(Level.FINEST)) {
+                LOGGER.log(Level.FINEST,
+                        "Not a OSGi compatible bundle-version [{0}] : {1}",
+                        new Object[]{version, nfe});
             }
         }
         return isCompatible;
     }
 
-    private static StringBuffer deriveBundleClassPath(List<String> embeddedJars) {
+    private static StringBuffer deriveBundleClassPath(
+            List<String> embeddedJars) {
+
         StringBuffer bundleClasspath = new StringBuffer(".");
-        for(int i = 0; i<embeddedJars.size() ; i++){
+        for (int i = 0; i < embeddedJars.size(); i++) {
             bundleClasspath = bundleClasspath.append(",");
             bundleClasspath = bundleClasspath.append(embeddedJars.get(i));
         }
         return bundleClasspath;
     }
 
-    private static List<String> getEmbeddedJarsList(File file) throws IOException {
+    private static List<String> getEmbeddedJarsList(File file)
+            throws IOException {
+
         List<String> jarsList = new ArrayList<String>();
         JarFile f = new JarFile(file);
-        Enumeration<JarEntry> entries =  f.entries();
-        while(entries.hasMoreElements()){
+        Enumeration<JarEntry> entries = f.entries();
+        while (entries.hasMoreElements()) {
             JarEntry entry = entries.nextElement();
-            if(!entry.isDirectory() && entry.getName().toLowerCase(locale).endsWith(".jar")){
+            if (!entry.isDirectory() && entry.getName()
+                    .toLowerCase(LOCALE).endsWith(".jar")) {
                 jarsList.add(entry.getName());
             }
         }
@@ -160,16 +172,17 @@ public class JDBCJarManifestProcessor {
                 }
                 queryParams.put(name, value);
             }
-            logger.logp(Level.INFO, "JDBCJarManifestProcessor", "readQueryParams",
-                    "queryParams = {0}", new Object[]{queryParams});
+            LOGGER.logp(Level.INFO, "JDBCJarManifestProcessor",
+                    "readQueryParams", "queryParams = {0}",
+                    new Object[]{queryParams});
         }
         return queryParams;
     }
 
     private static void process(Properties deployerOptions,
-                                Attributes developerOptions,
-                                String key,
-                                String defaultOption) {
+            Attributes developerOptions,
+            String key,
+            String defaultOption) {
         String deployerOption = deployerOptions.getProperty(key);
         String developerOption = developerOptions.getValue(key);
         String finalOption = defaultOption;
@@ -178,7 +191,8 @@ public class JDBCJarManifestProcessor {
         } else if (developerOption != null) {
             finalOption = developerOption;
         }
-        if (finalOption != developerOption) {
+        if (finalOption == null ? developerOption != null : !finalOption
+                .equals(developerOption)) {
             developerOptions.putValue(key, finalOption);
         }
     }

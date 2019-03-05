@@ -13,7 +13,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  */
-
 package org.glassfish.fighterfish.test.app18;
 
 import org.osgi.framework.Bundle;
@@ -23,9 +22,10 @@ import org.osgi.framework.FrameworkUtil;
 import javax.enterprise.inject.Produces;
 
 /**
- * 
- * A simple producer bean which allows us to inject BundleContext of this bundle.
- * 
+ *
+ * A simple producer bean which allows us to inject BundleContext of this
+ * bundle.
+ *
  * @author sanjeeb.sahoo@oracle.com
  *
  */
@@ -34,9 +34,11 @@ public class BundleContextProducerBean {
     @Produces
     public BundleContext getBundleContext() {
         Bundle bundle = FrameworkUtil.getBundle(getClass());
-        System.out.println("BundleContextProducerBean.getBundleContext() " + bundle);
+        System.out.println("BundleContextProducerBean.getBundleContext() "
+                + bundle);
         BundleContext bundleContext = bundle.getBundleContext();
-        System.out.println("BundleContextProducerBean.getBundleContext() " + bundleContext);
+        System.out.println("BundleContextProducerBean.getBundleContext() "
+                + bundleContext);
         return bundleContext;
     }
 }

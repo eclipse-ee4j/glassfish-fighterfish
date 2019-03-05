@@ -13,7 +13,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  */
-
 package org.glassfish.osgijavaeebase;
 
 import com.sun.enterprise.deploy.shared.ArchiveFactory;
@@ -38,90 +37,94 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * This is a stateful service. This is responsible for deployment
- * of artifacts in JavaEE runtime.
+ * This is a stateful service. This is responsible for deployment of artifacts
+ * in JavaEE runtime.
  *
  * @author Sanjeeb.Sahoo@Sun.COM
  */
-public abstract class OSGiDeploymentRequest
-{
-    private static final Logger logger =
-            Logger.getLogger(OSGiUndeploymentRequest.class.getPackage().getName());
+public abstract class OSGiDeploymentRequest {
 
-    private ActionReport reporter;
-    private Bundle b;
+    private static final Logger LOGGER = Logger.getLogger(
+            OSGiUndeploymentRequest.class.getPackage().getName());
+
+    private final ActionReport reporter;
+    private final Bundle bundle;
     private boolean dirDeployment;
-    private Deployment deployer;
-    private ArchiveFactory archiveFactory;
-    private ServerEnvironmentImpl env;
+    private final Deployment deployer;
+    private final ArchiveFactory archiveFactory;
+    private final ServerEnvironmentImpl env;
     private ReadableArchive archive;
     private OSGiDeploymentContext dc;
     private OSGiApplicationInfo result;
 
     public OSGiDeploymentRequest(Deployment deployer,
-                                   ArchiveFactory archiveFactory,
-                                   ServerEnvironmentImpl env,
-                                   ActionReport reporter,
-                                   Bundle b)
-    {
+            ArchiveFactory archiveFactory,
+            ServerEnvironmentImpl env,
+            ActionReport reporter,
+            Bundle b) {
         this.deployer = deployer;
         this.archiveFactory = archiveFactory;
         this.env = env;
         this.reporter = reporter;
-        this.b = b;
+        this.bundle = b;
     }
 
-    protected void preDeploy() throws DeploymentException {}
+    protected void preDeploy() throws DeploymentException {
+    }
 
-    protected void postDeploy() {}
+    protected void postDeploy() {
+    }
 
     /**
-     * Deploys a web application bundle in GlassFish Web container.
-     * It properly rolls back if something goes wrong.
+     * Deploys a web application bundle in GlassFish Web container. It properly
+     * rolls back if something goes wrong.
+     *
      * @return OSGIApplicationInfo
      */
-    public OSGiApplicationInfo execute()
-    {
+    public OSGiApplicationInfo execute() {
         try {
             preDeploy();
         } catch (DeploymentException e) {
-            reporter.failure(logger,
-                    "Failed while deploying bundle " + b, e);
-            return result; // return without calling postDeploy()
+            reporter.failure(LOGGER,
+                    "Failed while deploying bundle " + bundle, e);
+            // return without calling postDeploy()
+            return result;
         }
         // This is where the fun is...
-        try
-        {
+        try {
             prepare();
-            result = deploy(); // Now actual deployment begins
-        }
-        catch (Exception e)
-        {
-            reporter.failure(logger,
-                    "Failed while deploying bundle " + b, e);
+            // Now actual deployment begins
+            result = deploy();
+        } catch (Exception e) {
+            reporter.failure(LOGGER,
+                    "Failed while deploying bundle " + bundle, e);
         } finally {
-            postDeploy(); // call even if something failed so that the actions in predeploy() can be rolled back.
+            // call even if something failed so that the actions in
+            // predeploy() can be rolled back.
+            postDeploy();
         }
         return result;
     }
 
-    private void prepare() throws Exception
-    {
-        // The steps are described below:
-        // 1. Create an Archive from the bundle
-        //    - If the bundle has been installed with reference: scheme,
-        //    get hold hold of the underlying file and read from it, else
-        //    use the bundle directly to create the archive.
-        // 2. Prepare a context for deployment. This includes setting up
-        // various deployment options, setting up of an ArchiveHandler,
-        // expansion of the archive, etc. The archive needs to be expanded before we create
-        // deployment context, because in order to create WABClassLoader, we need to know
-        // expansion directory location, so that we can configure the repositories correctly.
-        // More over, we need to create the deployment options before expanding the archive, because
-        // we set application name = archive.getName(). If we explode first and then create OpsParams, then
-        // we will end up using the same name as used by "asadmin deploy --type=osgi" and eventually hit by
-        // issue #10536.
-        // 3. Finally deploy and store the result in our inmemory map.
+    /**
+     * The steps are described below: 1. Create an Archive from the bundle - If
+     * the bundle has been installed with reference: scheme, get hold hold of
+     * the underlying file and read from it, else use the bundle directly to
+     * create the archive. 2. Prepare a context for deployment. This includes
+     * setting up various deployment options, setting up of an ArchiveHandler,
+     * expansion of the archive, etc. The archive needs to be expanded before we
+     * create deployment context, because in order to create WABClassLoader, we
+     * need to know expansion directory location, so that we can configure the
+     * repositories correctly. More over, we need to create the deployment
+     * options before expanding the archive, because we set application name =
+     * archive.getName(). If we explode first and then create OpsParams, then we
+     * will end up using the same name as used by "asadmin deploy --type=osgi"
+     * and eventually hit by issue #10536. 3. Finally deploy and store the
+     * result in our inmemory map.
+     *
+     * @throws Exception
+     */
+    private void prepare() throws Exception {
 
         archive = makeArchive();
 
@@ -133,75 +136,82 @@ public abstract class OSGiDeploymentRequest
 
         dc = getDeploymentContextImpl(
                 reporter,
-                logger,
+                LOGGER,
                 archive,
                 opsParams,
                 env,
-                b);
+                bundle);
     }
 
     /**
-     * Factory method. Subclasses override this to create specialised Archive instance.
+     * Factory method. Subclasses override this to create specialized Archive
+     * instance.
+     *
      * @return
      */
     protected ReadableArchive makeArchive() {
-        return new OSGiBundleArchive(b);
+        return new OSGiBundleArchive(bundle);
     }
 
-    protected abstract OSGiDeploymentContext getDeploymentContextImpl(ActionReport reporter, Logger logger, ReadableArchive archive, OpsParams opsParams, ServerEnvironmentImpl env, Bundle b) throws Exception;
+    protected abstract OSGiDeploymentContext getDeploymentContextImpl(
+            ActionReport reporter, Logger logger, ReadableArchive archive,
+            OpsParams opsParams, ServerEnvironmentImpl env, Bundle b)
+            throws Exception;
 
-    private OSGiApplicationInfo deploy()
-    {
+    private OSGiApplicationInfo deploy() {
         // Need to declare outside to do proper cleanup of target dir
         // when deployment fails. We can't rely on exceptions as
         // deployer.deploy() eats most of the exceptions.
         ApplicationInfo appInfo = null;
-        try
-        {
+        try {
             appInfo = deployer.deploy(dc);
-            if (appInfo != null)
-            {
-                // Pass in the final classloader so that it can be used to set appropriate context
-                // while using underlying EE components in pure OSGi context like registering EJB as services.
-                // This won't be needed if we figure out a way of navigating to the final classloader from
+            if (appInfo != null) {
+                // Pass in the final classloader so that it can be used to set
+                // appropriate context
+                // while using underlying EE components in pure OSGi context
+                // like registering EJB as services.
+                // This won't be needed if we figure out a way of navigating
+                // to the final classloader from
                 // an EE component like EJB.
-                return new OSGiApplicationInfo(appInfo, dirDeployment, b, dc.getFinalClassLoader());
-            }
-            else
-            {
-                logger.logp(Level.FINE, "OSGiDeploymentRequest",
-                        "deploy", "failed to deploy {0} for following reason: {1} ", new Object[]{b, reporter.getMessage()});
-                throw new RuntimeException("Failed to deploy bundle [ " + b + " ], root cause: " + reporter.getMessage(),
+                return new OSGiApplicationInfo(appInfo, dirDeployment, bundle,
+                        dc.getFinalClassLoader());
+            } else {
+                LOGGER.logp(Level.FINE, "OSGiDeploymentRequest",
+                        "deploy",
+                        "failed to deploy {0} for following reason: {1} ",
+                        new Object[]{bundle, reporter.getMessage()});
+                throw new RuntimeException(
+                        "Failed to deploy bundle [ " + bundle
+                        + " ], root cause: "
+                        + reporter.getMessage(),
                         reporter.getFailureCause());
             }
-        }
-        finally
-        {
-            if (!dirDeployment && appInfo == null)
-            {
-                try
-                {
+        } finally {
+            if (!dirDeployment && appInfo == null) {
+                try {
                     File dir = dc.getSourceDir();
                     assert (dir.isDirectory());
                     if (FileUtils.whack(dir)) {
-                        logger.logp(Level.INFO, "OSGiDeploymentRequest", "deploy",
-                                "Deleted {0}", new Object[]{dir});
+                        LOGGER.logp(Level.INFO, "OSGiDeploymentRequest",
+                                "deploy", "Deleted {0}", new Object[]{dir});
                     } else {
-                        logger.logp(Level.WARNING, "OSGiDeploymentRequest", "deploy", "Unable to delete {0} ", new Object[]{dir});
+                        LOGGER.logp(Level.WARNING, "OSGiDeploymentRequest",
+                                "deploy", "Unable to delete {0} ",
+                                new Object[]{dir});
                     }
-                }
-                catch (Exception e2)
-                {
-                    logger.logp(Level.WARNING, "OSGiDeploymentRequest", "deploy",
-                            "Exception while cleaning up target directory.", e2);
+                } catch (Exception e2) {
+                    LOGGER.logp(Level.WARNING, "OSGiDeploymentRequest",
+                            "deploy",
+                            "Exception while cleaning up target directory.",
+                            e2);
                     // don't throw this anymore
                 }
             }
         }
     }
 
-    private void expandIfNeeded() throws IOException
-    {
+    private void expandIfNeeded() throws IOException {
+
         // Try to obtain a handle to the underlying archive.
         // First see if it is backed by a file or a directory, else treat
         // it as a generic bundle.
@@ -209,10 +219,10 @@ public abstract class OSGiDeploymentRequest
 
         // expand if necessary, else set directory deployment to true
         dirDeployment = file != null && file.isDirectory();
-        if (dirDeployment)
-        {
-            logger.logp(Level.FINE, "OSGiDeploymentRequest", "expandIfNeeded",
-                    "Archive is already expanded at = {0}", new Object[]{file});
+        if (dirDeployment) {
+            LOGGER.logp(Level.FINE, "OSGiDeploymentRequest", "expandIfNeeded",
+                    "Archive is already expanded at = {0}",
+                    new Object[]{file});
             archive = archiveFactory.openArchive(file);
             return;
         }
@@ -222,71 +232,81 @@ public abstract class OSGiDeploymentRequest
         File tmpFile = getExplodedDir();
         tmpFile.deleteOnExit();
 
-        // We don't reuse old directory at this point of time as we are not completely sure if it is safe to reuse.
-        // It is possible that we had a semicomplete directory from previous execution.
-        // e.g., if glassfish can be killed while osgi-container is exploding the archive.
-        // or glassfish can be killed while it was in the middle of deleting the previously exploded directory.
-        // So, better to not reuse existing directory until we ensure that explosion or removal are atomic operations.
+        // We don't reuse old directory at this point of time as we are not
+        // completely sure if it is safe to reuse.
+        // It is possible that we had a semicomplete directory from previous
+        // execution.
+        // e.g., if glassfish can be killed while osgi-container is exploding
+        // the archive.
+        // or glassfish can be killed while it was in the middle of deleting
+        // the previously exploded directory.
+        // So, better to not reuse existing directory until we ensure that
+        // explosion or removal are atomic operations.
         if (tmpFile.exists()) {
-            logger.logp(Level.INFO, "OSGiDeploymentRequest", "expandIfNeeded",
-                    "Going to delete existing exploded content found at {0}", new Object[]{tmpFile});
+            LOGGER.logp(Level.INFO, "OSGiDeploymentRequest", "expandIfNeeded",
+                    "Going to delete existing exploded content found at {0}",
+                    new Object[]{tmpFile});
             if (!FileUtils.whack(tmpFile)) {
-                throw new IOException("Unable to delete directory wth name " + tmpFile);
+                throw new IOException(
+                        "Unable to delete directory wth name " + tmpFile);
             }
         }
-        if (!tmpFile.mkdirs())
-        {
-            throw new IOException("Not able to expand " + archive.getName() + " in " + tmpFile);
+        if (!tmpFile.mkdirs()) {
+            throw new IOException("Not able to expand " + archive.getName()
+                    + " in " + tmpFile);
         }
         WritableArchive targetArchive = archiveFactory.createArchive(tmpFile);
         new OSGiArchiveHandler().expand(archive, targetArchive, dc);
-        logger.logp(Level.INFO, "OSGiDeploymentRequest", "expandIfNeeded",
+        LOGGER.logp(Level.INFO, "OSGiDeploymentRequest", "expandIfNeeded",
                 "Expanded at {0}", new Object[]{targetArchive.getURI()});
         archive = archiveFactory.openArchive(tmpFile);
     }
-    
+
     /**
-     * We don't keep the file in tmpdir, because in some deployment environment, the tmpdir is periodically cleaned
-     * up by external programs to reclaim memory. So, we keep them under application dir in bundle private storage area.
-     * More over, we need to make sure that the directory is named uniquely to avoid accidental reuse.
-     * So, we include Bundle-Id and Bundle-LastModifiedTimestamp in the dir name.
-     * 
-     * @return the directory where the OSGi application will be exploded during deployment
+     * We don't keep the file in tmpdir, because in some deployment environment,
+     * the tmpdir is periodically cleaned up by external programs to reclaim
+     * memory. So, we keep them under application dir in bundle private storage
+     * area. More over, we need to make sure that the directory is named
+     * uniquely to avoid accidental reuse. So, we include Bundle-Id and
+     * Bundle-LastModifiedTimestamp in the dir name.
+     *
+     * @return the directory where the OSGi application will be exploded during
+     * deployment
      */
     private File getExplodedDir() {
-    	BundleContext ctx = getBundleContext(this.getClass());
-    	File bundleBaseStorage = ctx.getDataFile("");
-    	// We keep everything under application directory.
-    	// We include Bundle-Id and Bundle-Timestamp to ensure that we don't accidentally use stale contents.
-    	// Assume the following where stale contents can be there in a file if we don't use timestamp in name:
-    	// a wab deployed. Now system is stopped forcefully. During next restart osgi-webcontainer
-    	// is not started, but wab is updated. Next time, osgi-web-container comes up, it should not end up using
-    	// previously exploded directory.
-    	final String name = "applications" + File.separator + "bundle" + b.getBundleId() + "-" + b.getLastModified();
-    	return new File(bundleBaseStorage, name);
+        BundleContext ctx = getBundleContext(this.getClass());
+        File bundleBaseStorage = ctx.getDataFile("");
+        // We keep everything under application directory.
+        // We include Bundle-Id and Bundle-Timestamp to ensure that we don't
+        // accidentally use stale contents.
+        // Assume the following where stale contents can be there in a file if
+        // we don't use timestamp in name:
+        // a wab deployed. Now system is stopped forcefully. During next restart
+        // osgi-webcontainer
+        // is not started, but wab is updated. Next time, osgi-web-container
+        // comes up, it should not end up using
+        // previously exploded directory.
+        final String name = "applications" + File.separator + "bundle"
+                + bundle.getBundleId() + "-" + bundle.getLastModified();
+        return new File(bundleBaseStorage, name);
     }
 
     /**
      * @param a The archive
-     * @return a File object that corresponds to this archive.
-     * return null if it can't determine the underlying file object.
+     * @return a File object that corresponds to this archive. return null if it
+     * can't determine the underlying file object.
      */
-    public static File makeFile(ReadableArchive a)
-    {
-        try
-        {
+    public static File makeFile(ReadableArchive a) {
+        try {
             return new File(a.getURI());
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             // Ignore, if we can't convert
         }
         return null;
     }
 
-    protected DeployCommandParameters getDeployParams() throws Exception
-    {
-        assert(archive != null);
+    protected DeployCommandParameters getDeployParams() throws Exception {
+        assert (archive != null);
         DeployCommandParameters parameters = new DeployCommandParameters();
         parameters.name = archive.getName();
         parameters.enabled = Boolean.TRUE;
@@ -297,7 +317,7 @@ public abstract class OSGiDeploymentRequest
     }
 
     public Bundle getBundle() {
-        return b;
+        return bundle;
     }
 
     public ReadableArchive getArchive() {
@@ -313,13 +333,15 @@ public abstract class OSGiDeploymentRequest
         String target = se.getInstanceName();
         return target;
     }
-    
-    /** Obtaining BundleContext which belongs to osgi-javaee-base
+
+    /**
+     * Obtaining BundleContext which belongs to osgi-javaee-base
+     *
      * @param clazz some class belongs to osgi-javaee-base
      * @return BundleContext which belongs to osgi-javaee-base
      */
     private BundleContext getBundleContext(Class<?> clazz) {
-    	return BundleReference.class.cast(clazz.getClassLoader())
+        return BundleReference.class.cast(clazz.getClassLoader())
                 .getBundle().getBundleContext();
 
     }

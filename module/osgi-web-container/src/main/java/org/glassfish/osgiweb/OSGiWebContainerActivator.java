@@ -13,7 +13,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  */
-
 package org.glassfish.osgiweb;
 
 import org.osgi.framework.BundleActivator;
@@ -24,19 +23,21 @@ import org.osgi.framework.ServiceRegistration;
 /**
  * @author Sanjeeb.Sahoo@Sun.COM
  */
-public class OSGiWebContainerActivator implements BundleActivator
-{
+public class OSGiWebContainerActivator implements BundleActivator {
 
     private ServiceRegistration extenderReg;
 
-    public void start(BundleContext context) throws Exception
-    {
+    @Override
+    public void start(BundleContext context) throws Exception {
         WebExtender webExtender = new WebExtender(context);
-        extenderReg = context.registerService(Extender.class.getName(), webExtender, null);
+        extenderReg = context.registerService(Extender.class.getName(),
+                webExtender, null);
     }
 
-    public void stop(BundleContext context) throws Exception
-    {
-        extenderReg.unregister(); // Call unregister so that ExtenderManager will stop with a valid BundleContext
+    @Override
+    public void stop(BundleContext context) throws Exception {
+        // Call unregister so that ExtenderManager will stop with a valid
+        // BundleContext
+        extenderReg.unregister();
     }
 }

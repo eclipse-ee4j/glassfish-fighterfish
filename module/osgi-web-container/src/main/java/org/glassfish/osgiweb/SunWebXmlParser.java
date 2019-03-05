@@ -13,44 +13,42 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  */
-
 package org.glassfish.osgiweb;
 
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamConstants;
 import static javax.xml.stream.XMLStreamConstants.*;
 import java.io.InputStream;
 
 /**
- * A mini parser to parse sun-web.xml and glassfish-web.xml for entries of interest 
- * to us.
- * Currently, we only read context-root value.
+ * A mini parser to parse sun-web.xml and glassfish-web.xml for entries of
+ * interest to us. Currently, we only read context-root value.
  *
  * @author Sanjeeb.Sahoo@Sun.COM
  */
-class SunWebXmlParser
-{
-    private static XMLInputFactory xmlIf = null;
+class SunWebXmlParser {
+
+    private static final XMLInputFactory XMLIF;
 
     static {
-        xmlIf = XMLInputFactory.newInstance();
-        xmlIf.setProperty(XMLInputFactory.SUPPORT_DTD, false);
+        XMLIF = XMLInputFactory.newInstance();
+        XMLIF.setProperty(XMLInputFactory.SUPPORT_DTD, false);
     }
 
     String contextRoot;
 
     /**
      * The caller should close the input stream.
+     *
      * @param in InputStream for sun-web.xml or glassfish-web.xml
      */
-    SunWebXmlParser(InputStream in) throws XMLStreamException
-    {
-        XMLStreamReader reader = xmlIf.createXMLStreamReader(in);
+    SunWebXmlParser(InputStream in) throws XMLStreamException {
+        XMLStreamReader reader = XMLIF.createXMLStreamReader(in);
         try {
             int event;
-            while (reader.hasNext() && (event = reader.next()) != END_DOCUMENT) {
+            while (reader.hasNext() && (event = reader.next())
+                    != END_DOCUMENT) {
                 if (event == START_ELEMENT) {
                     String element = reader.getLocalName();
                     if (element.equals("context-root")) {
@@ -64,8 +62,7 @@ class SunWebXmlParser
         }
     }
 
-    public String getContextRoot()
-    {
+    public String getContextRoot() {
         return contextRoot;
     }
 }

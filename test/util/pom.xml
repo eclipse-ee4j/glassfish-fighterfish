@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2018, 2019 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0, which is available at
@@ -20,112 +20,24 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>org.eclipse.ee4j</groupId>
-        <artifactId>project</artifactId>
-        <version>1.0</version>
+        <groupId>org.glassfish.fighterfish</groupId>
+        <artifactId>fighterfish-test-parent</artifactId>
+        <version>3.0.0-SNAPSHOT</version>
     </parent>
-    <!--
-    TODO: There is a lot of common configuration between this POM and POM of test/it. So,
-    we should have a common parent pom for all.
-    -->
-    <groupId>org.glassfish.fighterfish</groupId>
-    <artifactId>test.util</artifactId>
-    <version>1.1.8-SNAPSHOT</version>
-    <name>A junit extension which helps writing test cases involving GlassFish/Maven/JUnit/PAX-EXAM easier</name>
+    <artifactId>fighterfish-test-util</artifactId>
+    <name>FighterFish Test Util</name>
+
     <description>
         This is a small junit extension developed in FighterFish project to make the task of writing
         test cases using maven/glassfish/junit much easier. It in turn leverages pax-exam test framework.
     </description>
-    <scm>
-        <connection>scm:svn:https://github.com/eclipse-ee4j/glassfish-fighterfish/test/util</connection>
-        <developerConnection>scm:svn:https://github.com/eclipse-ee4j/glassfish-fighterfish/test/util
-        </developerConnection>
-        <url>https://github.com/eclipse-ee4j/glassfish-fighterfish/test/util</url>
-    </scm>
+
+    <properties>
+        <stage.dir>${project.build.directory}/stage</stage.dir>
+        <glassfish.install.dir>${stage.dir}/glassfish5/glassfish</glassfish.install.dir>
+    </properties>
+
     <build>
-        <!-- This or a subset of it should go to a higher level pom -->
-        <pluginManagement>
-            <plugins>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-compiler-plugin</artifactId>
-                    <version>2.3.2</version>
-                    <configuration>
-                        <source>1.6</source>
-                        <target>1.6</target>
-                    </configuration>
-                </plugin>
-                <plugin>
-                    <!-- Configure maven-bundle-plugin to generate OSGi manifest. Please
-                            note: we use the manifest goal only and not the bundle goal. The bundle goal
-                            can lead to very surprising results if the package names are not correctly
-                            specified. So, we use the jar plugin to generate the jar. -->
-                    <groupId>org.apache.felix</groupId>
-                    <artifactId>maven-bundle-plugin</artifactId>
-                    <version>2.3.4</version>
-                    <configuration>
-                        <!-- By default, we don't export anything. -->
-                        <Export-Package />
-                        <!-- Since, we are in a top level pom and we we don't want it to be
-                                 active for plain jar type artifacts, enable the plugin for hk2-jar and bundle
-                                 packaging type only, -->
-                        <supportedProjectTypes>
-                            <supportedProjectType>jar</supportedProjectType>
-                        </supportedProjectTypes>
-                        <instructions>
-                            <!-- Read all the configuration from osgi.properties file, if it exists.
-                                      See Felix-699 to find out why we use ${basedir}. -->
-                            <_include>-${basedir}/osgi.properties</_include>
-                        </instructions>
-                    </configuration>
-                    <executions>
-                        <execution>
-                            <id>bundle-manifest</id>
-                            <phase>process-classes</phase>
-                            <goals>
-                                <goal>manifest</goal>
-                            </goals>
-                        </execution>
-                    </executions>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-jar-plugin</artifactId>
-                    <version>2.3.2</version>
-                    <configuration>
-                        <archive>
-                            <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF
-                            </manifestFile>
-                        </archive>
-                    </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-failsafe-plugin</artifactId>
-                    <version>2.12.2</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-surefire-plugin</artifactId>
-                    <version>2.10</version>
-                </plugin>
-                <!--
-                We can't enable tests while doing a release, because one of our test tries to install itself
-                and that fails to resolve the artifact from repo.
-                The profile jvnet-release is what is mentioned in parent pom. gpg plugin is enabled in that profile.
-                -->
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-release-plugin</artifactId>
-                    <version>2.4</version>
-                    <configuration>
-                        <arguments>-Pjvnet-release -DskipTests=true -Dgpg.passphrase=${gpg.passphrase}</arguments>
-                        <tagBase>https://svn.java.net/svn/glassfish~svn/tags/fighterfish-releases</tagBase>
-                        <tagNameFormat>@{project.groupId}.@{project.artifactId}-@{project.version}</tagNameFormat>
-                    </configuration>
-                </plugin>
-            </plugins>
-        </pluginManagement>
         <resources>
             <resource>
                 <directory>src/main/resources</directory>
@@ -134,365 +46,327 @@
         </resources>
         <plugins>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
+                <groupId>org.apache.servicemix.tooling</groupId>
+                <artifactId>depends-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>generate-depends-file</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>generate-depends-file</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-            </plugin>
-            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>install-glassfish</id>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <phase>pre-integration-test</phase>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>org.glassfish.main.distributions</groupId>
+                                    <artifactId>glassfish</artifactId>
+                                    <version>${glassfish.version}</version>
+                                    <type>zip</type>
+                                </artifactItem>
+                            </artifactItems>
+                            <outputDirectory>${stage.dir}</outputDirectory>
+                            <overWriteReleases>true</overWriteReleases>
+                            <overWriteSnapshots>true</overWriteSnapshots>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>override-fighterfish-autostart</id>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <phase>pre-integration-test</phase>
+                        <configuration>
+                            <includeGroupIds>org.glassfish.fighterfish</includeGroupIds>
+                            <includeArtifactIds>
+                                osgi-cdi, osgi-ee-resources, osgi-ejb-container,
+                                osgi-http, osgi-javaee-base, osgi-jdbc, osgi-jpa,
+                                osgi-jta, osgi-web-container
+                            </includeArtifactIds>
+                            <transitive>false</transitive>
+                            <outputDirectory>${glassfish.install.dir}/modules/autostart</outputDirectory>
+                            <overWriteReleases>true</overWriteReleases>
+                            <overWriteSnapshots>true</overWriteSnapshots>
+                            <stripVersion>true</stripVersion>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>override-fighterfish-module</id>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <phase>pre-integration-test</phase>
+                        <configuration>
+                            <includeGroupIds>org.glassfish.fighterfish</includeGroupIds>
+                            <includeArtifactIds>
+                                 osgi-jpa-extension
+                            </includeArtifactIds>
+                            <transitive>false</transitive>
+                            <outputDirectory>${glassfish.install.dir}/modules</outputDirectory>
+                            <overWriteReleases>true</overWriteReleases>
+                            <overWriteSnapshots>true</overWriteSnapshots>
+                            <stripVersion>true</stripVersion>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <configuration>
-                    <!--
-                    Maven chooses to make provided dependencies part of test classpath.
-                    The javaee-api and javaee-web-api jars can't be used in runtime, for they
-                    don't contain proper classes, so we exclude them from test classpath.
-                    -->
-                    <classpathDependencyExcludes>
-                        <classpathDependencyExcludes>javax:javaee-web-api
-                        </classpathDependencyExcludes>
-                    </classpathDependencyExcludes>
-                </configuration>
-            </plugin>
-            <!--
-            Let's configure fail-safe plugin to execute integration tests for this module
-            -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-failsafe-plugin</artifactId>
-                <executions>
-                </executions>
                 <configuration>
+                    <argLine>-Dfile.encoding=UTF-8 -Djava.endorsed.dirs=${glassfish.install.dir}/modules/endorsed</argLine>
                     <systemPropertyVariables>
-                        <!-- This is what is used by Derby Embedded Driver to decide where to keep the derby log messages -->
                         <derby.stream.error.file>${project.build.directory}/derby.log</derby.stream.error.file>
-                        <!-- This is needed for pax-url-mvn to read custom settings.xml.
-                             pax-url-mvn tries to locate settings.xml in ~/.m2 or in ${maven.home}/conf
-                        -->
-                        <user.home>${user.home}</user.home>
-                        <!-- This is needed for pax-url-mvn to reads custom settings.xml.
-                             pax-url-mvn tries to locate settings.xml in ~/.m2 or in ${maven.home}/conf
-                        -->
-                        <maven.home>${maven.home}</maven.home>
+                        <org.glassfish.startupThreadPolicy>FULLY_THREADED</org.glassfish.startupThreadPolicy>
+                        <com.sun.aas.installRoot>${glassfish.install.dir}</com.sun.aas.installRoot>
+                        <com.sun.aas.instanceRoot>${glassfish.install.dir}/domains/domain1</com.sun.aas.instanceRoot>
+                        <org.osgi.framework.storage>${project.build.directory}/osgi-cache</org.osgi.framework.storage>
+                        <fighterfish.test.setup.timeout>200000</fighterfish.test.setup.timeout>
+                        <!-- DEBUG friendly -->
+                        <!--<fighterfish.test.timeout>2000000</fighterfish.test.timeout>-->
                     </systemPropertyVariables>
-                    <!--
-                    Maven chooses to make provided dependencies part of test classpath.
-                    The javaee-api and javaee-web-api jars can't be used in runtime, for they
-                    don't contain proper classes, so we exclude them from test classpath.
-                    -->
                     <classpathDependencyExcludes>
-                        <classpathDependencyExcludes>javax:javaee-web-api
-                        </classpathDependencyExcludes>
+                        <classpathDependencyExcludes>javax:javaee-web-api</classpathDependencyExcludes>
+                        <classpathDependencyExcludes>org.glassfish.hk2:*</classpathDependencyExcludes>
+                        <classpathDependencyExcludes>org.glassfish.fighterfish:*</classpathDependencyExcludes>
                     </classpathDependencyExcludes>
                 </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>integration-test</goal>
+                            <goal>verify</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
+
     <dependencies>
         <dependency>
-            <groupId>org.glassfish</groupId>
+            <groupId>org.glassfish.main.common</groupId>
             <artifactId>simple-glassfish-api</artifactId>
-            <version>3.1.1</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.12</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.core</artifactId>
-            <version>4.2.0</version>
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.compendium</artifactId>
-            <version>4.2.0</version>
+            <artifactId>osgi.enterprise</artifactId>
         </dependency>
         <dependency>
             <groupId>org.ops4j.pax.exam</groupId>
             <artifactId>pax-exam</artifactId>
-            <version>${pax-exam.version}</version>
         </dependency>
         <dependency>
             <groupId>org.ops4j.pax.exam</groupId>
             <artifactId>pax-exam-junit4</artifactId>
-            <version>${pax-exam.version}</version>
         </dependency>
         <dependency>
-            <!-- Having this dependency instructs pax-exam to use in-process OSGi
-                   runtime -->
             <groupId>org.ops4j.pax.exam</groupId>
             <artifactId>pax-exam-container-native</artifactId>
-            <version>${pax-exam.version}</version>
         </dependency>
-        <!-- Starting with pax-exam 2.2.0, native container requires pax-exam-link-assembly
-              and pax-url-aether to be provisioned as well while using mvn protocol. -->
         <dependency>
             <groupId>org.ops4j.pax.exam</groupId>
             <artifactId>pax-exam-link-assembly</artifactId>
-            <version>${pax-exam.version}</version>
         </dependency>
-        <!-- pax-exam uses slf4j. We need to provide a binding for the same here. -->
+        <dependency>
+            <groupId>org.ops4j.pax.exam</groupId>
+            <artifactId>pax-exam-invoker-junit</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.ops4j.pax.url</groupId>
+            <artifactId>pax-url-aether</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-jdk14</artifactId>
-            <version>1.6.1</version>
         </dependency>
         <dependency>
-            <groupId>javax</groupId>
-            <artifactId>javaee-web-api</artifactId>
-            <version>6.0</version>
-            <scope>provided</scope>
-            <optional>true</optional>
-        </dependency>
-        <!--
-        api and simplewab are two sample bundles provisioned by the tests.
-        -->
-        <dependency>
-            <groupId>org.glassfish.fighterfish</groupId>
-            <artifactId>sample.uas.api</artifactId>
-            <version>1.0.0</version>
-            <scope>test</scope>
+            <groupId>org.slf4j</groupId>
+            <artifactId>jcl-over-slf4j</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.glassfish.fighterfish</groupId>
-            <artifactId>sample.uas.simplewab</artifactId>
-            <version>1.0.0</version>
-            <scope>test</scope>
-            <type>war</type>
+            <groupId>org.ops4j.pax.exam</groupId>
+            <artifactId>pax-exam-spi</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient-osgi</artifactId>
-            <version>4.5.5</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpcore-osgi</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>javax</groupId>
+            <artifactId>javaee-web-api</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.fighterfish</groupId>
+            <artifactId>osgi-cdi</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+            <optional>true</optional>
+            <exclusions>
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.fighterfish</groupId>
+            <artifactId>osgi-ee-resources</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+            <optional>true</optional>
+            <exclusions>
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.fighterfish</groupId>
+            <artifactId>osgi-ejb-container</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+            <optional>true</optional>
+            <exclusions>
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.fighterfish</groupId>
+            <artifactId>osgi-http</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+            <optional>true</optional>
+            <exclusions>
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.fighterfish</groupId>
+            <artifactId>osgi-javaee-base</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+            <optional>true</optional>
+            <exclusions>
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.fighterfish</groupId>
+            <artifactId>osgi-jdbc</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+            <optional>true</optional>
+            <exclusions>
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.fighterfish</groupId>
+            <artifactId>osgi-jpa</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+            <optional>true</optional>
+            <exclusions>
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.fighterfish</groupId>
+            <artifactId>osgi-jpa-extension</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+            <optional>true</optional>
+            <exclusions>
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.fighterfish</groupId>
+            <artifactId>osgi-jta</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+            <optional>true</optional>
+            <exclusions>
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.fighterfish</groupId>
+            <artifactId>osgi-web-container</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+            <optional>true</optional>
+            <exclusions>
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.fighterfish</groupId>
+            <artifactId>fighterfish-sample-uas-simplewab</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+            <type>war</type>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.felix</groupId>
+            <artifactId>org.apache.felix.framework</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
-
-    <!--
-    We want to run the tests multiple times with different settings like with an existing GlassFish
-    installation, without an installation, with Felix and Equinox, etc. So, we create multiple
-    test executions.
-    -->
-    <profiles>
-        <profile>
-            <id>ToolsJar</id>
-            <activation>
-                <os>
-                    <family>!mac</family>
-                </os>
-            </activation>
-            <dependencies>
-                <!-- Add tools.jar to classpath as required by GlassFish. See ASMainHelper#createOSGiFrameworkLauncherCL -->
-                <dependency>
-                    <groupId>com.sun</groupId>
-                    <artifactId>tools</artifactId>
-                    <version>${java.version}</version>
-                    <scope>system</scope>
-                    <systemPath>${java.home}/../lib/tools.jar</systemPath>
-                </dependency>
-            </dependencies>
-        </profile>
-
-        <profile>
-            <id>Felix</id>
-            <activation>
-                <!-- We can't use activeByDefault, as such a profile is not selected when any other profile is selected
-                     because of explicit user request or because of activation rule.
-                     We don't want everyone to pass -PFelix either. So, we activate it using a rule
-                     which will always match. If you want this profile to be inactive (e.g. when running
-                     using Equinox), then you have to pass -P-Felix.
-                -->
-                <jdk>[1.6,1000)</jdk>
-            </activation>
-            <dependencies>
-                <dependency>
-                    <groupId>org.apache.felix</groupId>
-                    <artifactId>org.apache.felix.framework</artifactId>
-                    <scope>test</scope>
-                    <version>${felix.version}</version>
-                </dependency>
-            </dependencies>
-            <properties>
-                <GlassFish_Platform>Felix</GlassFish_Platform>
-            </properties>
-        </profile>
-
-        <profile>
-            <id>Equinox</id>
-            <activation>
-                <activeByDefault>false</activeByDefault>
-            </activation>
-            <dependencies>
-                <dependency>
-                    <groupId>org.sonatype.tycho</groupId>
-                    <artifactId>org.eclipse.osgi</artifactId>
-                    <version>${equinox.version}</version>
-                    <scope>test</scope>
-                </dependency>
-            </dependencies>
-            <properties>
-                <GlassFish_Platform>Equinox</GlassFish_Platform>
-            </properties>
-        </profile>
-
-        <profile>
-            <id>SunJVM</id>
-            <activation>
-                <property>
-                    <name>java.vm.name</name>
-                    <value>Java HotSpot(TM) Server VM</value>
-                </property>
-            </activation>
-            <properties>
-                <argLine>-XX:MaxPermSize=256m</argLine>
-            </properties>
-        </profile>
-
-        <profile>
-            <id>IBM-J9-VM</id>
-            <activation>
-                <property>
-                    <name>java.vm.name</name>
-                    <value>IBM J9 VM</value>
-                </property>
-            </activation>
-            <properties>
-                <argLine>-XX:MaxPermSize=256m -Xverify:none</argLine>
-            </properties>
-        </profile>
-
-        <!--
-        In this profile, the test framework downloads and installs glassfish and uses it to run tests.
-        The location to download glassfish can be overridden via a property called fighterfish.provisioner.url.
-        -->
-        <profile>
-            <id>TestWithoutInstallation</id>
-            <activation>
-                <!--
-                See Felix profile to undertstand why we use this activation policy.
-                -->
-                <jdk>[1.6,1000)</jdk>
-            </activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <artifactId>maven-failsafe-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>TestWithoutInstallation</id>
-                                <goals>
-                                    <goal>integration-test</goal>
-                                    <goal>verify</goal>
-                                </goals>
-                                <configuration>
-                                    <systemPropertyVariables>
-                                        <fighterfish.provisioner.url>${fighterfish.provisioner.url}</fighterfish.provisioner.url>
-                                        <org.osgi.framework.storage>
-                                            ${project.build.directory}/osgi-cache/${GlassFish_Platform}/TestWithoutInstallation
-                                        </org.osgi.framework.storage>
-                                    </systemPropertyVariables>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-
-        <!--
-        In this profile, it is NOT the responsibility of test framework to install glassfish.
-        So, we use maven-dependency-plugin:unpack to install glassfish in target dir and pass its
-        location to test framework via com.sun.aas.installRoot property.
-        We have hard coded the version of glassfish to install,
-        because the purpose of this profile is to make sure that this utility can use an existing installation.
-        If we want to test compatibility with various gf versions, we can easily
-        do that using TestWithoutInstallation profile by overriding fighterfish.provisioner.url.
-        -->
-        <profile>
-            <id>TestWithInstallation</id>
-            <activation>
-                <!--
-                See Felix profile to undertstand why we use this activation policy.
-                -->
-                <jdk>[1.6,1000)</jdk>
-            </activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <artifactId>maven-dependency-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>install-glassfish</id>
-                                <goals>
-                                    <goal>unpack</goal>
-                                </goals>
-                                <phase>pre-integration-test</phase>
-                                <configuration>
-                                    <artifactItems>
-                                        <artifactItem>
-                                            <groupId>org.glassfish.main.distributions</groupId>
-                                            <artifactId>glassfish</artifactId>
-                                            <version>3.1.2.2</version>
-                                            <type>zip</type>
-                                        </artifactItem>
-                                    </artifactItems>
-                                    <outputDirectory>
-                                        ${project.build.directory}/stages/
-                                    </outputDirectory>
-                                    <overWriteReleases>true</overWriteReleases>
-                                    <overWriteSnapshots>true</overWriteSnapshots>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <artifactId>maven-failsafe-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>TestWithInstallation</id>
-                                <goals>
-                                    <goal>integration-test</goal>
-                                    <goal>verify</goal>
-                                </goals>
-                                <configuration>
-                                    <systemPropertyVariables>
-                                        <com.sun.aas.installRoot>
-                                            ${project.build.directory}/stages/glassfish3/glassfish
-                                        </com.sun.aas.installRoot>
-                                        <org.osgi.framework.storage>
-                                            ${project.build.directory}/osgi-cache/${GlassFish_Platform}/TestWithInstallation
-                                        </org.osgi.framework.storage>
-                                    </systemPropertyVariables>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-
-        <profile>
-            <id>Debug</id>
-            <properties>
-                <maven.failsafe.debug>-Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=9009</maven.failsafe.debug>
-                <maven.surefire.debug>-Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=9009</maven.surefire.debug>
-            </properties>
-        </profile>
-    </profiles>
-    <properties>
-        <!-- The version of pax-exam being used. I have tested test.util bundle
-              with 2.3.0 only, so, let's stick to this version for now. -->
-        <pax-exam.version>2.3.0</pax-exam.version>
-        <fighterfish.provisioner.url>mvn:org.glassfish.main.distributions/glassfish/3.1.2.2/zip</fighterfish.provisioner.url>
-        <felix.version>4.2.1</felix.version>
-        <equinox.version>3.6.2.R36x_v20110210</equinox.version>
-    </properties>
 </project>

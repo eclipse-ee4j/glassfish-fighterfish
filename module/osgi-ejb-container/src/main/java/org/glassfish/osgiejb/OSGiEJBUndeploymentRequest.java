@@ -32,10 +32,12 @@ import java.util.logging.Logger;
  * @author Sanjeeb.Sahoo@Sun.COM
  */
 public class OSGiEJBUndeploymentRequest extends OSGiUndeploymentRequest {
+
     public OSGiEJBUndeploymentRequest(Deployment deployer, ServerEnvironmentImpl env, ActionReport reporter, OSGiApplicationInfo osgiAppInfo) {
         super(deployer, env, reporter, osgiAppInfo);
     }
 
+    @Override
     protected OSGiDeploymentContext getDeploymentContextImpl(ActionReport reporter, Logger logger, ReadableArchive source, UndeployCommandParameters undeployParams, ServerEnvironmentImpl env, Bundle bundle) throws Exception {
         return new OSGiEJBDeploymentContext(reporter, logger, source, undeployParams, env, bundle);
     }

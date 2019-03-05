@@ -13,7 +13,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  */
-
 package org.glassfish.osgihttp;
 
 import org.osgi.service.http.HttpContext;
@@ -35,18 +34,22 @@ import java.net.URISyntaxException;
  */
 public class OSGiResourceServlet extends HttpServlet {
 
-    private String alias;
-    private String name;
-    private HttpContext httpContext;
+    private final String alias;
+    private final String name;
+    private final HttpContext httpContext;
 
-    public OSGiResourceServlet(String alias, String name, HttpContext httpContext) {
+    public OSGiResourceServlet(String alias, String name,
+            HttpContext httpContext) {
+
         this.alias = alias;
         this.name = name;
         this.httpContext = httpContext;
     }
 
     @Override
-    protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void service(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
+
         final String resPath = getResourcePath(req);
         URL url = httpContext.getResource(resPath);
         if (url == null) {
@@ -58,7 +61,8 @@ public class OSGiResourceServlet extends HttpServlet {
         // writing everything.
         String mimeType = httpContext.getMimeType(resPath);
         if (mimeType == null) {
-            mimeType = getServletConfig().getServletContext().getMimeType(resPath);
+            mimeType = getServletConfig().getServletContext()
+                    .getMimeType(resPath);
         }
         resp.setContentType(mimeType);
         URLConnection conn = url.openConnection();
@@ -69,36 +73,42 @@ public class OSGiResourceServlet extends HttpServlet {
 
     private String getResourcePath(HttpServletRequest req) {
         String servletPath = req.getServletPath();
-        assert(alias.equals(servletPath));
+        assert (alias.equals(servletPath));
         String contextPath = req.getContextPath();
         final String requestURI;
         try {
             requestURI = new URI(req.getRequestURI()).normalize().toString();
         } catch (URISyntaxException e) {
-            throw new RuntimeException(e); // TODO(Sahoo): Proper Exception Handling
+            // TODO(Sahoo): Proper Exception Handling
+            throw new RuntimeException(e);
         }
         String requestedPath = requestURI.substring(contextPath.length());
         StringBuilder mappedPath = new StringBuilder(requestedPath);
         String internalName = name == "/" ? "" : name;
         mappedPath.replace(0, servletPath.length(), internalName);
-//        System.out.println("Mapped [" + requestedPath + "] to [" + mappedPath + "]");
+//        System.out.println("Mapped [" + requestedPath
+//                + "] to [" + mappedPath + "]");
         return mappedPath.toString();
     }
 
-    private int writeToStream(URLConnection connection, OutputStream os) throws IOException {
+    private int writeToStream(URLConnection connection, OutputStream os)
+            throws IOException {
+
         InputStream is = connection.getInputStream();
         try {
             byte[] buf = new byte[8192];
             int readCount = is.read(buf);
             int writeCount = 0;
-            while (readCount!=-1) {
+            while (readCount != -1) {
                 os.write(buf, 0, readCount);
                 writeCount += readCount;
                 readCount = is.read(buf);
             }
             return writeCount;
         } finally {
-            if (is != null) is.close();
+            if (is != null) {
+                is.close();
+            }
         }
     }
 }

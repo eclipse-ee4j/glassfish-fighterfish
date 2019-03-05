@@ -7,7 +7,6 @@
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
-
 package org.glassfish.fighterfish.sample.uas.advservice;
 
 import org.glassfish.fighterfish.sample.uas.api.UserAuthService;
@@ -24,8 +23,7 @@ import java.util.List;
 
 public class AdvUserAuthServiceImpl implements UserAuthService {
 
-    private AdvSvcImplActivator activator;
-
+    private final AdvSvcImplActivator activator;
 
     public AdvUserAuthServiceImpl(AdvSvcImplActivator activator) {
         this.activator = activator;
@@ -41,17 +39,23 @@ public class AdvUserAuthServiceImpl implements UserAuthService {
             } catch (Throwable t) {
                 t.printStackTrace();
                 setRollbackOnly();
-                throw t instanceof RuntimeException ? RuntimeException.class.cast(t) : new RuntimeException(t);
+                throw t instanceof RuntimeException
+                        ? RuntimeException.class.cast(t)
+                        : new RuntimeException(t);
             } finally {
                 em.close();
             }
         } finally {
-            if (startedTX) endTX();
+            if (startedTX) {
+                endTX();
+            }
         }
     }
 
     @Override
-    public boolean register(@NotNull @Size(min = 3) String name, @NotNull @Size(min = 3) String password) {
+    public boolean register(@NotNull @Size(min = 3) String name,
+            @NotNull @Size(min = 3) String password) {
+
         boolean startedTX = startTX();
         try {
             EntityManager em = getEM();
@@ -65,7 +69,9 @@ public class AdvUserAuthServiceImpl implements UserAuthService {
                 em.close();
             }
         } finally {
-            if (startedTX) endTX();
+            if (startedTX) {
+                endTX();
+            }
         }
     }
 
@@ -84,7 +90,9 @@ public class AdvUserAuthServiceImpl implements UserAuthService {
                 em.close();
             }
         } finally {
-            if (startedTX) endTX();
+            if (startedTX) {
+                endTX();
+            }
         }
     }
 
@@ -103,7 +111,9 @@ public class AdvUserAuthServiceImpl implements UserAuthService {
                 em.close();
             }
         } finally {
-            if (startedTX) endTX();
+            if (startedTX) {
+                endTX();
+            }
         }
     }
 
@@ -115,7 +125,8 @@ public class AdvUserAuthServiceImpl implements UserAuthService {
             LoginAttempt attempt = new LoginAttempt();
             attempt.setSuccessful(result);
             attempt.setUserCredential(uc);
-            // set both sides of relationships because stupid JPA providers don't even update their second level cache
+            // set both sides of relationships because stupid JPA providers
+            // don't even update their second level cache
             // with relationships in database.
             uc.getLoginAttempts().add(attempt);
             em.persist(attempt);
@@ -125,7 +136,9 @@ public class AdvUserAuthServiceImpl implements UserAuthService {
 
     private boolean register2(String name, String password, EntityManager em) {
         UserCredential uc = em.find(UserCredential.class, name);
-        if (uc != null) return false;
+        if (uc != null) {
+            return false;
+        }
         uc = new UserCredential();
         uc.setName(name);
         uc.setPassword(password);
@@ -136,14 +149,19 @@ public class AdvUserAuthServiceImpl implements UserAuthService {
 
     private boolean unregister2(String name, EntityManager em) {
         UserCredential uc = em.find(UserCredential.class, name);
-        if (uc == null) return false;
+        if (uc == null) {
+            return false;
+        }
         em.remove(uc);
         log("Unregistering (" + name + ")");
         return true;
     }
 
+    @SuppressWarnings("unchecked")
     private String getReport2(EntityManager em) {
-        List<LoginAttempt> attempts = em.createNamedQuery("LoginAttempt.findAll").getResultList();
+        List<LoginAttempt> attempts = em
+                .createNamedQuery("LoginAttempt.findAll")
+                .getResultList();
         log("Number of entries found: " + attempts.size());
         StringBuilder report = new StringBuilder("Login Attempt Report:\n");
         for (LoginAttempt attempt : attempts) {
@@ -177,7 +195,8 @@ public class AdvUserAuthServiceImpl implements UserAuthService {
     }
 
     /**
-     * Commit or rollback a transaction depending on rollback flag set in the tx.
+     * Commit or rollback a transaction depending on rollback flag set in the
+     * tx.
      */
     private void endTX() {
         try {
@@ -211,5 +230,5 @@ public class AdvUserAuthServiceImpl implements UserAuthService {
 
     private EntityManager getEM() {
         return activator.getEMF().createEntityManager();
-	}
+    }
 }

@@ -28,7 +28,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Writer;
 import java.net.URL;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -36,7 +35,7 @@ import java.util.logging.Logger;
  */
 public class PersistenceXMLReaderWriter
 {
-    private static final Logger logger = Logger.getLogger(
+    private static final Logger LOGGER = Logger.getLogger(
             PersistenceXMLReaderWriter.class.getPackage().getName());
 
     public Persistence read(URL pxmlURL) throws IOException
@@ -101,12 +100,14 @@ public class PersistenceXMLReaderWriter
     }
 
     private JAXBContext getJAXBContext() throws JAXBException {
-        // We need to set context class loader to be CommonClassLoader, otherwise our stupid JAXB implementation
+        // We need to set context class loader to be CommonClassLoader,
+        // otherwise our stupid JAXB implementation
         // won't be able to locate the default JAXB context factory class.
         final Thread thread = Thread.currentThread();
         ClassLoader oldCL = thread.getContextClassLoader();
         try {
-            ClassLoader ccl = Globals.get(ClassLoaderHierarchy.class).getCommonClassLoader();
+            ClassLoader ccl = Globals.get(ClassLoaderHierarchy.class)
+                    .getCommonClassLoader();
             thread.setContextClassLoader(ccl);
             JAXBContext jc = JAXBContext.newInstance(ObjectFactory.class);
         return jc;

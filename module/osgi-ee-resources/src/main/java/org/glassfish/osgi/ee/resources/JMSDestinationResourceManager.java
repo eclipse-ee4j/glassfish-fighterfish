@@ -13,7 +13,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  */
-
 package org.glassfish.osgi.ee.resources;
 
 import com.sun.enterprise.config.serverbeans.BindableResource;
@@ -27,36 +26,43 @@ import javax.jms.Queue;
 import javax.jms.Topic;
 import java.util.Collection;
 import java.util.Dictionary;
-import java.util.Hashtable;
+import java.util.Properties;
 
 /**
- * Resource-Manager to export jms-destinations (JMS-RA admin-object-resources) in GlassFish to OSGi's service-registry
+ * Resource-Manager to export jms-destinations (JMS-RA admin-object-resources)
+ * in GlassFish to OSGi's service-registry
  *
  * @author Jagadish Ramu
  */
-public class JMSDestinationResourceManager extends BaseResourceManager implements ResourceManager {
+public class JMSDestinationResourceManager extends BaseResourceManager
+        implements ResourceManager {
 
-    public JMSDestinationResourceManager(Habitat habitat){
+    public JMSDestinationResourceManager(Habitat habitat) {
         super(habitat);
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public void registerResources(BundleContext context) {
         registerJmsResources(context);
     }
 
     /**
      * registers the admin-object-resource in service-registry
+     *
      * @param context bundle-context
      */
     public void registerJmsResources(BundleContext context) {
-        Resources resources = getHabitat().getComponent(Domain.class).getResources();
-        Collection<AdminObjectResource> administeredObjectResources = resources.getResources(AdminObjectResource.class);
+        Resources resources = getHabitat().getComponent(Domain.class)
+                .getResources();
+        Collection<AdminObjectResource> administeredObjectResources =
+                resources.getResources(AdminObjectResource.class);
         for (AdminObjectResource resource : administeredObjectResources) {
             if (isJmsResource(resource)) {
-                ResourceRef resRef = getResourceHelper().getResourceRef(resource.getJndiName());
+                ResourceRef resRef = getResourceHelper()
+                        .getResourceRef(resource.getJndiName());
                 registerResource(resource, resRef, context);
             }
         }
@@ -65,10 +71,15 @@ public class JMSDestinationResourceManager extends BaseResourceManager implement
     /**
      * {@inheritDoc}
      */
-    public void registerResource(BindableResource resource, ResourceRef resRef, BundleContext bundleContext) {
-        AdminObjectResource adminObjectResource = (AdminObjectResource) resource;
+    @Override
+    @SuppressWarnings("unchecked")
+    public void registerResource(BindableResource resource, ResourceRef resRef,
+            BundleContext bundleContext) {
+        AdminObjectResource adminObjectResource =
+                (AdminObjectResource) resource;
         if (adminObjectResource.getEnabled().equalsIgnoreCase("true")) {
-            if (resRef != null && resRef.getEnabled().equalsIgnoreCase("true")) {
+            if (resRef != null && resRef.getEnabled()
+                    .equalsIgnoreCase("true")) {
                 String defnName = adminObjectResource.getResType();
                 Class claz = null;
                 Class intf[] = null;
@@ -80,14 +91,18 @@ public class JMSDestinationResourceManager extends BaseResourceManager implement
                     claz = Topic.class;
                     intf = new Class[]{Topic.class, Invalidate.class};
                 } else {
-                    throw new RuntimeException
-                            ("Invalid Destination [ " + defnName + " ]" +
-                                    " for jms-resource [ " + resource.getJndiName() + " ]");
+                    throw new RuntimeException(
+                            "Invalid Destination [ " + defnName + " ]"
+                            + " for jms-resource [ "
+                            + resource.getJndiName() + " ]");
                 }
-                Dictionary properties = new Hashtable();
-                properties.put(Constants.JNDI_NAME, adminObjectResource.getJndiName());
-                Object proxy = getProxy(adminObjectResource.getJndiName(), intf, getClassLoader());
-                registerResourceAsService(bundleContext, adminObjectResource, claz.getName(), properties, proxy);
+                Dictionary properties = new Properties();
+                properties.put(Constants.JNDI_NAME, adminObjectResource
+                        .getJndiName());
+                Object proxy = getProxy(adminObjectResource.getJndiName(), intf,
+                        getClassLoader());
+                registerResourceAsService(bundleContext, adminObjectResource,
+                        claz.getName(), properties, proxy);
             }
         }
 
@@ -96,6 +111,7 @@ public class JMSDestinationResourceManager extends BaseResourceManager implement
     /**
      * {@inheritDoc}
      */
+    @Override
     public boolean handlesResource(BindableResource resource) {
         boolean result = false;
         if (resource instanceof AdminObjectResource) {
@@ -108,9 +124,11 @@ public class JMSDestinationResourceManager extends BaseResourceManager implement
 
     /**
      * determines whether the resource is a JMS-RA's resource
+     *
      * @param resource admin-object-resource
      * @return boolean
      */
+    @SuppressWarnings("unchecked")
     private boolean isJmsResource(AdminObjectResource resource) {
         boolean result = false;
         String raName = resource.getResAdapter();

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Distribution License v. 1.0, which is available at
+    http://www.eclipse.org/org/documents/edl-v10.php.
+
+    SPDX-License-Identifier: BSD-3-Clause
+
+-->
+
+<persistence version="2.0" xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd">
+    <persistence-unit name="sample.uas.entities" transaction-type="JTA">
+        <jta-data-source>jdbc/__default</jta-data-source>
+        <class>org.glassfish.fighterfish.sample.uas.entities.LoginAttempt</class>
+        <class>org.glassfish.fighterfish.sample.uas.entities.UserCredential</class>
+        <properties>
+            <property name="eclipselink.ddl-generation" value="drop-and-create-tables"/>
+            <property name="eclipselink.logging.level" value="FINEST"/>
+            <property name="eclipselink.target-server" value="org.eclipse.persistence.platform.server.sunas.SunAS9ServerPlatform"/>
+        </properties>
+    </persistence-unit>
+</persistence>

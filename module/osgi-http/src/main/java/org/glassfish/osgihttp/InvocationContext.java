@@ -13,18 +13,17 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  */
-
 package org.glassfish.osgihttp;
 
 import com.sun.enterprise.web.WebModule;
-
-import javax.servlet.ServletContext;
 
 /**
  *
  * @author Sanjeeb.Sahoo@Sun.COM
  */
 public interface InvocationContext {
+
     WebModule getWebModule();
+
     void setWebModule(WebModule webModule);
 }

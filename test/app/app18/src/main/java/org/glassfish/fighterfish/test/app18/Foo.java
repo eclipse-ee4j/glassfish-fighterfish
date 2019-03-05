@@ -13,7 +13,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  */
-
 package org.glassfish.fighterfish.test.app18;
 
 import javax.ejb.Local;
@@ -24,5 +23,6 @@ import javax.ejb.Local;
  */
 @Local
 public interface Foo {
+
     void bar();
 }

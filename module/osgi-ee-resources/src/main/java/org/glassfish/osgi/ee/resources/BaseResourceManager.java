@@ -13,7 +13,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  */
-
 package org.glassfish.osgi.ee.resources;
 
 import com.sun.enterprise.config.serverbeans.BindableResource;
@@ -32,37 +31,50 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Base class for resource-managers that export resources in GlassFish to OSGi's service-registry
+ * Base class for resource-managers that export resources in GlassFish to OSGi
+ * service-registry
  *
  * @author Jagadish Ramu
  */
 public class BaseResourceManager {
 
-    private Habitat habitat;
-
-    protected List<ServiceRegistration> services = new ArrayList<ServiceRegistration>();
-    protected static final Logger logger = Logger.getLogger(
+    protected static final Logger LOGGER = Logger.getLogger(
             BaseResourceManager.class.getPackage().getName());
-    protected ResourceHelper resourceHelper ;
 
-    public BaseResourceManager(Habitat habitat){
+    protected final List<ServiceRegistration> services =
+            new ArrayList<ServiceRegistration>();
+    protected final ResourceHelper resourceHelper;
+    private final Habitat habitat;
+
+    public BaseResourceManager(Habitat habitat) {
         this.habitat = habitat;
-        resourceHelper = new ResourceHelper(habitat);
+        this.resourceHelper = new ResourceHelper(habitat);
     }
 
-    protected void unRegisterResource(ServiceRegistration serviceRegistration, BundleContext context) {
-        debug("unregistering resource [" + serviceRegistration.getReference().getProperty(Constants.JNDI_NAME) + "]");
-        Invalidate proxy = (Invalidate) serviceRegistration.getReference().getBundle().
-                getBundleContext().getService(serviceRegistration.getReference());
+    @SuppressWarnings("unchecked")
+    protected void unRegisterResource(ServiceRegistration serviceRegistration,
+            BundleContext context) {
+
+        debug("unregistering resource ["
+                + serviceRegistration.getReference()
+                        .getProperty(Constants.JNDI_NAME) + "]");
+        Invalidate proxy = (Invalidate) serviceRegistration
+                .getReference()
+                .getBundle()
+                .getBundleContext()
+                .getService(serviceRegistration.getReference());
         serviceRegistration.unregister();
         proxy.invalidate();
     }
 
-    public void unRegisterResource(BindableResource resource, ResourceRef resRef, BundleContext bundleContext) {
+    public void unRegisterResource(BindableResource resource,
+            ResourceRef resRef, BundleContext bundleContext) {
+
         String jndiName = resource.getJndiName();
         ServiceRegistration toRemove = null;
         for (ServiceRegistration serviceRegistration : services) {
-            if (serviceRegistration.getReference().getProperty(Constants.JNDI_NAME).equals(jndiName)) {
+            if (serviceRegistration.getReference()
+                    .getProperty(Constants.JNDI_NAME).equals(jndiName)) {
                 unRegisterResource(serviceRegistration, bundleContext);
                 toRemove = serviceRegistration;
                 break;
@@ -76,7 +88,8 @@ public class BaseResourceManager {
     public void unRegisterResources(BundleContext context) {
         Iterator it = services.iterator();
         while (it.hasNext()) {
-            ServiceRegistration serviceRegistration = (ServiceRegistration) it.next();
+            ServiceRegistration serviceRegistration =
+                    (ServiceRegistration) it.next();
             unRegisterResource(serviceRegistration, context);
             it.remove();
         }
@@ -98,28 +111,36 @@ public class BaseResourceManager {
         return this.getClass().getClassLoader();
     }
 
-    protected void registerResourceAsService(BundleContext bundleContext, BindableResource bindableResource,
-                                             String name, Dictionary properties, Object o) {
-        ServiceRegistration service = bundleContext.registerService(name, o, properties);
+    @SuppressWarnings("unchecked")
+    protected void registerResourceAsService(BundleContext bundleContext,
+            BindableResource bindableResource, String name,
+            Dictionary properties, Object o) {
+
+        ServiceRegistration service = bundleContext
+                .registerService(name, o, properties);
         debug("registering resource [" + bindableResource.getJndiName() + "]");
         services.add(service);
     }
 
     /**
-     * get proxy object for the resource types (interfaces) so as to delegate to actual objects<br>
-     * @param jndiName jndi-name of resource
+     * get proxy object for the resource types (interfaces) so as to delegate to
+     * actual objects<br>
+     *
+     * @param jndiName JNDI name of resource
      * @param ifaces list of interfaces for which the proxy is needed
      * @param loader class-loader to define the proxy class
-     * @return proxy object 
+     * @return proxy object
      */
-    protected Object getProxy(String jndiName, Class[] ifaces, ClassLoader loader) {
+    protected Object getProxy(String jndiName, Class[] ifaces,
+            ClassLoader loader) {
+
         ResourceProxy proxy = new ResourceProxy(jndiName);
         return Proxy.newProxyInstance(loader, ifaces, proxy);
     }
 
     protected void debug(String s) {
-        if (logger.isLoggable(Level.FINEST)) {
-            logger.finest("[osgi-ee-resources] : " + s);
+        if (LOGGER.isLoggable(Level.FINEST)) {
+            LOGGER.log(Level.FINEST, "[osgi-ee-resources] : {0}", s);
         }
     }
 }

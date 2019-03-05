@@ -13,22 +13,24 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  */
-
 package org.glassfish.fighterfish.test.util;
 
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 
 /**
- * A simple {@link BaseMatcher} that matches if a string contains a specific character sequence. No regular expression
- * support as yet.
+ * A simple {@link BaseMatcher} that matches if a string contains a specific
+ * character sequence. No regular expression support as yet.
  *
  * @author Sanjeeb.Sahoo@Sun.COM
  */
 public class StringPatternMatcher extends BaseMatcher<String> {
+
     private final String expectedOutputPattern;
 
-    public StringPatternMatcher(String expectedOutputPattern) {this.expectedOutputPattern = expectedOutputPattern;}
+    public StringPatternMatcher(String expectedOutputPattern) {
+        this.expectedOutputPattern = expectedOutputPattern;
+    }
 
     @Override
     public boolean matches(Object o) {
@@ -37,6 +39,7 @@ public class StringPatternMatcher extends BaseMatcher<String> {
 
     @Override
     public void describeTo(Description description) {
-        description.appendText("Expected output to contain [" + expectedOutputPattern + "]");
+        description.appendText("Expected output to contain ["
+                + expectedOutputPattern + "]");
     }
 }

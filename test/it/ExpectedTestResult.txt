@@ -1,1 +1,0 @@
-Tests run: 30, Failures: 0, Errors: 0, Skipped: 4

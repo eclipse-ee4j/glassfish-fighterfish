@@ -13,7 +13,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  */
-
 package org.glassfish.osgijta;
 
 import org.glassfish.osgijavaeebase.Extender;
@@ -33,39 +32,57 @@ import java.lang.reflect.Proxy;
  * @author Sanjeeb.Sahoo@Sun.COM
  */
 public class JTAExtender implements Extender {
+
+    private static final Class[] JTA_CLASSES = {
+        UserTransaction.class,
+        TransactionManager.class,
+        TransactionSynchronizationRegistry.class
+    };
+
+    private static final String[] JTA_JDNI_NAMES = {
+        "java:comp/UserTransaction",
+        "java:appserver/TransactionManager",
+        "java:appserver/TransactionSynchronizationRegistry"
+    };
+
     private final BundleContext ctx;
 
     public JTAExtender(BundleContext ctx) {
         this.ctx = ctx;
     }
 
+    @Override
     public void start() {
-        Class[] classes = {UserTransaction.class, TransactionManager.class, TransactionSynchronizationRegistry.class};
-        String[] jndiNames = {"java:comp/UserTransaction", "java:appserver/TransactionManager", "java:appserver/TransactionSynchronizationRegistry"};
         for (int i = 0; i < 3; ++i) {
-            registerProxy(classes[i], jndiNames[i]);
+            registerProxy(JTA_CLASSES[i], JTA_JDNI_NAMES[i]);
         }
     }
 
     private void registerProxy(Class clazz, String jndiName) {
         InvocationHandler ih = new MyInvocationHandler(clazz, jndiName);
-        Object proxy = Proxy.newProxyInstance(getClass().getClassLoader(), new Class[]{clazz}, ih);
+        Object proxy = Proxy.newProxyInstance(getClass().getClassLoader(),
+                new Class[]{clazz}, ih);
         ctx.registerService(clazz.getName(), proxy, null);
     }
 
+    @Override
     public void stop() {
     }
 
     private class MyInvocationHandler implements InvocationHandler {
-        private Class<?> clazz;
-        private String jndiName;
+
+        private final Class<?> clazz;
+        private final String jndiName;
 
         private MyInvocationHandler(Class<?> clazz, String jndiName) {
             this.clazz = clazz;
             this.jndiName = jndiName;
         }
 
-        public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+        @Override
+        public Object invoke(Object proxy, Method method, Object[] args)
+                throws Throwable {
+
             try {
                 InitialContext ic = getInitialContext();
                 Object target = ic.lookup(jndiName);

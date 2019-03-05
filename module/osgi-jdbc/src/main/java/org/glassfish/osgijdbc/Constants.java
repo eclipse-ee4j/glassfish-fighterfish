@@ -13,11 +13,10 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  */
-
 package org.glassfish.osgijdbc;
 
 /**
- * Constants that will be used by osgi-jdbc module
+ * Constants that will be used by osgi-jdbc module.
  *
  * @author Jagadish Ramu
  */

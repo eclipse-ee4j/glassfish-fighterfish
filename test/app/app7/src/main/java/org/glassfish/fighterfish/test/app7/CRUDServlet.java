@@ -44,6 +44,7 @@ public class CRUDServlet extends HttpServlet
 
     @Resource UserTransaction utx;
 
+    @Override
     public void service(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, java.io.IOException
     {
@@ -107,6 +108,5 @@ public class CRUDServlet extends HttpServlet
             e.printStackTrace(out);
         }
         out.println("</BODY> </HTML> ");
-
     }
 }

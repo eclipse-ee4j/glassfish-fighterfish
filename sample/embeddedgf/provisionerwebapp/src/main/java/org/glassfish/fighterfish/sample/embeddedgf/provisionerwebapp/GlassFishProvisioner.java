@@ -7,7 +7,6 @@
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
-
 package org.glassfish.fighterfish.sample.embeddedgf.provisionerwebapp;
 
 import org.glassfish.embeddable.GlassFish;
@@ -35,22 +34,25 @@ import java.util.concurrent.Executors;
 /**
  * @author sanjeeb.sahoo@oracle.com
  */
-
 @WebListener
 public class GlassFishProvisioner implements ServletContextListener {
 
     private ServletContext servletContext;
     private volatile Framework framework;
     private volatile GlassFish glassfish;
-    private final ExecutorService executorService = Executors.newSingleThreadExecutor();
+    private final ExecutorService executorService
+            = Executors.newSingleThreadExecutor();
 
     private String fwJndiName = FW_JNDI_NAME_DEFAULT;
     private String gfJndiName = GF_JNDI_NAME_DEFAULT;
     private String gfHome;
 
-    private static final String FW_JNDI_NAME_DEFAULT = "java:global/glassfish-osgi-framework";
-    private static final String GF_JNDI_NAME_DEFAULT = "java:global/glassfish-instance";
-    private static final String GLASSFISH_INSTALL_ROOT_PROP = "com.sun.aas.installRoot";
+    private static final String FW_JNDI_NAME_DEFAULT
+            = "java:global/glassfish-osgi-framework";
+    private static final String GF_JNDI_NAME_DEFAULT
+            = "java:global/glassfish-instance";
+    private static final String GLASSFISH_INSTALL_ROOT_PROP
+            = "com.sun.aas.installRoot";
     private Bundle gfMainBundle;
 
     @Resource
@@ -79,28 +81,35 @@ public class GlassFishProvisioner implements ServletContextListener {
                     provisionGlassFish();
                     waitForGlassFish();
                     new InitialContext().rebind(gfJndiName, glassfish);
-                    log("bound " + glassfish + " in JNDI location: " + gfJndiName);
+                    log("bound " + glassfish + " in JNDI location: "
+                            + gfJndiName);
                 } catch (InterruptedException e) {
                     log("got interrupted: ", e);
                     Thread.currentThread().interrupt();
                     return;
                 } catch (Exception e) {
-                    log("Something has gone wrong while provisioning GlassFish.", e);
+                    log("Something has gone wrong while provisioning GlassFish.",
+                            e);
                 }
             }
         });
         log("Submitted task");
     }
 
-    private void waitForFramework() throws ExecutionException, InterruptedException {
+    private void waitForFramework()
+            throws ExecutionException, InterruptedException {
+
         log("waiting for OSGi framework");
         framework = new WaitForOSGiFrameworkTask().call();
     }
 
+    @SuppressWarnings("unchecked")
+    private void waitForGlassFish()
+            throws InterruptedException, ExecutionException {
 
-    private void waitForGlassFish() throws InterruptedException, ExecutionException {
         log("waiting for GlassFish");
-        ServiceTracker st = new ServiceTracker(framework.getBundleContext(), GlassFish.class.getName(), null);
+        ServiceTracker st = new ServiceTracker(framework.getBundleContext(),
+                GlassFish.class.getName(), null);
         st.open();
         try {
             glassfish = (GlassFish) st.waitForService(0);
@@ -116,21 +125,28 @@ public class GlassFishProvisioner implements ServletContextListener {
             gfHome = bctx.getProperty("com.sun.aas.installRoot");
         }
         if (gfHome == null) {
-            throw new RuntimeException("Please set GlassFish home either by setting a property called " +
-                    GLASSFISH_INSTALL_ROOT_PROP + " either in the system or in OSGi properties file.\n" +
-                    "Alternatively, you can set it using runtime deployment descriptor or " +
-                    "deployment plan while deploying this war file.");
+            throw new RuntimeException(
+                    "Please set GlassFish home either by setting a property"
+                    + " called " + GLASSFISH_INSTALL_ROOT_PROP
+                    + " either in the system or in OSGi properties file.\n"
+                    + "Alternatively, you can set it using runtime deployment"
+                    + " descriptor or deployment plan while deploying"
+                    + " this war file.");
         }
         log("Going to provision GlassFish bundles from " + gfHome);
-        File jar = new File(gfHome, "modules" + File.separator + "glassfish.jar");
+        File jar = new File(gfHome, "modules" + File.separator
+                + "glassfish.jar");
         if (!jar.exists()) {
-            throw new Exception(jar.getAbsolutePath() + " does not exist. Check what you have set as " + GLASSFISH_INSTALL_ROOT_PROP);
+            throw new Exception(jar.getAbsolutePath()
+                    + " does not exist. Check what you have set as "
+                    + GLASSFISH_INSTALL_ROOT_PROP);
         }
         URL url = jar.toURI().toURL();
         this.log("Installing bundle [" + url + "]");
         gfMainBundle = bctx.installBundle(url.toExternalForm());
         try {
-            gfMainBundle.start(Bundle.START_TRANSIENT); // start transiently to have more control over the lifecycle
+            // start transiently to have more control over the lifecycle
+            gfMainBundle.start(Bundle.START_TRANSIENT);
         } catch (BundleException e) {
             log("Failed to start " + gfMainBundle, e);
         }
@@ -144,7 +160,8 @@ public class GlassFishProvisioner implements ServletContextListener {
             try {
                 gfMainBundle.stop();
             } catch (BundleException e) {
-                log("Error while stopping glassfish main bundle " + gfMainBundle, e);
+                log("Error while stopping glassfish main bundle "
+                        + gfMainBundle, e);
             }
         }
         glassfish = null;
@@ -154,11 +171,13 @@ public class GlassFishProvisioner implements ServletContextListener {
      * Waits for OSGi framework to be available in JNDI
      */
     private class WaitForOSGiFrameworkTask implements Callable<Framework> {
+
         @Override
         public Framework call() throws InterruptedException {
             while (true) {
                 try {
-                    Framework framework = (Framework) new InitialContext().lookup(fwJndiName);
+                    Framework framework = (Framework) new InitialContext()
+                            .lookup(fwJndiName);
                     log("obtained " + framework);
                     return framework;
                 } catch (NamingException e) {
@@ -184,19 +203,24 @@ public class GlassFishProvisioner implements ServletContextListener {
         @Override
         public Void call() throws InterruptedException {
             try {
-                // Poll for GlassFish to start. GlassFish service might have been registered by
-                // GlassFishRuntime.newGlassFish() and hence might not be ready to use.
+                // Poll for GlassFish to start. GlassFish service might have
+                // been registered by
+                // GlassFishRuntime.newGlassFish() and hence might not be
+                // ready to use.
                 GlassFish.Status status = gf.getStatus();
-                while (status != GlassFish.Status.STARTED && status != GlassFish.Status.DISPOSED) {
+                while (status != GlassFish.Status.STARTED
+                        && status != GlassFish.Status.DISPOSED) {
                     Thread.sleep(1000);
                 }
                 if (status != GlassFish.Status.STARTED) {
                     log("status = " + status);
-                    throw new RuntimeException("GlassFish didn't start properly");
+                    throw new RuntimeException(
+                            "GlassFish didn't start properly");
                 }
 
             } catch (GlassFishException e) {
-                throw new RuntimeException(e); // TODO(Sahoo): Proper Exception Handling
+                // TODO(Sahoo): Proper Exception Handling
+                throw new RuntimeException(e);
             }
             return null;
         }
@@ -209,5 +233,4 @@ public class GlassFishProvisioner implements ServletContextListener {
     private void log(String s, Throwable e) {
         servletContext.log("provisionerwebapp: " + s, e);
     }
-
 }

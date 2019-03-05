@@ -7,7 +7,6 @@
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
-
 package org.glassfish.fighterfish.sample.uas.ejbservice2;
 
 import org.glassfish.fighterfish.sample.uas.api.UserAuthService;
@@ -23,21 +22,21 @@ import javax.persistence.EntityManagerFactory;
 import java.util.List;
 
 /**
- * Session Bean implementation class UserAuthServiceEJB2
+ * Session Bean implementation class UserAuthServiceEJB2.
  */
 @Stateless
 @Local({UserAuthService.class})
 public class UserAuthServiceEJB2 implements UserAuthService {
 
     @Inject
-    @OSGiService(dynamic = true, serviceCriteria = "(persistence-unit=sample.uas.entities)")
+    @OSGiService(dynamic = true,
+            serviceCriteria = "(persistence-unit=sample.uas.entities)")
     private EntityManagerFactory emf;
 
     /**
      * Default constructor.
      */
     public UserAuthServiceEJB2() {
-        // TODO Auto-generated constructor stub
     }
 
     @Override
@@ -52,7 +51,8 @@ public class UserAuthServiceEJB2 implements UserAuthService {
                 LoginAttempt attempt = new LoginAttempt();
                 attempt.setSuccessful(result);
                 attempt.setUserCredential(uc);
-                // set both sides of relationships because stupid JPA providers don't even update their second level cache
+                // set both sides of relationships because stupid JPA providers
+                // don't even update their second level cache
                 // with relationships in database.
                 uc.getLoginAttempts().add(attempt);
                 em.persist(attempt);
@@ -69,7 +69,9 @@ public class UserAuthServiceEJB2 implements UserAuthService {
         EntityManager em = emf.createEntityManager();
         try {
             UserCredential uc = em.find(UserCredential.class, name);
-            if (uc != null) return false;
+            if (uc != null) {
+                return false;
+            }
             uc = new UserCredential();
             uc.setName(name);
             uc.setPassword(password);
@@ -86,7 +88,9 @@ public class UserAuthServiceEJB2 implements UserAuthService {
         EntityManager em = emf.createEntityManager();
         try {
             UserCredential uc = em.find(UserCredential.class, name);
-            if (uc == null) return false;
+            if (uc == null) {
+                return false;
+            }
             em.remove(uc);
             return true;
         } finally {
@@ -98,7 +102,10 @@ public class UserAuthServiceEJB2 implements UserAuthService {
     public String getReport() {
         EntityManager em = emf.createEntityManager();
         try {
-            List<LoginAttempt> attempts = em.createNamedQuery("LoginAttempt.findAll").getResultList();
+            @SuppressWarnings("unchecked")
+            List<LoginAttempt> attempts = em
+                    .createNamedQuery("LoginAttempt.findAll")
+                    .getResultList();
             log("Number of entries found: " + attempts.size());
             StringBuilder report = new StringBuilder("Login Attempt Report:\n");
             for (LoginAttempt attempt : attempts) {
@@ -111,6 +118,7 @@ public class UserAuthServiceEJB2 implements UserAuthService {
     }
 
     private void log(String msg) {
-        System.out.println("UserAuthServiceEJB2: " + msg);
+        System.out.println(UserAuthServiceEJB2.class.getSimpleName()
+                + ": " + msg);
     }
 }

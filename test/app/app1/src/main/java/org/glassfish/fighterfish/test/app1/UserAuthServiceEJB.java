@@ -13,7 +13,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  */
-
 package org.glassfish.fighterfish.test.app1;
 
 import java.sql.Connection;
@@ -31,10 +30,9 @@ import javax.sql.DataSource;
  */
 @Stateless
 @LocalBean
-public class UserAuthServiceEJB 
-{
+public class UserAuthServiceEJB {
 
-    @Resource(mappedName= TestApp1Activator.dsName)
+    @Resource(mappedName = TestApp1Activator.DS_NAME)
     private DataSource ds;
 
     @PostConstruct
@@ -42,18 +40,16 @@ public class UserAuthServiceEJB
         System.out.println("UserAuthServiceEJB.postConstruct");
     }
 
-    public boolean login(String name, String password)
-    {
+    public boolean login(String name, String password) {
         System.out.println("UserAuthServiceEJBuser: logging in " + name);
         Connection c = null;
         Statement s = null;
-        try
-        {
+        try {
             c = ds.getConnection();
             s = c.createStatement();
-            String sql = "select count(*) as record_count from " +
-                    TestApp1Activator.tableName +" where name = '" + name +
-                    "' and password= '" + password + "'";
+            String sql = "select count(*) as record_count from "
+                    + TestApp1Activator.TABLE_NAME + " where name = '" + name
+                    + "' and password= '" + password + "'";
             System.out.println("sql = " + sql);
             ResultSet rs = s.executeQuery(sql);
             rs.next();
@@ -61,53 +57,45 @@ public class UserAuthServiceEJB
                 System.out.println("Login successful");
                 return true;
             }
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             e.printStackTrace();
-        }
-        finally
-        {
-            try
-            {
-                if (c!= null) c.close();
-                if (s!=null) s.close();
-            }
-            catch (Exception e)
-            {
+        } finally {
+            try {
+                if (c != null) {
+                    c.close();
+                }
+                if (s != null) {
+                    s.close();
+                }
+            } catch (Exception e) {
             }
         }
         return false;
     }
 
-    public boolean register(String name, String password)
-    {
+    public boolean register(String name, String password) {
         System.out.println("UserAuthServiceEJB: registering " + name);
         Connection c = null;
         Statement s = null;
-        try
-        {
+        try {
             c = ds.getConnection();
             s = c.createStatement();
-            String sql = "insert into " + TestApp1Activator.tableName +
-                    " values('" + name + "', '" + password + "')";
+            String sql = "insert into " + TestApp1Activator.TABLE_NAME
+                    + " values('" + name + "', '" + password + "')";
             System.out.println("sql = " + sql);
             s.executeUpdate(sql);
             return true;
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             e.printStackTrace();
-        }
-        finally
-        {
-            try
-            {
-                if (c!= null) c.close();
-                if (s!=null) s.close();
-            }
-            catch (Exception e)
-            {
+        } finally {
+            try {
+                if (c != null) {
+                    c.close();
+                }
+                if (s != null) {
+                    s.close();
+                }
+            } catch (Exception e) {
             }
         }
         return false;

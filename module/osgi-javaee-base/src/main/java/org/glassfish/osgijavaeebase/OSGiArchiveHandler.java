@@ -13,7 +13,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  */
-
 package org.glassfish.osgijavaeebase;
 
 import com.sun.enterprise.deploy.shared.AbstractArchiveHandler;
@@ -21,35 +20,37 @@ import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 
 /**
- * An implementation of {@link org.glassfish.api.deployment.archive.ArchiveHandler}
- * specialized for OSGi-ed WAR files. It is not exported as a Service.
+ * An implementation of
+ * {@link org.glassfish.api.deployment.archive.ArchiveHandler} specialized for
+ * OSGi-ed WAR files. It is not exported as a Service.
  *
  * @author Sanjeeb.Sahoo@Sun.COM
  */
-public class OSGiArchiveHandler extends AbstractArchiveHandler
-{
-    public String getArchiveType()
-    {
+public class OSGiArchiveHandler extends AbstractArchiveHandler {
+
+    @Override
+    public String getArchiveType() {
         return "OSGiBundle";
     }
 
-    public boolean handles(ReadableArchive archive)
-    {
+    @Override
+    public boolean handles(ReadableArchive archive) {
         // We don't want this handler to participate in any automatic
         // discovery, so it returns false.
         return false;
     }
 
-    public ClassLoader getClassLoader(ClassLoader parent, DeploymentContext context)
-    {
-        throw new RuntimeException("Assertion Failure: This method should not be called");
+    @Override
+    public ClassLoader getClassLoader(ClassLoader parent,
+            DeploymentContext context) {
+        throw new RuntimeException(
+                "Assertion Failure: This method should not be called");
     }
 
     // Since we don't have a fixed file extension, we override
     // getDefaultApplicationName methods
     @Override
-    public String getDefaultApplicationName(ReadableArchive archive)
-    {
+    public String getDefaultApplicationName(ReadableArchive archive) {
         String appName = archive.getName();
         int lastDot = appName.lastIndexOf('.');
         if (lastDot != -1) {
@@ -59,8 +60,7 @@ public class OSGiArchiveHandler extends AbstractArchiveHandler
     }
 
     @Override
-    public String getDefaultApplicationName(ReadableArchive archive, DeploymentContext context)
-    {
+    public String getDefaultApplicationName(ReadableArchive archive, DeploymentContext context) {
         return getDefaultApplicationName(archive);
     }
 }

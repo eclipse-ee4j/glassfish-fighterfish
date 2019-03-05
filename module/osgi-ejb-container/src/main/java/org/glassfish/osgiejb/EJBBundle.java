@@ -13,7 +13,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  */
-
 package org.glassfish.osgiejb;
 
 import org.glassfish.api.deployment.archive.Archive;
@@ -40,20 +39,27 @@ public class EJBBundle extends OSGiJavaEEArchive {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     protected void init() {
         // Very important implementation note:
         //
-        // Now we need to merge individual namespaces represented in each of the the subarchives
+        // Now we need to merge individual namespaces represented in each of the
+        // subarchives
         // corresponding to entries in the effetcive bundle classpath.
         // During merging of namespaces, collision can be expected. e.g.:
         // a bundle with BCP: bin, . and having a content tree like this:
         // p/A.class, bin/p/A.class.
-        // Actually, there is only name here which is p/A.class, but it appears in both the namespaces.
-        // Our collision avoidance strategy is based on how Bundle.getResource() behaves. Since bin
-        // appears ahead of . in BCP, bundle.getResource(p/A.class) will return bin/p/A.class.
+        // Actually, there is only name here which is p/A.class, but it appears
+        // in both the namespaces.
+        // Our collision avoidance strategy is based on how Bundle.getResource()
+        // behaves. Since bin
+        // appears ahead of . in BCP, bundle.getResource(p/A.class) will return
+        // bin/p/A.class.
         // So,our merged namespace must also contain bin/p/A.class.
-        // The simplest way to achieve this is to collect entries from the subarchives in the reverse
-        // order of bundle classpath and put them into a hasmap with entry name being the key.
+        // The simplest way to achieve this is to collect entries from the
+        // subarchives in the reverse
+        // order of bundle classpath and put them into a hasmap with entry name
+        // being the key.
         // See https://glassfish.dev.java.net/issues/show_bug.cgi?id=14268
         final EffectiveBCP bcp = getEffectiveBCP();
         List<BCPEntry> bcpEntries = new ArrayList(bcp.getBCPEntries());
@@ -61,54 +67,68 @@ public class EJBBundle extends OSGiJavaEEArchive {
         for (BCPEntry bcpEntry : bcpEntries) {
             bcpEntry.accept(new BCPEntry.BCPEntryVisitor() {
 
+                @Override
                 public void visitDir(final DirBCPEntry bcpEntry) {
-                visitBCPEntry(bcpEntry);
-            }
-
-            public void visitJar(final JarBCPEntry bcpEntry) {
-                // do special processing for Bundle-ClassPath DOT
-                if (bcpEntry.getName().equals(DOT)) {
-                    OSGiBundleArchive subArchive = getArchive(bcpEntry.getBundle());
-                    addEntriesForSubArchive(subArchive);
-                } else {
                     visitBCPEntry(bcpEntry);
                 }
-            }
 
-            private void visitBCPEntry(BCPEntry bcpEntry) {
-                try {
-                    final Archive subArchive = getArchive(bcpEntry.getBundle()).getSubArchive(bcpEntry.getName());
-                    addEntriesForSubArchive(subArchive);
-                } catch (IOException e) {
-                    throw new RuntimeException(e); // TODO(Sahoo): Proper Exception Handling
+                @Override
+                @SuppressWarnings("unchecked")
+                public void visitJar(final JarBCPEntry bcpEntry) {
+                    // do special processing for Bundle-ClassPath DOT
+                    if (bcpEntry.getName().equals(DOT)) {
+                        OSGiBundleArchive subArchive =
+                                getArchive(bcpEntry.getBundle());
+                        addEntriesForSubArchive(subArchive);
+                    } else {
+                        visitBCPEntry(bcpEntry);
+                    }
                 }
-            }
 
-            private void addEntriesForSubArchive(Archive subArchive) {
-                final URIable uriableArchive = (URIable) subArchive;
-                for (final String subEntry : Collections.list(subArchive.entries())) {
-                    ArchiveEntry archiveEntry = new ArchiveEntry() {
-                        public String getName() {
-                            return subEntry;
-                        }
+                private void visitBCPEntry(BCPEntry bcpEntry) {
+                    try {
+                        final Archive subArchive = getArchive(
+                                bcpEntry.getBundle())
+                                .getSubArchive(bcpEntry.getName());
+                        addEntriesForSubArchive(subArchive);
+                    } catch (IOException e) {
+                        // TODO(Sahoo): Proper Exception Handling
+                        throw new RuntimeException(e);
+                    }
+                }
 
-                        public URI getURI() throws URISyntaxException {
-                            return uriableArchive.getEntryURI(subEntry);
-                        }
+                private void addEntriesForSubArchive(Archive subArchive) {
+                    final URIable uriableArchive = (URIable) subArchive;
+                    for (final String subEntry : Collections.list(
+                            subArchive.entries())) {
 
-                        public InputStream getInputStream() throws IOException {
-                            try {
-                                return getURI().toURL().openStream();
-                            } catch (URISyntaxException e) {
-                                throw new RuntimeException(e); // TODO(Sahoo): Proper Exception Handling
+                        ArchiveEntry archiveEntry = new ArchiveEntry() {
+                            @Override
+                            public String getName() {
+                                return subEntry;
                             }
-                        }
-                    };
-                    getEntries().put(archiveEntry.getName(), archiveEntry);
-                }
-            }
 
-        });
+                            @Override
+                            public URI getURI() throws URISyntaxException {
+                                return uriableArchive.getEntryURI(subEntry);
+                            }
+
+                            @Override
+                            public InputStream getInputStream()
+                                    throws IOException {
+
+                                try {
+                                    return getURI().toURL().openStream();
+                                } catch (URISyntaxException e) {
+                                    // TODO(Sahoo): Proper Exception Handling
+                                    throw new RuntimeException(e);
+                                }
+                            }
+                        };
+                        getEntries().put(archiveEntry.getName(), archiveEntry);
+                    }
+                }
+            });
         }
     }
 }

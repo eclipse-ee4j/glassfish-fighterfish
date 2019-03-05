@@ -13,13 +13,13 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  */
-
 package org.glassfish.osgijavaeebase;
 
 /**
  * @author Sanjeeb.Sahoo@Sun.COM
  */
 public class Constants {
+
     // Protocol used both in Felix and Equinox to read content of a bundle
     // directly from a jar or directory as opposed to first copying it to
     // bundle cache and then reading from there.

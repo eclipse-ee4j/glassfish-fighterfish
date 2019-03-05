@@ -13,20 +13,22 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  */
-
 package org.glassfish.fighterfish.test.util;
 
 import org.glassfish.embeddable.GlassFish;
 import org.glassfish.embeddable.GlassFishException;
 
 /**
- * Represents a domain configuration change that can be restored to its original value.
- * To restore the original value, call {@link #restore()}.
+ * Represents a domain configuration change that can be restored to its original
+ * value. To restore the original value, call {@link #restore()}.
  *
  * @author Sanjeeb.Sahoo@Sun.COM
- * @see EnterpriseResourceProvisioner#configureEmbeddedDerby(GlassFish, String, String)
- * @see EnterpriseResourceProvisioner#createJmsResource(GlassFish, String, String)
+ * @see EnterpriseResourceProvisioner#configureEmbeddedDerby(GlassFish, String,
+ * String)
+ * @see EnterpriseResourceProvisioner#createJmsResource(GlassFish, String,
+ * String)
  */
 public interface RestorableDomainConfiguration {
+
     void restore() throws GlassFishException;
 }

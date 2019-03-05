@@ -16,9 +16,5 @@
 
 -exportcontents: !*
 Bundle-Activator: org.glassfish.osgi.ee.resources.ResourcesActivator
-Import-Package: \
-                        javax.jms;resolution:=optional, \
-                        *
-
-
+Import-Package: javax.jms;resolution:=optional, *
 

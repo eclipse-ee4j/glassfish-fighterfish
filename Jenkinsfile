@@ -56,7 +56,7 @@ spec:
         memory: "1Gi"
         cpu: "1"
   - name: build-container
-    image: ee4jglassfish/ci:jdk-7.221
+    image: ee4jglassfish/ci:jdk-8.181
     args:
     - cat
     tty: true
@@ -79,7 +79,7 @@ spec:
         container('build-container') {
           timeout(time: 10, unit: 'MINUTES') {
             sh 'mvn clean install'
-            junit testResults: '**/target/surefire-reports/*.xml', allowEmptyResults: true
+            junit testResults: '**/target/*-reports/*.xml', allowEmptyResults: true
           }
         }
       }

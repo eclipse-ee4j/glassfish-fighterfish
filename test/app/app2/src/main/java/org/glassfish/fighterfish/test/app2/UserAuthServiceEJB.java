@@ -13,7 +13,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  */
-
 package org.glassfish.fighterfish.test.app2;
 
 import javax.annotation.PostConstruct;
@@ -27,8 +26,7 @@ import javax.persistence.PersistenceContext;
  */
 @Stateless
 @LocalBean
-public class UserAuthServiceEJB 
-{
+public class UserAuthServiceEJB {
 
     @PersistenceContext
     EntityManager em;
@@ -38,15 +36,13 @@ public class UserAuthServiceEJB
         System.out.println("UserAuthServiceEJB.postConstruct");
     }
 
-    public boolean login(String name, String password)
-    {
+    public boolean login(String name, String password) {
         System.out.println("UserAuthServiceEJBuser: logging in " + name);
         UserCredential uc = em.find(UserCredential.class, name);
         return (uc != null && uc.isMatchingPassword(password));
     }
 
-    public boolean register(String name, String password)
-    {
+    public boolean register(String name, String password) {
         System.out.println("UserAuthServiceEJB: registering " + name);
         UserCredential uc = new UserCredential(name, password);
         em.persist(uc);

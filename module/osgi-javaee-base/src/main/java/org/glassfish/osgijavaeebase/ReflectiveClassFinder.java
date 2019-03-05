@@ -13,7 +13,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  */
-
 package org.glassfish.osgijavaeebase;
 
 import org.glassfish.internal.api.DelegatingClassLoader;
@@ -25,27 +24,28 @@ import java.net.URL;
 import java.util.Enumeration;
 
 /**
- * An implementation of {@link org.glassfish.internal.api.DelegatingClassLoader.ClassFinder}
- * that uses reflection to call the methods of the delegate.
- * It is currently NOT used because it requires special permission
- * granted to this codebase to access protected members like findClass.
+ * An implementation of
+ * {@link org.glassfish.internal.api.DelegatingClassLoader.ClassFinder} that
+ * uses reflection to call the methods of the delegate. It is currently NOT used
+ * because it requires special permission granted to this codebase to access
+ * protected members like findClass.
  *
  * This is pretty much an ugly hack.
  *
  * @author Sanjeeb.Sahoo@Sun.COM
  */
-class ReflectiveClassFinder implements DelegatingClassLoader.ClassFinder
-{
+class ReflectiveClassFinder implements DelegatingClassLoader.ClassFinder {
+
     ClassLoader delegate;
     Method findClass, findLoadedClass, findResource, findResources;
 
-    ReflectiveClassFinder(ClassLoader delegate)
-    {
+    ReflectiveClassFinder(ClassLoader delegate) {
         this.delegate = delegate;
         Class<ClassLoader> clazz = ClassLoader.class;
         try {
             findClass = clazz.getDeclaredMethod("findClass", String.class);
-            findLoadedClass = clazz.getDeclaredMethod("findLoadedClass", String.class);
+            findLoadedClass = clazz.getDeclaredMethod("findLoadedClass",
+                    String.class);
             findResource = clazz.getDeclaredMethod("findResource", String.class);
             findResources = clazz.getDeclaredMethod("findResources", String.class);
         } catch (NoSuchMethodException e) {
@@ -53,110 +53,77 @@ class ReflectiveClassFinder implements DelegatingClassLoader.ClassFinder
         }
     }
 
-    public ClassLoader getParent()
-    {
+    @Override
+    public ClassLoader getParent() {
         return delegate.getParent();
     }
 
-    public Class<?> findClass(String name) throws ClassNotFoundException
-    {
-        try
-        {
+    @Override
+    public Class<?> findClass(String name) throws ClassNotFoundException {
+        try {
             Object result = findClass.invoke(delegate, name);
             return (Class) result;
-        }
-        catch (IllegalAccessException e)
-        {
+        } catch (IllegalAccessException e) {
             throw new RuntimeException(e);
-        }
-        catch (InvocationTargetException e)
-        {
+        } catch (InvocationTargetException e) {
             Throwable cause = e.getCause();
-            if (cause instanceof ClassNotFoundException)
-            {
+            if (cause instanceof ClassNotFoundException) {
                 throw (ClassNotFoundException) cause;
-            }
-            else if (cause instanceof RuntimeException)
-            {
+            } else if (cause instanceof RuntimeException) {
                 throw (RuntimeException) cause;
-            }
-            else
-            {
+            } else {
                 throw new RuntimeException(e);
             }
         }
     }
 
-    public Class<?> findExistingClass(String name)
-    {
-        try
-        {
+    @Override
+    public Class<?> findExistingClass(String name) {
+        try {
             Object result = findLoadedClass.invoke(delegate, name);
             return (Class) result;
-        }
-        catch (IllegalAccessException e)
-        {
+        } catch (IllegalAccessException e) {
             throw new RuntimeException(e);
-        }
-        catch (InvocationTargetException e)
-        {
+        } catch (InvocationTargetException e) {
             Throwable cause = e.getCause();
-            if (cause instanceof RuntimeException)
-            {
+            if (cause instanceof RuntimeException) {
                 throw (RuntimeException) cause;
-            }
-            else
-            {
+            } else {
                 throw new RuntimeException(e);
             }
         }
     }
 
-    public URL findResource(String name)
-    {
-        try
-        {
+    @Override
+    public URL findResource(String name) {
+        try {
             Object result = findResource.invoke(delegate, name);
             return (URL) result;
-        }
-        catch (IllegalAccessException e)
-        {
+        } catch (IllegalAccessException e) {
             throw new RuntimeException(e);
-        }
-        catch (InvocationTargetException e)
-        {
+        } catch (InvocationTargetException e) {
             Throwable cause = e.getCause();
-            if (cause instanceof RuntimeException)
-            {
+            if (cause instanceof RuntimeException) {
                 throw (RuntimeException) cause;
-            }
-            else
-            {
+            } else {
                 throw new RuntimeException(e);
             }
         }
     }
 
-    public Enumeration<URL> findResources(String name) throws IOException
-    {
-        try
-        {
+    @Override
+    @SuppressWarnings("unchecked")
+    public Enumeration<URL> findResources(String name) throws IOException {
+        try {
             Object result = findResources.invoke(delegate, name);
             return (Enumeration<URL>) result;
-        }
-        catch (IllegalAccessException e)
-        {
+        } catch (IllegalAccessException e) {
             throw new RuntimeException(e);
-        }
-        catch (InvocationTargetException e)
-        {
+        } catch (InvocationTargetException e) {
             Throwable cause = e.getCause();
-            if (cause instanceof RuntimeException)
-            {
+            if (cause instanceof RuntimeException) {
                 throw (RuntimeException) cause;
-            }
-            else
-            {
+            } else {
                 throw new RuntimeException(e);
             }
         }

@@ -7,7 +7,6 @@
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
-
 package org.glassfish.fighterfish.sample.helloworld.osgijdbc;
 
 import java.sql.SQLException;
@@ -23,50 +22,50 @@ import org.osgi.util.tracker.ServiceTracker;
 
 public class JDBCSampleActivator implements BundleActivator {
 
-	private static final String DSNAME = "jdbc/__default"; // Should be a configurable property
-	private ServiceTracker st;
+    // Should be a configurable property
+    private static final String DSNAME = "jdbc/__default";
+    private ServiceTracker st;
 
-	@Override
-	public void start(BundleContext context) throws Exception {
-		debug("Activator started");
+    @Override
+    @SuppressWarnings("unchecked")
+    public void start(BundleContext context) throws Exception {
+        debug("Activator started");
 
-		// Create an LDAP filter which matches both the interface type
-		// as well as jndi-name property.
-		Filter filter = context.createFilter("(&" + "(" + Constants.OBJECTCLASS
-				+ "=" + DataSource.class.getName() + ")" + "(jndi-name="
-				+ DSNAME + ")" + ")");
-		st = new ServiceTracker(context, filter, null) {
+        // Create an LDAP filter which matches both the interface type
+        // as well as jndi-name property.
+        Filter filter = context.createFilter("(&" + "(" + Constants.OBJECTCLASS
+                + "=" + DataSource.class.getName() + ")" + "(jndi-name="
+                + DSNAME + ")" + ")");
+        st = new ServiceTracker(context, filter, null) {
 
-			@Override
-			public Object addingService(ServiceReference reference) {
-				DataSource ds = (DataSource) context.getService(reference);
-				try {
-					debug(ds.getConnection().toString());
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
+            @Override
+            public Object addingService(ServiceReference reference) {
+                DataSource ds = (DataSource) context.getService(reference);
+                try {
+                    debug(ds.getConnection().toString());
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
 
-				return super.addingService(reference);
-			}
+                return super.addingService(reference);
+            }
 
-			@Override
-			public void removedService(ServiceReference reference,
-					Object service) {
-				super.removedService(reference, service);
-			}
+            @Override
+            public void removedService(ServiceReference reference,
+                    Object service) {
+                super.removedService(reference, service);
+            }
+        };
+        st.open();
+    }
 
-		};
-		st.open();
-	}
+    @Override
+    public void stop(BundleContext context) throws Exception {
+        st.close();
+        debug("Activator stopped");
+    }
 
-	@Override
-	public void stop(BundleContext context) throws Exception {
-		st.close();
-		debug("Activator stopped");
-	}
-
-	private void debug(String msg) {
-		System.out.println("JDBCTestBundleActivator: " + msg);
-	}
-
+    private void debug(String msg) {
+        System.out.println("JDBCTestBundleActivator: " + msg);
+    }
 }

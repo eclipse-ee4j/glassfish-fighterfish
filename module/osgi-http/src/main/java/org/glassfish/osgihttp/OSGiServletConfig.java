@@ -13,7 +13,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  */
-
 package org.glassfish.osgihttp;
 
 import javax.servlet.ServletConfig;
@@ -29,13 +28,13 @@ import java.util.Map;
  */
 public class OSGiServletConfig implements ServletConfig {
 
-    private String servletName;
-    private ServletContext servletContext;
-    private Map<String, String> initParams = new HashMap<String, String>();
+    private final String servletName;
+    private final ServletContext servletContext;
+    private final Map<String, String> initParams = new HashMap<String, String>();
 
     public OSGiServletConfig(String servletName,
-                             ServletContext servletContext,
-                             Dictionary initParams) {
+            ServletContext servletContext,
+            Dictionary initParams) {
         this.servletName = servletName;
         this.servletContext = servletContext;
         if (initParams != null) {
@@ -48,26 +47,31 @@ public class OSGiServletConfig implements ServletConfig {
         }
     }
 
+    @Override
     public String getServletName() {
         return servletName;
     }
 
+    @Override
     public ServletContext getServletContext() {
         return servletContext;
     }
 
+    @Override
     public String getInitParameter(String name) {
         return initParams.get(name);
     }
 
-    public Enumeration getInitParameterNames() {
+    @Override
+    public Enumeration<String> getInitParameterNames() {
         return Collections.enumeration(initParams.keySet());
     }
 
     /**
      * @return an unmodifiable map of {@link #initParams}
      */
-    /* package */Map<String,String> getInitParameters() {
+    /* package */
+    Map<String, String> getInitParameters() {
         return Collections.unmodifiableMap(initParams);
     }
 }

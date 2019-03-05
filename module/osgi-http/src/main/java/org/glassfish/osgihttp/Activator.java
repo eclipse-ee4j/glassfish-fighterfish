@@ -13,7 +13,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  */
-
 package org.glassfish.osgihttp;
 
 import com.sun.enterprise.config.serverbeans.Config;
@@ -38,7 +37,6 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.http.HttpService;
-import org.osgi.util.tracker.ServiceTracker;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -47,70 +45,84 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * This is the entry point to our implementation of OSGi/HTTP service.
- * For every virtual server in the configuration, it creates HTTPService.
- * Every service has same context path. The context path can be defined
- * by user using configuration property org.glassfish.web.osgihttp.ContextPath.
- * If it is absent, we use a default value of "/osgi." After initializing
- * the HttpService factory with necessary details, we register the factory
- * OSGi service registry.
+ * This is the entry point to our implementation of OSGi/HTTP service. For every
+ * virtual server in the configuration, it creates HTTPService. Every service
+ * has same context path. The context path can be defined by user using
+ * configuration property org.glassfish.web.osgihttp.ContextPath. If it is
+ * absent, we use a default value of "/osgi." After initializing the HttpService
+ * factory with necessary details, we register the factory OSGi service
+ * registry.
  *
  * @author Sanjeeb.Sahoo@Sun.COM
  */
 public class Activator implements BundleActivator {
 
-    // TODO(Sahoo): Use config admin to configure context path, virtual server, etc.
+    // configuration property used to select context root under which
+    // this service is deployed.
+    private static final String CONTEXT_PATH_PROP
+            = Activator.class.getPackage().getName() + ".ContextPath";
 
+    private static final Logger LOGGER = Logger.getLogger(
+            Activator.class.getPackage().getName());
+
+    // TODO(Sahoo): Use config admin to configure context path, virtual server.
     private BundleContext bctx;
     private Map<String, Host> vss = new HashMap<String, Host>();
     private String contextPath;
-    private List<ServiceRegistration> registrations = new ArrayList<ServiceRegistration>();
+    private final List<ServiceRegistration> registrations =
+            new ArrayList<ServiceRegistration>();
 
-    // configuration property used to select context root under which
-    // this service is deployed.
-    private static final String CONTEXT_PATH_PROP =
-            Activator.class.getPackage().getName() + ".ContextPath";
-
-    private Logger logger = Logger.getLogger(getClass().getPackage().getName());
     private GlassFish gf;
     private ServiceRegistration extenderReg;
 
+    @Override
     public void start(BundleContext context) throws Exception {
         bctx = context;
         Extender extender = new OSGiHtttpExtender();
-        extenderReg = context.registerService(Extender.class.getName(), extender, null);
+        extenderReg = context.registerService(Extender.class.getName(),
+                extender, null);
     }
 
     /**
-     * This method is responsible for registering a HTTPService for every virtual server.
-     * Each service is registered with a service property called "VirtualServer," which can be used by clients
-     * to select a service. e.g., web console can use this to select __asadmin virtual server.
-     * While registering the service for the default virtual server, it sets the service.ranking
-     * to the maximum value so that any client just looking for an HTTPService gets to see the
-     * HTTPService bound to default virtual server.
+     * This method is responsible for registering a HTTPService for every
+     * virtual server. Each service is registered with a service property called
+     * "VirtualServer," which can be used by clients to select a service. e.g.,
+     * web console can use this to select __asadmin virtual server. While
+     * registering the service for the default virtual server, it sets the
+     * service.ranking to the maximum value so that any client just looking for
+     * an HTTPService gets to see the HTTPService bound to default virtual
+     * server.
      *
      * @param webContainer
      */
-    private void doActualWork(WebContainer webContainer) throws GlassFishException {
+    @SuppressWarnings("unchecked")
+    private void doActualWork(WebContainer webContainer)
+            throws GlassFishException {
+
         String defaultVsId = getDefaultVirtualServer();
-        final StringTokenizer vsIds = new StringTokenizer(getAllVirtualServers(), ",");
+        final StringTokenizer vsIds = new StringTokenizer(
+                getAllVirtualServers(), ",");
         while (vsIds.hasMoreTokens()) {
             String vsId = vsIds.nextToken().trim();
             try {
-                WebModule standardContext = createRootWebModule(webContainer, vsId);
+                WebModule standardContext = createRootWebModule(webContainer,
+                        vsId);
                 if (standardContext == null) {
-                    logger.logp(Level.WARNING, "Activator", "doActualWork",
-                            "GlassFishHttpService will not be available for for virtual server = {0}, " +
-                                    "because we are not able to create root web app.", new Object[]{vsId});
+                    LOGGER.logp(Level.WARNING, "Activator", "doActualWork",
+                            "GlassFishHttpService will not be available for for virtual server = {0}, "
+                            + "because we are not able to create root web app.",
+                            new Object[]{vsId});
                     continue;
                 }
-                GlassFishHttpService httpService = new GlassFishHttpService(standardContext);
-                Properties props = new Properties();
+                GlassFishHttpService httpService =
+                        new GlassFishHttpService(standardContext);
+                Dictionary props = new Properties();
                 props.put("VirtualServer", vsId);
                 if (vsId.equals(defaultVsId)) {
                     props.put(Constants.SERVICE_RANKING, Integer.MAX_VALUE);
                 }
-                ServiceRegistration registration = bctx.registerService(HttpService.class.getName(),
+                ServiceRegistration registration = bctx
+                        .registerService(HttpService.class.getName(),
                         new HttpServiceWrapper.HttpServiceFactory(httpService),
                         props);
                 registrations.add(registration);
@@ -120,10 +132,16 @@ public class Activator implements BundleActivator {
         }
     }
 
-    private WebModule createRootWebModule(WebContainer webContainer, String vsId) throws Exception {
+    private WebModule createRootWebModule(WebContainer webContainer,
+            String vsId) throws Exception {
+
         Engine engine = webContainer.getEngine();
         Host vs = (Host) engine.findChild(vsId);
-        if (vs == null) return null; // this can happen if some one deleted a virtual server after we read domain.xml
+        if (vs == null) {
+            // this can happen if someone deleted a virtual server after we
+            // read domain.xml
+            return null;
+        }
         vss.put(vsId, vs);
         contextPath = bctx.getProperty(CONTEXT_PATH_PROP);
         if (contextPath == null) {
@@ -138,7 +156,8 @@ public class Activator implements BundleActivator {
         // TODO(Sahoo): Need to set proper values for these directories
         standardContext.setDocBase(System.getProperty("java.io.tmpdir"));
         standardContext.setWorkDir(System.getProperty("java.io.tmpdir"));
-        // standardContext.setJ2EEServer(System.getProperty("com.sun.aas.instanceName"));
+//         standardContext.setJ2EEServer(
+//                 System.getProperty("com.sun.aas.instanceName"));
         standardContext.setJ2EEServer(getInstanceName());
         standardContext.addLifecycleListener(new ContextConfig());
         Realm realm = gf.getService(Realm.class);
@@ -159,27 +178,34 @@ public class Activator implements BundleActivator {
         // persistence.
         switchOffSessionPersistence(standardContext);
         vs.addChild(standardContext);
-        logger.logp(Level.INFO, "Activator", "createRootWebModule", "standardContext = {0}",
+        LOGGER.logp(Level.INFO, "Activator", "createRootWebModule",
+                "standardContext = {0}",
                 new Object[]{standardContext});
         return standardContext;
     }
 
-    private ClassLoader getCommonClassLoader(GlassFish gf) throws GlassFishException {
-        ClassLoaderHierarchy clh =
-                gf.getService(ClassLoaderHierarchy.class);
+    private ClassLoader getCommonClassLoader(GlassFish gf)
+            throws GlassFishException {
+
+        ClassLoaderHierarchy clh
+                = gf.getService(ClassLoaderHierarchy.class);
         return clh.getAPIClassLoader();
     }
 
+    @Override
     public void stop(BundleContext context) throws Exception {
         extenderReg.unregister();
-        // let everything else happen in Extender.stop which will get called by ExtenderManager.stop()
+        // let everything else happen in Extender.stop which will get called by
+        // ExtenderManager.stop()
     }
 
     private void undoActualWork() {
-        for (ServiceRegistration registration : registrations) registration.unregister();
+        for (ServiceRegistration registration : registrations) {
+            registration.unregister();
+        }
         for (Host vs : vss.values()) {
-            StandardContext standardContext =
-                    StandardContext.class.cast(vs.findChild(contextPath));
+            StandardContext standardContext
+                    = StandardContext.class.cast(vs.findChild(contextPath));
             if (standardContext == null) {
                 continue;
             }
@@ -205,7 +231,7 @@ public class Activator implements BundleActivator {
             try {
                 StandardManager.class.cast(mgr).setPathname(null);
             } catch (ClassCastException cce) {
-                logger.logp(Level.INFO, "Activator", "switchOffSessionPersistence",
+                LOGGER.logp(Level.INFO, "Activator", "switchOffSessionPersistence",
                         "SessionManager {0} does not allow path name of session store to be configured.",
                         new Object[]{mgr});
             }
@@ -213,7 +239,8 @@ public class Activator implements BundleActivator {
     }
 
     /**
-     * @return comma-separated list of all defined virtual servers (including __asadmin)
+     * @return comma-separated list of all defined virtual servers (including
+     * __asadmin)
      */
     private String getAllVirtualServers() throws GlassFishException {
         StringBuilder sb = new StringBuilder();
@@ -224,7 +251,8 @@ public class Activator implements BundleActivator {
         if (server != null) {
             Config config = server.getConfig();
             if (config != null) {
-                com.sun.enterprise.config.serverbeans.HttpService httpService = config.getHttpService();
+                com.sun.enterprise.config.serverbeans.HttpService httpService =
+                        config.getHttpService();
                 if (httpService != null) {
                     List<VirtualServer> hosts = httpService.getVirtualServer();
                     if (hosts != null) {
@@ -251,30 +279,41 @@ public class Activator implements BundleActivator {
     }
 
     /**
-     * @return the dafault virtual server
+     * @return the default virtual server
      */
+    @SuppressWarnings("unchecked")
     private String getDefaultVirtualServer() throws GlassFishException {
-        // Grizzly renamed its package name from com.sun.grizzly to org.glassfish.grizzly in Grizzly 2.1. Since Grizzly 2.1 is only
-        // integrated into GF3.2 only and we expect our module to work with GF 3.1.1 as well, we are not relying on Grizzly classes statically.
+        // Grizzly renamed its package name from com.sun.grizzly to
+        // org.glassfish.grizzly in Grizzly 2.1. Since Grizzly 2.1 is only
+        // integrated into GF3.2 only and we expect our module to work with
+        // GF 3.1.1 as well, we are not relying on Grizzly classes statically.
         // So, the code below does what the following line would have done.
-        // return Globals.get(com.sun.grizzly.config.dom.NetworkListener.class).findHttpProtocol().getHttp().getDefaultVirtualServer();
+        // return Globals.get(com.sun.grizzly.config.dom.NetworkListener.class)
+        // .findHttpProtocol().getHttp().getDefaultVirtualServer();
         Class netWorkListenerClass;
         try {
-            netWorkListenerClass = Class.forName("com.sun.grizzly.config.dom.NetworkListener");
+            netWorkListenerClass = Class.forName(
+                    "com.sun.grizzly.config.dom.NetworkListener");
         } catch (ClassNotFoundException cnfe) {
             try {
-                netWorkListenerClass = Class.forName("org.glassfish.grizzly.config.dom.NetworkListener");
+                netWorkListenerClass = Class.forName(
+                        "org.glassfish.grizzly.config.dom.NetworkListener");
             } catch (ClassNotFoundException e) {
                 throw new RuntimeException(e);
             }
         }
         Object networkListenerObj = gf.getService(netWorkListenerClass);
         try {
-            Method findHttpProtocolMethod = netWorkListenerClass.getMethod("findHttpProtocol");
-            Object httpProtocolObj = findHttpProtocolMethod.invoke(networkListenerObj);
-            final Object httpObj = httpProtocolObj.getClass().getMethod("getHttp").invoke(httpProtocolObj);
-            final String defaultVirtualServer = (String) httpObj.getClass().getMethod("getDefaultVirtualServer").invoke(httpObj);
-            logger.logp(Level.INFO, "Activator", "getDefaultVirtualServer", "defaultVirtualServer = {0}",
+            Method findHttpProtocolMethod = netWorkListenerClass
+                    .getMethod("findHttpProtocol");
+            Object httpProtocolObj = findHttpProtocolMethod
+                    .invoke(networkListenerObj);
+            final Object httpObj = httpProtocolObj.getClass()
+                    .getMethod("getHttp").invoke(httpProtocolObj);
+            final String defaultVirtualServer = (String) httpObj.getClass()
+                    .getMethod("getDefaultVirtualServer").invoke(httpObj);
+            LOGGER.logp(Level.INFO, "Activator", "getDefaultVirtualServer",
+                    "defaultVirtualServer = {0}",
                     new Object[]{defaultVirtualServer});
             return defaultVirtualServer;
         } catch (NoSuchMethodException e) {
@@ -287,12 +326,15 @@ public class Activator implements BundleActivator {
     }
 
     private class OSGiHtttpExtender implements Extender {
+
         private GlassFish getGlassFish() {
-            GlassFish gf = (GlassFish) bctx.getService(bctx.getServiceReference(GlassFish.class.getName()));
+            GlassFish gf = (GlassFish) bctx.getService(bctx
+                    .getServiceReference(GlassFish.class.getName()));
             try {
-                assert(gf.getStatus() == GlassFish.Status.STARTED);
+                assert (gf.getStatus() == GlassFish.Status.STARTED);
             } catch (GlassFishException e) {
-                throw new RuntimeException(e); // TODO(Sahoo): Proper Exception Handling
+                // TODO(Sahoo): Proper Exception Handling
+                throw new RuntimeException(e);
             }
             return gf;
         }
@@ -307,7 +349,8 @@ public class Activator implements BundleActivator {
             try {
                 doActualWork(getWebContainer());
             } catch (GlassFishException e) {
-                throw new RuntimeException(e); // TODO(Sahoo): Proper Exception Handling
+                // TODO(Sahoo): Proper Exception Handling
+                throw new RuntimeException(e);
             }
         }
 
@@ -315,6 +358,5 @@ public class Activator implements BundleActivator {
         public void stop() {
             undoActualWork();
         }
-
     }
 }

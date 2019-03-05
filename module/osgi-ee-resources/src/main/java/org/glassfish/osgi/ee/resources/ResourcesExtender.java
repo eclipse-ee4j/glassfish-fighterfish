@@ -25,38 +25,39 @@ import java.util.logging.Logger;
 
 public class ResourcesExtender implements Extender {
 
-    private BundleContext bundleContext;
+    private static final Logger LOGGER = Logger.getLogger(
+            ResourcesExtender.class.getPackage().getName());
 
-    private ServiceRegistration urlHandlerService;
-
+    private final BundleContext bundleContext;
     private Habitat habitat;
     private ResourceProviderService rps;
 
-
-    private static final Logger logger = Logger.getLogger(
-            ResourcesExtender.class.getPackage().getName());
 
     public ResourcesExtender(BundleContext context) {
         this.bundleContext = context;
     }
 
+    @Override
     public void start() {
         debug("begin start()");
-        GlassFish gf = (GlassFish) bundleContext.getService(bundleContext.getServiceReference(GlassFish.class.getName()));
+        GlassFish gf = (GlassFish) bundleContext
+                .getService(bundleContext.getServiceReference(
+                        GlassFish.class.getName()));
         habitat = new Habitat(gf);
         rps = new ResourceProviderService(habitat, bundleContext);
         rps.registerResources();
         debug("completed start()");
     }
 
+    @Override
     public void stop() {
         rps.unRegisterResources();
         debug("stopped");
     }
 
     private void debug(String s) {
-        if (logger.isLoggable(Level.FINEST)) {
-            logger.finest("[osgi-ee-resources] : " + s);
+        if (LOGGER.isLoggable(Level.FINEST)) {
+            LOGGER.log(Level.FINEST, "[osgi-ee-resources] : {0}", s);
         }
     }
 }

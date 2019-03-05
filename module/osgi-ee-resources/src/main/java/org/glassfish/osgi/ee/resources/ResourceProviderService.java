@@ -13,7 +13,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  */
-
 package org.glassfish.osgi.ee.resources;
 
 import com.sun.appserv.connectors.internal.api.ConnectorsUtil;
@@ -33,37 +32,37 @@ import java.util.logging.Logger;
 
 /**
  * A service to export resources in GlassFish to OSGi's service-registry.<br>
- * OSGi applications can use <i>ServiceReference</i> to get access to these resources.
- * OSGi applications can do lookup of appropriate type of<br>
+ * OSGi applications can use <i>ServiceReference</i> to get access to these
+ * resources. OSGi applications can do lookup of appropriate type of<br>
  * <i>ServiceReference</i> with the filter <i>"jndi-name"</i> <br><br>
- * For JDBC Resources, additional filter <i>"osgi.jdbc.driver.class"</i> that indicates the<br>
+ * For JDBC Resources, additional filter <i>"osgi.jdbc.driver.class"</i> that
+ * indicates the<br>
  * driver-class-name/datasource-class-name will work.
  * <p/>
- * JDBC Resources, JMS Connection Factories, JMS Destinations are exported with following <i>ServiceReference</i> names<br>
+ * JDBC Resources, JMS Connection Factories, JMS Destinations are exported with
+ * following <i>ServiceReference</i> names<br>
  * For JDBC Resources : <i>javax.sql.DataSource</i>  <br>
- * For JMS Resources : <i>javax.jms.ConnectionFactory / javax.jms.QueueConnectionFactory / javax.jms.TopicConnectionFactory</i> <br>
+ * For JMS Resources : <i>javax.jms.ConnectionFactory /
+ * javax.jms.QueueConnectionFactory / javax.jms.TopicConnectionFactory</i> <br>
  * For JMS Destinations : <i>javax.jms.Queue / javax.jms.Topic</i> <br>
  *
  * @author Jagadish Ramu
  */
 public class ResourceProviderService implements ConfigListener {
 
-    private Habitat habitat;
+    private static final Logger LOGGER = Logger.getLogger(
+            ResourceProviderService.class.getPackage().getName());
 
-    private Resources resources;
-    private Servers servers;
-
+    private final Habitat habitat;
+    private final Resources resources;
+    private final Servers servers;
     //config-bean proxy objects so as to listen to changes to these configuration.
     private ObservableBean serverConfigBean;
     private ObservableBean resourcesConfigBean;
+    private final BundleContext bundleContext;
+    private final ResourceHelper resourceHelper;
+    private final Collection<ResourceManager> resourceManagers;
 
-    private BundleContext bundleContext;
-    private ResourceHelper resourceHelper;
-
-    private Collection<ResourceManager> resourceManagers;
-
-    private static final Logger logger = Logger.getLogger(
-            ResourceProviderService.class.getPackage().getName());
 
     public ResourceProviderService(Habitat habitat, BundleContext bundleContext) {
         this.habitat = habitat;
@@ -77,26 +76,19 @@ public class ResourceProviderService implements ConfigListener {
     }
 
     private void initializeResourceManagers() {
-        Habitat habitat = getHabitat();
         resourceManagers.add(new JDBCResourceManager(habitat));
-        if(runtimeSupportsJMS()){
+        if (runtimeSupportsJMS()) {
             registerJMSResources(resourceManagers, habitat);
         }
     }
 
-    private Habitat getHabitat() {
-        return habitat;
-    }
-
     public void registerResources() {
-        Collection<ResourceManager> resourceManagers = getAllResourceManagers();
         for (ResourceManager rm : resourceManagers) {
             rm.registerResources(bundleContext);
         }
     }
 
     public void unRegisterResources() {
-        Collection<ResourceManager> resourceManagers = getAllResourceManagers();
         for (ResourceManager rm : resourceManagers) {
             rm.unRegisterResources(bundleContext);
         }
@@ -118,70 +110,87 @@ public class ResourceProviderService implements ConfigListener {
     /**
      * register config bean proxy change listeners
      */
-    public void postConstruct() {
+    public final void postConstruct() {
         List<Server> serversList = servers.getServer();
-
-        ServerContext context = getHabitat().getComponent(ServerContext.class);
+        ServerContext context = habitat.getComponent(ServerContext.class);
         String instanceName = context.getInstanceName();
-
         for (Server server : serversList) {
             if (server.getName().equals(instanceName)) {
-                serverConfigBean = (ObservableBean) ConfigSupport.getImpl((ConfigBeanProxy) server);
+                serverConfigBean = (ObservableBean) ConfigSupport
+                        .getImpl((ConfigBeanProxy) server);
                 serverConfigBean.addListener(this);
             }
         }
 
-        resourcesConfigBean = (ObservableBean) ConfigSupport.getImpl((ConfigBeanProxy) resources);
+        resourcesConfigBean = (ObservableBean) ConfigSupport
+                .getImpl((ConfigBeanProxy) resources);
         resourcesConfigBean.addListener(this);
 
     }
 
     /**
      * Notification that @Configured objects that were injected have changed
-     *
+     * @return
      * @param events list of changes
      */
+    @Override
     public UnprocessedChangeEvents changed(PropertyChangeEvent[] events) {
-        return ConfigSupport.sortAndDispatch(events, new PropertyChangeHandler(events), logger);
+        return ConfigSupport.sortAndDispatch(events,
+                new PropertyChangeHandler(events, this), LOGGER);
     }
 
+    private static class PropertyChangeHandler implements Changed {
 
-    class PropertyChangeHandler implements Changed {
+        private final PropertyChangeEvent[] events;
+        private final ResourceProviderService rps;
 
-        PropertyChangeEvent[] events;
+        private PropertyChangeHandler(PropertyChangeEvent[] events,
+                ResourceProviderService rps) {
 
-        private PropertyChangeHandler(PropertyChangeEvent[] events) {
             this.events = events;
+            this.rps = rps;
         }
 
-        public <T extends ConfigBeanProxy> NotProcessed changed(Changed.TYPE type, Class<T> changedType, T changedInstance) {
+        @Override
+        public <T extends ConfigBeanProxy> NotProcessed changed(
+                Changed.TYPE type, Class<T> changedType, T changedInstance) {
 
-            NotProcessed np = null;
+            NotProcessed np;
             try {
                 switch (type) {
                     case ADD:
-                        if (logger.isLoggable(Level.FINEST)) {
-                            logger.finest("A new " + changedType.getName() + " was added : " + changedInstance);
+                        if (LOGGER.isLoggable(Level.FINEST)) {
+                            LOGGER.log(Level.FINEST,
+                                    "A new {0} was added : {1}",
+                                    new Object[]{changedType.getName(),
+                                        changedInstance});
                         }
                         np = handleAddEvent(changedInstance);
                         break;
 
                     case CHANGE:
-                        if (logger.isLoggable(Level.FINEST)) {
-                            logger.finest("A " + changedType.getName() + " was changed : " + changedInstance);
+                        if (LOGGER.isLoggable(Level.FINEST)) {
+                            LOGGER.log(Level.FINEST,
+                                    "A {0} was changed : {1}",
+                                    new Object[]{changedType.getName(),
+                                        changedInstance});
                         }
                         np = handleChangeEvent(changedInstance);
                         break;
 
                     case REMOVE:
-                        if (logger.isLoggable(Level.FINEST)) {
-                            logger.finest("A " + changedType.getName() + " was removed : " + changedInstance);
+                        if (LOGGER.isLoggable(Level.FINEST)) {
+                            LOGGER.log(Level.FINEST,
+                                    "A {0} was removed : {1}",
+                                    new Object[]{changedType.getName(),
+                                        changedInstance});
                         }
                         np = handleRemoveEvent(changedInstance);
                         break;
 
                     default:
-                        np = new NotProcessed("Unrecognized type of change: " + type);
+                        np = new NotProcessed(
+                                "Unrecognized type of change: " + type);
                         break;
                 }
                 return np;
@@ -190,25 +199,31 @@ public class ResourceProviderService implements ConfigListener {
 
         }
 
-        private <T extends ConfigBeanProxy> NotProcessed handleRemoveEvent(T removedInstance) {
+        private <T extends ConfigBeanProxy> NotProcessed handleRemoveEvent(
+                T removedInstance) {
+
             if (removedInstance instanceof ResourceRef) {
                 ResourceRef resourceRef = (ResourceRef) removedInstance;
                 String resourceName = resourceRef.getRef();
-                BindableResource resource = (BindableResource)
-                        resources.getResourceByName(BindableResource.class, resourceName);
+                BindableResource resource = (BindableResource) rps.resources
+                        .getResourceByName(BindableResource.class,
+                                resourceName);
                 unRegisterResource(resource);
             } else if (removedInstance instanceof BindableResource) {
-                //since delete resource-ref event will not work (resource related configuration
-                //information won't be available during resource-ref deletion event), handling
-                //un-register of service here also.
+                //since delete resource-ref event will not work
+                // (resource related configuration
+                //information won't be available during resource-ref
+                // deletion event), handling
+                // un-register of service here also.
                 unRegisterResource((BindableResource) removedInstance);
             }
             return null;
         }
 
-        private <T extends ConfigBeanProxy> NotProcessed handleChangeEvent(T changedInstance) {
-            //TODO Handle other attribute changes (jndi-name)
+        private <T extends ConfigBeanProxy> NotProcessed handleChangeEvent(
+                T changedInstance) {
 
+            //TODO Handle other attribute changes (jndi-name)
             if (changedInstance instanceof ResourceRef) {
                 ResourceRef resourceRef = (ResourceRef) changedInstance;
                 String refName = resourceRef.getRef();
@@ -216,12 +231,17 @@ public class ResourceProviderService implements ConfigListener {
                 for (PropertyChangeEvent event : events) {
                     String propertyName = event.getPropertyName();
                     if ("enabled".equalsIgnoreCase(propertyName)) {
-                        boolean newValue = Boolean.parseBoolean(event.getNewValue().toString());
-                        boolean oldValue = Boolean.parseBoolean(event.getOldValue().toString());
+                        boolean newValue = Boolean.parseBoolean(
+                                event.getNewValue().toString());
+                        boolean oldValue = Boolean.parseBoolean(
+                                event.getOldValue().toString());
                         //make sure that there is state change
                         if (!(newValue && oldValue)) {
-                            BindableResource bindableResource =
-                                    (BindableResource) resources.getResourceByName(BindableResource.class, refName);
+                            BindableResource bindableResource
+                                    = (BindableResource) rps.resources
+                                            .getResourceByName(
+                                                    BindableResource.class,
+                                                    refName);
                             if (newValue) {
                                 registerResource(bindableResource, resourceRef);
                             } else {
@@ -231,12 +251,15 @@ public class ResourceProviderService implements ConfigListener {
                     }
                 }
             } else if (changedInstance instanceof BindableResource) {
-                BindableResource bindableResource = (BindableResource) changedInstance;
+                BindableResource bindableResource = (BindableResource)
+                        changedInstance;
                 for (PropertyChangeEvent event : events) {
                     String propertyName = event.getPropertyName();
                     if ("enabled".equalsIgnoreCase(propertyName)) {
-                        boolean newValue = Boolean.parseBoolean(event.getNewValue().toString());
-                        boolean oldValue = Boolean.parseBoolean(event.getOldValue().toString());
+                        boolean newValue = Boolean.parseBoolean(
+                                event.getNewValue().toString());
+                        boolean oldValue = Boolean.parseBoolean(
+                                event.getOldValue().toString());
                         //make sure that there is state change
                         if (!(newValue && oldValue)) {
                             if (newValue) {
@@ -247,38 +270,39 @@ public class ResourceProviderService implements ConfigListener {
                         }
                     } else {
 
-                        /*
-                        This block handles any change under resource configuration apart from enable/disable.
-                         */
+                        // this block handles any change under resource
+                        // configuration apart from enable/disable.
                         Object newValueObject = event.getNewValue();
                         Object oldValueObject = event.getOldValue();
                         String newValue = "";
                         String oldValue = "";
 
-                        if(newValueObject!=null) {
+                        if (newValueObject != null) {
                             newValue = newValueObject.toString();
                         }
 
-                        if(oldValueObject!=null) {
+                        if (oldValueObject != null) {
                             oldValue = oldValueObject.toString();
                         }
 
-                        if(!newValue.equals(oldValue)) {
+                        if (!newValue.equals(oldValue)) {
                             unRegisterResource(bindableResource);
                             registerResource(bindableResource);
                         }
 
                     }
                 }
-            } else if (changedInstance instanceof JdbcConnectionPool ||
-                    changedInstance instanceof ConnectorConnectionPool) {
-                /*
-                This block handles any configuration change under connection pool,
-                it's re-registering all resources which uses that connection pool.
-                 */
-                String poolName = ((ResourcePool)changedInstance).getName();
-                Resources resources = habitat.getComponent(Domain.class).getResources();
-                Collection<BindableResource> bindableResources = ConnectorsUtil.getResourcesOfPool(resources,poolName);
+            } else if (changedInstance instanceof JdbcConnectionPool
+                    || changedInstance instanceof ConnectorConnectionPool) {
+                // this block handles any configuration change under connection
+                // pool,
+                // it's re-registering all resources which uses that connection
+                // pool.
+                String poolName = ((ResourcePool) changedInstance).getName();
+                Resources resources = rps.habitat.getComponent(Domain.class)
+                        .getResources();
+                Collection<BindableResource> bindableResources = ConnectorsUtil
+                        .getResourcesOfPool(resources, poolName);
                 reRegisterResource(bindableResources);
             }
             return null;
@@ -286,13 +310,17 @@ public class ResourceProviderService implements ConfigListener {
 
         /**
          * This method un-register and register resource again.
+         *
          * @param bindableResources
          */
-        private void reRegisterResource(Collection<BindableResource> bindableResources) {
-            for(BindableResource resource:bindableResources) {
-                if(Boolean.valueOf(resource.getEnabled())) {
-                    ResourceRef resRef = getResourceHelper().getResourceRef(resource.getJndiName());
-                    if(resRef!=null && Boolean.valueOf(resRef.getEnabled())) {
+        private void reRegisterResource(
+                Collection<BindableResource> bindableResources) {
+
+            for (BindableResource resource : bindableResources) {
+                if (Boolean.valueOf(resource.getEnabled())) {
+                    ResourceRef resRef = rps.resourceHelper
+                            .getResourceRef(resource.getJndiName());
+                    if (resRef != null && Boolean.valueOf(resRef.getEnabled())) {
                         unRegisterResource(resource);
                         registerResource(resource);
                     }
@@ -301,31 +329,39 @@ public class ResourceProviderService implements ConfigListener {
         }
 
         private void unRegisterResource(BindableResource bindableResource) {
-            Collection<ResourceManager> resourceManagers = getResourceManagers(bindableResource);
+            Collection<ResourceManager> resourceManagers =
+                    rps.getResourceManagers(bindableResource);
             for (ResourceManager rm : resourceManagers) {
-                ResourceRef ref = getResourceHelper().getResourceRef(bindableResource.getJndiName());
-                rm.unRegisterResource(bindableResource, ref, bundleContext);
+                ResourceRef ref = rps.resourceHelper
+                        .getResourceRef(bindableResource.getJndiName());
+                rm.unRegisterResource(bindableResource, ref, rps.bundleContext);
             }
         }
 
-        private void registerResource(BindableResource bindableResource, ResourceRef ref) {
-            Collection<ResourceManager> resourceManagers = getResourceManagers(bindableResource);
+        private void registerResource(BindableResource bindableResource,
+                ResourceRef ref) {
+            Collection<ResourceManager> resourceManagers =
+                    rps.getResourceManagers(bindableResource);
             for (ResourceManager rm : resourceManagers) {
-                rm.registerResource(bindableResource, ref, bundleContext);
+                rm.registerResource(bindableResource, ref, rps.bundleContext);
             }
         }
 
         private void registerResource(BindableResource bindableResource) {
-            ResourceRef ref = getResourceHelper().getResourceRef(bindableResource.getJndiName());
+            ResourceRef ref = rps.resourceHelper
+                    .getResourceRef(bindableResource.getJndiName());
             registerResource(bindableResource, ref);
         }
 
-        private <T extends ConfigBeanProxy> NotProcessed handleAddEvent(T addedInstance) {
+        private <T extends ConfigBeanProxy> NotProcessed handleAddEvent(
+                T addedInstance) {
+
             if (addedInstance instanceof ResourceRef) {
                 ResourceRef resourceRef = (ResourceRef) addedInstance;
                 String resourceName = resourceRef.getRef();
-                BindableResource resource = (BindableResource)
-                        resources.getResourceByName(BindableResource.class, resourceName);
+                BindableResource resource = (BindableResource) rps.resources
+                        .getResourceByName(BindableResource.class,
+                                resourceName);
                 if (resource != null) {
                     registerResource(resource, resourceRef);
                 }
@@ -336,53 +372,37 @@ public class ResourceProviderService implements ConfigListener {
 
     /**
      * get the list of resource-managers that can handle the resource
+     *
      * @param resource resource
      * @return list of resource-managers
      */
-    private Collection<ResourceManager> getResourceManagers(BindableResource resource) {
-        Collection<ResourceManager> resourceManagers = new ArrayList<ResourceManager>();
-        for (ResourceManager rm : getAllResourceManagers()) {
+    private Collection<ResourceManager> getResourceManagers(
+            BindableResource resource) {
+
+        Collection<ResourceManager> rms = new ArrayList<ResourceManager>();
+        for (ResourceManager rm : resourceManagers) {
             if (rm.handlesResource(resource)) {
-                resourceManagers.add(rm);
+                rms.add(rm);
             }
         }
-        return resourceManagers;
-    }
-
-    /**
-     * get the list of all resource-managers in the system
-     * @return list of resource-managers
-     */
-    private Collection<ResourceManager> getAllResourceManagers() {
-        //resourceManagers = getHabitat().getAllByContract(ResourceManager.class);
-        return resourceManagers;
+        return rms;
     }
 
     private boolean runtimeSupportsJMS() {
         boolean supports = false;
-        try{
+        try {
             Class.forName("javax.jms.QueueConnectionFactory");
             supports = true;
-        }catch(Throwable e){
-            logger.finest("Exception while loading JMS API " + e);
+        } catch (Throwable e) {
+            LOGGER.log(Level.FINEST, "Exception while loading JMS API {0}", e);
         }
         return supports;
     }
 
-    private void registerJMSResources(Collection<ResourceManager> resourceManagers, Habitat habitat) {
+    private void registerJMSResources(
+            Collection<ResourceManager> resourceManagers, Habitat habitat) {
+
         resourceManagers.add(new JMSResourceManager(habitat));
         resourceManagers.add(new JMSDestinationResourceManager(habitat));
-    }
-
-    private ResourceHelper getResourceHelper() {
-        return resourceHelper;
-        //return habitat.getComponent(ResourceHelper.class);
-    }
-
-
-    private void debug(String s) {
-        if (logger.isLoggable(Level.FINEST)) {
-            logger.finest("[osgi-ee-resources] : " + s);
-        }
     }
 }

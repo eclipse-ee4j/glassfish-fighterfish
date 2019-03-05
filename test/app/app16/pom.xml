@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (c) 2012, 2018 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0, which is available at
@@ -20,32 +20,31 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <artifactId>sample.parent-pom</artifactId>
         <groupId>org.glassfish.fighterfish</groupId>
-        <version>1.0.2</version>
+        <artifactId>fighterfish-test-app-parent</artifactId>
+        <version>3.0.0-SNAPSHOT</version>
     </parent>
-
-    <groupId>org.glassfish.fighterfish</groupId>
-    <artifactId>test.app16</artifactId>
-    <version>1.0.1-SNAPSHOT</version>
+    <artifactId>fighterfish-test-app-16</artifactId>
     <packaging>war</packaging>
-
-    <name>test.app16</name>
-    <scm>
-        <connection>scm:git:https://github.com/eclipse-ee4j/glassfish-fighterfish/test/app/app16</connection>
-        <developerConnection>scm:git:https://github.com/eclipse-ee4j/glassfish-fighterfish/test/app/app16
-        </developerConnection>
-        <url>https://github.com/eclipse-ee4j/glassfish-fighterfish/test/app/app16</url>
-    </scm>
+    <name>FighterFish Test App 16</name>
 
     <dependencies>
         <dependency>
             <groupId>org.glassfish.fighterfish</groupId>
-            <artifactId>test.app16.entities</artifactId>
-            <version>1.0.0</version>
-            <type>jar</type>
+            <artifactId>osgi-cdi-api</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>javax</groupId>
+            <artifactId>javaee-web-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.fighterfish</groupId>
+            <artifactId>fighterfish-test-app-16-entities</artifactId>
+            <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
-
 </project>

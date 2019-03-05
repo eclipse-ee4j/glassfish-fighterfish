@@ -13,7 +13,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  */
-
 package org.glassfish.fighterfish.test.util;
 
 import java.io.IOException;
@@ -23,15 +22,18 @@ import java.util.Properties;
 /**
  * @author Sanjeeb.Sahoo@Sun.COM
  */
-class Version {
+public class Version {
+
     public static String getVersion() {
         Properties props = new Properties();
-        final InputStream stream = Version.class.getResourceAsStream("VersionInfo.properties");
+        final InputStream stream = Version.class.getResourceAsStream(
+                "VersionInfo.properties");
         try {
             props.load(stream);
             return props.getProperty("Version");
         } catch (IOException e) {
-            throw new RuntimeException(e); // not sure why this should happen. if it happens, propagate up
+            // not sure why this should happen. if it happens, propagate up
+            throw new RuntimeException(e);
         } finally {
             try {
                 stream.close();

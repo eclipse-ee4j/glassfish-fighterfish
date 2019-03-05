@@ -27,11 +27,14 @@ import org.osgi.framework.ServiceRegistration;
 public class OSGiJTAActivator implements BundleActivator {
     private ServiceRegistration extenderReg;
 
+    @Override
     public void start(BundleContext context) throws Exception {
         Extender extender = new JTAExtender(context);
-        extenderReg = context.registerService(Extender.class.getName(), extender, null);
+        extenderReg = context
+                .registerService(Extender.class.getName(), extender, null);
     }
 
+    @Override
     public void stop(BundleContext context) throws Exception {
         extenderReg.unregister();
     }
