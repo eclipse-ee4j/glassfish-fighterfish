@@ -1,7 +1,14 @@
 CONTRIBUTING.md
+LICENSE.md
+KNOWN-ISSUES.md
+NOTICE.md
 README.md
+copyright-exclude
 .MF
 .jar
 .zip
 .class
 .txt
+META-INF/services/
+META-INF/hiddenservices/
+META-INF/hk2-locator/
