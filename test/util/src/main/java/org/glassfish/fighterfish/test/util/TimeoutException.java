@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -18,17 +18,24 @@ package org.glassfish.fighterfish.test.util;
 /**
  * This exception has the additional role of printing equivalent of JStack so
  * that we can analyze any locking issues easily.
- *
- * @author Sanjeeb.Sahoo@Sun.COM
  */
-public class TimeoutException extends RuntimeException {
+public final class TimeoutException extends RuntimeException {
 
-    String msg;
+    /**
+     * Additional message.
+     */
+    private String msg;
 
+    /**
+     * Create a new instance.
+     */
     public TimeoutException() {
         collectStackTrace();
     }
 
+    /**
+     * Fill-up the additional message with extra info.
+     */
     private void collectStackTrace() {
         msg = "Stack traces of all threads are given below:\n"
                 + "[StackTraceBegin]\n"
@@ -36,17 +43,30 @@ public class TimeoutException extends RuntimeException {
                 + "\n[StackTraceEnd]";
     }
 
-    public TimeoutException(String message) {
+    /**
+     * Create a new instance with a message and no cause.
+     * @param message exception message
+     */
+    public TimeoutException(final String message) {
         super(message);
         collectStackTrace();
     }
 
-    public TimeoutException(String message, Throwable cause) {
+    /**
+     * Create a new instance with a message and a cause.
+     * @param message exception message
+     * @param cause exception cause
+     */
+    public TimeoutException(final String message, final Throwable cause) {
         super(message, cause);
         collectStackTrace();
     }
 
-    public TimeoutException(Throwable cause) {
+    /**
+     * Create a new instance with no message and a cause.
+     * @param cause exception cause
+     */
+    public TimeoutException(final Throwable cause) {
         super(cause);
         collectStackTrace();
     }

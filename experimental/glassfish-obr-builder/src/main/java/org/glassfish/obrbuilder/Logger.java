@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -17,10 +17,20 @@
 package org.glassfish.obrbuilder;
 
 /**
- * @author Sanjeeb.Sahoo@Sun.COM
+ * Logger utility.
  */
-public class Logger {
-    public static final java.util.logging.Logger logger =
+public final class Logger {
+
+    /**
+     * Cannot be instanciated.
+     */
+    private Logger() {
+    }
+
+    /**
+     * Logger instance.
+     */
+    static final java.util.logging.Logger LOGGER =
             java.util.logging.Logger.getLogger(
                     Logger.class.getPackage().getName());
 }

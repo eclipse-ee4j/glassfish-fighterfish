@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -22,27 +22,46 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
 /**
- * Session Bean implementation class UserAuthServiceEJB
+ * Session Bean implementation class UserAuthServiceEJB.
  */
 @Stateless
 @LocalBean
+@SuppressWarnings("checkstyle:DesignForExtension")
 public class UserAuthServiceEJB {
 
+    /**
+     * Entity manager.
+     */
     @PersistenceContext
-    EntityManager em;
+    private EntityManager em;
 
+    /**
+     * Post construct hook.
+     */
     @PostConstruct
     public void postConstruct() {
         System.out.println("UserAuthServiceEJB.postConstruct");
     }
 
-    public boolean login(String name, String password) {
+    /**
+     * Authenticate a user.
+     * @param name user name
+     * @param password user password
+     * @return {@code true} if authenticated, {@code false} otherwise
+     */
+    public boolean login(final String name, final String password) {
         System.out.println("UserAuthServiceEJBuser: logging in " + name);
         UserCredential uc = em.find(UserCredential.class, name);
         return (uc != null && uc.isMatchingPassword(password));
     }
 
-    public boolean register(String name, String password) {
+    /**
+     * Register a user.
+     * @param name user name
+     * @param password user password
+     * @return {@code true} if registered, {@code false} otherwise
+     */
+    public boolean register(final String name, final String password) {
         System.out.println("UserAuthServiceEJB: registering " + name);
         UserCredential uc = new UserCredential(name, password);
         em.persist(uc);

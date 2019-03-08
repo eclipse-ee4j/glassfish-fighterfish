@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Distribution License v. 1.0, which is available at
@@ -32,46 +32,101 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
- * @author sanjeeb.sahoo@oracle.com
+ * Main entry point.
  */
 @WebListener
-public class GlassFishProvisioner implements ServletContextListener {
+public final class GlassFishProvisioner implements ServletContextListener {
 
+    /**
+     * Servlet context.
+     */
     private ServletContext servletContext;
+
+    /**
+     * OSGi framework.
+     */
     private volatile Framework framework;
+
+    /**
+     * GlassFish service.
+     */
     private volatile GlassFish glassfish;
+
+    /**
+     * Executor service.
+     */
     private final ExecutorService executorService
             = Executors.newSingleThreadExecutor();
 
+    /**
+     * OSGi framework JNDI name.
+     */
     private String fwJndiName = FW_JNDI_NAME_DEFAULT;
+
+    /**
+     * GlassFish default JNDI name.
+     */
     private String gfJndiName = GF_JNDI_NAME_DEFAULT;
+
+    /**
+     * GlassFish install home.
+     */
     private String gfHome;
 
+    /**
+     *  OSGi framework JNDI default name.
+     */
     private static final String FW_JNDI_NAME_DEFAULT
             = "java:global/glassfish-osgi-framework";
+
+    /**
+     * GlassFish default JNDI name.
+     */
     private static final String GF_JNDI_NAME_DEFAULT
             = "java:global/glassfish-instance";
+
+    /**
+     * Property name for the GlassFish install root directory.
+     */
     private static final String GLASSFISH_INSTALL_ROOT_PROP
             = "com.sun.aas.installRoot";
+
+    /**
+     * GlassFish main bundle.
+     */
     private Bundle gfMainBundle;
 
+    /**
+     * Set the GlassFish JNDI name.
+     * @param jndiName JNDI name
+     */
     @Resource
-    public void setGfJndiName(String gfJndiName) {
-        this.gfJndiName = gfJndiName;
+    public void setGfJndiName(final String jndiName) {
+        this.gfJndiName = jndiName;
     }
 
+    /**
+     * Set the OSGi framework JNDI name.
+     * @param jndiName JNDI name
+     */
     @Resource
-    public void setFwJndiName(String fwJndiName) {
-        this.fwJndiName = fwJndiName;
+    public void setFwJndiName(final String jndiName) {
+        this.fwJndiName = jndiName;
     }
 
+    /**
+     * Set the GlassFish install home.
+     * @param home new install home
+     */
     @Resource
-    public void setGfHome(String gfHome) {
-        this.gfHome = gfHome;
+    public void setGfHome(final String home) {
+        this.gfHome = home;
     }
 
     @Override
-    public void contextInitialized(ServletContextEvent servletContextEvent) {
+    public void contextInitialized(
+            final ServletContextEvent servletContextEvent) {
+
         this.servletContext = servletContextEvent.getServletContext();
         executorService.submit(new Runnable() {
             @Override
@@ -88,14 +143,19 @@ public class GlassFishProvisioner implements ServletContextListener {
                     Thread.currentThread().interrupt();
                     return;
                 } catch (Exception e) {
-                    log("Something has gone wrong while provisioning GlassFish.",
-                            e);
+                    log("Something has gone wrong while provisioning"
+                            + " GlassFish.", e);
                 }
             }
         });
         log("Submitted task");
     }
 
+    /**
+     * Wait for the OSGi framework to come up.
+     * @throws ExecutionException if an error occurs
+     * @throws InterruptedException if an error occurs
+     */
     private void waitForFramework()
             throws ExecutionException, InterruptedException {
 
@@ -103,6 +163,11 @@ public class GlassFishProvisioner implements ServletContextListener {
         framework = new WaitForOSGiFrameworkTask().call();
     }
 
+    /**
+     * Wait for GlassFish to be up.
+     * @throws InterruptedException if an error occurs
+     * @throws ExecutionException if an error occurs
+     */
     @SuppressWarnings("unchecked")
     private void waitForGlassFish()
             throws InterruptedException, ExecutionException {
@@ -119,6 +184,10 @@ public class GlassFishProvisioner implements ServletContextListener {
         new WaitForGlassFishToStart(glassfish).call();
     }
 
+    /**
+     * Provision GlassFish.
+     * @throws Exception if an error occurs
+     */
     private void provisionGlassFish() throws Exception {
         BundleContext bctx = framework.getBundleContext();
         if (gfHome == null) {
@@ -153,8 +222,11 @@ public class GlassFishProvisioner implements ServletContextListener {
     }
 
     @Override
-    public void contextDestroyed(ServletContextEvent servletContextEvent) {
-        log("Shutting down the executor so that it can cancel any pending tasks");
+    public void contextDestroyed(
+            final ServletContextEvent servletContextEvent) {
+
+        log("Shutting down the executor so that it can cancel any"
+                + " pending tasks");
         executorService.shutdownNow();
         if (gfMainBundle != null) {
             try {
@@ -168,18 +240,19 @@ public class GlassFishProvisioner implements ServletContextListener {
     }
 
     /**
-     * Waits for OSGi framework to be available in JNDI
+     * Waits for OSGi framework to be available in JNDI.
      */
     private class WaitForOSGiFrameworkTask implements Callable<Framework> {
 
         @Override
+        @SuppressWarnings("checkstyle:MagicNumber")
         public Framework call() throws InterruptedException {
             while (true) {
                 try {
-                    Framework framework = (Framework) new InitialContext()
+                    Framework fw = (Framework) new InitialContext()
                             .lookup(fwJndiName);
-                    log("obtained " + framework);
-                    return framework;
+                    log("obtained " + fw);
+                    return fw;
                 } catch (NamingException e) {
                     log("This is sometimes expected: ", e);
                 }
@@ -192,15 +265,24 @@ public class GlassFishProvisioner implements ServletContextListener {
     /**
      * Waits for GlassFish to start.
      */
-    private class WaitForGlassFishToStart implements Callable<Void> {
+    private final class WaitForGlassFishToStart
+            implements Callable<Void> {
 
-        GlassFish gf;
+        /**
+         * GlassFish service.
+         */
+        private final GlassFish gf;
 
-        private WaitForGlassFishToStart(GlassFish gf) {
-            this.gf = gf;
+        /**
+         * Create a new instance.
+         * @param glassFish glassFish service
+         */
+        WaitForGlassFishToStart(final GlassFish glassFish) {
+            this.gf = glassFish;
         }
 
         @Override
+        @SuppressWarnings("checkstyle:MagicNumber")
         public Void call() throws InterruptedException {
             try {
                 // Poll for GlassFish to start. GlassFish service might have
@@ -226,11 +308,20 @@ public class GlassFishProvisioner implements ServletContextListener {
         }
     }
 
-    private void log(String s) {
-        servletContext.log("provisionerwebapp: " + s);
+    /**
+     * Log a message using the servlet context.
+     * @param msg message to log
+     */
+    private void log(final String msg) {
+        servletContext.log("provisionerwebapp: " + msg);
     }
 
-    private void log(String s, Throwable e) {
-        servletContext.log("provisionerwebapp: " + s, e);
+    /**
+     * Log a message using the servlet context.
+     * @param msg message to log
+     * @param ex exception
+     */
+    private void log(final String msg, final Throwable ex) {
+        servletContext.log("provisionerwebapp: " + msg, ex);
     }
 }

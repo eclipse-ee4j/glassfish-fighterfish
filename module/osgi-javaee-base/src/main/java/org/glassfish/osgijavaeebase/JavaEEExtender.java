@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -23,7 +23,14 @@ import org.osgi.util.tracker.BundleTracker;
 import org.osgi.util.tracker.BundleTrackerCustomizer;
 
 import java.util.Map;
-import java.util.concurrent.*;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -32,28 +39,61 @@ import java.util.logging.Logger;
  * bundle. Implementation Note: All methods are synchronized, because we don't
  * allow the extender to stop while it is deploying or undeploying something.
  * Similarly, while it is being stopped, we don't want it to deploy or undeploy
- * something. After receiving the event, it spwans a separate thread to carry
+ * something. After receiving the event, it spawns a separate thread to carry
  * out the task so that we don't spend long time in the synchronous event
  * listener. More over, that can lead to deadlocks as observed in
  * https://glassfish.dev.java.net/issues/show_bug.cgi?id=14313.
- *
- * @author Sanjeeb.Sahoo@Sun.COM
  */
-public class JavaEEExtender implements Extender {
+public final class JavaEEExtender implements Extender {
 
+    /**
+     * Property name for deployment timeout configuration.
+     */
     private static final String DEPLOYMENT_TIMEOUT
             = "org.glassfish.osgijavaeebase.deployment.timeout";
-    private volatile OSGiContainer c;
+
+    /**
+     * Default deployment timeout value.
+     */
+    private static final long DEFAULT_DEPLOYMENT_TIMEOUT = 10000;
+
+    /**
+     * Logger.
+     */
     private static final Logger LOGGER = Logger.getLogger(
             JavaEEExtender.class.getPackage().getName());
 
+    /**
+     * Bundle context.
+     */
     private final BundleContext context;
+
+    /**
+     * OSGi container.
+     */
+    private volatile OSGiContainer c;
+
+    /**
+     * Service registration of the OSGi container.
+     */
     private ServiceRegistration reg;
+
+    /**
+     * Bundle tracker.
+     */
     private BundleTracker tracker;
+
+    /**
+     * Executor service.
+     */
     private ExecutorService executorService;
 
-    public JavaEEExtender(BundleContext context) {
-        this.context = context;
+    /**
+     * Create a new instance.
+     * @param bundleContext bundle context
+     */
+    public JavaEEExtender(final BundleContext bundleContext) {
+        this.context = bundleContext;
     }
 
     @Override
@@ -85,53 +125,77 @@ public class JavaEEExtender implements Extender {
         executorService.shutdownNow();
     }
 
-    private synchronized OSGiApplicationInfo deploy(Bundle b) {
+    /**
+     * Initiate the deployment action of the given bundle against the OSGi
+     * container.
+     * @param bundle bundle to be deployed
+     * @return OSGiApplicationInfo or {@code null} if the container is not
+     * started or if an error occurs during deployment
+     */
+    private synchronized OSGiApplicationInfo deploy(final Bundle bundle) {
         if (!isStarted()) {
             return null;
         }
         try {
-            return c.deploy(b);
+            return c.deploy(bundle);
         } catch (Throwable e) {
             LOGGER.logp(Level.SEVERE, "JavaEEExtender", "deploy",
                     "Exception deploying bundle {0}",
-                    new Object[]{b.getLocation()});
+                    new Object[]{bundle.getLocation()});
             LOGGER.logp(Level.SEVERE, "JavaEEExtender", "deploy",
                     "Exception Stack Trace", e);
         }
         return null;
     }
 
-    private synchronized void undeploy(Bundle b) {
+    /**
+     * Initiate the undeployment action of the given bundle against the OSGi
+     * container.
+     * @param bundle bundle to be deployed
+     */
+    private synchronized void undeploy(final Bundle bundle) {
         if (!isStarted()) {
             return;
         }
         try {
-            if (c.isDeployed(b)) {
-                c.undeploy(b);
+            if (c.isDeployed(bundle)) {
+                c.undeploy(bundle);
             }
         } catch (Exception e) {
             LOGGER.logp(Level.SEVERE, "JavaEEExtender", "undeploy",
                     "Exception undeploying bundle {0}",
-                    new Object[]{b.getLocation()});
+                    new Object[]{bundle.getLocation()});
             LOGGER.logp(Level.SEVERE, "JavaEEExtender", "undeploy",
                     "Exception Stack Trace", e);
         }
     }
 
+    /**
+     * Test if the OSGi container is started.
+     * @return {@code true} if started, {@code false} otherwise
+     */
     private boolean isStarted() {
         // This method is deliberately made non-synchronized, because it is
         // called from tracker customizer
         return c != null;
     }
 
+    /**
+     * A bundle tracker customizer to deploy asynchronously.
+     */
     private class HybridBundleTrackerCustomizer
             implements BundleTrackerCustomizer {
 
+        /**
+         * The deployment tasks executed asynchronously.
+         */
         private final Map<Long, Future<OSGiApplicationInfo>> deploymentTasks
                 = new ConcurrentHashMap<Long, Future<OSGiApplicationInfo>>();
 
         @Override
-        public Object addingBundle(final Bundle bundle, BundleEvent event) {
+        public Object addingBundle(final Bundle bundle,
+                final BundleEvent event) {
+
             if (!isStarted()) {
                 return null;
             }
@@ -152,13 +216,13 @@ public class JavaEEExtender implements Extender {
 
         /**
          * Bundle is ready when its state is ACTIVE or, when a lazy activation
-         * policy is used, STARTING
+         * policy is used, STARTING.
          *
-         * @param event
-         * @param state
-         * @return
+         * @param event the bundle event
+         * @param state the bundle state
+         * @return {@code true} if ready, {@code false} otherwise
          */
-        private boolean isReady(BundleEvent event, int state) {
+        private boolean isReady(final BundleEvent event, final int state) {
             return state == Bundle.ACTIVE
                     || (state == Bundle.STARTING
                     && (event != null
@@ -166,13 +230,13 @@ public class JavaEEExtender implements Extender {
         }
 
         @Override
-        public void modifiedBundle(Bundle bundle, BundleEvent event,
-                Object object) {
+        public void modifiedBundle(final Bundle bundle, final BundleEvent event,
+                final Object object) {
         }
 
         @Override
-        public void removedBundle(final Bundle bundle, BundleEvent event,
-                Object object) {
+        public void removedBundle(final Bundle bundle, final BundleEvent event,
+                final Object object) {
 
             if (!isStarted()) {
                 return;
@@ -194,8 +258,8 @@ public class JavaEEExtender implements Extender {
                     LOGGER.logp(Level.FINE,
                             "JavaEEExtender$HybridBundleTrackerCustomizer",
                             "removedBundle",
-                            "Undeployer times out waiting for deployment to finish for bundle "
-                                    + bundle, e);
+                            "Undeployer times out waiting for deployment to"
+                                    + " finish for bundle " + bundle, e);
                     boolean isCancelled = deploymentTask.cancel(true);
                     if (!isCancelled) {
                         // cancellation of timer won't be successful if the
@@ -219,7 +283,7 @@ public class JavaEEExtender implements Extender {
                 // deployment status by calling isDeployed().
                 if (deployedApp != null || c.isDeployed(bundle)) {
                     // undeploy synchronously to avoid any deadlock.
-                    undeploy(bundle); 
+                    undeploy(bundle);
                 }
             } catch (InterruptedException e) {
                 // TODO(Sahoo): Proper Exception Handling
@@ -231,13 +295,17 @@ public class JavaEEExtender implements Extender {
             }
         }
 
+        /**
+         * Get the configured deployment timeout.
+         * @return timeout
+         */
         public long getDeploymentTimeout() {
             long timeOut;
             String time = context.getProperty(DEPLOYMENT_TIMEOUT);
             if (time != null) {
-                timeOut = Long.valueOf(time);
+                timeOut = Long.parseLong(time);
             } else {
-                timeOut = 10000;
+                timeOut = DEFAULT_DEPLOYMENT_TIMEOUT;
             }
             return timeOut;
         }

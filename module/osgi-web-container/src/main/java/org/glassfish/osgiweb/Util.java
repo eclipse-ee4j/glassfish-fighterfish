@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -20,20 +20,25 @@ import org.osgi.framework.Bundle;
 import static org.glassfish.osgiweb.Constants.WEB_CONTEXT_PATH;
 
 /**
- * @author Sanjeeb.Sahoo@Sun.COM
+ * Utility class for the web container module.
  */
-public class Util {
+public final class Util {
+
+    /**
+     * Cannot be instanciated.
+     */
+    private Util() {
+    }
 
     /**
      * This method attached slash when context path header does not start with
      * /. This is done keeping the following observations in mind: a) GlassFish
      * web container automatically attaches a '/'. b) The r42 CT installs some
      * WABs which contains such context path. Unless we attach a '/', they fail.
-     *
-     * @param bundle
-     * @return
+     * @param bundle the budnle to process
+     * @return context path
      */
-    static String getContextPath(Bundle bundle) {
+    static String getContextPath(final Bundle bundle) {
         String cp = (String) bundle.getHeaders().get(WEB_CONTEXT_PATH);
         if (cp != null && !cp.startsWith("/")) {
             cp = "/".concat(cp);

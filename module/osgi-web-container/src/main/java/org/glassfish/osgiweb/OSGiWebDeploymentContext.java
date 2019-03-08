@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -15,6 +15,7 @@
  */
 package org.glassfish.osgiweb;
 
+import com.sun.enterprise.module.common_impl.CompositeEnumeration;
 import org.apache.naming.resources.WebDirContext;
 import org.glassfish.osgijavaeebase.OSGiArchiveHandler;
 import org.glassfish.osgijavaeebase.OSGiDeploymentContext;
@@ -26,20 +27,25 @@ import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.deployment.OpsParams;
-import org.osgi.framework.*;
+import org.osgi.framework.Bundle;
 
 import java.io.FileFilter;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URL;
-import java.util.*;
 import java.util.jar.JarFile;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.io.IOException;
 import java.io.File;
-
-import com.sun.enterprise.module.common_impl.CompositeEnumeration;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * This is at the heart of WAB support. It is responsible for setting up a class
@@ -49,34 +55,95 @@ import com.sun.enterprise.module.common_impl.CompositeEnumeration;
  * behaves like a WAR in our web container. So, we create a special class loader
  * called {@link org.glassfish.osgiweb.OSGiWebDeploymentContext.WABClassLoader}
  * and set that in the deployment context.
- *
- * @author Sanjeeb.Sahoo@Sun.COM
  */
 class OSGiWebDeploymentContext extends OSGiDeploymentContext {
 
+    /**
+     * Logger.
+     */
     private static final Logger LOGGER = Logger.getLogger(
             OSGiWebDeploymentContext.class.getPackage().getName());
 
-    public OSGiWebDeploymentContext(ActionReport actionReport,
-            Logger logger,
-            ReadableArchive source,
-            OpsParams params,
-            ServerEnvironment env,
-            Bundle bundle) throws Exception {
+    /**
+     * We don't package our custom providers as a META-INF/services/, for doing
+     * so will make them visible to non hybrid applications as well. So, we
+     * package it at a different location and punch in our class-loader
+     * appropriately. This map holds the key name that client is looking for and
+     * the value is where we have placed it in our bundle.
+     */
+    private static final Map<String, String> HIDDEN_SERVICES_MAP;
+
+    /**
+     * Since mojarra uses thread's context class loader to look up custom
+     * providers and our custom providers are not available via APIClassLoader's
+     * META-INF/service punch-in mechanism, we need to make them visible
+     * specially. This field maintains a list of such service class names. As
+     * much as we would like to hide
+     * {@link org.glassfish.osgiweb.OSGiWebModuleDecorator}, we can't, because
+     * that's looked up via habitat, which means it has to be either present as
+     * META-INF/services in the bundle itself or added as an existing
+     * inhabitant. We have gone for the latter approach for the decorator. The
+     * other providers that are looked up by mojarra are hidden using the
+     * technique implemented here.
+     */
+    private static final Collection<String> HIDDEN_SERVICES;
+
+    //CHECKSTYLE:OFF
+    static {
+        Map<String, String> map = new HashMap<String, String>();
+
+        // This is for the custom AnnotationProvider. Note that Mojarra
+        // surprising uses different nomenclature than what is used by JDK SPI.
+        // The service type is AnnotationProvider, yet it looks for
+        // annotationprovider.
+        map.put("META-INF/services/com.sun.faces.spi.annotationprovider",
+                "META-INF/hiddenservices/com.sun.faces.spi.annotationprovider");
+
+        // This is for our custom faces-config.xml discoverer
+        map.put("META-INF/services/com.sun.faces.spi.FacesConfigResourceProvider",
+                "META-INF/hiddenservices/com.sun.faces.spi.FacesConfigResourceProvider");
+
+        // This is for our custom taglib.xml discoverer
+        map.put("META-INF/services/com.sun.faces.spi.FaceletConfigResourceProvider",
+                "META-INF/hiddenservices/com.sun.faces.spi.FaceletConfigResourceProvider");
+        HIDDEN_SERVICES_MAP = Collections.unmodifiableMap(map);
+
+        HIDDEN_SERVICES = Collections.unmodifiableList(Arrays.asList(
+                OSGiFacesAnnotationScanner.class.getName(),
+                OSGiFaceletConfigResourceProvider.class.getName(),
+                OSGiFacesConfigResourceProvider.class.getName()
+        ));
+    }
+    //CHECKSTYLE:ON
+
+    /**
+     * Create a new instance.
+     * @param actionReport GlassFish command reporter
+     * @param logger logger
+     * @param source  Application archive
+     * @param params Deploy command parameters
+     * @param env GlassFish server environment
+     * @param bundle Application bundle
+     * @throws Exception if an error occurs
+     */
+    OSGiWebDeploymentContext(final ActionReport actionReport,
+            final Logger logger, final ReadableArchive source,
+            final OpsParams params, final ServerEnvironment env,
+            final Bundle bundle) throws Exception {
 
         super(actionReport, logger, source, params, env, bundle);
         // ArchiveHandler must correctly return the ArchiveType for DOL
         // processing to succeed,
         setArchiveHandler(new OSGiArchiveHandler() {
             @Override
-            public List<URI> getClassPathURIs(ReadableArchive archive) {
+            public List<URI> getClassPathURIs(final ReadableArchive archive) {
                 final List<URI> uris = new ArrayList<URI>();
                 File base = getSourceDir();
                 assert (base != null && base.isDirectory());
                 uris.add(new File(base, "WEB-INF/classes/").toURI());
                 new File(base, "WEB-INF/lib/").listFiles(new FileFilter() {
                     @Override
-                    public boolean accept(File pathname) {
+                    public boolean accept(final File pathname) {
                         if (pathname.isFile()
                                 && pathname.getName().endsWith(".jar")) {
                             uris.add(pathname.toURI());
@@ -96,24 +163,26 @@ class OSGiWebDeploymentContext extends OSGiDeploymentContext {
                 // yet staged in a maven repo,
                 // I am accessing the value in a round about way.
                 // WarType.ARCHIVE_TYPE;
-                return javax.enterprise.deploy.shared.ModuleType.WAR.toString();
+                return javax.enterprise.deploy.shared.ModuleType.WAR
+                        .toString();
             }
         });
     }
 
     @Override
     protected void setupClassLoader() throws Exception {
-        finalClassLoader = new WABClassLoader(null);
-        shareableTempClassLoader = finalClassLoader;
-        WebappClassLoader.class.cast(finalClassLoader).start();
+        ClassLoader cl = new WABClassLoader(null);
+        setFinalClassLoader(cl);
+        setShareableTempClassLoader(cl);
+        WebappClassLoader.class.cast(cl).start();
     }
 
     /**
      * We need this class loader for variety of reasons explained below: a)
-     * GlassFish default servlet (DefaultServlet.java), the servletresponsible
+     * GlassFish default servlet (DefaultServlet.java), the servlet responsible
      * for serving static content fails to serve any static content from
-     * META-INF/resources/ of WEB-INF/lib/*.jar, if the classloader is not an
-     * instanceof WebappClassLoader. b) DefaultServlet also expects
+     * META-INF/resources/ of WEB-INF/lib/*.jar, if the class-loader is not an
+     * instance of WebappClassLoader. b) DefaultServlet also expects
      * WebappClassLoader's resourceEntries to be properly populated. c) JSPC
      * relies on getURLs() methods so that it can discover TLDs in the web app.
      * Setting up repositories and jar files ensures that WebappClassLoader's
@@ -130,21 +199,31 @@ class OSGiWebDeploymentContext extends OSGiDeploymentContext {
      */
     private class WABClassLoader extends WebappClassLoader {
 
-        final BundleClassLoader delegate1 = new BundleClassLoader(bundle);
-        final ClassLoader delegate2
-                = Globals.get(ClassLoaderHierarchy.class).getAPIClassLoader();
+        /**
+         * First delegate class-loader.
+         */
+        private final BundleClassLoader delegate1 =
+                new BundleClassLoader(getBundle());
+
+        /**
+         * Second delegate class-loader.
+         */
+        private final ClassLoader delegate2 = Globals
+                .get(ClassLoaderHierarchy.class).getAPIClassLoader();
 
         @Override
-        public Class<?> loadClass(String name) throws ClassNotFoundException {
+        public Class<?> loadClass(final String name)
+                throws ClassNotFoundException {
+
             return loadClass(name, false);
         }
 
         @Override
-        protected synchronized Class<?> loadClass(String name, boolean resolve)
-                throws ClassNotFoundException {
+        protected synchronized Class<?> loadClass(final String name,
+                final boolean resolve) throws ClassNotFoundException {
 
             // this class loader may be the defining loader for a proxy or
-            // generated class 
+            // generated class
             Class c = findLoadedClass(name);
             if (c != null) {
                 return c;
@@ -153,7 +232,7 @@ class OSGiWebDeploymentContext extends OSGiDeploymentContext {
             // up custom annotation provider.
             // since we don't export our package and in fact hide our provider,
             // we need to load them using current loader.
-            if (hiddenServices.contains(name)) {
+            if (HIDDEN_SERVICES.contains(name)) {
                 return Class.forName(name);
             }
             try {
@@ -164,7 +243,7 @@ class OSGiWebDeploymentContext extends OSGiDeploymentContext {
         }
 
         @Override
-        public URL getResource(String name) {
+        public URL getResource(final String name) {
             URL url = delegate1.getResource(name);
             if (url == null) {
                 url = delegate2.getResource(name);
@@ -173,10 +252,12 @@ class OSGiWebDeploymentContext extends OSGiDeploymentContext {
         }
 
         @Override
-        public Enumeration<URL> getResources(String name) throws IOException {
-            List<Enumeration<URL>> enumerators =
-                    new ArrayList<Enumeration<URL>>();
-            final String mappedResourcePath = hiddenServicesMap.get(name);
+        public Enumeration<URL> getResources(final String name)
+                throws IOException {
+
+            List<Enumeration<URL>> enumerators
+                    = new ArrayList<Enumeration<URL>>();
+            final String mappedResourcePath = HIDDEN_SERVICES_MAP.get(name);
             if (mappedResourcePath != null) {
                 return getClass().getClassLoader()
                         .getResources(mappedResourcePath);
@@ -187,22 +268,29 @@ class OSGiWebDeploymentContext extends OSGiDeploymentContext {
         }
 
         @Override
-        public InputStream getResourceAsStream(String name) {
+        public InputStream getResourceAsStream(final String name) {
             // We need to override this method because of the stupid
             // WebappClassLoader that for some reason not only overrides
             // getResourceAsStream, it also does not delegate to getResource
             // method.
             URL url = getResource(name);
             try {
-                return url != null ? url.openStream() : null;
+                if (url != null) {
+                    return url.openStream();
+                }
+                return null;
             } catch (IOException e) {
                 return null;
             }
         }
 
-        public WABClassLoader(ClassLoader parent) {
+        /**
+         * Create a new instance.
+         * @param parent the parent class-loader
+         */
+        WABClassLoader(final ClassLoader parent) {
             super(parent);
-            // we always delegate. The default is false in WebappClassLoader!!!
+            // we always delegate. The default is false in WebappClassLoader!
             setDelegate(true);
 
             File base = getSourceDir();
@@ -224,9 +312,11 @@ class OSGiWebDeploymentContext extends OSGiDeploymentContext {
                 int baseFileLen = base.getPath().length();
                 for (File file : libDir.listFiles(
                         new FileFilter() {
-                    public boolean accept(File pathname) {
+                    @Override
+                    public boolean accept(final File pathname) {
                         String fileName = pathname.getName();
-                        return (fileName.endsWith(".jar") && pathname.isFile());
+                        return (fileName.endsWith(".jar")
+                                && pathname.isFile());
                     }
                 })) {
                     try {
@@ -242,56 +332,5 @@ class OSGiWebDeploymentContext extends OSGiDeploymentContext {
             // We set the same working dir as set in WarHandler
             setWorkDir(getScratchDir("jsp"));
         }
-
-    }
-
-    /**
-     * We don't package our custom providers as a META-INF/services/, for doing
-     * so will make them visible to non hybrid applications as well. So, we
-     * package it at a different location and punch in our classloader
-     * appropriately. This map holds the key name that client is looking for and
-     * the value is where we have placed it in our bundle.
-     */
-    private static final Map<String, String> hiddenServicesMap;
-
-    /**
-     * Since mojarra uses thread's context class loader to look up custom
-     * providers and our custom providers are not available via APIClassLoader's
-     * META-INF/service punch-in mechanism, we need to make them visible
-     * specially. This field maintains a list of such service class names. As
-     * much as we would like to hide
-     * {@link org.glassfish.osgiweb.OSGiWebModuleDecorator}, we can't, because
-     * that's looked up via habitat, which means it has to be either present as
-     * META-INF/services in the bundle itself or added as an existing
-     * inhabitant. We have gone for the latter approach for the decorator. The
-     * other providers that are looked up by mojarra are hidden using the
-     * technique implemented here.
-     */
-    private static final Collection<String> hiddenServices;
-
-    static {
-        Map<String, String> map = new HashMap<String, String>();
-
-        // This is for the custom AnnotationProvider. Note that Mojarra
-        // surprising uses different nomenclature than what is used by JDK SPI.
-        // The service type is AnnotationProvider, yet it looks for
-        // annotationprovider.
-        map.put("META-INF/services/com.sun.faces.spi.annotationprovider",
-                "META-INF/hiddenservices/com.sun.faces.spi.annotationprovider");
-
-        // This is for our custom faces-config.xml discoverer
-        map.put("META-INF/services/com.sun.faces.spi.FacesConfigResourceProvider",
-                "META-INF/hiddenservices/com.sun.faces.spi.FacesConfigResourceProvider");
-
-        // This is for our custom taglib.xml discoverer
-        map.put("META-INF/services/com.sun.faces.spi.FaceletConfigResourceProvider",
-                "META-INF/hiddenservices/com.sun.faces.spi.FaceletConfigResourceProvider");
-        hiddenServicesMap = Collections.unmodifiableMap(map);
-
-        hiddenServices = Collections.unmodifiableList(Arrays.asList(
-                OSGiFacesAnnotationScanner.class.getName(),
-                OSGiFaceletConfigResourceProvider.class.getName(),
-                OSGiFacesConfigResourceProvider.class.getName()
-        ));
     }
 }

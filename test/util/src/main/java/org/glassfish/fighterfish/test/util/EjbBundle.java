@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -25,34 +25,45 @@ import java.util.concurrent.TimeUnit;
  * This class is used by tests to deploy Ejb Bundles. Since EJB deployment
  * happens asynchronously when an EJB Bundle is activated, for a test case to
  * know whether the deployment is successful or not is not as simple as checking
- * if b.start() returns successfully or not. This is where this class is helpful.
- * Unlike OSGi Web Application container, OSGi EJB Spec does not raise events to
- * indicating success or failure of events. So, this class relies on user to
- * tell it at least one service that's being exported by this bundle to OSGi
- * service registry. This class then uses a service tracker to wait for such a
- * service to appear. If such a service does not show up in a specified amount
- * of time, it times out the deployment operation.
- *
- * @author Sanjeeb.Sahoo@Sun.COM
+ * if b.start() returns successfully or not. This is where this class is
+ * helpful. Unlike OSGi Web Application container, OSGi EJB Spec does not raise
+ * events to indicating success or failure of events. So, this class relies on
+ * user to tell it at least one service that's being exported by this bundle to
+ * OSGi service registry. This class then uses a service tracker to wait for
+ * such a service to appear. If such a service does not show up in a specified
+ * amount of time, it times out the deployment operation.
  */
-public class EjbBundle {
+public final class EjbBundle {
 
+    /**
+     * Bundle context.
+     */
     private final BundleContext ctx;
-    private final Bundle b;
+
+    /**
+     * Bundle.
+     */
+    private final Bundle bundle;
+
+    /**
+     * Services provided by the bundle.
+     */
     private final String[] services;
 
     /**
-     * A handle to the EJB bundle being deployed.
+     * Create a new instance.
      *
-     * @param ctx BundleContext of test used for various OSGi operation.
-     * @param b Bundle to be deployed.
-     * @param services Services that are expected to be made available by this
+     * @param bndCtx BundleContext of test used for various OSGi operation.
+     * @param bnd Bundle to be deployed.
+     * @param svcs Services that are expected to be made available by this
      * EJB bundle if deployment is successful.
      */
-    public EjbBundle(BundleContext ctx, Bundle b, String[] services) {
-        this.ctx = ctx;
-        this.b = b;
-        this.services = services;
+    public EjbBundle(final BundleContext bndCtx, final Bundle bnd,
+            final String[] svcs) {
+
+        this.ctx = bndCtx;
+        this.bundle = bnd;
+        this.services = svcs;
     }
 
     /**
@@ -61,18 +72,18 @@ public class EjbBundle {
      * service registry in the specified amount of time, it assumes the
      * operation has failed and throws TimeoutOperation.
      *
-     * @param timeout
-     * @param timeUnit
-     * @throws BundleException
-     * @throws InterruptedException
-     * @throws TimeoutException
+     * @param timeout deploy timeout
+     * @param timeUnit timeout unit
+     * @throws BundleException if an error occurs
+     * @throws InterruptedException if an error occurs
+     * @throws TimeoutException if the timeout is reached
      */
-    public void deploy(long timeout, TimeUnit timeUnit)
+    public void deploy(final long timeout, final TimeUnit timeUnit)
             throws BundleException, InterruptedException, TimeoutException {
 
-        b.start(Bundle.START_TRANSIENT);
+        bundle.start(Bundle.START_TRANSIENT);
         for (String service : services) {
-            if (OSGiUtil.waitForService(ctx, b, service,
+            if (OSGiUtil.waitForService(ctx, bundle, service,
                     timeUnit.toMillis(timeout)) == null) {
                 throw new TimeoutException(
                         "Deployment timed out. No service of type "
@@ -85,13 +96,17 @@ public class EjbBundle {
      * Undeploy the EJB OSGi bundle. There is no need for any timeout argument,
      * as undeployment is a synchronous process unlike deployment.
      *
-     * @throws BundleException
+     * @throws BundleException if an error occurs
      */
     public void undeploy() throws BundleException {
-        b.stop();
+        bundle.stop();
     }
 
+    /**
+     * Get the bundle.
+     * @return Bundle
+     */
     public Bundle getBundle() {
-        return b;
+        return bundle;
     }
 }

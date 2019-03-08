@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -23,23 +23,30 @@ import org.glassfish.internal.api.ServerContext;
 import java.util.List;
 
 /**
- * @author Jagadish Ramu
+ * Resource helper.
  */
-public class ResourceHelper {
+public final class ResourceHelper {
 
-    Habitat habitat;
+    /**
+     * Component locator.
+     */
+    private final Habitat habitat;
 
-    ResourceHelper(Habitat habitat) {
-        this.habitat = habitat;
+    /**
+     * Create a new instance.
+     * @param hab component locator
+     */
+    ResourceHelper(final Habitat hab) {
+        this.habitat = hab;
     }
 
     /**
-     * retrieves <i>resource-ref</i> from configuration
+     * Retrieves <i>resource-ref</i> from configuration.
      *
      * @param resourceName resource-name
      * @return resource-ref
      */
-    public ResourceRef getResourceRef(String resourceName) {
+    public ResourceRef getResourceRef(final String resourceName) {
         ServerContext context = getHabitat().getComponent(ServerContext.class);
         String instanceName = context.getInstanceName();
 
@@ -57,6 +64,10 @@ public class ResourceHelper {
         return null;
     }
 
+    /**
+     * Get the habitat.
+     * @return Habitat
+     */
     private Habitat getHabitat() {
         return habitat;
     }

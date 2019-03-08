@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -31,8 +31,6 @@ import static org.junit.Assert.assertNotNull;
 /**
  * This class demonstrates how simple it is to write a test scenario using
  * pax-exam and the simple abstractions provided by our test.util bundle.
- *
- * @author Sanjeeb.Sahoo@Sun.COM
  */
 public class SingleTestIT extends AbstractTestObject {
 

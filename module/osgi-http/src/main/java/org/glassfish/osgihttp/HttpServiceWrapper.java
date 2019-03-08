@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -30,16 +30,17 @@ import java.util.Set;
 
 /**
  * This is an implementation of {@link HttpService} per bundle. This is what a
- * bundle gets when they look up the servuce in OSGi service registry. This is
+ * bundle gets when they look up the service in OSGi service registry. This is
  * needed so that we can unregister all the servlets registered by a bundle when
  * that bundle goes down without unregistering the servlet or resource end
  * points. This delegates to {@link GlassFishHttpService} for implementing the
  * actual service.
- *
- * @author Sanjeeb.Sahoo@Sun.COM
  */
-public class HttpServiceWrapper implements HttpService {
+public final class HttpServiceWrapper implements HttpService {
 
+    /**
+     * The delegate HTTP service.
+     */
     private final GlassFishHttpService delegate;
 
     /**
@@ -52,10 +53,16 @@ public class HttpServiceWrapper implements HttpService {
      */
     private final Set<String> aliases = new HashSet<String>();
 
-    public HttpServiceWrapper(GlassFishHttpService delegate,
-            Bundle registeringBundle) {
-        this.delegate = delegate;
-        this.registeringBundle = registeringBundle;
+    /**
+     * Create a new instance.
+     * @param gfHttpService the delegate HTTP service
+     * @param bnd the registering bundle
+     */
+    public HttpServiceWrapper(final GlassFishHttpService gfHttpService,
+            final Bundle bnd) {
+
+        this.delegate = gfHttpService;
+        this.registeringBundle = bnd;
     }
 
     @Override
@@ -64,34 +71,45 @@ public class HttpServiceWrapper implements HttpService {
     }
 
     @Override
-    public void registerServlet(String alias, Servlet servlet,
-            Dictionary initParams, HttpContext httpContext)
+    public void registerServlet(final String alias, final Servlet servlet,
+            final Dictionary initParams, final HttpContext httpContext)
             throws ServletException, NamespaceException {
 
-        if (httpContext == null) {
-            httpContext = createDefaultHttpContext();
+        HttpContext ctx;
+        if (httpContext != null) {
+            ctx = httpContext;
+        } else {
+            ctx = createDefaultHttpContext();
         }
-        delegate.registerServlet(alias, servlet, initParams, httpContext);
+        delegate.registerServlet(alias, servlet, initParams, ctx);
         aliases.add(alias);
     }
 
     @Override
-    public void registerResources(String alias, String name,
-            HttpContext httpContext) throws NamespaceException {
+    public void registerResources(final String alias, final String name,
+            final HttpContext httpContext) throws NamespaceException {
 
-        if (httpContext == null) {
-            httpContext = createDefaultHttpContext();
+        HttpContext ctx;
+        if (httpContext != null) {
+            ctx = httpContext;
+        } else {
+            ctx = createDefaultHttpContext();
         }
-        delegate.registerResources(alias, name, httpContext);
+        delegate.registerResources(alias, name, ctx);
         aliases.add(alias);
     }
 
     @Override
-    public synchronized void unregister(String alias) {
+    public synchronized void unregister(final String alias) {
         unregister(alias, true);
     }
 
-    private void unregister(String alias, boolean callDestroy) {
+    /**
+     * Unregister a given alias.
+     * @param alias the alias to unregister
+     * @param callDestroy flag to indicate if servlet.destroy should be called
+     */
+    private void unregister(final String alias, final boolean callDestroy) {
         delegate.unregister(alias, callDestroy);
         aliases.remove(alias);
     }
@@ -99,7 +117,7 @@ public class HttpServiceWrapper implements HttpService {
     /**
      * Unregisters all the aliases without calling servlet.destroy (if any).
      */
-    /* package */ void unregisterAll() {
+    void unregisterAll() {
         // take a copy of all registered aliases,
         // as the underlying list will change
         for (String alias : aliases.toArray(new String[0])) {
@@ -118,24 +136,31 @@ public class HttpServiceWrapper implements HttpService {
      * destroy method of the servlet to be called. This can be done in the
      * BundleActivator.stop method of the bundle registering the servlet.
      */
-    public static class HttpServiceFactory implements ServiceFactory {
+    public static final class HttpServiceFactory implements ServiceFactory {
 
+        /**
+         * Delegate HTTP service.
+         */
         private final GlassFishHttpService delegate;
 
-        public HttpServiceFactory(GlassFishHttpService delegate) {
-            this.delegate = delegate;
+        /**
+         * Create a new instance.
+         * @param gfHttpService the delegate HTTP service
+         */
+        public HttpServiceFactory(final GlassFishHttpService gfHttpService) {
+            this.delegate = gfHttpService;
         }
 
         @Override
-        public Object getService(Bundle bundle,
-                ServiceRegistration registration) {
+        public Object getService(final Bundle bnd,
+                final ServiceRegistration registration) {
 
-            return new HttpServiceWrapper(delegate, bundle);
+            return new HttpServiceWrapper(delegate, bnd);
         }
 
         @Override
-        public void ungetService(Bundle bundle,
-                ServiceRegistration registration, Object service) {
+        public void ungetService(final Bundle bundle,
+                final ServiceRegistration registration, final Object service) {
 
             HttpServiceWrapper.class.cast(service).unregisterAll();
         }

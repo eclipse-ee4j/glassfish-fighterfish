@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -21,20 +21,31 @@ import org.glassfish.embeddable.GlassFishException;
 /**
  * Adapter for old Habitat's getComponent method We keep the class name same to
  * reduce the no of lines that we have to change.
- *
- * @author sanjeeb.sahoo@oracle.com
  */
-public class Habitat {
+public final class Habitat {
 
-    private final GlassFish gf;
+    /**
+     * GlassFish service.
+     */
+    private final GlassFish glassFish;
 
-    Habitat(GlassFish gf) {
-        this.gf = gf;
+    /**
+     * Create a new instance.
+     * @param gf GlassFish service
+     */
+    Habitat(final GlassFish gf) {
+        this.glassFish = gf;
     }
 
-    public <T> T getComponent(Class<T> type) {
+    /**
+     * Lookup a component by type.
+     * @param <T> component type
+     * @param type component class
+     * @return T
+     */
+    public <T> T getComponent(final Class<T> type) {
         try {
-            return gf.getService(type);
+            return glassFish.getService(type);
         } catch (GlassFishException e) {
             // TODO(Sahoo): Proper Exception Handling
             throw new RuntimeException(e);

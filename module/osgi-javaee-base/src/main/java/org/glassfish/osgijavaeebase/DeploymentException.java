@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -16,22 +16,38 @@
 package org.glassfish.osgijavaeebase;
 
 /**
- * @author Sanjeeb.Sahoo@Sun.COM
+ * Deployment exception.
  */
 public class DeploymentException extends Exception {
 
+    /**
+     * Create a new exception with no message and no cause.
+     */
     public DeploymentException() {
     }
 
-    public DeploymentException(String message) {
+    /**
+     * Create a new exception with a message and no cause.
+     * @param message exception message
+     */
+    public DeploymentException(final String message) {
         super(message);
     }
 
-    public DeploymentException(String message, Throwable cause) {
+    /**
+     * Create a new exception with a message and a cause.
+     * @param message exception message
+     * @param cause exception cause
+     */
+    public DeploymentException(final String message, final Throwable cause) {
         super(message, cause);
     }
 
-    public DeploymentException(Throwable cause) {
+    /**
+     * Create a new exception with no message and a cause.
+     * @param cause exception cause
+     */
+    public DeploymentException(final Throwable cause) {
         super(cause);
     }
 }

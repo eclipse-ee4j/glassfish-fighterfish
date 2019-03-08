@@ -35,6 +35,8 @@
     <properties>
         <stage.dir>${project.build.directory}/stage</stage.dir>
         <glassfish.install.dir>${stage.dir}/glassfish5/glassfish</glassfish.install.dir>
+        <maven.deploy.skip>false</maven.deploy.skip>
+        <maven.javadoc.skip>false</maven.javadoc.skip>
     </properties>
 
     <build>
@@ -138,7 +140,8 @@
                         <!--<fighterfish.test.timeout>2000000</fighterfish.test.timeout>-->
                     </systemPropertyVariables>
                     <classpathDependencyExcludes>
-                        <classpathDependencyExcludes>javax:javaee-web-api</classpathDependencyExcludes>
+                        <classpathDependencyExcludes>javax.*:*</classpathDependencyExcludes>
+                        <classpathDependencyExcludes>jakarta.*:*</classpathDependencyExcludes>
                         <classpathDependencyExcludes>org.glassfish.hk2:*</classpathDependencyExcludes>
                         <classpathDependencyExcludes>org.glassfish.fighterfish:*</classpathDependencyExcludes>
                     </classpathDependencyExcludes>
@@ -222,9 +225,17 @@
             <artifactId>httpcore-osgi</artifactId>
         </dependency>
         <dependency>
-            <groupId>javax</groupId>
-            <artifactId>javaee-web-api</artifactId>
+            <groupId>com.github.spotbugs</groupId>
+            <artifactId>spotbugs-annotations</artifactId>
             <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.servlet</groupId>
+            <artifactId>jakarta.servlet-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>javax.inject</groupId>
+            <artifactId>javax.inject</artifactId>
         </dependency>
         <dependency>
             <groupId>org.glassfish.fighterfish</groupId>

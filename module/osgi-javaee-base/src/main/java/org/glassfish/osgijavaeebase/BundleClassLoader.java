@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -30,32 +30,40 @@ import java.util.NoSuchElementException;
  * as opposed to their findXYZ() equivalents so that the OSGi export control
  * mechanism is enforced even for classes and resources available in the
  * system/boot class loader.
- *
- * @author Sanjeeb.Sahoo@Sun.COM
  */
-public class BundleClassLoader extends ClassLoader {
+public final class BundleClassLoader extends ClassLoader {
 
+    /**
+     * The bundle.
+     */
     private final Bundle bundle;
 
-    public BundleClassLoader(Bundle b) {
+    /**
+     * Create a new instance.
+     * @param bnd the bundle
+     */
+    public BundleClassLoader(final Bundle bnd) {
         super(Bundle.class.getClassLoader());
-        this.bundle = b;
+        this.bundle = bnd;
     }
 
     @Override
-    public synchronized Class<?> loadClass(final String name, boolean resolve)
+    public synchronized Class<?> loadClass(final String name,
+            final boolean resolve)
             throws ClassNotFoundException {
 
         return bundle.loadClass(name);
     }
 
     @Override
-    public URL getResource(String name) {
+    public URL getResource(final String name) {
         return bundle.getResource(name);
     }
 
     @Override
-    public Enumeration<URL> getResources(String name) throws IOException {
+    public Enumeration<URL> getResources(final String name)
+            throws IOException {
+
         Enumeration<URL> resources = bundle.getResources(name);
         if (resources == null) {
             // This check is needed, because ClassLoader.getResources()

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Distribution License v. 1.0, which is available at
@@ -26,21 +26,31 @@ import java.io.PrintWriter;
  * Servlet implementation class RegistrationServlet.
  */
 @WebServlet("/UnregistrationServlet")
-public class UnregistrationServlet extends HttpServlet {
+public final class UnregistrationServlet extends HttpServlet {
 
+    /**
+     * Serialization UID.
+     */
     private static final long serialVersionUID = 1L;
 
+    /**
+     * User authentication service.
+     */
     @Inject
     @OSGiService(dynamic = true)
     private UserAuthService uas;
 
+    /**
+     * Create a new instance.
+     */
     public UnregistrationServlet() {
         super();
     }
 
     @Override
-    protected void service(HttpServletRequest request,
-            HttpServletResponse response) throws ServletException, IOException {
+    protected void service(final HttpServletRequest request,
+            final HttpServletResponse response)
+            throws ServletException, IOException {
 
         PrintWriter out = response.getWriter();
         out.println("<HTML> <HEAD> <TITLE> Login "

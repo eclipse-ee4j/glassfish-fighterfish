@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -27,8 +27,6 @@ import org.osgi.framework.BundleException;
 /**
  * This is an integration test for this module. The class name is suffixed with
  * IT so that it gets picked up by failsafe plugin only.
- *
- * @author Sanjeeb.Sahoo@Sun.COM
  */
 @RunWith(FighterFishJUnitRunner.class)
 public class T1_UtilIT {

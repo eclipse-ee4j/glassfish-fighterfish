@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -26,7 +26,25 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.glassfish.osgiweb.Constants.*;
+import static org.glassfish.osgiweb.Constants.EVENT_PROPERTY_BUNDLE;
+import static org.glassfish.osgiweb.Constants.EVENT_PROPERTY_BUNDLE_ID;
+import static org.glassfish.osgiweb.Constants.EVENT_PROPERTY_BUNDLE_SYMBOLICNAME;
+import static org.glassfish.osgiweb.Constants.EVENT_PROPERTY_BUNDLE_VERSION;
+import static org.glassfish.osgiweb.Constants.EVENT_PROPERTY_COLLISION;
+import static org.glassfish.osgiweb.Constants.EVENT_PROPERTY_COLLISION_BUNDLES;
+import static org.glassfish.osgiweb.Constants.EVENT_PROPERTY_CONTEXT_PATH;
+import static org.glassfish.osgiweb.Constants.EVENT_PROPERTY_EXCEPTION;
+import static org.glassfish.osgiweb.Constants.EVENT_PROPERTY_EXTENDER_BUNDLE;
+import static org.glassfish.osgiweb.Constants.EVENT_PROPERTY_EXTENDER_BUNDLE_ID;
+import static org.glassfish.osgiweb.Constants.EVENT_PROPERTY_EXTENDER_BUNDLE_NAME;
+import static org.glassfish.osgiweb.Constants.EVENT_PROPERTY_EXTENDER_BUNDLE_VERSION;
+import static org.glassfish.osgiweb.Constants.EVENT_PROPERTY_TIMESTAMP;
+import static org.glassfish.osgiweb.Constants.EVENT_TOPIC_DEPLOYED;
+import static org.glassfish.osgiweb.Constants.EVENT_TOPIC_DEPLOYING;
+import static org.glassfish.osgiweb.Constants.EVENT_TOPIC_FAILED;
+import static org.glassfish.osgiweb.Constants.EVENT_TOPIC_UNDEPLOYED;
+import static org.glassfish.osgiweb.Constants.EVENT_TOPIC_UNDEPLOYING;
+
 
 /**
  * This class is responsible for publishing events using EventAdmin service for
@@ -66,25 +84,40 @@ import static org.glassfish.osgiweb.Constants.*;
  * Web-ContextPath that had a collision • collision.bundles – (Long) If a name
  * collision occurred, a list of bundle ids that all have the same value for the
  * Web-ContextPath manifest header.
- *
- * @author Sanjeeb.Sahoo@Sun.COM
  */
-class WABEventPublisher {
+final class WABEventPublisher {
 
-    void raiseEvent(AbstractOSGiDeployer.State state, Bundle appBundle,
-            Bundle extenderBundle, Throwable e) {
+    /**
+     * Raise an event for the following exception.
+     * @param state deployer state
+     * @param appBundle application bundle
+     * @param extenderBundle extender bundle
+     * @param ex event source
+     */
+    void raiseEvent(final AbstractOSGiDeployer.State state,
+            final Bundle appBundle, final Bundle extenderBundle,
+            final Throwable ex) {
 
-        Event event = prepareEvent(state, appBundle, extenderBundle, e);
+        Event event = prepareEvent(state, appBundle, extenderBundle, ex);
         if (event != null) {
             postEvent(event, extenderBundle.getBundleContext());
         }
     }
 
-    private Event prepareEvent(AbstractOSGiDeployer.State state,
-            Bundle appBundle, Bundle extenderBundle, Throwable e) {
+    /**
+     * Create a event to publish.
+     * @param state deployment state
+     * @param appBundle application bundle
+     * @param extenderBundle extender
+     * @param ex event source
+     * @return Event
+     */
+    private Event prepareEvent(final AbstractOSGiDeployer.State state,
+            final Bundle appBundle, final Bundle extenderBundle,
+            final Throwable ex) {
 
         String topic;
-        Map<Object, Object> props = new HashMap<Object, Object>();
+        Map<String, Object> props = new HashMap<String, Object>();
         props.put(EVENT_PROPERTY_BUNDLE_SYMBOLICNAME,
                 appBundle.getSymbolicName());
         props.put(EVENT_PROPERTY_BUNDLE_ID, appBundle.getBundleId());
@@ -110,11 +143,11 @@ class WABEventPublisher {
                 break;
             case FAILED:
                 topic = EVENT_TOPIC_FAILED;
-                props.put(EVENT_PROPERTY_EXCEPTION, e);
-                if (e instanceof ContextPathCollisionException) {
+                props.put(EVENT_PROPERTY_EXCEPTION, ex);
+                if (ex instanceof ContextPathCollisionException) {
                     final ContextPathCollisionException ce =
-                            ContextPathCollisionException.class.cast(e);
-                    Long ids[] = ce.getCollidingWabIds();
+                            ContextPathCollisionException.class.cast(ex);
+                    Long[] ids = ce.getCollidingWabIds();
                     props.put(EVENT_PROPERTY_COLLISION_BUNDLES,
                             // The spec requires it to be a collection
                             Arrays.asList(ids));
@@ -134,16 +167,22 @@ class WABEventPublisher {
         return event;
     }
 
+    /**
+     * Submit the event.
+     * @param event event to submit
+     * @param ctx the bundle context
+     */
     @SuppressWarnings("unchecked")
-    private void postEvent(Event event, BundleContext bc) {
+    private void postEvent(final Event event, final BundleContext ctx) {
+
         ServiceReference ref = ServiceReference.class.cast(
-                bc.getServiceReference(EventAdmin.class.getName()));
+                ctx.getServiceReference(EventAdmin.class.getName()));
         if (ref != null) {
-            EventAdmin ea = (EventAdmin) bc.getService(ref);
+            EventAdmin ea = (EventAdmin) ctx.getService(ref);
             if (ea != null) {
                 ea.postEvent(event); // asynchronous
             }
-            bc.ungetService(ref);
+            ctx.ungetService(ref);
         }
     }
 }

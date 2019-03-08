@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -13,7 +13,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  */
-
 package org.glassfish.obrbuilder;
 
 import java.net.URI;
@@ -21,13 +20,20 @@ import java.net.URI;
 import org.apache.felix.bundlerepository.RepositoryAdmin;
 
 /**
- * 
- * @author TangYong(tangyong@cn.fujitsu.com)
+ * OBR handler service.
  */
-
 public interface ObrHandlerService {
 
-	public RepositoryAdmin getRepositoryAdmin();
+    /**
+     * Get the repository admin.
+     * @return RepositoryAdmin
+     */
+    RepositoryAdmin getRepositoryAdmin();
 
-	public void addRepository(URI obrUri) throws Exception;
+    /**
+     * Add the repository at the given URI.
+     * @param obrUri repository URI
+     * @throws Exception if an error occurs
+     */
+    void addRepository(URI obrUri) throws Exception;
 }

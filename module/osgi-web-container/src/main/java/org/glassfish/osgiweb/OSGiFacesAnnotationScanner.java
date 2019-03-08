@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -16,7 +16,6 @@
 package org.glassfish.osgiweb;
 
 import com.sun.faces.spi.AnnotationProvider;
-import org.glassfish.hk2.classmodel.reflect.*;
 
 import javax.faces.component.FacesComponent;
 import javax.faces.component.behavior.FacesBehavior;
@@ -28,34 +27,47 @@ import javax.faces.validator.FacesValidator;
 import javax.servlet.ServletContext;
 import java.lang.annotation.Annotation;
 import java.net.URI;
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.glassfish.hk2.classmodel.reflect.AnnotatedElement;
+import org.glassfish.hk2.classmodel.reflect.AnnotationType;
+import org.glassfish.hk2.classmodel.reflect.Member;
+import org.glassfish.hk2.classmodel.reflect.Type;
+import org.glassfish.hk2.classmodel.reflect.Types;
 
 /**
- * @author Sanjeeb.Sahoo@Sun.COM
+ * Custom annotation provider for Mojarra.
  */
-public class OSGiFacesAnnotationScanner extends AnnotationProvider {
+public final class OSGiFacesAnnotationScanner extends AnnotationProvider {
 
+    /**
+     * Logger.
+     */
     private static final Logger LOGGER = Logger.getLogger(
             OSGiFacesAnnotationScanner.class.getPackage().getName());
 
     /**
-     * Creates a new <code>AnnotationScanner</code> instance.
-     * <p/>
+     * Creates a new {@code AnnotationScanner} instance.
      * This is a much needed constructor as mojarra initializes using this
      * constructor.
      *
-     * @param sc the <code>ServletContext</code> for the application to be
-     * scanned
+     * @param sc the {@code ServletContext} for the application to be scanned
      */
-    public OSGiFacesAnnotationScanner(ServletContext sc) {
+    public OSGiFacesAnnotationScanner(final ServletContext sc) {
         super(sc);
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public Map<Class<? extends Annotation>, Set<Class<?>>> getAnnotatedClasses(Set<URI> uris) {
+    public Map<Class<? extends Annotation>, Set<Class<?>>> getAnnotatedClasses(
+            final Set<URI> uris) {
+
         Map<Class<? extends Annotation>, Set<Class<?>>> result =
                 (Map<Class<? extends Annotation>, Set<Class<?>>>) servletContext
                         .getAttribute(Constants.FACES_ANNOTATED_CLASSES);
@@ -68,17 +80,26 @@ public class OSGiFacesAnnotationScanner extends AnnotationProvider {
         return result;
     }
 
-    /* package */
+    /**
+     * Scan annotations.
+     * @param uris a filter for the class-loader resource to be scanned
+     * @param types the annotations as {@code Type}
+     * @param cl class-loader
+     * @return map of scanned annotations
+     */
     static Map<Class<? extends Annotation>, Set<Class<? extends Object>>> scan(
-            Collection<URI> uris, Types types, ClassLoader cl) {
+            final Collection<URI> uris, final Types types,
+            final ClassLoader cl) {
 
         // can't use ServletContext here, because it is not yet available as
         // this method is called
         // from WebModuleDecorator which is called when WebModule is being
         // created.
         // hence this is a static method.
-        Map<Class<? extends Annotation>, Set<Class<? extends Object>>> result
-                = new HashMap<Class<? extends Annotation>, Set<Class<? extends Object>>>();
+        //CHECKSTYLE:OFF
+        Map<Class<? extends Annotation>, Set<Class<? extends Object>>> result =
+                new HashMap<Class<? extends Annotation>, Set<Class<? extends Object>>>();
+        //CHECKSTYLE:ON
         Class<? extends Annotation>[] annotations = getAnnotationTypes();
         if (annotations == null) {
             return result;
@@ -90,8 +111,12 @@ public class OSGiFacesAnnotationScanner extends AnnotationProvider {
                 Collection<AnnotatedElement> elements = ((AnnotationType) type)
                         .allAnnotatedTypes();
                 for (AnnotatedElement element : elements) {
-                    Type t = (element instanceof Member ? ((Member) element)
-                            .getDeclaringType() : (Type) element);
+                    Type t;
+                    if (element instanceof Member) {
+                        t = ((Member) element).getDeclaringType();
+                    } else {
+                        t = (Type) element;
+                    }
                     if (t.wasDefinedIn(uris)) {
                         Set<Class<? extends Object>> classes = result
                                 .get(annotationType);
@@ -120,7 +145,11 @@ public class OSGiFacesAnnotationScanner extends AnnotationProvider {
         return result;
     }
 
-    @SuppressWarnings({"unchecked", "deprecation"})
+    /**
+     * Get the annotation {@code Type} for the annotations to scan.
+     * @return annotation types
+     */
+    @SuppressWarnings({"unchecked", "deprecation", "checkstyle:magicnumber"})
     private static Class<Annotation>[] getAnnotationTypes() {
         HashSet<Class<? extends Annotation>> annotationInstances
                 = new HashSet<Class<? extends Annotation>>(8, 1.0f);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -19,10 +19,11 @@ import javax.ejb.DependsOn;
 import javax.ejb.Singleton;
 
 /**
- * Session Bean implementation class FooEJB
+ * Session Bean implementation class FooEJB.
  */
 @Singleton
 @DependsOn("ServiceListenerEJB")
+@SuppressWarnings("checkstyle:DesignForExtension")
 public class FooEJB implements Foo {
 
     @Override

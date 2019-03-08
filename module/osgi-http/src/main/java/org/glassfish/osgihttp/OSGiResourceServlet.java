@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -30,24 +30,42 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 /**
- * @author Sanjeeb.Sahoo@Sun.COM
+ * Servlet to serve resources through OSGi.
  */
-public class OSGiResourceServlet extends HttpServlet {
+public final class OSGiResourceServlet extends HttpServlet {
 
+    /**
+     * Servlet alias.
+     */
     private final String alias;
+
+    /**
+     * Servlet name.
+     */
     private final String name;
+
+    /**
+     * OSGi HTTP context.
+     */
     private final HttpContext httpContext;
 
-    public OSGiResourceServlet(String alias, String name,
-            HttpContext httpContext) {
+    /**
+     * Create a new instance.
+     * @param sAlias the servlet alias
+     * @param sName the servlet name
+     * @param sHttpCtx the OSGi HTTP context
+     */
+    public OSGiResourceServlet(final String sAlias, final String sName,
+            final HttpContext sHttpCtx) {
 
-        this.alias = alias;
-        this.name = name;
-        this.httpContext = httpContext;
+        this.alias = sAlias;
+        this.name = sName;
+        this.httpContext = sHttpCtx;
     }
 
     @Override
-    protected void service(HttpServletRequest req, HttpServletResponse resp)
+    protected void service(final HttpServletRequest req,
+            final HttpServletResponse resp)
             throws ServletException, IOException {
 
         final String resPath = getResourcePath(req);
@@ -71,7 +89,12 @@ public class OSGiResourceServlet extends HttpServlet {
         resp.setStatus(HttpServletResponse.SC_OK);
     }
 
-    private String getResourcePath(HttpServletRequest req) {
+    /**
+     * Get the resource from the request URI.
+     * @param req the incoming request
+     * @return mapped resource path
+     */
+    private String getResourcePath(final HttpServletRequest req) {
         String servletPath = req.getServletPath();
         assert (alias.equals(servletPath));
         String contextPath = req.getContextPath();
@@ -84,14 +107,26 @@ public class OSGiResourceServlet extends HttpServlet {
         }
         String requestedPath = requestURI.substring(contextPath.length());
         StringBuilder mappedPath = new StringBuilder(requestedPath);
-        String internalName = name == "/" ? "" : name;
+        String internalName;
+        if ("/".equals(name)) {
+            internalName = "";
+        } else {
+            internalName = name;
+        }
         mappedPath.replace(0, servletPath.length(), internalName);
-//        System.out.println("Mapped [" + requestedPath
-//                + "] to [" + mappedPath + "]");
         return mappedPath.toString();
     }
 
-    private int writeToStream(URLConnection connection, OutputStream os)
+    /**
+     * Write the connection input stream to the given output stream.
+     * @param connection the connection to use
+     * @param os the output stream
+     * @return number of byte written
+     * @throws IOException if an error occurs
+     */
+    @SuppressWarnings("checkstyle:magicnumber")
+    private int writeToStream(final URLConnection connection,
+            final OutputStream os)
             throws IOException {
 
         InputStream is = connection.getInputStream();

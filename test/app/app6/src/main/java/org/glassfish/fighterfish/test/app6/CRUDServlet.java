@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -35,15 +35,22 @@ import java.io.PrintWriter;
  * Servlet implementation class CRUDServlet.
  */
 @WebServlet("/crud")
-public class CRUDServlet extends HttpServlet {
+public final class CRUDServlet extends HttpServlet {
 
+    /**
+     * Serialization UID.
+     */
     private static final long serialVersionUID = 9133422911516243972L;
 
+    /**
+     * User transaction service.
+     */
     @Resource
-    UserTransaction utx;
+    private UserTransaction utx;
 
     @Override
-    public void service(HttpServletRequest req, HttpServletResponse resp)
+    public void service(final HttpServletRequest req,
+            final HttpServletResponse resp)
             throws ServletException, java.io.IOException {
 
         resp.setContentType("text/html");
@@ -65,7 +72,7 @@ public class CRUDServlet extends HttpServlet {
             if ("createEmployee".equals(action)) {
                 String departmentName =
                         (String) req.getParameter("departmentName");
-                Department d = em.find(Department.class,departmentName);
+                Department d = em.find(Department.class, departmentName);
                 Employee e = new Employee();
                 e.setDepartment(d);
                 em.persist(e);

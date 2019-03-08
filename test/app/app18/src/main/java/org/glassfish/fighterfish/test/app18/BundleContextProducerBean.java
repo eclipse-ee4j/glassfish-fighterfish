@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -22,15 +22,16 @@ import org.osgi.framework.FrameworkUtil;
 import javax.enterprise.inject.Produces;
 
 /**
- *
  * A simple producer bean which allows us to inject BundleContext of this
  * bundle.
- *
- * @author sanjeeb.sahoo@oracle.com
- *
  */
+@SuppressWarnings("checkstyle:DesignForExtension")
 public class BundleContextProducerBean {
 
+    /**
+     * Produce the bundle context bean.
+     * @return BundleContext
+     */
     @Produces
     public BundleContext getBundleContext() {
         Bundle bundle = FrameworkUtil.getBundle(getClass());

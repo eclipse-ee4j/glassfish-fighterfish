@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -15,12 +15,19 @@
  */
 package org.glassfish.osgijpa.extension;
 
-import org.glassfish.hk2.osgiresourcelocator.ServiceLoader;
-
-import javax.persistence.spi.PersistenceProvider;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.ServiceConfigurationError;
+import java.util.WeakHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import javax.persistence.spi.PersistenceProvider;
+
+import org.glassfish.hk2.osgiresourcelocator.ServiceLoader;
 
 /**
  * This is a custom implementation of
@@ -52,11 +59,15 @@ import java.util.logging.Logger;
  * caching mode which can be explicitly enabled at construction time. Caching
  * should only be enabled in environment where providers are not
  * installed/uninstalled dynamically.
- *
- * @author Sanjeeb.Sahoo@Sun.COM
  */
-public class HybridPersistenceProviderResolver implements
+public final class HybridPersistenceProviderResolver implements
         javax.persistence.spi.PersistenceProviderResolver {
+
+    /**
+     * Logger.
+     */
+    private static final Logger LOGGER = Logger.getLogger(
+            HybridPersistenceProviderResolver.class.getPackage().getName());
 
     // Yes, I am fully aware that eclipselink produced javax.persistence bundle
     // also has an activator
@@ -68,20 +79,28 @@ public class HybridPersistenceProviderResolver implements
     // need of both kinds of users.
     // Should we hold a WeakReference to provider instead of name of the
     // provider?
+    /**
+     * Map of class loader to provider names.
+     */
     private final Map<ClassLoader, List<String>> cl2ProviderNames
             = Collections.synchronizedMap(
                     new WeakHashMap<ClassLoader, List<String>>());
 
+    /**
+     * Flag to indicate if caching is enabled.
+     */
     private final boolean cachingEnabled;
 
-    private static final Logger LOGGER = Logger.getLogger(
-            HybridPersistenceProviderResolver.class.getPackage().getName());
-
-    public HybridPersistenceProviderResolver(boolean cachingEnabled) {
+    /**
+     * Create a new instance.
+     *
+     * @param caching caching enabled flag
+     */
+    public HybridPersistenceProviderResolver(final boolean caching) {
         LOGGER.logp(Level.FINE, "HybridPersistenceProviderResolver",
                 "HybridPersistenceProviderResolver",
-                "cachingEnabled = {0}", new Object[]{cachingEnabled});
-        this.cachingEnabled = cachingEnabled;
+                "cachingEnabled = {0}", new Object[]{caching});
+        this.cachingEnabled = caching;
     }
 
     @Override
@@ -90,8 +109,16 @@ public class HybridPersistenceProviderResolver implements
         return getPersistenceProviders(cl);
     }
 
-    private List<PersistenceProvider> getPersistenceProviders(ClassLoader cl) {
+    /**
+     * Get the persistence providers for the given class-loader.
+     *
+     * @param cl class-loader
+     * @return list of persistence providers
+     */
+    private List<PersistenceProvider> getPersistenceProviders(
+            final ClassLoader cl) {
         List<PersistenceProvider> providers;
+
         if (isCachingEnabled()) {
             providers = readCache(cl);
             if (providers == null) {
@@ -104,17 +131,32 @@ public class HybridPersistenceProviderResolver implements
         return providers;
     }
 
-    private void populateCache(ClassLoader cl,
-            List<PersistenceProvider> providers) {
+    /**
+     * Populate the cache.
+     *
+     * @param cl class-loader
+     * @param providers list of providers
+     */
+    private void populateCache(final ClassLoader cl,
+            final List<PersistenceProvider> providers) {
 
         List<String> providerNames = new ArrayList<String>(providers.size());
         providerNames.addAll(convert(providers));
         cl2ProviderNames.put(cl, providerNames);
     }
 
-    private List<PersistenceProvider> readCache(ClassLoader cl) {
+    /**
+     * Read the providers from the cache for a given class-loader.
+     *
+     * @param cl class-loader
+     * @return list of providers
+     */
+    private List<PersistenceProvider> readCache(final ClassLoader cl) {
         List<String> providerNames = cl2ProviderNames.get(cl);
-        return providerNames != null ? convert(providerNames, cl) : null;
+        if (providerNames != null) {
+            return convert(providerNames, cl);
+        }
+        return null;
     }
 
     /**
@@ -124,7 +166,9 @@ public class HybridPersistenceProviderResolver implements
      * @param providers list of providers
      * @return list of class names
      */
-    private List<String> convert(Iterable<PersistenceProvider> providers) {
+    private List<String> convert(
+            final Iterable<PersistenceProvider> providers) {
+
         List<String> result = new ArrayList<String>();
         for (PersistenceProvider p : providers) {
             result.add(p.getClass().getName());
@@ -145,25 +189,34 @@ public class HybridPersistenceProviderResolver implements
      * @param cl class loader to be used to load provider classes
      * @return list of provider objects.
      */
-    private List<PersistenceProvider> convert(Iterable<String> providerNames,
-            ClassLoader cl) {
+    private List<PersistenceProvider> convert(
+            final Iterable<String> providerNames, final ClassLoader cl) {
 
-        List<PersistenceProvider> result = new ArrayList<PersistenceProvider>();
+        List<PersistenceProvider> result
+                = new ArrayList<PersistenceProvider>();
         for (String name : providerNames) {
             try {
-                result.add((PersistenceProvider) cl.loadClass(name).newInstance());
+                result.add((PersistenceProvider) cl.loadClass(name)
+                        .newInstance());
             } catch (Exception e) {
                 LOGGER.logp(Level.WARNING, "HybridPersistenceProviderResolver",
                         "convert",
-                        "Exception trying to instantiate cached provider by name "
+                        "Exception trying to instantiate cached provider by"
+                        + " name "
                         + name, e);
             }
         }
         return result;
     }
 
+    /**
+     * Discover the providers in the given class-loader.
+     *
+     * @param cl class-loader
+     * @return discovered list of providers
+     */
     private List<PersistenceProvider> discoverPersistenceProviders(
-            ClassLoader cl) {
+            final ClassLoader cl) {
 
         List<PersistenceProvider> result
                 = new ArrayList<PersistenceProvider>();
@@ -179,7 +232,8 @@ public class HybridPersistenceProviderResolver implements
                     // something of that sort.
                     LOGGER.logp(Level.FINE, "HybridPersistenceProviderResolver",
                             "getPersistenceProviders",
-                            "Exception while discovering providers for class loader "
+                            "Exception while discovering providers for class"
+                            + " loader "
                             + cl, e);
                 }
             }
@@ -195,8 +249,10 @@ public class HybridPersistenceProviderResolver implements
     }
 
     /**
-     * @return persistence providers made available by OSGi bundles installed in
-     * the current framework.
+     * Discover the providers made available by OSGi bundles installed in the
+     * current framework.
+     *
+     * @return list of discovered providers
      */
     private List<PersistenceProvider> discoverOSGiProviders() {
         List<PersistenceProvider> result
@@ -215,6 +271,11 @@ public class HybridPersistenceProviderResolver implements
         }
     }
 
+    /**
+     * Test if caching is enabled.
+     *
+     * @return {@code true} if caching is enabled, {@code false} otherwise
+     */
     public boolean isCachingEnabled() {
         return cachingEnabled;
     }

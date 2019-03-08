@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -21,36 +21,49 @@ import java.util.Arrays;
 
 /**
  * This exception is thrown when multiple WABs have same Web-ContextPath.
- *
- * @author Sanjeeb.Sahoo@Sun.COM
  */
 class ContextPathCollisionException extends DeploymentException {
 
+    /**
+     * Context paths.
+     */
     private final String contextPath;
+
+    /**
+     * set of colliding web application bundle id.
+     */
     private final Long[] collidingWabIds;
 
     /**
-     * @param contextPath Context-Path for which collision is detected
-     * @param collidingWabIds bundle id of the WABs that have same context path.
+     * Create a new instance.
+     * @param ctxPath context path for which collision is detected
+     * @param wabIds bundle id of the WABs that have same context path.
      * The last entry denotes the current bundle being deployed
      */
-    public ContextPathCollisionException(String contextPath,
-            Long[] collidingWabIds) {
+    ContextPathCollisionException(final String ctxPath, final Long[] wabIds) {
 
-        if (collidingWabIds.length < 2) {
+        if (wabIds.length < 2) {
             throw new IllegalArgumentException(
                     "At least two WAB ids are needed");
         }
-        this.contextPath = contextPath;
-        this.collidingWabIds = Arrays.copyOf(collidingWabIds,
-                collidingWabIds.length);
+        this.contextPath = ctxPath;
+        this.collidingWabIds = Arrays.copyOf(wabIds,
+                wabIds.length);
         Arrays.sort(this.collidingWabIds);
     }
 
+    /**
+     * Get the context path.
+     * @return context path
+     */
     public String getContextPath() {
         return contextPath;
     }
 
+    /**
+     * Get the colliding web application bundle id.
+     * @return Long[]
+     */
     public Long[] getCollidingWabIds() {
         // return a new copy
         return Arrays.copyOfRange(collidingWabIds, 0, collidingWabIds.length);

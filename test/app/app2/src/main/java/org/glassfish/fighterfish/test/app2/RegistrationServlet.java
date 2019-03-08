@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -26,17 +26,27 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * Servlet implementation class RegistrationServlet
+ * Servlet implementation class RegistrationServlet.
  */
 @WebServlet("/RegistrationServlet")
-public class RegistrationServlet extends HttpServlet {
+public final class RegistrationServlet extends HttpServlet {
+
+    /**
+     * Serialization UID.
+     */
     private static final long serialVersionUID = 1L;
 
+    /**
+     * User authentication service.
+     */
     @EJB
-    UserAuthServiceEJB userAuthService;
+    private UserAuthServiceEJB userAuthService;
 
-    public void service(HttpServletRequest req, HttpServletResponse resp)
+    @Override
+    public void service(final HttpServletRequest req,
+            final HttpServletResponse resp)
             throws ServletException, java.io.IOException {
+
         resp.setContentType("text/html");
         PrintWriter out = resp.getWriter();
         out.println("<HTML> <HEAD> <TITLE> Registration "
@@ -55,6 +65,5 @@ public class RegistrationServlet extends HttpServlet {
             e.printStackTrace();
         }
         out.println("</BODY> </HTML> ");
-
     }
 }

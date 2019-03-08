@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -25,27 +25,36 @@ import java.util.concurrent.TimeUnit;
  * A class that helps tests in the deployment of entity bundles. An entity
  * bundle is a bundle containing JPA entities which upon successful deployment
  * registers a service of type EntityManagerFactory.
- *
- * @author Sanjeeb.Sahoo@Sun.COM
  */
-public class EntityBundle {
+public final class EntityBundle {
 
-    private final Bundle b;
+    /**
+     * Bundle.
+     */
+    private final Bundle bundle;
+
+    /**
+     * Bundle context.
+     */
     private final BundleContext ctx;
+
+    /**
+     * Services registered by entity bundles.
+     */
     private static final String[] SERVICES = {
         "javax.persistence.EntityManagerFactory"
     };
 
     /**
-     * Create a new EntityBundle
+     * Create a new instance.
      *
-     * @param ctx BundleContext of the test - this is not the bundle context of
-     * the entity bundle being deployed.
-     * @param b EntityBundle being deployed.
+     * @param bndCtx BundleContext of the test - this is not the bundle context
+     * of the entity bundle being deployed.
+     * @param bnd EntityBundle being deployed.
      */
-    public EntityBundle(BundleContext ctx, Bundle b) {
-        this.b = b;
-        this.ctx = ctx;
+    public EntityBundle(final BundleContext bndCtx, final Bundle bnd) {
+        this.bundle = bnd;
+        this.ctx = bndCtx;
     }
 
     /**
@@ -53,17 +62,17 @@ public class EntityBundle {
      * not get registered in the specified time, assume the deployment has
      * failed and throw a TimeoutException.
      *
-     * @param timeout
-     * @param timeUnit
-     * @throws BundleException
-     * @throws InterruptedException
+     * @param timeout deploy timeout
+     * @param timeUnit timeout unit
+     * @throws BundleException if an error occurs
+     * @throws InterruptedException if an error occurs
      */
-    public void deploy(long timeout, TimeUnit timeUnit)
+    public void deploy(final long timeout, final TimeUnit timeUnit)
             throws BundleException, InterruptedException {
 
-        b.start(Bundle.START_TRANSIENT);
+        bundle.start(Bundle.START_TRANSIENT);
         for (String service : SERVICES) {
-            if (OSGiUtil.waitForService(ctx, b, service,
+            if (OSGiUtil.waitForService(ctx, bundle, service,
                     timeUnit.toMillis(timeout)) == null) {
                 throw new TimeoutException(
                         "Deployment timed out. No service of type "
@@ -72,11 +81,19 @@ public class EntityBundle {
         }
     }
 
+    /**
+     * Undeploy the bundle.
+     * @throws BundleException if an error occurs
+     */
     public void undeploy() throws BundleException {
-        b.stop();
+        bundle.stop();
     }
 
+    /**
+     * Get the bundle.
+     * @return Bundle
+     */
     public Bundle getBundle() {
-        return b;
+        return bundle;
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -22,30 +22,61 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 
+/**
+ * Employee entity.
+ */
 @Entity
+@SuppressWarnings("checkstyle:DesignForExtension")
 public class Employee implements java.io.Serializable {
 
+    /**
+     * Serialization UID.
+     */
     private static final long serialVersionUID = -6829839191194419668L;
-    int id;
-    Department department;
 
+    /**
+     * Employee id.
+     */
+    private int id;
+
+    /**
+     * Employee department.
+     */
+    private Department department;
+
+    /**
+     * Get the employee id.
+     * @return int
+     */
     @Id
     @GeneratedValue
     public int getId() {
         return id;
     }
 
-    public void setId(int i) {
-        this.id = i;
+    /**
+     * Set the employee id.
+     * @param newId the new employee id
+     */
+    public void setId(final int newId) {
+        this.id = newId;
     }
 
+    /**
+     * Get the employee department.
+     * @return Department
+     */
     @ManyToOne(fetch = FetchType.LAZY)
     public Department getDepartment() {
         return department;
     }
 
-    public void setDepartment(Department u) {
-        this.department = u;
+    /**
+     * Set the employee department.
+     * @param newDept the new department
+     */
+    public void setDepartment(final Department newDept) {
+        this.department = newDept;
     }
 
     @Override

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1997-2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2019 Oracle and/or its affiliates. All rights reserved.
  * Copyright 2004 The Apache Software Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,11 +22,24 @@ import java.util.Map;
 import java.util.Properties;
 
 /**
- * @author Sanjeeb.Sahoo@Sun.COM
+ * Utility class to parse and resolve properties. (copied from Felix).
  */
-public class Util {
+public final class Util {
 
+    /**
+     * Cannot be instanciated.
+     */
+    private Util() {
+    }
+
+    /**
+     * Property start delimiter.
+     */
     private static final String DELIM_START = "${";
+
+    /**
+     * Property stop delimiter.
+     */
     private static final String DELIM_STOP = "}";
 
     /**
@@ -51,8 +64,12 @@ public class Util {
      * @throws IllegalArgumentException If there was a syntax error in the
      * property placeholder syntax or a recursive variable reference.
      */
-    private static String substVars(String val, String currentKey,
-            Map<String,String> cycleMap, Properties configProps)
+    @SuppressWarnings({
+        "checkstyle:FinalParameters",
+        "checkstyle:AvoidInlineConditionals"
+    })
+    private static String substVars(String val, final String currentKey,
+            Map<String, String> cycleMap, final Properties configProps)
             throws IllegalArgumentException {
         /*
          * THIS METHOD HAS BEEN COPIED FROM FELIX
@@ -91,7 +108,8 @@ public class Util {
                 return val;
             }
             while (stopDelim >= 0) {
-                int idx = val.indexOf(DELIM_START, startDelim + DELIM_START.length());
+                int idx = val.indexOf(DELIM_START, startDelim
+                        + DELIM_START.length());
                 if ((idx < 0) || (idx > stopDelim)) {
                     break;
                 } else if (idx < stopDelim) {
@@ -143,7 +161,11 @@ public class Util {
         return val;
     }
 
-    public static void substVars(Properties props) {
+    /**
+     * Resolve the given properties.
+     * @param props properties to resolve
+     */
+    public static void substVars(final Properties props) {
         // Perform variable substitution for system properties.
         for (Enumeration e = props.propertyNames(); e.hasMoreElements();) {
             String name = (String) e.nextElement();

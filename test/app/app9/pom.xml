@@ -27,12 +27,4 @@
     <artifactId>fighterfish-test-app-9</artifactId>
     <name>FighterFish Test App 9</name>
     <packaging>war</packaging>
-
-    <dependencies>
-        <dependency>
-            <groupId>javax</groupId>
-            <artifactId>javaee-web-api</artifactId>
-            <scope>provided</scope>
-        </dependency>
-    </dependencies>
 </project>

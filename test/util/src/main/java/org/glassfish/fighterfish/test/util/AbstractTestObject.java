@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -27,8 +27,6 @@ import javax.inject.Inject;
 import java.io.IOException;
 
 /**
- * @author Sanjeeb.Sahoo@Sun.COM
- *
  * PAX-EXAM requires each test class to be annotated with {@link RunWith}
  * annotation with a value of {@link JUnit4TestRunner}. We have also set
  * {@link ExamReactorStrategy} as {@link PerClass} which means for every test
@@ -53,23 +51,31 @@ import java.io.IOException;
 @ExamReactorStrategy(PerClass.class)
 public abstract class AbstractTestObject {
 
+    /**
+     * Bundle context.
+     */
     @Inject
+    @SuppressWarnings("checkstyle:VisibilityModifier")
     protected BundleContext ctx;
 
     /**
      * PaxExamJunit driver treats methods in JUnit Test class annotated with
-     * @Configuration specially. For each such method, it creates a separate
-     * test container configuring it with the options as returned by the method.
+     * {@code @Configuration} specially. For each such method, it creates a
+     * separate test container configuring it with the options as returned by
+     * the method.
      *
      * @return Options used to configure a test container
-     * @throws IOException
+     * @throws IOException if an error occurs
      */
     @Configuration
     public Option[] getPaxExamConfiguration() throws IOException {
         return TestsConfiguration.getInstance().getPaxExamConfiguration();
     }
 
-    // helper method
+    /**
+     * Get the configured timeout.
+     * @return timeout
+     */
     protected Long getTimeout() {
         return TestsConfiguration.getInstance().getTimeout();
     }

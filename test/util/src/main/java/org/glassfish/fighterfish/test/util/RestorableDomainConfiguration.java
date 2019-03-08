@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -15,20 +15,20 @@
  */
 package org.glassfish.fighterfish.test.util;
 
-import org.glassfish.embeddable.GlassFish;
 import org.glassfish.embeddable.GlassFishException;
 
 /**
  * Represents a domain configuration change that can be restored to its original
  * value. To restore the original value, call {@link #restore()}.
  *
- * @author Sanjeeb.Sahoo@Sun.COM
- * @see EnterpriseResourceProvisioner#configureEmbeddedDerby(GlassFish, String,
- * String)
- * @see EnterpriseResourceProvisioner#createJmsResource(GlassFish, String,
- * String)
+ * @see EnterpriseResourceProvisioner#configureEmbeddedDerby
+ * @see EnterpriseResourceProvisioner#createJmsResource
  */
 public interface RestorableDomainConfiguration {
 
+    /**
+     * Restore the domain configuration.
+     * @throws GlassFishException if an error occurs
+     */
     void restore() throws GlassFishException;
 }

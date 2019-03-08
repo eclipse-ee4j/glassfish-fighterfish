@@ -25,7 +25,6 @@
         <version>3.0.0-SNAPSHOT</version>
     </parent>
     <artifactId>fighterfish-test-app-19</artifactId>
-    <packaging>bundle</packaging>
     <name>FighterFish Test App 19</name>
 
     <dependencies>

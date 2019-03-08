@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -18,7 +18,10 @@ package org.glassfish.osgiweb;
 import org.glassfish.osgijavaeebase.JarHelper;
 import org.osgi.service.url.AbstractURLStreamHandlerService;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.ByteBuffer;
@@ -50,22 +53,23 @@ import static org.glassfish.osgiweb.Constants.WEB_BUNDLE_SCHEME;
  * the embedded URL to simplify this processing. The following example shows an
  * HTTP URL with some query parameter:
  * <p/>
- * webbundle:https://localhost:1234/some/path/?war=example.war?Web-ContextPath=/foo
+ * webbundle:/some/path/?war=example.war?Web-ContextPath=/foo
  * <p/>
  * In this case getPath method of the webbundle URL must return:
- * https://localhost:1234/some/path/?war=example.war
+ * /some/path/?war=example.war
  * <p/>
  * All the parameters in the webbundle: URL are optional except for the
  * Web-ContextPath parameter. The parameter names are case insensitive, but
  * their values must be treated as case sensitive. Since Web-ContextPath url
  * parameter is mandatory, the query component can never be empty:
  * webbundle:http://www.acme.com:8021/sales.war?
- *
- * @author Sanjeeb.Sahoo@Sun.COM
  */
-public class WebBundleURLStreamHandlerService
+public final class WebBundleURLStreamHandlerService
         extends AbstractURLStreamHandlerService {
 
+    /**
+     * Logger.
+     */
     private static final Logger LOGGER = Logger.getLogger(
             WebBundleURLStreamHandlerService.class.getPackage().getName());
 
@@ -111,21 +115,18 @@ public class WebBundleURLStreamHandlerService
     }
 
     @Override
-    protected void setURL(URL u,
-            String proto,
-            String host,
-            int port,
-            String auth,
-            String user,
-            String path,
-            String query,
-            String ref) {
+    @SuppressWarnings("checkstyle:parameterNumber")
+    protected void setURL(final URL u, final String proto, final String host,
+            final int port, final String auth, final String user,
+            final String path, final String query, final String ref) {
+
         LOGGER.logp(Level.INFO, "WebBundleURLStreamHandlerService",
                 "setURL() called with",
                 "u = [{0}], proto = [{1}], host = [{2}], port = [{3}], "
                 + "auth = [{4}], user = [{5}], path = [{6}], "
                 + "query = [{7}], ref = [{7}]",
-                new Object[]{u, proto, host, port, auth, user, path, query, ref});
+                new Object[]{u, proto, host, port, auth, user, path, query,
+                    ref});
 
         // Since Web-ContextPath url param must be present, the query
         // can't be null.
@@ -138,11 +139,16 @@ public class WebBundleURLStreamHandlerService
         // parts, then the first part belongs to embedded URL, else
         // the query entirely belongs to the outer URL.
         int sep = query.indexOf("?");
+        String zeQuery;
+        String zePath;
         if (sep != -1) { // two parts in the query
             String query1 = query.substring(0, sep);
             String query2 = query.substring(sep + 1);
-            path = path.concat("?").concat(query1);
-            query = query2;
+            zePath = path.concat("?").concat(query1);
+            zeQuery = query2;
+        } else {
+            zeQuery = query;
+            zePath = path;
         }
         LOGGER.logp(Level.INFO, "WebBundleURLStreamHandlerService", "setURL ",
                 "new path = [{0}], new query = [{1}]",
@@ -150,7 +156,7 @@ public class WebBundleURLStreamHandlerService
 
         // Let's also validate here that query contains Web-ContextPath param
         Map<String, String> queryParameters = WARManifestProcessor
-                .readQueryParams(query);
+                .readQueryParams(zeQuery);
         boolean containsContextPathKey = false;
         for (String key : queryParameters.keySet()) {
             if (Constants.WEB_CONTEXT_PATH.equalsIgnoreCase(key)) {
@@ -159,14 +165,24 @@ public class WebBundleURLStreamHandlerService
             }
         }
         if (!containsContextPathKey) {
-            throw new IllegalArgumentException("Query [" + query
+            throw new IllegalArgumentException("Query [" + zeQuery
                     + "] does not contain Web-ContextPath parameter.");
         }
-        super.setURL(u, proto, host, port, auth, user, path, query, ref);
+        super.setURL(u, proto, host, port, auth, user, zePath, zeQuery, ref);
     }
 
-    private void writeWithoutSignedFiles(URLConnection con,
-            PipedOutputStream os, Manifest m) throws IOException {
+    /**
+     * Write the content of the JAR file available at the given URL connection
+     * into the given output stream.
+     *
+     * @param con the URL connection
+     * @param os the output stream
+     * @param m the manifest
+     * @throws IOException if an error occurs
+     */
+    private void writeWithoutSignedFiles(final URLConnection con,
+            final PipedOutputStream os, final Manifest m)
+            throws IOException {
 
         JarInputStream jis = null;
         JarOutputStream jos = null;
@@ -190,45 +206,84 @@ public class WebBundleURLStreamHandlerService
         }
     }
 
+    /**
+     * Write the given JAR input stream to the given JAR output stream and omit
+     * signatures.
+     *
+     * @param jis the JAR input stream
+     * @param jos the JAR output stream
+     * @throws IOException if an error occurs
+     */
     private void writeWithoutSignedFiles(final JarInputStream jis,
             final JarOutputStream jos) throws IOException {
+
         // Ideally we should enhance JarHelper.write() method to accept a
         // filter that it could use to exclude files
         // from being written out. But, since such a method does not exist,
         // we will write it here itself.
-//                        JarHelper.write(con, pos, m);
-        JarHelper.accept(jis, new JarHelper.Visitor() {
-            ByteBuffer buffer = ByteBuffer.allocate(1024);
+        // JarHelper.write(con, pos, m);
+        JarHelper.accept(jis, new JarVisitorImpl(jis, jos));
+    }
 
-            @Override
-            public void visit(JarEntry je) {
-                try {
-                    final String name = je.getName();
-                    // Refer to http://download.oracle.com/javase/6/docs/technotes/guides/jar/jar.html#Signed%20JAR%20File
-                    if (name.startsWith("META-INF/")
-                            && !name.substring("META-INF/".length())
-                                    .contains("/")
-                            && (name.endsWith(".SF")
-                            || name.endsWith(".RSA")
-                            || name.endsWith(".DSA")
-                            || name.startsWith("SIG-"))) {
-                        LOGGER.logp(Level.INFO,
-                                "WebBundleURLStreamHandlerService", "visit",
-                                "Skipping writing of singature file {0}",
-                                new Object[]{name});
-                        return;
-                    }
-                    LOGGER.logp(Level.FINE, "WebBundleURLStreamHandlerService",
-                            "visit", "Writing jar entry = {0}",
-                            new Object[]{je});
-                    jos.putNextEntry(je);
-                    JarHelper.copy(jis, jos, buffer);
-                    jos.closeEntry();
-                } catch (IOException e) {
-                    // TODO(Sahoo): Proper Exception Handling
-                    throw new RuntimeException(e);
+    /**
+     * JarVisitor implementation.
+     */
+    private static final class JarVisitorImpl implements JarHelper.Visitor {
+
+        /**
+         * Input stream.
+         */
+        private final JarInputStream jis;
+
+        /**
+         * Output stream.
+         */
+        private final JarOutputStream jos;
+
+        /**
+         * Buffer.
+         */
+        private ByteBuffer buffer;
+
+        /**
+         * Create a new instance.
+         * @param is input stream
+         * @param os output stream
+         */
+        @SuppressWarnings("checkstyle:magicnumber")
+        JarVisitorImpl(final JarInputStream is, final JarOutputStream os) {
+            this.jis = is;
+            this.jos = os;
+            buffer = ByteBuffer.allocate(1024);
+        }
+
+        @Override
+        public void visit(final JarEntry je) {
+            try {
+                final String name = je.getName();
+                if (name.startsWith("META-INF/")
+                        && !name.substring("META-INF/".length())
+                                .contains("/")
+                        && (name.endsWith(".SF")
+                        || name.endsWith(".RSA")
+                        || name.endsWith(".DSA")
+                        || name.startsWith("SIG-"))) {
+                    LOGGER.logp(Level.INFO,
+                            "WebBundleURLStreamHandlerService", "visit",
+                            "Skipping writing of singature file {0}",
+                            new Object[]{name});
+                    return;
                 }
+                LOGGER.logp(Level.FINE, "WebBundleURLStreamHandlerService",
+                        "visit", "Writing jar entry = {0}",
+                        new Object[]{je});
+                jos.putNextEntry(je);
+                JarHelper.copy(jis, jos, buffer);
+                jos.closeEntry();
+            } catch (IOException e) {
+                // TODO(Sahoo): Proper Exception Handling
+                throw new RuntimeException(e);
             }
-        });
+        }
     }
 }

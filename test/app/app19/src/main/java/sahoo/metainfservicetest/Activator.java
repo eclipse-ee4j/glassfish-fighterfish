@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -16,43 +16,61 @@
 
 package sahoo.metainfservicetest;
 
-import org.osgi.framework.*;
 import javax.xml.bind.JAXBContext;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import org.osgi.framework.BundleActivator;
+import org.osgi.framework.BundleContext;
 
-public class Activator implements BundleActivator {
-    public void start(BundleContext ctx) throws Exception {
+/**
+ * Bundle activator.
+ */
+public final class Activator implements BundleActivator {
+
+    @Override
+    public void start(final BundleContext ctx) throws Exception {
         try {
-            System.out.println("MY CLASSLOADER " + Thread.currentThread().getContextClassLoader());
+            System.out.println("MY CLASSLOADER " + Thread.currentThread()
+                    .getContextClassLoader());
 
             JAXBContext jc = JAXBContext.newInstance(Persistence.class);
-            Persistence test_object = new Persistence();
-            test_object.setVersion("3.0");
+
+            // create an object and marshall it.
+            Persistence testObject = new Persistence();
+            testObject.setVersion("3.0");
             ByteArrayOutputStream out = new ByteArrayOutputStream();
-            jc.createMarshaller().marshal(test_object,out);
+            jc.createMarshaller().marshal(testObject, out);
+
+            // unmarshall it
             byte[] data = out.toByteArray();
             ByteArrayInputStream istream = new ByteArrayInputStream(data);
-            Persistence out_object = (Persistence) jc.createUnmarshaller().unmarshal(istream);
+            Persistence unmarshalledObject = (Persistence)
+                    jc.createUnmarshaller().unmarshal(istream);
 
-            final String O2_version = out_object.getVersion();
+            // ensure the version value remains the same
+            final String unmarshalledVersion = unmarshalledObject
+                    .getVersion();
+             if ("3.0".equals(unmarshalledVersion)) {
+                 System.out.println("Marshall and UnMarshall Success.");
+             } else {
+                 throw new RuntimeException(
+                         "Marshall/UnMarshall of Persistence Object Failed.");
+             }
 
-             if("3.0".equals(O2_version)){System.out.println("Marshall and UnMarshall Success.");}
-
-             else { throw new RuntimeException("Marshall/UnMarshall of Persistence Object Failed.");}
-
-        } catch(Exception e) {
-             throw new RuntimeException("Marshall/UnMarshall of Persistence Object Failed.");
+        } catch (Exception e) {
+             throw new RuntimeException(
+                     "Marshall/UnMarshall of Persistence Object Failed.");
         }
 
         // This works, because GlassFish uses StAX from JRE.
         try {
             javax.xml.stream.XMLInputFactory.newInstance();
-        } catch(Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
- 
-    public void stop(BundleContext ctx) {
+
+    @Override
+    public void stop(final BundleContext ctx) {
     }
 }

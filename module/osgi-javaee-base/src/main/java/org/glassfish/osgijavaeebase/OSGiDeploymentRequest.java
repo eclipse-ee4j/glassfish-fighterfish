@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -39,39 +39,91 @@ import java.util.logging.Logger;
 /**
  * This is a stateful service. This is responsible for deployment of artifacts
  * in JavaEE runtime.
- *
- * @author Sanjeeb.Sahoo@Sun.COM
  */
 public abstract class OSGiDeploymentRequest {
 
+    /**
+     * Logger.
+     */
     private static final Logger LOGGER = Logger.getLogger(
             OSGiUndeploymentRequest.class.getPackage().getName());
 
+    /**
+     * GlassFish command reported.
+     */
     private final ActionReport reporter;
+
+    /**
+     * Bundle to be deployed.
+     */
     private final Bundle bundle;
+
+    /**
+     * Flag to indicate if this is directory deployment (opposed to archive).
+     */
     private boolean dirDeployment;
+
+    /**
+     * GlassFish deployment object.
+     */
     private final Deployment deployer;
+
+    /**
+     * GlassFish archive factory.
+     */
     private final ArchiveFactory archiveFactory;
+
+    /**
+     * GlassFish server environment.
+     */
     private final ServerEnvironmentImpl env;
+
+    /**
+     * GlassFish archive.
+     */
     private ReadableArchive archive;
+
+    /**
+     * Custom deployment context.
+     */
     private OSGiDeploymentContext dc;
+
+    /**
+     * Deployed application information.
+     */
     private OSGiApplicationInfo result;
 
-    public OSGiDeploymentRequest(Deployment deployer,
-            ArchiveFactory archiveFactory,
-            ServerEnvironmentImpl env,
-            ActionReport reporter,
-            Bundle b) {
-        this.deployer = deployer;
-        this.archiveFactory = archiveFactory;
-        this.env = env;
-        this.reporter = reporter;
-        this.bundle = b;
+    /**
+     * Create a new instance.
+     * @param gfDeployer the GlassFish deployer
+     * @param gfArchiveFactory the GlassFish archive factory
+     * @param serverEnv the GlassFish server environment
+     * @param actionReporter the GlassFish command reporter
+     * @param appBundle the bundle to deploy
+     */
+    public OSGiDeploymentRequest(final Deployment gfDeployer,
+            final ArchiveFactory gfArchiveFactory,
+            final ServerEnvironmentImpl serverEnv,
+            final ActionReport actionReporter,
+            final Bundle appBundle) {
+
+        this.deployer = gfDeployer;
+        this.archiveFactory = gfArchiveFactory;
+        this.env = serverEnv;
+        this.reporter = actionReporter;
+        this.bundle = appBundle;
     }
 
+    /**
+     * Invoked before the deploy action.
+     * @throws DeploymentException if an error occurs
+     */
     protected void preDeploy() throws DeploymentException {
     }
 
+    /**
+     * Invoked after the deploy action.
+     */
     protected void postDeploy() {
     }
 
@@ -122,7 +174,7 @@ public abstract class OSGiDeploymentRequest {
      * and eventually hit by issue #10536. 3. Finally deploy and store the
      * result in our inmemory map.
      *
-     * @throws Exception
+     * @throws Exception if an error occurs
      */
     private void prepare() throws Exception {
 
@@ -147,17 +199,33 @@ public abstract class OSGiDeploymentRequest {
      * Factory method. Subclasses override this to create specialized Archive
      * instance.
      *
-     * @return
+     * @return the created GlassFish archive instance for the bundle
      */
     protected ReadableArchive makeArchive() {
         return new OSGiBundleArchive(bundle);
     }
 
+    /**
+     * Get the deployment context for the given bundle.
+     * @param actionReported the GlassFish command reporter
+     * @param logger the logger to use
+     * @param appArchive the GlassFish application archive
+     * @param opsParams the GlassFish command parameters
+     * @param serverEnv the GlassFish server environment
+     * @param appBundle the application bundle
+     * @return the deployment context
+     * @throws Exception if an error occurs
+     */
     protected abstract OSGiDeploymentContext getDeploymentContextImpl(
-            ActionReport reporter, Logger logger, ReadableArchive archive,
-            OpsParams opsParams, ServerEnvironmentImpl env, Bundle b)
+            ActionReport actionReported, Logger logger,
+            ReadableArchive appArchive, OpsParams opsParams,
+            ServerEnvironmentImpl serverEnv, Bundle appBundle)
             throws Exception;
 
+    /**
+     * Do the deployment work.
+     * @return OSGiApplicationInfo
+     */
     private OSGiApplicationInfo deploy() {
         // Need to declare outside to do proper cleanup of target dir
         // when deployment fails. We can't rely on exceptions as
@@ -210,6 +278,10 @@ public abstract class OSGiDeploymentRequest {
         }
     }
 
+    /**
+     * Expand the application archive on disk if needed.
+     * @throws IOException if an error occurs
+     */
     private void expandIfNeeded() throws IOException {
 
         // Try to obtain a handle to the underlying archive.
@@ -292,11 +364,12 @@ public abstract class OSGiDeploymentRequest {
     }
 
     /**
+     * Make a {@link File} instance for the given application archive.
      * @param a The archive
      * @return a File object that corresponds to this archive. return null if it
      * can't determine the underlying file object.
      */
-    public static File makeFile(ReadableArchive a) {
+    public static File makeFile(final ReadableArchive a) {
         try {
             return new File(a.getURI());
         } catch (Exception e) {
@@ -305,6 +378,11 @@ public abstract class OSGiDeploymentRequest {
         return null;
     }
 
+    /**
+     * Get the GlassFish deploy command parameters.
+     * @return DeployCommandParameters
+     * @throws Exception if an error occurs
+     */
     protected DeployCommandParameters getDeployParams() throws Exception {
         assert (archive != null);
         DeployCommandParameters parameters = new DeployCommandParameters();
@@ -316,18 +394,34 @@ public abstract class OSGiDeploymentRequest {
         return parameters;
     }
 
+    /**
+     * Get the bundle for this deployment request.
+     * @return Bundle
+     */
     public Bundle getBundle() {
         return bundle;
     }
 
+    /**
+     * Get the archive for this deployment request.
+     * @return ReadableArchive
+     */
     public ReadableArchive getArchive() {
         return archive;
     }
 
+    /**
+     * Get the application info for this deployment request.
+     * @return OSGiApplicationInfo
+     */
     public OSGiApplicationInfo getResult() {
         return result;
     }
 
+    /**
+     * Get the GlassFish server instance name.
+     * @return server instance name
+     */
     private String getInstanceName() {
         ServerEnvironment se = Globals.get(ServerEnvironment.class);
         String target = se.getInstanceName();
@@ -335,12 +429,11 @@ public abstract class OSGiDeploymentRequest {
     }
 
     /**
-     * Obtaining BundleContext which belongs to osgi-javaee-base
-     *
+     * Obtaining BundleContext which belongs to osgi-javaee-base.
      * @param clazz some class belongs to osgi-javaee-base
      * @return BundleContext which belongs to osgi-javaee-base
      */
-    private BundleContext getBundleContext(Class<?> clazz) {
+    private BundleContext getBundleContext(final Class<?> clazz) {
         return BundleReference.class.cast(clazz.getClassLoader())
                 .getBundle().getBundleContext();
 

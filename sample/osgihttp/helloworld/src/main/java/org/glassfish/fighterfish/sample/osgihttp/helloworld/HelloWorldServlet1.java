@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Distribution License v. 1.0, which is available at
@@ -26,16 +26,16 @@ import javax.servlet.http.HttpSession;
  * the ServletContext and from there it reads the attribute values to
  * demonstrate that it does not mater how you retrieve the ServletContext, they
  * are all functionally equivalent.
- *
- * @author sanjeeb.sahoo@oracle.com
- *
  */
-public class HelloWorldServlet1 extends HttpServlet {
+public final class HelloWorldServlet1 extends HttpServlet {
 
-    final static String AttrName = "count";
+    /**
+     * Servlet attribute name.
+     */
+    static final String ATTRIBUTE_NAME = "count";
 
     @Override
-    public void init(ServletConfig sc) throws ServletException {
+    public void init(final ServletConfig sc) throws ServletException {
         System.out.println(this + ".init(" + sc + ")");
         super.init(sc);
     }
@@ -46,27 +46,28 @@ public class HelloWorldServlet1 extends HttpServlet {
     }
 
     @Override
-    protected void service(HttpServletRequest req, HttpServletResponse resp)
+    protected void service(final HttpServletRequest req,
+            final HttpServletResponse resp)
             throws ServletException, IOException {
+
         resp.setContentType("text/html");
         PrintWriter writer = resp.getWriter();
         writer.write("<html><body><p>Hello World -- sample servlet #1: </p>");
         ServletContext sc = getServletConfig().getServletContext();
-        Integer count = (Integer) sc.getAttribute(AttrName);
+        Integer count = (Integer) sc.getAttribute(ATTRIBUTE_NAME);
         writer.write("<p>servlet context counter = " + count + "</p>");
         if (count == null) {
             count = 0;
         }
-        sc.setAttribute(AttrName, new Integer(++count));
+        sc.setAttribute(ATTRIBUTE_NAME, ++count);
 
         HttpSession session = req.getSession(true);
-        Integer sessionCount = (Integer) session.getAttribute(AttrName);
+        Integer sessionCount = (Integer) session.getAttribute(ATTRIBUTE_NAME);
         writer.write("<p>http session counter = " + sessionCount + "</p>");
         if (sessionCount == null) {
             sessionCount = 0;
         }
-        session.setAttribute(AttrName, new Integer(++sessionCount));
+        session.setAttribute(ATTRIBUTE_NAME, ++sessionCount);
         writer.print("</body></html>");
     }
-
 }

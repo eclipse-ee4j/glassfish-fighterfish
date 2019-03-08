@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Distribution License v. 1.0, which is available at
@@ -7,7 +7,6 @@
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
-
 package org.glassfish.fighterfish.sample.uas.entities;
 
 import java.io.Serializable;
@@ -20,45 +19,85 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
 /**
- * Entity implementation class for Entity: UserCredential
- * 
+ * Entity implementation class for Entity: UserCredential.
  */
 @Entity
 public class UserCredential implements Serializable {
 
-	@Id
-	private String name;
-	private String password;
-	@OneToMany(mappedBy = "userCredential", cascade = CascadeType.REMOVE)
-	private List<LoginAttempt> loginAttempts = new ArrayList<LoginAttempt>();
-	private static final long serialVersionUID = 1L;
+    /**
+     * User credential ID.
+     */
+    @Id
+    private String name;
 
-	public UserCredential() {
-		super();
-	}
+    /**
+     * User password.
+     */
+    private String password;
 
-	public String getName() {
-		return this.name;
-	}
+    /**
+     * Login attempts.
+     */
+    @OneToMany(mappedBy = "userCredential", cascade = CascadeType.REMOVE)
+    private List<LoginAttempt> loginAttempts = new ArrayList<LoginAttempt>();
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    /**
+     * Serialization UID.
+     */
+    private static final long serialVersionUID = 1L;
 
-	public String getPassword() {
-		return this.password;
-	}
+    /**
+     * Create a new instance.
+     */
+    public UserCredential() {
+        super();
+    }
 
-	public void setPassword(String password) {
-		this.password = password;
-	}
+    /**
+     * Get the user name.
+     * @return user name
+     */
+    public String getName() {
+        return this.name;
+    }
 
-	public void setLoginAttempts(List<LoginAttempt> loginAttempts) {
-		this.loginAttempts = loginAttempts;
-	}
+    /**
+     * Set the user name.
+     * @param username new name
+     */
+    public void setName(final String username) {
+        this.name = username;
+    }
 
-	public List<LoginAttempt> getLoginAttempts() {
-		return loginAttempts;
-	}
+    /**
+     * Get the user password.
+     * @return password
+     */
+    public String getPassword() {
+        return this.password;
+    }
 
+    /**
+     * Set the user password.
+     * @param passwd new password
+     */
+    public void setPassword(final String passwd) {
+        this.password = passwd;
+    }
+
+    /**
+     * Set the login attempts.
+     * @param attemps new login attempts
+     */
+    public void setLoginAttempts(final List<LoginAttempt> attemps) {
+        this.loginAttempts = attemps;
+    }
+
+    /**
+     * Get the login attempts.
+     * @return list of login attempts
+     */
+    public List<LoginAttempt> getLoginAttempts() {
+        return loginAttempts;
+    }
 }

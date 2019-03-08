@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -35,28 +35,47 @@ import java.util.Set;
  * (actually we register {@link OSGiServletWrapper} with the same
  * {@link org.apache.catalina.Context} object. So we need a way to demultiplex
  * the OSGi servlet context.
- *
- * @author Sanjeeb.Sahoo@Sun.COM
  */
-public class OSGiServletWrapper extends StandardWrapper implements Wrapper {
+public final class OSGiServletWrapper extends StandardWrapper
+        implements Wrapper {
 
     // TODO(Sahoo): Logging
+    /**
+     * The wrapped servlet.
+     */
     private final Servlet servlet;
+
+    /**
+     * The custom servlet config.
+     */
     private final OSGiServletConfig config;
+
+    /**
+     * The GlassFish web module.
+     */
     private final WebModule webModule;
 
-    public OSGiServletWrapper(String name, Servlet servlet,
-            OSGiServletConfig config, String urlMapping, WebModule webModule) {
+    /**
+     * Create a new instance.
+     * @param name the servlet name
+     * @param sInstance the servlet to wrap
+     * @param sConfig the servlet config
+     * @param urlMapping the URL mapping
+     * @param gfWebModule the GlassFish webModule
+     */
+    public OSGiServletWrapper(final String name, final Servlet sInstance,
+            final OSGiServletConfig sConfig, final String urlMapping,
+            final WebModule gfWebModule) {
 
-        this.servlet = servlet;
-        this.config = config;
-        this.webModule = webModule;
+        this.servlet = sInstance;
+        this.config = sConfig;
+        this.webModule = gfWebModule;
         // Set init params in the wrapper itself to avoid issues as reported
         // in GLASSFISH-18492
-        Set<String> conflicts = setInitParameters(config.getInitParameters());
+        Set<String> conflicts = setInitParameters(sConfig.getInitParameters());
         assert (conflicts.isEmpty());
         setOSGi(true);
-        setServlet(servlet);
+        setServlet(sInstance);
         setName(name);
         addMapping(urlMapping);
     }
@@ -66,11 +85,18 @@ public class OSGiServletWrapper extends StandardWrapper implements Wrapper {
         return servlet;
     }
 
-    /* package */ void initializeServlet() throws ServletException {
+    /**
+     * Initialize the servlet.
+     * @throws ServletException if an error occurs
+     */
+    void initializeServlet() throws ServletException {
         servlet.init(config);
     }
 
-    /* package */ void destroyServlet() {
+    /**
+     * Destroy the servlet.
+     */
+    void destroyServlet() {
         servlet.destroy();
     }
 
@@ -113,10 +139,14 @@ public class OSGiServletWrapper extends StandardWrapper implements Wrapper {
     // Override addValve as StandardWrapper has put in an optimisation
     // and does not support adding any valve (see issue #1343).
     @Override
-    public synchronized void addValve(GlassFishValve valve) {
+    public synchronized void addValve(final GlassFishValve valve) {
         getPipeline().addValve(valve);
     }
 
+    /**
+     * Get the GlassFish web module.
+     * @return WebModule
+     */
     public WebModule getWebModule() {
         return webModule;
     }

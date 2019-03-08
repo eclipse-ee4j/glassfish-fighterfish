@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Distribution License v. 1.0, which is available at
@@ -20,15 +20,25 @@ import org.osgi.framework.Filter;
 import org.osgi.framework.ServiceReference;
 import org.osgi.util.tracker.ServiceTracker;
 
-public class JDBCSampleActivator implements BundleActivator {
+/**
+ * Bundle activator.
+ */
+public final class JDBCSampleActivator implements BundleActivator {
 
+    /**
+     * Data source name.
+     */
     // Should be a configurable property
     private static final String DSNAME = "jdbc/__default";
+
+    /**
+     * Service tracker for the data source.
+     */
     private ServiceTracker st;
 
     @Override
     @SuppressWarnings("unchecked")
-    public void start(BundleContext context) throws Exception {
+    public void start(final BundleContext context) throws Exception {
         debug("Activator started");
 
         // Create an LDAP filter which matches both the interface type
@@ -39,7 +49,7 @@ public class JDBCSampleActivator implements BundleActivator {
         st = new ServiceTracker(context, filter, null) {
 
             @Override
-            public Object addingService(ServiceReference reference) {
+            public Object addingService(final ServiceReference reference) {
                 DataSource ds = (DataSource) context.getService(reference);
                 try {
                     debug(ds.getConnection().toString());
@@ -51,8 +61,9 @@ public class JDBCSampleActivator implements BundleActivator {
             }
 
             @Override
-            public void removedService(ServiceReference reference,
-                    Object service) {
+            public void removedService(final ServiceReference reference,
+                    final Object service) {
+
                 super.removedService(reference, service);
             }
         };
@@ -60,12 +71,16 @@ public class JDBCSampleActivator implements BundleActivator {
     }
 
     @Override
-    public void stop(BundleContext context) throws Exception {
+    public void stop(final BundleContext context) throws Exception {
         st.close();
         debug("Activator stopped");
     }
 
-    private void debug(String msg) {
+    /**
+     * Log a message to the standard output.
+     * @param msg message to log
+     */
+    private void debug(final String msg) {
         System.out.println("JDBCTestBundleActivator: " + msg);
     }
 }

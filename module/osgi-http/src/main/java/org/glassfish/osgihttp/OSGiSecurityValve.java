@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -31,19 +31,24 @@ import java.security.Principal;
 
 /**
  * This valve is used to implement security in OSGi/HTTP service.
- *
- * @author Sanjeeb.Sahoo@Sun.COM
  */
-public class OSGiSecurityValve extends ValveBase {
+public final class OSGiSecurityValve extends ValveBase {
 
+    /**
+     * The OSGi HTTP context.
+     */
     private final HttpContext httpContext;
 
-    public OSGiSecurityValve(HttpContext httpContext) {
-        this.httpContext = httpContext;
+    /**
+     * Create a new instance.
+     * @param ctx the OSGi HTTP context
+     */
+    public OSGiSecurityValve(final HttpContext ctx) {
+        this.httpContext = ctx;
     }
 
     @Override
-    public int invoke(Request request, Response response)
+    public int invoke(final Request request, final Response response)
             throws IOException, ServletException {
 
         if (httpContext.handleSecurity(HttpServletRequest.class.cast(request),
@@ -64,7 +69,11 @@ public class OSGiSecurityValve extends ValveBase {
         }
     }
 
-    private void mapAuthType(HttpRequest httpRequest) {
+    /**
+     * Map authentication type for a given request.
+     * @param httpRequest the request to map
+     */
+    private void mapAuthType(final HttpRequest httpRequest) {
         String authType = (String) httpRequest.getRequest()
                 .getAttribute(HttpContext.AUTHENTICATION_TYPE);
         if (authType != null) {
@@ -72,7 +81,11 @@ public class OSGiSecurityValve extends ValveBase {
         }
     }
 
-    private void mapUser(HttpRequest httpRequest) {
+    /**
+     * Map a user for a given request.
+     * @param httpRequest the request to map
+     */
+    private void mapUser(final HttpRequest httpRequest) {
         String userName = (String) httpRequest.getRequest()
                 .getAttribute(HttpContext.REMOTE_USER);
         if (userName != null) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Distribution License v. 1.0, which is available at
@@ -31,8 +31,6 @@ import javax.inject.Inject;
  * properties. See the pom.xml to see various configuration options. If you
  * chose to control those options from code, then you can provide in a method in
  * test class annotated with @Configuration.
- *
- * @author sanjeeb.sahoo@oracle.com
  */
 @RunWith(FighterFishJUnitRunner.class)
 public class FighterFishJUnitRunnerIT {

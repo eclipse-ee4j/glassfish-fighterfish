@@ -136,8 +136,8 @@
                     </systemPropertyVariables>
                     <classpathDependencyExcludes>
                         <classpathDependencyExcludes>org.osgi</classpathDependencyExcludes>
-                        <classpathDependencyExcludes>javax:javaee-web-api</classpathDependencyExcludes>
-                        <classpathDependencyExcludes>javax:javaee-api</classpathDependencyExcludes>
+                        <classpathDependencyExcludes>javax.*:*</classpathDependencyExcludes>
+                        <classpathDependencyExcludes>jakarta.*:*</classpathDependencyExcludes>
                         <classpathDependencyExcludes>org.glassfish.main.osgi-platforms:felix-webconsole-extension</classpathDependencyExcludes>
                         <classpathDependencyExcludes>org.glassfish.fighterfish:osgi-*</classpathDependencyExcludes>
                         <classpathDependencyExcludes>org.glassfish.fighterfish:fighterfighs-test*</classpathDependencyExcludes>
@@ -171,11 +171,6 @@
         <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>osgi.enterprise</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>javax</groupId>
-            <artifactId>javaee-web-api</artifactId>
             <scope>test</scope>
         </dependency>
         <!--

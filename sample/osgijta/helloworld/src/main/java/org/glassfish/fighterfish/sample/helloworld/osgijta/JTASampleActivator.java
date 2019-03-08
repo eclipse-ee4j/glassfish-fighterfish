@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Distribution License v. 1.0, which is available at
@@ -17,11 +17,14 @@ import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
-public class JTASampleActivator implements BundleActivator {
+/**
+ * Bundle activator.
+ */
+public final class JTASampleActivator implements BundleActivator {
 
     @Override
     @SuppressWarnings("unchecked")
-    public void start(BundleContext context) throws Exception {
+    public void start(final BundleContext context) throws Exception {
         debug("Started");
         ServiceReference txRef = context
                 .getServiceReference(UserTransaction.class.getName());
@@ -50,7 +53,7 @@ public class JTASampleActivator implements BundleActivator {
                 }
 
                 @Override
-                public void afterCompletion(int i) {
+                public void afterCompletion(final int i) {
                     debug("afterCompletion");
                 }
             });
@@ -65,14 +68,17 @@ public class JTASampleActivator implements BundleActivator {
     }
 
     @Override
-    public void stop(BundleContext context) throws Exception {
+    public void stop(final BundleContext context) throws Exception {
         debug("Stopped");
     }
 
     /**
-     * Maps status integer as returned by getStatus() method to a String
+     * Maps status integer as returned by getStatus() method to a String.
+     * @param status status int
+     * @return status string
      */
-    private static String statusToString(int status) {
+    @SuppressWarnings("checkstyle:MagicNumber")
+    private static String statusToString(final int status) {
         switch (status) {
             case 0:
                 return "ACTIVE";
@@ -99,7 +105,11 @@ public class JTASampleActivator implements BundleActivator {
         }
     }
 
-    private void debug(String msg) {
+    /**
+     * Log a message to the standard output.
+     * @param msg message to log
+     */
+    private void debug(final String msg) {
         System.out.println("JTATestBundleActivator: " + msg);
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -21,24 +21,29 @@ import org.hamcrest.Description;
 /**
  * A simple {@link BaseMatcher} that matches if a string contains a specific
  * character sequence. No regular expression support as yet.
- *
- * @author Sanjeeb.Sahoo@Sun.COM
  */
-public class StringPatternMatcher extends BaseMatcher<String> {
+public final class StringPatternMatcher extends BaseMatcher<String> {
 
+    /**
+     * Expected output pattern.
+     */
     private final String expectedOutputPattern;
 
-    public StringPatternMatcher(String expectedOutputPattern) {
-        this.expectedOutputPattern = expectedOutputPattern;
+    /**
+     * Create a new instance.
+     * @param pattern expected output pattern
+     */
+    public StringPatternMatcher(final String pattern) {
+        this.expectedOutputPattern = pattern;
     }
 
     @Override
-    public boolean matches(Object o) {
+    public boolean matches(final Object o) {
         return String.class.cast(o).contains(expectedOutputPattern);
     }
 
     @Override
-    public void describeTo(Description description) {
+    public void describeTo(final Description description) {
         description.appendText("Expected output to contain ["
                 + expectedOutputPattern + "]");
     }

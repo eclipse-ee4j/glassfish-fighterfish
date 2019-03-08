@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -16,14 +16,26 @@
 package org.glassfish.osgijavaeebase;
 
 /**
- * @author Sanjeeb.Sahoo@Sun.COM
+ * Common constants for the base module.
  */
-public class Constants {
+public final class Constants {
 
-    // Protocol used both in Felix and Equinox to read content of a bundle
-    // directly from a jar or directory as opposed to first copying it to
-    // bundle cache and then reading from there.
+    /**
+     * Cannot be instanciated.
+     */
+    private Constants() {
+    }
+
+    /**
+     * Protocol used both in Felix and Equinox to read content of a bundle
+     * directly from a jar or directory as opposed to first copying it to
+     * bundle cache and then reading from there.
+     */
     public static final String REFERENCE_PROTOCOL = "reference:";
+
+    /**
+     * File protocol.
+     */
     public static final String FILE_PROTOCOL = "file:";
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -16,43 +16,181 @@
 package org.glassfish.osgiweb;
 
 /**
- * @author Sanjeeb.Sahoo@Sun.COM
+ * Constant for this module.
  */
-public class Constants {
+public final class Constants {
 
+    /**
+     * Cannot be instanciated.
+     */
+    private Constants() {
+    }
+
+    /**
+     * Constant for {@code webbundle} URI scheme.
+     */
     public static final String WEB_BUNDLE_SCHEME = "webbundle";
+
+    /**
+     * Constant for {@code Web-ContextPath} manifest entry.
+     */
     public static final String WEB_CONTEXT_PATH = "Web-ContextPath";
-    public static final String WEB_JSP_EXTRACT_LOCATION = "Web-JSPExtractLocation";
+
+    /**
+     * Constant for {@code Web-JSPExtractLocation} manifest entry.
+     */
+    public static final String WEB_JSP_EXTRACT_LOCATION =
+            "Web-JSPExtractLocation";
+
+    /**
+     * Constant for {@code osgi-bundlecontext}.
+     */
     public static final String BUNDLE_CONTEXT_ATTR = "osgi-bundlecontext";
-    public static final String OSGI_WEB_SYMBOLIC_NAME = "osgi.web.symbolicname";
+
+    /**
+     * Constant for the property name of the osgi-web bundle symbolic name.
+     */
+    public static final String OSGI_WEB_SYMBOLIC_NAME =
+            "osgi.web.symbolicname";
+
+    /**
+     * Constant for the property name of the osgi-web bundle version.
+     */
     public static final String OSGI_WEB_VERSION = "osgi.web.version";
+
+    /**
+     * Constant for the property name of the osgi-web bundle context path.
+     */
     public static final String OSGI_WEB_CONTEXTPATH = "osgi.web.contextpath";
 
     // constants related to integration with event admin service
-    public static final String EVENT_TOPIC_DEPLOYING = "org/osgi/service/web/DEPLOYING";
-    public static final String EVENT_TOPIC_DEPLOYED = "org/osgi/service/web/DEPLOYED";
-    public static final String EVENT_TOPIC_UNDEPLOYING = "org/osgi/service/web/UNDEPLOYING";
-    public static final String EVENT_TOPIC_UNDEPLOYED = "org/osgi/service/web/UNDEPLOYED";
-    public static final String EVENT_TOPIC_FAILED = "org/osgi/service/web/FAILED";
+
+    /**
+     * Constant for the {@code DEPLOYING} event topic.
+     */
+    public static final String EVENT_TOPIC_DEPLOYING =
+            "org/osgi/service/web/DEPLOYING";
+
+    /**
+     * Constant for the {@code DEPLOYED} event topic.
+     */
+    public static final String EVENT_TOPIC_DEPLOYED =
+            "org/osgi/service/web/DEPLOYED";
+
+    /**
+     * Constant for the {@code UNDEPLOYING} event topic.
+     */
+    public static final String EVENT_TOPIC_UNDEPLOYING =
+            "org/osgi/service/web/UNDEPLOYING";
+
+    /**
+     * Constant for the {@code UNDEPLOYED} event topic.
+     */
+    public static final String EVENT_TOPIC_UNDEPLOYED =
+            "org/osgi/service/web/UNDEPLOYED";
+
+    /**
+     * Constant for the {@code FAILED} event topic.
+     */
+    public static final String EVENT_TOPIC_FAILED =
+            "org/osgi/service/web/FAILED";
 
     // various properties published as part of the event data
-    public static final String EVENT_PROPERTY_BUNDLE_SYMBOLICNAME = "bundle.symbolicName";
+
+    /**
+     * Event property for bundle symbolic name.
+     */
+    public static final String EVENT_PROPERTY_BUNDLE_SYMBOLICNAME =
+            "bundle.symbolicName";
+
+    /**
+     * Event property for bundle id.
+     */
     public static final String EVENT_PROPERTY_BUNDLE_ID = "bundle.id";
+
+    /**
+     * Event property for bundle.
+     */
     public static final String EVENT_PROPERTY_BUNDLE = "bundle";
-    public static final String EVENT_PROPERTY_BUNDLE_VERSION = "bundle.version";
+
+    /**
+     * Event property for bundle version.
+     */
+    public static final String EVENT_PROPERTY_BUNDLE_VERSION =
+            "bundle.version";
+
+    /**
+     * Event property for context path.
+     */
     public static final String EVENT_PROPERTY_CONTEXT_PATH = "context.path";
+
+    /**
+     * Event property for timestamp.
+     */
     public static final String EVENT_PROPERTY_TIMESTAMP = "timestamp";
-    public static final String EVENT_PROPERTY_EXTENDER_BUNDLE = "extender.bundle";
-    public static final String EVENT_PROPERTY_EXTENDER_BUNDLE_ID = "extender.bundle.id";
-    public static final String EVENT_PROPERTY_EXTENDER_BUNDLE_NAME = "extender.bundle.symbolicName";
-    public static final String EVENT_PROPERTY_EXTENDER_BUNDLE_VERSION = "extender.bundle.version";
+
+    /**
+     * Event property for extender.
+     */
+    public static final String EVENT_PROPERTY_EXTENDER_BUNDLE =
+            "extender.bundle";
+
+    /**
+     * Event property for extender bundle id.
+     */
+    public static final String EVENT_PROPERTY_EXTENDER_BUNDLE_ID =
+            "extender.bundle.id";
+
+    /**
+     * Event property for bundle symbolic name.
+     */
+    public static final String EVENT_PROPERTY_EXTENDER_BUNDLE_NAME =
+            "extender.bundle.symbolicName";
+
+    /**
+     * Event property for extender bundle version.
+     */
+    public static final String EVENT_PROPERTY_EXTENDER_BUNDLE_VERSION =
+            "extender.bundle.version";
+
+    /**
+     * Event property for exception.
+     */
     public static final String EVENT_PROPERTY_EXCEPTION = "exception";
+
+    /**
+     * Event property for collision.
+     */
     public static final String EVENT_PROPERTY_COLLISION = "collision";
-    public static final String EVENT_PROPERTY_COLLISION_BUNDLES = "collision.bundles";
+
+    /**
+     * Event property for collision bundles.
+     */
+    public static final String EVENT_PROPERTY_COLLISION_BUNDLES =
+            "collision.bundles";
 
     // Below are GlassFish specific constants
-    public static final String FACES_CONFIG_ATTR = "glassfish.osgi.web.facesconfigs";
-    public static final String FACELET_CONFIG_ATTR = "glassfish.osgi.web.faceletconfigs";
-    public static final String FACES_ANNOTATED_CLASSES = "glassfish.osgi.web.facesannotatedclasses";
+
+    /**
+     * Property name for custom faces config.
+     */
+    public static final String FACES_CONFIG_ATTR =
+            "glassfish.osgi.web.facesconfigs";
+
+    /**
+     * Property name for custom facelet config.
+     */
+    public static final String FACELET_CONFIG_ATTR =
+            "glassfish.osgi.web.faceletconfigs";
+
+    /**
+     * Property name for faces annotated classes.
+     */
+    public static final String FACES_ANNOTATED_CLASSES =
+            "glassfish.osgi.web.facesannotatedclasses";
+
+    /**
+     * Constant for the GlassFish domain config entry for virtual servers.
+     */
     public static final String VIRTUAL_SERVERS = "Virtual-Servers";
 }

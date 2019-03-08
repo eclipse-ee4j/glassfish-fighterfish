@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -30,36 +30,35 @@ import java.util.Properties;
 
 /**
  * Resource-Manager to export jms-connection-factories (JMS-RA
- * Connector-Resources) in GlassFish to OSGi's service-registry
- *
- * @author Jagadish Ramu
+ * Connector-Resources) in GlassFish to OSGi's service-registry.
  */
-public class JMSResourceManager extends BaseResourceManager
+public final class JMSResourceManager extends BaseResourceManager
         implements ResourceManager {
 
-    public JMSResourceManager(Habitat habitat) {
+    /**
+     * Create a new instance.
+     * @param habitat component locator
+     */
+    public JMSResourceManager(final Habitat habitat) {
         super(habitat);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public void registerResources(BundleContext context) {
+    public void registerResources(final BundleContext context) {
         registerJmsResources(context);
     }
 
     /**
-     * Iterates through all of the configured connector-resources of jms-ra<br>
-     * Exposes them as OSGi service by appropriate contract which can be one of
-     * the following :<br>
+     * Iterates through all of the configured connector-resources of jms-ra and
+     * exposes them as OSGi service.
+     * The service contract  can be one of the following :<br>
      * <i>javax.jms.ConnectionFactory</i><br>
      * <i>javax.jms.QueueConnectionFactory</i><br>
      * <i>javax.jms.TopicConnectionFactory</i><br><br>
      *
      * @param context bundle-context
      */
-    public void registerJmsResources(BundleContext context) {
+    public void registerJmsResources(final BundleContext context) {
         Collection<ConnectorResource> connectorResources = getResources()
                 .getResources(ConnectorResource.class);
         for (ConnectorResource resource : connectorResources) {
@@ -71,13 +70,10 @@ public class JMSResourceManager extends BaseResourceManager
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     @SuppressWarnings("unchecked")
-    public void registerResource(BindableResource resource, ResourceRef resRef,
-            BundleContext bundleContext) {
+    public void registerResource(final BindableResource resource,
+            final ResourceRef resRef, final BundleContext bundleContext) {
 
         ConnectorResource connectorResource = (ConnectorResource) resource;
         if (connectorResource.getEnabled().equalsIgnoreCase("true")) {
@@ -86,11 +82,12 @@ public class JMSResourceManager extends BaseResourceManager
                 String poolName = connectorResource.getPoolName();
                 ConnectorConnectionPool pool
                         = (ConnectorConnectionPool) getResources()
-                                .getResourceByName(ConnectorConnectionPool.class,
+                                .getResourceByName(
+                                        ConnectorConnectionPool.class,
                                         poolName);
                 String defnName = pool.getConnectionDefinitionName();
                 Class claz = null;
-                Class intf[] = null;
+                Class[] intf = null;
 
                 if (defnName.equals(Constants.QUEUE_CF)) {
                     claz = QueueConnectionFactory.class;
@@ -102,12 +99,13 @@ public class JMSResourceManager extends BaseResourceManager
                         Invalidate.class};
                 } else if (defnName.equals(Constants.UNIFIED_CF)) {
                     claz = ConnectionFactory.class;
-                    intf = new Class[]{ConnectionFactory.class, Invalidate.class};
+                    intf = new Class[]{ConnectionFactory.class,
+                        Invalidate.class};
                 } else {
                     throw new RuntimeException(
-                            "Invalid connection-definition [ " + defnName + " ]"
-                            + " for jms-resource [ "
-                                    + resource.getJndiName() + " ]");
+                            "Invalid connection-definition [ " + defnName
+                            + " ] for jms-resource [ "
+                            + resource.getJndiName() + " ]");
                 }
                 Dictionary properties = new Properties();
                 properties.put(Constants.JNDI_NAME, connectorResource
@@ -121,11 +119,8 @@ public class JMSResourceManager extends BaseResourceManager
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public boolean handlesResource(BindableResource resource) {
+    public boolean handlesResource(final BindableResource resource) {
         boolean result = false;
         if (resource instanceof ConnectorResource) {
             result = isJmsResource((ConnectorResource) resource);
@@ -134,12 +129,12 @@ public class JMSResourceManager extends BaseResourceManager
     }
 
     /**
-     * determines whether the resource is a JMS-RA's resource
+     * Test if the given resource is a JMS-RA resource.
      *
      * @param resource connector-resource
-     * @return boolean
+     * @return {@code true} if a JMS resource, {@code false} otherwise
      */
-    private boolean isJmsResource(ConnectorResource resource) {
+    private boolean isJmsResource(final ConnectorResource resource) {
         boolean result = false;
         String poolName = resource.getPoolName();
         ConnectorConnectionPool pool = (ConnectorConnectionPool) getResources()

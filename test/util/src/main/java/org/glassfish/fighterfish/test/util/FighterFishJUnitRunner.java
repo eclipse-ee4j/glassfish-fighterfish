@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -44,75 +44,104 @@ import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static org.junit.Assert.fail;
 
 /**
- * See {@link org.ops4j.pax.exam.junit.impl.ProbeRunner}.
- * @author Sanjeeb.Sahoo@Sun.COM
+ * Custom JUnit runner for fighterfish based applications.
  */
-public class FighterFishJUnitRunner extends BlockJUnit4ClassRunner {
+public final class FighterFishJUnitRunner extends BlockJUnit4ClassRunner {
 
+    /**
+     * Logger.
+     */
     private static final Logger LOGGER = Logger.getLogger(
             FighterFishJUnitRunner.class.getPackage().getName());
 
-    private final StagedExamReactor m_reactor;
-    private final Map<TestAddress, FrameworkMethod> m_map =
+    /**
+     * PAX-EXAM reactor.
+     */
+    private final StagedExamReactor mReactor;
+
+    /**
+     * Methods map.
+     */
+    private final Map<TestAddress, FrameworkMethod> mMap =
             new HashMap<TestAddress, FrameworkMethod>();
-    private final Map<FrameworkMethod, TestAddress> m__childs =
+
+    /**
+     * Tests map.
+     */
+    private final Map<FrameworkMethod, TestAddress> mChilds =
             new HashMap<FrameworkMethod, TestAddress>();
 
-    private final ExamSystem m_system;
+    /**
+     * PAX-EXAM system.
+     */
+    private final ExamSystem mSystem;
+
+    /**
+     * PAX-EXAM reactor manager.
+     */
     private final ReactorManager manager;
 
-    public FighterFishJUnitRunner(Class<?> klass)
+    /**
+     * Create a new instance.
+     * @param klass test class
+     * @throws Exception if an error occurs
+     */
+    public FighterFishJUnitRunner(final Class<?> klass)
             throws Exception {
         super(klass);
         manager = ReactorManager.getInstance();
-        m_system = PaxExamRuntime.createTestSystem();
-        m_reactor = prepareReactor();
+        mSystem = PaxExamRuntime.createTestSystem();
+        mReactor = prepareReactor();
     }
 
     @Override
-    public void run(RunNotifier notifier) {
+    public void run(final RunNotifier notifier) {
         Class<?> testClass = getTestClass().getJavaClass();
         try {
-            manager.beforeClass(m_reactor, testClass);
+            manager.beforeClass(mReactor, testClass);
             super.run(notifier);
         } catch (Exception e) {
             throw new TestContainerException(
                     "Problem interacting with reactor.", e);
         } finally {
-            manager.afterClass(m_reactor, testClass);
+            manager.afterClass(mReactor, testClass);
         }
     }
 
     /**
      * Override to avoid running BeforeClass and AfterClass by the driver.
      * They shall only be run by the container.
-     * @param notifier
-     * @return 
+     * @param notifier run notifier
+     * @return Statement
      */
     @Override
     protected Statement classBlock(final RunNotifier notifier) {
-        Statement statement= childrenInvoker(notifier);
+        Statement statement = childrenInvoker(notifier);
         return statement;
     }
 
     /**
      * Override to avoid running Before, After and Rule methods by the driver.
      * They shall only be run by the container.
-     * @param method
-     * @return 
+     * @param method test method
+     * @return Statement
      */
     @Override
-    protected Statement methodBlock(FrameworkMethod method) {
+    protected Statement methodBlock(final FrameworkMethod method) {
         Object test;
         try {
-            test= new ReflectiveCallable() {
+            test = new ReflectiveCallable() {
                 @Override
                 protected Object runReflectiveCall() throws Throwable {
                     return createTest();
@@ -122,28 +151,30 @@ public class FighterFishJUnitRunner extends BlockJUnit4ClassRunner {
             return new Fail(e);
         }
 
-        Statement statement= methodInvoker(method, test);
+        Statement statement = methodInvoker(method, test);
         return statement;
     }
 
-
     /**
-     * We overwrite those with reactor content
-     * @return 
+     * We overwrite those with reactor content.
+     * @return list of method
      */
     @Override
     protected List<FrameworkMethod> getChildren() {
-        if (m__childs.isEmpty()) {
+        if (mChilds.isEmpty()) {
             fillChildren();
         }
-        return Arrays.asList(m__childs.keySet().toArray(
-                new FrameworkMethod[m__childs.size()]));
+        return Arrays.asList(mChilds.keySet().toArray(
+                new FrameworkMethod[mChilds.size()]));
     }
 
+    /**
+     * Fill in children for the reactor.
+     */
     private void fillChildren() {
-        Set<TestAddress> targets = m_reactor.getTargets();
+        Set<TestAddress> targets = mReactor.getTargets();
         for (final TestAddress address : targets) {
-            final FrameworkMethod frameworkMethod = m_map.get(address.root());
+            final FrameworkMethod frameworkMethod = mMap.get(address.root());
 
             // now, someone later may refer to that artificial FrameworkMethod.
             // We need to be able to tell the address.
@@ -155,7 +186,7 @@ public class FighterFishJUnitRunner extends BlockJUnit4ClassRunner {
                 }
 
                 @Override
-                public boolean equals(Object obj) {
+                public boolean equals(final Object obj) {
                     return address.equals(obj);
                 }
 
@@ -165,16 +196,20 @@ public class FighterFishJUnitRunner extends BlockJUnit4ClassRunner {
                 }
             };
 
-            m__childs.put(method, address);
+            mChilds.put(method, address);
         }
     }
 
     @Override
-    protected void collectInitializationErrors
-            (List<Throwable> errors) {
+    protected void collectInitializationErrors(final List<Throwable> errors) {
         // do nothing
     }
 
+    /**
+     * Prepare the reactor.
+     * @return StagedExamReactor
+     * @throws Exception if an error occurs
+     */
     private synchronized StagedExamReactor prepareReactor()
             throws Exception {
 
@@ -186,7 +221,15 @@ public class FighterFishJUnitRunner extends BlockJUnit4ClassRunner {
         return reactor.stage(getFactory(testClass));
     }
 
-    private void addConfigurationsToReactor(ExamReactor reactor)
+    /**
+     * Add reactor configuration.
+     * @param reactor the reactor to process
+     * @throws IllegalAccessException if an error occurs
+     * @throws InvocationTargetException if an error occurs
+     * @throws IllegalArgumentException if an error occurs
+     * @throws IOException if an error occurs
+     */
+    private void addConfigurationsToReactor(final ExamReactor reactor)
             throws IllegalAccessException, InvocationTargetException,
             IllegalArgumentException, IOException {
 
@@ -194,11 +237,19 @@ public class FighterFishJUnitRunner extends BlockJUnit4ClassRunner {
                 .getPaxExamConfiguration());
     }
 
-    private void addTestsToReactor(ExamReactor reactor, Class testClass,
-            Object testClassInstance)
+    /**
+     * Add tests to the reactor.
+     * @param reactor the reactor to process
+     * @param testClass the test class
+     * @param testClassInstance the test instance
+     * @throws IOException if an error occurs
+     * @throws ExamConfigurationException if an error occurs
+     */
+    private void addTestsToReactor(final ExamReactor reactor,
+            final Class testClass, final Object testClassInstance)
             throws IOException, ExamConfigurationException {
 
-        TestProbeBuilder probe = m_system.createProbe();
+        TestProbeBuilder probe = mSystem.createProbe();
         probe = overwriteWithUserDefinition(testClass, testClassInstance,
                 probe);
 
@@ -208,30 +259,47 @@ public class FighterFishJUnitRunner extends BlockJUnit4ClassRunner {
             if (address == null) {
                 address = probe.addTest(testClass, s.getMethod().getName());
             }
-            m_map.put(address, s);
+            mMap.put(address, s);
         }
         reactor.addProbe(probe);
     }
 
-    private TestAddress delegateTest(Object testClassInstance,
-            TestProbeBuilder probe, FrameworkMethod s) {
+    /**
+     * Delegate the test invocation.
+     * @param testClassInstance test instance
+     * @param probe PAX-EXAM probe
+     * @param method test method
+     * @return TestAddress
+     */
+    private TestAddress delegateTest(final Object testClassInstance,
+            final TestProbeBuilder probe, final FrameworkMethod method) {
 
         try {
-            Class<?>[] types = s.getMethod().getParameterTypes();
-            if (types.length == 1 && types[0].isAssignableFrom(TestProbeBuilder.class)) {
+            Class<?>[] types = method.getMethod().getParameterTypes();
+            if (types.length == 1
+                    && types[0].isAssignableFrom(TestProbeBuilder.class)) {
                 // do some backtracking:
-                return (TestAddress) s.getMethod().invoke(testClassInstance, probe);
+                return (TestAddress) method.getMethod()
+                        .invoke(testClassInstance, probe);
 
             } else {
                 return null;
             }
         } catch (Exception e) {
-            throw new TestContainerException("Problem delegating to test.", e);
+            throw new TestContainerException("Problem delegating to test.",
+                    e);
         }
     }
 
+    /**
+     * Get the PAX-EXAM reactor factory.
+     * @param testClass test class
+     * @return StagedExamReactorFactory
+     * @throws InstantiationException if an error occurs
+     * @throws IllegalAccessException if an error occurs
+     */
     @SuppressWarnings("unchecked")
-    private StagedExamReactorFactory getFactory(Class testClass)
+    private StagedExamReactorFactory getFactory(final Class testClass)
             throws InstantiationException, IllegalAccessException {
         ExamReactorStrategy strategy = (ExamReactorStrategy) testClass
                 .getAnnotation(ExamReactorStrategy.class);
@@ -246,13 +314,27 @@ public class FighterFishJUnitRunner extends BlockJUnit4ClassRunner {
         return fact;
     }
 
-    private DefaultExamReactor getReactor(Class testClass)
+    /**
+     * Get the PAX-EXAM reactor.
+     * @param testClass test class
+     * @return DefaultExamReactor
+     * @throws InstantiationException if an error occurs
+     * @throws IllegalAccessException if an error occurs
+     */
+    private DefaultExamReactor getReactor(final Class testClass)
             throws InstantiationException, IllegalAccessException {
-        return new DefaultExamReactor(m_system, getExamFactory(testClass));
+        return new DefaultExamReactor(mSystem, getExamFactory(testClass));
     }
 
+    /**
+     * Get the PAX-EXAM factory.
+     * @param testClass test class
+     * @return TestContainerFactory
+     * @throws IllegalAccessException if an error occurs
+     * @throws InstantiationException if an error occurs
+     */
     @SuppressWarnings("unchecked")
-    private TestContainerFactory getExamFactory(Class testClass)
+    private TestContainerFactory getExamFactory(final Class testClass)
             throws IllegalAccessException, InstantiationException {
         ExamFactory f = (ExamFactory) testClass.getAnnotation(
                 ExamFactory.class);
@@ -268,22 +350,22 @@ public class FighterFishJUnitRunner extends BlockJUnit4ClassRunner {
     }
 
     @Override
-    protected synchronized Statement methodInvoker(final FrameworkMethod method,
-            final Object test) {
+    protected synchronized Statement methodInvoker(
+            final FrameworkMethod method, final Object test) {
 
         return new Statement() {
 
             @Override
             public void evaluate()
                     throws Throwable {
-                TestAddress address = m__childs.get(method);
+                TestAddress address = mChilds.get(method);
                 TestAddress root = address.root();
 
                 LOGGER.log(Level.FINE, "Invoke {0} @ {1} Arguments: {2}",
                         new Object[]{method.getName(), address,
                             Arrays.toString(root.arguments())});
                 try {
-                    m_reactor.invoke(address);
+                    mReactor.invoke(address);
                 } catch (Exception e) {
                     Throwable t = ExceptionHelper.unwind(e);
                     LOGGER.log(Level.SEVERE, "Exception", e);
@@ -296,12 +378,20 @@ public class FighterFishJUnitRunner extends BlockJUnit4ClassRunner {
 
     @Override
     protected void validatePublicVoidNoArgMethods(
-            Class<? extends Annotation> annotation, boolean isStatic,
-            List<Throwable> errors) {
+            final Class<? extends Annotation> annotation,
+            final boolean isStatic, final List<Throwable> errors) {
     }
 
-    private TestProbeBuilder overwriteWithUserDefinition(Class testClass,
-            Object instance, TestProbeBuilder probe)
+    /**
+     * Override a test probe for a given test.
+     * @param testClass test class
+     * @param instance test instance
+     * @param probe new probe
+     * @return TestProbeBuilder
+     * @throws ExamConfigurationException if an error occurs
+     */
+    private TestProbeBuilder overwriteWithUserDefinition(final Class testClass,
+            final Object instance, final TestProbeBuilder probe)
             throws ExamConfigurationException {
 
         Method[] methods = testClass.getMethods();

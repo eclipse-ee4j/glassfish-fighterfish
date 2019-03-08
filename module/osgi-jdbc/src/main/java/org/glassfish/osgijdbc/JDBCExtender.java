@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -16,33 +16,64 @@
 
 package org.glassfish.osgijdbc;
 
+import java.util.Dictionary;
+import java.util.HashSet;
+import java.util.Properties;
+import java.util.Set;
 import org.glassfish.embeddable.GlassFish;
 import org.glassfish.embeddable.GlassFishException;
 import org.glassfish.internal.api.ClassLoaderHierarchy;
 import org.glassfish.osgijavaeebase.Extender;
-import org.osgi.framework.*;
 import org.osgi.service.jdbc.DataSourceFactory;
 import org.osgi.service.url.URLConstants;
 import org.osgi.service.url.URLStreamHandlerService;
 import org.osgi.util.tracker.BundleTracker;
 import org.osgi.util.tracker.BundleTrackerCustomizer;
 
-import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.BundleEvent;
+import org.osgi.framework.ServiceRegistration;
 
-public class JDBCExtender implements Extender {
+/**
+ * JDBC extender service.
+ */
+public final class JDBCExtender implements Extender {
 
+    /**
+     * Logger.
+     */
     private static final Logger LOGGER = Logger.getLogger(
             JDBCExtender.class.getPackage().getName());
 
+    /**
+     * The bundle context.
+     */
     private final BundleContext bundleContext;
+
+    /**
+     * Service registration for the JDBC url handler service.
+     */
     private ServiceRegistration urlHandlerService;
+
+    /**
+     * Data source factory implementations.
+     */
     private final Set<DataSourceFactoryImpl> dataSourceFactories =
             new HashSet<DataSourceFactoryImpl>();
+
+    /**
+     * Bundle tracker.
+     */
     private BundleTracker bundleTracker;
 
-    public JDBCExtender(BundleContext context) {
+    /**
+     * Create a new instance.
+     * @param context the bundle context
+     */
+    public JDBCExtender(final BundleContext context) {
         this.bundleContext = context;
     }
 
@@ -69,7 +100,13 @@ public class JDBCExtender implements Extender {
         debug("stopped");
     }
 
-    private <T> T getService(Class<T> type){
+    /**
+     * Get the GlassFish service for the given class.
+     * @param <T> service type
+     * @param type service class
+     * @return T
+     */
+    private <T> T getService(final Class<T> type) {
         GlassFish gf = (GlassFish) bundleContext.getService(bundleContext
                 .getServiceReference(GlassFish.class.getName()));
         try {
@@ -80,6 +117,9 @@ public class JDBCExtender implements Extender {
         }
     }
 
+    /**
+     * Register the URL handler service.
+     */
     @SuppressWarnings("unchecked")
     private void addURLHandler() {
         //create parent class-loader (API ClassLoader to access Java EE API)
@@ -94,6 +134,9 @@ public class JDBCExtender implements Extender {
                 new JDBCDriverURLStreamHandlerService(apiClassLoader), p);
     }
 
+    /**
+     * Unregister the URL handler service.
+     */
     private void removeURLHandler() {
         if (urlHandlerService != null) {
             urlHandlerService.unregister();
@@ -101,28 +144,39 @@ public class JDBCExtender implements Extender {
         }
     }
 
-    private boolean isJdbcDriverBundle(Bundle b) {
-        String osgiRFC = (String) b.getHeaders()
+    /**
+     * Test if the given bundle contains JDBC driver.
+     * @param bnd the bundle to test
+     * @return {@code true} if the bundle contains some JDBC driver,
+     * {@code false} otherwise
+     */
+    private boolean isJdbcDriverBundle(final Bundle bnd) {
+        String osgiRFC = (String) bnd.getHeaders()
                 .get(Constants.OSGI_RFC_122);
-        if (osgiRFC != null && Boolean.valueOf(osgiRFC)) {
-            return true;
-        } else {
-            return false;
+        return osgiRFC != null && Boolean.valueOf(osgiRFC);
+    }
+
+    /**
+     * Log a {@code FINE} message.
+     * @param msg message to log
+     */
+    private static void debug(final String msg) {
+        if (LOGGER.isLoggable(Level.FINEST)) {
+            LOGGER.log(Level.FINEST, "[osgi-jdbc] : {0}", msg);
         }
     }
 
-    private void debug(String s) {
-        if(LOGGER.isLoggable(Level.FINEST)){
-            LOGGER.log(Level.FINEST, "[osgi-jdbc] : {0}", s);
-        }
-    }
-
-    private class JDBCBundleTrackerCustomizer implements
+    /**
+     * Bundle tracker customizer.
+     */
+    private final class JDBCBundleTrackerCustomizer implements
             BundleTrackerCustomizer {
 
         @Override
         @SuppressWarnings("unchecked")
-        public Object addingBundle(Bundle bundle, BundleEvent event) {
+        public Object addingBundle(final Bundle bundle,
+                final BundleEvent event) {
+
             if (isJdbcDriverBundle(bundle)) {
                 debug("Starting JDBC Bundle : " + bundle.getSymbolicName());
 
@@ -150,8 +204,9 @@ public class JDBCExtender implements Extender {
                             DataSourceFactory.OSGI_JDBC_DRIVER_NAME,
                             implTitle);
                 }
-                debug(" registering service for driver [" +
-                        header.get(Constants.DRIVER.replace(".", "_")) + "]");
+                debug(" registering service for driver ["
+                        + header.get(Constants.DRIVER.replace(".", "_"))
+                        + "]");
                 bundle.getBundleContext()
                         .registerService(DataSourceFactory.class.getName(),
                         dsfi, serviceProperties);
@@ -161,13 +216,13 @@ public class JDBCExtender implements Extender {
         }
 
         @Override
-        public void modifiedBundle(Bundle bundle, BundleEvent event,
-                Object object) {
+        public void modifiedBundle(final Bundle bundle, final BundleEvent event,
+                final Object object) {
         }
 
         @Override
-        public void removedBundle(Bundle bundle, BundleEvent event,
-                Object object) {
+        public void removedBundle(final Bundle bundle, final BundleEvent event,
+                final Object object) {
         }
     }
 }

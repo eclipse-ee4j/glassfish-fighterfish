@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -19,21 +19,30 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.NoneScoped;
 
 /**
- * @author sanjeeb.sahoo@oracle.com
- *
+ * Simple JSF managed bean.
  */
 @ManagedBean
 @NoneScoped
-public class Bean {
+public final class Bean {
 
-    protected String foo = "bar";
+    /**
+     * Foo.
+     */
+    private String foo = "bar";
 
+    /**
+     * Get foo.
+     * @return String
+     */
     public String getFoo() {
         return foo;
     }
 
-    public void setFoo(String foo) {
-        this.foo = foo;
+    /**
+     * Set foo.
+     * @param newFoo the new value of foo
+     */
+    public void setFoo(final String newFoo) {
+        this.foo = newFoo;
     }
-
 }

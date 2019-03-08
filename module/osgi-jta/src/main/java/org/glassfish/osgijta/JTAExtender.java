@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -29,59 +29,92 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
 /**
- * @author Sanjeeb.Sahoo@Sun.COM
+ * JTA extender.
  */
-public class JTAExtender implements Extender {
+public final class JTAExtender implements Extender {
 
+    /**
+     * JTA classes.
+     */
     private static final Class[] JTA_CLASSES = {
         UserTransaction.class,
         TransactionManager.class,
         TransactionSynchronizationRegistry.class
     };
 
+    /**
+     * JNDI names for the JTA classes.
+     */
     private static final String[] JTA_JDNI_NAMES = {
         "java:comp/UserTransaction",
         "java:appserver/TransactionManager",
         "java:appserver/TransactionSynchronizationRegistry"
     };
 
+    /**
+     * Bundle context.
+     */
     private final BundleContext ctx;
 
-    public JTAExtender(BundleContext ctx) {
-        this.ctx = ctx;
+    /**
+     * Create a new instance.
+     * @param bndCtx bundle context
+     */
+    public JTAExtender(final BundleContext bndCtx) {
+        this.ctx = bndCtx;
     }
 
     @Override
     public void start() {
-        for (int i = 0; i < 3; ++i) {
+        for (int i = 0; i < JTA_CLASSES.length; ++i) {
             registerProxy(JTA_CLASSES[i], JTA_JDNI_NAMES[i]);
         }
     }
 
-    private void registerProxy(Class clazz, String jndiName) {
-        InvocationHandler ih = new MyInvocationHandler(clazz, jndiName);
+    /**
+     * Register a proxy service for the given class and JNDI name.
+     * @param zeClass the class to proxy
+     * @param zeJndiName the JNDI name to use
+     */
+    private void registerProxy(final Class zeClass, final String zeJndiName) {
+        InvocationHandler ih = new MyInvocationHandler(zeClass, zeJndiName);
         Object proxy = Proxy.newProxyInstance(getClass().getClassLoader(),
-                new Class[]{clazz}, ih);
-        ctx.registerService(clazz.getName(), proxy, null);
+                new Class[]{zeClass}, ih);
+        ctx.registerService(zeClass.getName(), proxy, null);
     }
 
     @Override
     public void stop() {
     }
 
+    /**
+     * Proxy invocation handler.
+     */
     private class MyInvocationHandler implements InvocationHandler {
 
+        /**
+         * The class to proxy.
+         */
         private final Class<?> clazz;
+
+        /**
+         * The JNDI name.
+         */
         private final String jndiName;
 
-        private MyInvocationHandler(Class<?> clazz, String jndiName) {
-            this.clazz = clazz;
-            this.jndiName = jndiName;
+        /**
+         * Create a new instance.
+         * @param zeClass the class to proxy
+         * @param zeJndiName the JNDI name to use
+         */
+        MyInvocationHandler(final Class<?> zeClass, final String zeJndiName) {
+            this.clazz = zeClass;
+            this.jndiName = zeJndiName;
         }
 
         @Override
-        public Object invoke(Object proxy, Method method, Object[] args)
-                throws Throwable {
+        public Object invoke(final Object proxy, final Method method,
+                final Object[] args) throws Throwable {
 
             try {
                 InitialContext ic = getInitialContext();
@@ -98,6 +131,11 @@ public class JTAExtender implements Extender {
         }
     }
 
+    /**
+     * Create the JNDI initial context.
+     * @return InitialContext
+     * @throws NamingException if an error occurs
+     */
     private InitialContext getInitialContext() throws NamingException {
         return new InitialContext();
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -26,21 +26,23 @@ import javax.servlet.http.HttpServletResponse;
 import org.glassfish.osgicdi.OSGiService;
 
 /**
- * A simple Servlet to test GLASSFISH-18370
- *
- * @author Tang Yong
+ * A simple Servlet to test GLASSFISH-18370.
  */
 @WebServlet(urlPatterns = "/")
-public class StockQuoteServlet extends HttpServlet {
-    // Inject the OSGi service by specifying the OSGiService qualifier
+public final class StockQuoteServlet extends HttpServlet {
 
+    /**
+     * Inject the OSGi service by specifying the OSGiService qualifier.
+     */
     @Inject
     @OSGiService
-    StockQuoteService sqs;
+    private StockQuoteService sqs;
 
     @Override
-    public void service(HttpServletRequest req, HttpServletResponse resp)
+    public void service(final HttpServletRequest req,
+            final HttpServletResponse resp)
             throws ServletException, java.io.IOException {
+
         resp.setContentType("text/html");
         PrintWriter out = resp.getWriter();
 

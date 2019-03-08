@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -35,16 +35,28 @@ import java.util.logging.Logger;
 /**
  * This is a stateful service. It is responsible for undeployment of the
  * artifact from JavaEE runtime.
- *
- * @author Sanjeeb.Sahoo@Sun.COM
  */
 public abstract class OSGiUndeploymentRequest {
 
+    /**
+     * Logger.
+     */
     private static final Logger LOGGER = Logger.getLogger(
             OSGiUndeploymentRequest.class.getPackage().getName());
 
+    /**
+     * GlassFish deployer.
+     */
     private final Deployment deployer;
+
+    /**
+     * GlassFish server environment.
+     */
     private final ServerEnvironmentImpl env;
+
+    /**
+     * GlassFish command reporter.
+     */
     private final ActionReport reporter;
 
     /**
@@ -52,23 +64,38 @@ public abstract class OSGiUndeploymentRequest {
      */
     private final OSGiApplicationInfo osgiAppInfo;
 
-    public OSGiUndeploymentRequest(Deployment deployer,
-            ServerEnvironmentImpl env,
-            ActionReport reporter,
-            OSGiApplicationInfo osgiAppInfo) {
+    /**
+     * Create a new instance.
+     * @param gfDeployer the GlassFish deployer
+     * @param gfEnv the GlassFish server environment
+     * @param gfReporter the GlassFish command reporter
+     * @param appInfo the OSGi application info
+     */
+    public OSGiUndeploymentRequest(final Deployment gfDeployer,
+            final ServerEnvironmentImpl gfEnv, final ActionReport gfReporter,
+            final OSGiApplicationInfo appInfo) {
 
-        this.deployer = deployer;
-        this.env = env;
-        this.reporter = reporter;
-        this.osgiAppInfo = osgiAppInfo;
+        this.deployer = gfDeployer;
+        this.env = gfEnv;
+        this.reporter = gfReporter;
+        this.osgiAppInfo = appInfo;
     }
 
+    /**
+     * Invoked before the undeployment action.
+     */
     protected void preUndeploy() {
     }
 
+    /**
+     * Invoked after the undeployment action.
+     */
     protected void postUndeploy() {
     }
 
+    /**
+     * Undeploys a web application bundle in GlassFish Web container.
+     */
     public void execute() {
         preUndeploy();
         // TODO(Sahoo): There may be side effect of creating a deployment
@@ -107,7 +134,7 @@ public abstract class OSGiUndeploymentRequest {
         // We actually override the getClassLoader method and want that to be
         // used.
         closeClassLoaders(Arrays.asList(osgiAppInfo.getClassLoader(),
-                dc.shareableTempClassLoader, dc.finalClassLoader));
+                dc.getShareableTempClassLoader(), dc.getFinalClassLoader()));
 
         if (!osgiAppInfo.isDirectoryDeployment()) {
             // We can always assume dc.getSourceDir will return a valid file
@@ -117,7 +144,11 @@ public abstract class OSGiUndeploymentRequest {
         postUndeploy();
     }
 
-    private void closeClassLoaders(List<? extends Object> os) {
+    /**
+     * Close the given class-loaders.
+     * @param os list of class-loaders to close
+     */
+    private void closeClassLoaders(final List<? extends Object> os) {
         for (Object o : os) {
             if (preDestroy(o)) {
                 LOGGER.logp(Level.INFO, "OSGiUndeploymentRequest",
@@ -139,7 +170,7 @@ public abstract class OSGiUndeploymentRequest {
      * method exists
      * @return true if such a method was successfully called, false otherwise
      */
-    private boolean preDestroy(Object o) {
+    private boolean preDestroy(final Object o) {
         Method m;
         try {
             m = o.getClass().getMethod("preDestroy");
@@ -151,27 +182,53 @@ public abstract class OSGiUndeploymentRequest {
         return false;
     }
 
+    /**
+     * Get the deployment context.
+     * @param gfReporter the GlassFish command reporter
+     * @param logger the logger to use
+     * @param source the application archive
+     * @param undeployParams the GlassFish undeploy command parameters
+     * @param gfEnv the GlassFish server environment
+     * @param bnd the bundle
+     * @return OSGiDeploymentContext
+     * @throws Exception if an error occurs
+     */
     protected abstract OSGiDeploymentContext getDeploymentContextImpl(
-            ActionReport reporter, Logger logger, ReadableArchive source,
+            ActionReport gfReporter, Logger logger, ReadableArchive source,
             UndeployCommandParameters undeployParams,
-            ServerEnvironmentImpl env, Bundle bundle) throws Exception;
+            ServerEnvironmentImpl gfEnv, Bundle bnd)
+            throws Exception;
 
-    private void cleanup(File dir) {
+    /**
+     * Cleanup the given directory.
+     * @param dir directory to be cleaned-up
+     */
+    private void cleanup(final File dir) {
         assert (dir.isDirectory() && dir.exists());
         FileUtils.whack(dir);
         LOGGER.logp(Level.INFO, "OSGiUndeploymentRequest", "cleanup",
                 "Deleted {0}", new Object[]{dir});
     }
 
+    /**
+     * Get the GlassFish undeploy command parameters.
+     * @param appInfo the application to undeploy
+     * @return UndeployCommandParameters
+     */
     protected UndeployCommandParameters getUndeployParams(
-            OSGiApplicationInfo osgiAppInfo) {
+            final OSGiApplicationInfo appInfo) {
+
         UndeployCommandParameters parameters
                 = new UndeployCommandParameters();
-        parameters.name = osgiAppInfo.getAppInfo().getName();
+        parameters.name = appInfo.getAppInfo().getName();
         parameters.origin = DeployCommandParameters.Origin.undeploy;
         return parameters;
     }
 
+    /**
+     * Get the application info.
+     * @return OSGiApplicationInfo
+     */
     protected OSGiApplicationInfo getOsgiAppInfo() {
         return osgiAppInfo;
     }

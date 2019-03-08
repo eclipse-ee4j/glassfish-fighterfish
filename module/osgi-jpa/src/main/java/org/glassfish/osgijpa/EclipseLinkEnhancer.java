@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -27,44 +27,61 @@ import org.glassfish.api.deployment.archive.WritableArchive;
 import org.glassfish.internal.api.Globals;
 import org.glassfish.osgijpa.dd.Persistence;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URISyntaxException;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.List;
-import java.net.URISyntaxException;
-import java.io.*;
 
 import com.sun.enterprise.deploy.shared.ArchiveFactory;
 import com.sun.enterprise.util.io.FileUtils;
 
 /**
  * Enhancer for EclipseLink.
- *
- * @author Sanjeeb.Sahoo@Sun.COM
  */
-class EclipseLinkEnhancer implements JPAEnhancer {
+final class EclipseLinkEnhancer implements JPAEnhancer {
 
+    /**
+     * Logger.
+     */
     private static final Logger LOGGER =
             Logger.getLogger(EclipseLinkEnhancer.class.getPackage().getName());
 
-    ArchiveFactory archiveFactory = Globals.get(ArchiveFactory.class);
-    private static final String elPackage = "org.eclipse.persistence.*";
+    /**
+     * GlassFish archive factory.
+     */
+    private final ArchiveFactory archiveFactory = Globals.get(
+            ArchiveFactory.class);
+
+    /**
+     * Eclipse package.
+     */
+    private static final String EL_PKG = "org.eclipse.persistence.*";
 
     @Override
-    public InputStream enhance(Bundle b, List<Persistence> persistenceXMLs)
-            throws IOException {
+    public InputStream enhance(final Bundle bnd,
+            final List<Persistence> persistenceXMLs) throws IOException {
 
         // We need to explode the bundle if it is not a directory based
         // deployment.
         // This is because, eclipselink enhancer can only scan file system
         // artifacts.
-        File explodedDir = makeFile(b);
-        boolean dirDeployment = (explodedDir != null) ?
-                explodedDir.isDirectory() : false;
+        File explodedDir = makeFile(bnd);
+        boolean dirDeployment;
+        if (explodedDir != null) {
+            dirDeployment = explodedDir.isDirectory();
+        } else {
+            dirDeployment = false;
+        }
         try {
             if (!dirDeployment) {
-                explodedDir = explode(b);
+                explodedDir = explode(bnd);
             }
 
             // We need to make a copy of the exploded direactory where the
@@ -72,7 +89,7 @@ class EclipseLinkEnhancer implements JPAEnhancer {
             final File enhancedDir = makeTmpDir("enhanced-osgiapp");
             FileUtils.copyTree(explodedDir, enhancedDir);
 
-            ClassLoader cl = new BundleClassLoader(b);
+            ClassLoader cl = new BundleClassLoader(bnd);
 
             for (Persistence persistenceXML : persistenceXMLs) {
                 String puRoot = persistenceXML.getPURoot();
@@ -116,9 +133,18 @@ class EclipseLinkEnhancer implements JPAEnhancer {
         }
     }
 
-    private void enhance(File source, File target, ClassLoader cl,
-            Persistence persistenceXML)
-            throws IOException,URISyntaxException {
+    /**
+     * Do the actual enhancement work.
+     * @param source the file to enhance
+     * @param target the target file to create
+     * @param cl the class-loader to use
+     * @param persistenceXML the JPA persistence.xml
+     * @throws IOException if an IO error occurs
+     * @throws URISyntaxException if an error occurs
+     */
+    private void enhance(final File source, final File target,
+            final ClassLoader cl, final Persistence persistenceXML)
+            throws IOException, URISyntaxException {
 
         LOGGER.logp(Level.INFO, "EclipseLinkEnhancer", "enhance",
                 "Source = {0}, Target = {1}",
@@ -128,7 +154,12 @@ class EclipseLinkEnhancer implements JPAEnhancer {
         proc.performWeaving();
     }
 
-    private void updateManifest(File mf) throws IOException {
+    /**
+     * Update the given manifest file.
+     * @param mf manifest file
+     * @throws IOException if an error occurs
+     */
+    private void updateManifest(final File mf) throws IOException {
         Manifest m = new Manifest();
         FileInputStream is = new FileInputStream(mf);
         try {
@@ -140,9 +171,9 @@ class EclipseLinkEnhancer implements JPAEnhancer {
                 .getValue(Constants.DYNAMICIMPORT_PACKAGE);
         if (value != null) {
             // TODO(Sahoo): Don't add if org.eclipselink.* is already specified
-            value = value.concat(", " + elPackage);
+            value = value.concat(", " + EL_PKG);
         } else {
-            value = elPackage;
+            value = EL_PKG;
         }
         m.getMainAttributes().putValue(Constants.DYNAMICIMPORT_PACKAGE, value);
 
@@ -156,15 +187,16 @@ class EclipseLinkEnhancer implements JPAEnhancer {
             os.close();
         }
     }
+
     /**
      * Creates a temporary directory with the given prefix.
      * It marks the directory for deletion upon shutdown of the JVM.
      *
-     * @param prefix
+     * @param prefix prefix for the temporary directory
      * @return File representing the directory just created
      * @throws IOException if it fails to create the directory
      */
-    public static File makeTmpDir(String prefix) throws IOException {
+    public static File makeTmpDir(final String prefix) throws IOException {
         File tmpDir = File.createTempFile(prefix, "");
 
         // create a directory in place of the tmp file.
@@ -182,26 +214,32 @@ class EclipseLinkEnhancer implements JPAEnhancer {
      * Return a File object that corresponds to this bundle.
      * return null if it can't determine the underlying file object.
      *
-     * @param b the bundle
-     * @return
+     * @param bnd the bundle
+     * @return File
      */
-    public static File makeFile(Bundle b) {
+    public static File makeFile(final Bundle bnd) {
         try {
-            return new File(new OSGiBundleArchive(b).getURI());
+            return new File(new OSGiBundleArchive(bnd).getURI());
         } catch (Exception e) {
             // Ignore if we can't convert
         }
         return null;
     }
 
-    private File explode(Bundle b) throws IOException {
+    /**
+     * Explode the given bundle to a directory.
+     * @param bnd bundle
+     * @return File
+     * @throws IOException if an error occurs
+     */
+    private File explode(final Bundle bnd) throws IOException {
         File explodedDir = makeTmpDir("osgiapp");
         WritableArchive targetArchive = archiveFactory
                 .createArchive(explodedDir);
-        new OSGiArchiveHandler().expand(new OSGiBundleArchive(b),
+        new OSGiArchiveHandler().expand(new OSGiBundleArchive(bnd),
                 targetArchive, null);
         LOGGER.logp(Level.INFO, "EclipseLinkEnhancer", "explode",
-                "Exploded bundle {0} at {1} ", new Object[]{b, explodedDir});
+                "Exploded bundle {0} at {1} ", new Object[]{bnd, explodedDir});
         return explodedDir;
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -13,7 +13,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  */
-
 package org.glassfish.osgijpa.dd;
 
 import org.glassfish.internal.api.Globals;
@@ -28,18 +27,19 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Writer;
 import java.net.URL;
-import java.util.logging.Logger;
 
 /**
- * @author Sanjeeb.Sahoo@Sun.COM
+ * Utility to read persistence XML with JAX-B.
  */
-public class PersistenceXMLReaderWriter
-{
-    private static final Logger LOGGER = Logger.getLogger(
-            PersistenceXMLReaderWriter.class.getPackage().getName());
+public final class PersistenceXMLReaderWriter {
 
-    public Persistence read(URL pxmlURL) throws IOException
-    {
+    /**
+     * Unmarshall from URL.
+     * @param pxmlURL url
+     * @return Persistence
+     * @throws IOException if an error occurs
+     */
+    public Persistence read(final URL pxmlURL) throws IOException {
         InputStream is = pxmlURL.openStream();
         try {
             return read(is);
@@ -48,7 +48,13 @@ public class PersistenceXMLReaderWriter
         }
     }
 
-    public Persistence read(InputStream is) throws IOException {
+    /**
+     * Unmarshall from input stream
+     * @param is input stream
+     * @return Persistence
+     * @throws IOException if an error occurs
+     */
+    public Persistence read(final InputStream is) throws IOException {
         try {
             Unmarshaller unmarshaller = getUnmarshaller();
             return (Persistence) unmarshaller.unmarshal(is);
@@ -60,8 +66,15 @@ public class PersistenceXMLReaderWriter
         }
     }
 
-    public void write(Persistence persistence, OutputStream os)
+    /**
+     * Marshall.
+     * @param persistence instance to write out
+     * @param os output stream
+     * @throws IOException if an error occurs
+     */
+    public void write(final Persistence persistence, final OutputStream os)
             throws IOException {
+
         try {
             getMarshaller(persistence.getClass()).marshal(persistence,
                     os);
@@ -73,8 +86,15 @@ public class PersistenceXMLReaderWriter
         }
     }
 
-    public void write(Persistence persistence, Writer writer)
+    /**
+     * Marshall.
+     * @param persistence instance to write out
+     * @param writer writer to use
+     * @throws IOException if an error occurs
+     */
+    public void write(final Persistence persistence, final Writer writer)
             throws IOException {
+
         try {
             getMarshaller(persistence.getClass()).marshal(persistence,
                     writer);
@@ -86,19 +106,37 @@ public class PersistenceXMLReaderWriter
         }
     }
 
-    private Marshaller getMarshaller(Class<?> clazz) throws JAXBException {
-         JAXBContext jc = getJAXBContext();
-         Marshaller marshaller = jc.createMarshaller();
-         marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT,
-                 Boolean.TRUE);
-         return marshaller;
-     }
+    /**
+     * Get marshaller for a given class.
+     * @param clazz the class
+     * @return Marshaller
+     * @throws JAXBException if an error occurs
+     */
+    private Marshaller getMarshaller(final Class<?> clazz)
+            throws JAXBException {
 
+        JAXBContext jc = getJAXBContext();
+        Marshaller marshaller = jc.createMarshaller();
+        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT,
+                Boolean.TRUE);
+        return marshaller;
+    }
+
+    /**
+     * Get unmarshaller
+     * @return Unmarshaller
+     * @throws JAXBException if an error occurs
+     */
     private Unmarshaller getUnmarshaller() throws JAXBException {
         JAXBContext jc = getJAXBContext();
         return jc.createUnmarshaller();
     }
 
+    /**
+     * Get the JAXB context.
+     * @return JAXBContext
+     * @throws JAXBException if an error occurs
+     */
     private JAXBContext getJAXBContext() throws JAXBException {
         // We need to set context class loader to be CommonClassLoader,
         // otherwise our stupid JAXB implementation
@@ -110,10 +148,9 @@ public class PersistenceXMLReaderWriter
                     .getCommonClassLoader();
             thread.setContextClassLoader(ccl);
             JAXBContext jc = JAXBContext.newInstance(ObjectFactory.class);
-        return jc;
+            return jc;
         } finally {
             thread.setContextClassLoader(oldCL);
         }
     }
-
 }

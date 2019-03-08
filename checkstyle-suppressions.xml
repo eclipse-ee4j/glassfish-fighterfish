@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<!--
+
+    Copyright (c) 2019 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+-->
+
+<!DOCTYPE suppressions PUBLIC
+        "-//Puppy Crawl//DTD Suppressions 1.1//EN"
+        "http://checkstyle.sourceforge.net/dtds/suppressions_1_1.dtd">
+
+<suppressions>
+    <suppress checks="." files="module/osgi-jpa/src/main/java/org/glassfish/osgijpa/dd/*"/>
+    <suppress checks="." files="test/app/app19/src/main/java/sahoo/metainfservicetest/Persistence*"/>
+    <suppress checks="." files="test/app/app19/src/main/java/sahoo/metainfservicetest/ObjectFactory.java"/>
+    <suppress checks="." files="test/app/app19/src/main/java/sahoo/metainfservicetest/package-info.java"/>
+    <suppress checks="." files="experimental/glassfish-obr-builder/src/main/java/org/glassfish/obrbuilder/xmlentities/*"/>
+</suppressions>

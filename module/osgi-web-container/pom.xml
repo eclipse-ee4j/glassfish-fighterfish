@@ -27,6 +27,10 @@
     <artifactId>osgi-web-container</artifactId>
     <name>FighterFish OSGi Web Container</name>
 
+    <properties>
+        <spotbugs.exclude>${project.basedir}/exclude.xml</spotbugs.exclude>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>org.glassfish.fighterfish</groupId>
@@ -49,12 +53,12 @@
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.enterprise</artifactId>
+            <artifactId>osgi.enterprise</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>javax.transaction</groupId>
-            <artifactId>javax.transaction-api</artifactId>
+            <groupId>jakarta.transaction</groupId>
+            <artifactId>jakarta.transaction-api</artifactId>
             <optional>true</optional>
         </dependency>
     </dependencies>

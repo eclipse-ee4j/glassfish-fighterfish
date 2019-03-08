@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -17,11 +17,15 @@ package org.glassfish.osgiejb;
 
 import com.sun.enterprise.deploy.shared.ArchiveFactory;
 import com.sun.enterprise.deployment.Application;
+
 import org.glassfish.api.ActionReport;
 import org.glassfish.internal.data.ApplicationInfo;
 import org.glassfish.internal.deployment.Deployment;
-import org.glassfish.osgijavaeebase.*;
 import org.glassfish.server.ServerEnvironmentImpl;
+import org.glassfish.osgijavaeebase.AbstractOSGiDeployer;
+import org.glassfish.osgijavaeebase.OSGiApplicationInfo;
+import org.glassfish.osgijavaeebase.OSGiDeploymentRequest;
+import org.glassfish.osgijavaeebase.OSGiUndeploymentRequest;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
@@ -30,24 +34,42 @@ import org.osgi.util.tracker.ServiceTracker;
 
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
-import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Dictionary;
+import java.util.Map;
+import java.util.Properties;
+import java.util.StringTokenizer;
 
 /**
- * @author Sanjeeb.Sahoo@Sun.COM
+ * Custom deployer for the OSGi EJB container.
  */
-public class OSGiEJBDeployer extends AbstractOSGiDeployer {
+public final class OSGiEJBDeployer extends AbstractOSGiDeployer {
 
+    /**
+     * Logger.
+     */
     private static final Logger LOGGER = Logger.getLogger(
             OSGiEJBDeployer.class.getPackage().getName());
 
+    /**
+     * Service tracker for the EJB container.
+     */
     private final EJBTracker ejbTracker;
 
+    /**
+     * JNDI context.
+     */
     private final InitialContext ic;
 
-    public OSGiEJBDeployer(BundleContext ctx) {
+    /**
+     * Create a new instance.
+     * @param ctx the bundle context
+     */
+    public OSGiEJBDeployer(final BundleContext ctx) {
         super(ctx, Integer.MIN_VALUE);
         try {
             ic = new InitialContext();
@@ -61,8 +83,9 @@ public class OSGiEJBDeployer extends AbstractOSGiDeployer {
 
     @Override
     public OSGiUndeploymentRequest createOSGiUndeploymentRequest(
-            Deployment deployer, ServerEnvironmentImpl env,
-            ActionReport reporter, OSGiApplicationInfo osgiAppInfo) {
+            final Deployment deployer, final ServerEnvironmentImpl env,
+            final ActionReport reporter,
+            final OSGiApplicationInfo osgiAppInfo) {
 
         return new OSGiEJBUndeploymentRequest(deployer, env, reporter,
                 osgiAppInfo);
@@ -70,15 +93,16 @@ public class OSGiEJBDeployer extends AbstractOSGiDeployer {
 
     @Override
     public OSGiDeploymentRequest createOSGiDeploymentRequest(
-            Deployment deployer, ArchiveFactory archiveFactory,
-            ServerEnvironmentImpl env, ActionReport reporter, Bundle b) {
+            final Deployment deployer, final ArchiveFactory archiveFactory,
+            final ServerEnvironmentImpl env, final ActionReport reporter,
+            final Bundle bnd) {
 
         return new OSGiEJBDeploymentRequest(deployer, archiveFactory, env,
-                reporter, b);
+                reporter, bnd);
     }
 
     @Override
-    public boolean handles(Bundle bundle) {
+    public boolean handles(final Bundle bundle) {
         return isEJBBundle(bundle);
     }
 
@@ -86,11 +110,12 @@ public class OSGiEJBDeployer extends AbstractOSGiDeployer {
      * Determines if a bundle represents a EJB application or not. We determine
      * this by looking at presence of Application-Type manifest header.
      *
-     * @param b
-     * @return
+     * @param bnd bundle to test
+     * @return {@code true} if the bundle is an EJB bundle, {@code false}
+     * otherwise
      */
-    private boolean isEJBBundle(Bundle b) {
-        final Dictionary headers = b.getHeaders();
+    private boolean isEJBBundle(final Bundle bnd) {
+        final Dictionary headers = bnd.getHeaders();
         return headers.get(Constants.EXPORT_EJB) != null
                 && headers.get(org.osgi.framework.Constants.FRAGMENT_HOST)
                 == null;
@@ -115,19 +140,31 @@ public class OSGiEJBDeployer extends AbstractOSGiDeployer {
      * methods) listening to service events will get called in an appropriate
      * context.
      */
-    class EJBTracker extends ServiceTracker {
+    private final class EJBTracker extends ServiceTracker {
 
         // TODO(Sahoo): More javadoc needed about service properties and service
         // registration
-        private final String JNDI_NAME_PROP = "jndi-name";
+        /**
+         * Property name for the JNDI name.
+         */
+        private static final String JNDI_NAME_PROP = "jndi-name";
 
         /**
          * Maps bundle id to service registrations.
          */
+        //CHECKSTYLE:OFF
         private final Map<Long, Collection<ServiceRegistration>> b2ss
                 = new ConcurrentHashMap<Long, Collection<ServiceRegistration>>();
+        //CHECKSTYLE:ON
+
+        /**
+         * Service registration.
+         */
         private ServiceRegistration reg;
 
+        /**
+         * Create a new instance.
+         */
         @SuppressWarnings("unchecked")
         EJBTracker() {
             super(getBundleContext(), OSGiApplicationInfo.class.getName(),
@@ -136,7 +173,8 @@ public class OSGiEJBDeployer extends AbstractOSGiDeployer {
 
         @Override
         @SuppressWarnings("unchecked")
-        public Object addingService(ServiceReference reference) {
+        public Object addingService(final ServiceReference reference) {
+
             OSGiApplicationInfo osgiApplicationInfo = OSGiApplicationInfo.class
                     .cast(context.getService(reference));
             String exportEJB = (String) osgiApplicationInfo.getBundle()
@@ -158,7 +196,8 @@ public class OSGiEJBDeployer extends AbstractOSGiDeployer {
                 if (Constants.EXPORT_EJB_ALL.equals(exportEJB)) {
                     ejbsToBeExported = ejbs;
                 } else if (Constants.EXPORT_EJB_NONE.equals(exportEJB)) {
-                    LOGGER.info("addingService: Skipping adding EJBs as OSGi services as per configuration");
+                    LOGGER.info("addingService: Skipping adding EJBs as OSGi"
+                            + " services as per configuration");
                 } else {
                     StringTokenizer st = new StringTokenizer(exportEJB, ",");
                     while (st.hasMoreTokens()) {
@@ -186,11 +225,11 @@ public class OSGiEJBDeployer extends AbstractOSGiDeployer {
         }
 
         /**
-         *
-         * @param osgiApplicationInfo application which just got deployed
-         * @return the old thread context classloader
+         * Switch the thread context class-loader.
+         * @param osgiAppInfo application which just got deployed
+         * @return the old thread context class-loader
          */
-        private ClassLoader switchTCC(OSGiApplicationInfo osgiAppInfo) {
+        private ClassLoader switchTCC(final OSGiApplicationInfo osgiAppInfo) {
             ClassLoader newTCC = osgiAppInfo.getClassLoader();
             final Thread thread = Thread.currentThread();
             ClassLoader oldTCC = thread.getContextClassLoader();
@@ -198,9 +237,15 @@ public class OSGiEJBDeployer extends AbstractOSGiDeployer {
             return oldTCC;
         }
 
+        /**
+         * Register the given EJB as a service.
+         * @param ejb EJB instance to register
+         * @param bundle the application bundle
+         */
         @SuppressWarnings("unchecked")
-        private void registerEjbAsService(DolAdapter.EjbDescriptor ejb,
-                Bundle bundle) {
+        private void registerEjbAsService(final DolAdapter.EjbDescriptor ejb,
+                final Bundle bundle) {
+
             System.out.println(ejb);
             try {
                 if (com.sun.enterprise.deployment.EjbSessionDescriptor.TYPE
@@ -209,7 +254,8 @@ public class OSGiEJBDeployer extends AbstractOSGiDeployer {
                             DolAdapter.EjbSessionDescriptor.class.cast(ejb);
                     if (com.sun.enterprise.deployment.EjbSessionDescriptor
                             .STATEFUL.equals(sessionBean.getSessionType())) {
-                        LOGGER.warning("Stateful session bean can't be registered as OSGi service");
+                        LOGGER.warning("Stateful session bean can't be "
+                                + "registered as OSGi service");
                     } else {
                         final BundleContext ejbBundleContext = bundle
                                 .getBundleContext();
@@ -226,15 +272,16 @@ public class OSGiEJBDeployer extends AbstractOSGiDeployer {
                             Dictionary props = new Properties();
                             props.put(JNDI_NAME_PROP, jndiName);
 
-                            // Note: we register using the bundle context of the
-                            // bundle containing the EJB.
+                            // Note: we register using the bundle context of
+                            // the bundle containing the EJB.
                             reg = ejbBundleContext.registerService(lbi, service,
                                     props);
                             b2ss.get(bundle.getBundleId()).add(reg);
                         }
                     }
                 } else {
-                    LOGGER.warning("Only stateless bean or singleton beans can be registered as OSGi service");
+                    LOGGER.warning("Only stateless bean or singleton beans "
+                            + "can be registered as OSGi service");
                 }
             } catch (Exception e) {
                 LOGGER.logp(Level.SEVERE, "OSGiEJBDeployer$EJBTracker",
@@ -245,7 +292,9 @@ public class OSGiEJBDeployer extends AbstractOSGiDeployer {
 
         @Override
         @SuppressWarnings("unchecked")
-        public void removedService(ServiceReference reference, Object service) {
+        public void removedService(final ServiceReference reference,
+                final Object service) {
+
             // when the OSGi-EJB container goes away, the ejb bundle remains in
             // ACTIVE state, so
             // we must unregister the services that OSGi-EJB container has

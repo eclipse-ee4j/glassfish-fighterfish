@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -18,22 +18,42 @@ package org.glassfish.osgi.ee.resources;
 
 import org.glassfish.embeddable.GlassFish;
 import org.glassfish.osgijavaeebase.Extender;
-import org.osgi.framework.*;
+import org.osgi.framework.BundleContext;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class ResourcesExtender implements Extender {
+/**
+ * EE resources extender.
+ */
+public final class ResourcesExtender implements Extender {
 
+    /**
+     * Logger.
+     */
     private static final Logger LOGGER = Logger.getLogger(
             ResourcesExtender.class.getPackage().getName());
 
+    /**
+     * Bundle context.
+     */
     private final BundleContext bundleContext;
+
+    /**
+     * Component locator.
+     */
     private Habitat habitat;
+
+    /**
+     * Resource provider service.
+     */
     private ResourceProviderService rps;
 
-
-    public ResourcesExtender(BundleContext context) {
+    /**
+     * Create a new instance.
+     * @param context bundle context
+     */
+    public ResourcesExtender(final BundleContext context) {
         this.bundleContext = context;
     }
 
@@ -55,9 +75,13 @@ public class ResourcesExtender implements Extender {
         debug("stopped");
     }
 
-    private void debug(String s) {
+    /**
+     * Log a message at the {@code FINEST} level.
+     * @param msg message to log
+     */
+    private void debug(final String msg) {
         if (LOGGER.isLoggable(Level.FINEST)) {
-            LOGGER.log(Level.FINEST, "[osgi-ee-resources] : {0}", s);
+            LOGGER.log(Level.FINEST, "[osgi-ee-resources] : {0}", msg);
         }
     }
 }

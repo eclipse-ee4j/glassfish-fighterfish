@@ -29,8 +29,6 @@ import java.util.zip.ZipInputStream;
  * A simple bundle that can download GlassFish zip from a URL specified using {@link GLASSFISH_ARCHIVE_URL}
  * into a location specified in {@link INSTALLATION_DIR} property. It then bootstraps GlassFish in the same
  * JVM.
- *
- * @author Sanjeeb.Sahoo@Sun.COM
  */
 public class Activator implements BundleActivator {
 

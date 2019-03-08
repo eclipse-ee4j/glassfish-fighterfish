@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -32,18 +32,19 @@ import java.util.Properties;
  */
 @Singleton
 @Startup
+@SuppressWarnings("checkstyle:DesignForExtension")
 public class EjbLifecycleObserverEJB implements EjbLifecycleObserver {
 
+    /**
+     * OSGi event admin.
+     */
     @Inject
     @OSGiService(dynamic = true)
-    EventAdmin eventAdmin;
+    private EventAdmin eventAdmin;
 
-    /* (non-Javadoc)
-     * @see org.glassfish.fighterfish.test.app18.EjbLifecycleObserver#installService(java.lang.String)
-     */
     @Override
     @SuppressWarnings("unchecked")
-    public void registered(String serviceName) {
+    public void registered(final String serviceName) {
         String message = "EjbLifecycleObserverEJB.registered() " + serviceName;
         System.out.println(message);
         try {
@@ -57,5 +58,4 @@ public class EjbLifecycleObserverEJB implements EjbLifecycleObserver {
             System.out.println("EjbLifecycleObserverEJB.registered() " + e);
         }
     }
-
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -26,21 +26,34 @@ import javax.ejb.Stateless;
 import javax.sql.DataSource;
 
 /**
- * Session Bean implementation class UserAuthServiceEJB
+ * Session Bean implementation class UserAuthServiceEJB.
  */
 @Stateless
 @LocalBean
+@SuppressWarnings("checkstyle:DesignForExtension")
 public class UserAuthServiceEJB {
 
+    /**
+     * The data source.
+     */
     @Resource(mappedName = TestApp1Activator.DS_NAME)
     private DataSource ds;
 
+    /**
+     * Post construct hook.
+     */
     @PostConstruct
     public void postConstruct() {
         System.out.println("UserAuthServiceEJB.postConstruct");
     }
 
-    public boolean login(String name, String password) {
+    /**
+     * Authenticate a user.
+     * @param name user name
+     * @param password user password
+     * @return {@code true} if authenticated, {@code false} otherwise
+     */
+    public boolean login(final String name, final String password) {
         System.out.println("UserAuthServiceEJBuser: logging in " + name);
         Connection c = null;
         Statement s = null;
@@ -73,7 +86,13 @@ public class UserAuthServiceEJB {
         return false;
     }
 
-    public boolean register(String name, String password) {
+    /**
+     * Register a new user.
+     * @param name user name
+     * @param password user password
+     * @return {@code true} if registered, {@code false} otherwise
+     */
+    public boolean register(final String name, final String password) {
         System.out.println("UserAuthServiceEJB: registering " + name);
         Connection c = null;
         Statement s = null;

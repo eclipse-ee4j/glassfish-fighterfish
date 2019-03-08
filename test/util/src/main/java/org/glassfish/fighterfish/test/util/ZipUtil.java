@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -27,15 +27,28 @@ import java.util.zip.ZipInputStream;
 /**
  * A simple utility to extract a zip input stream. This is used to install
  * GlassFish when user does not have an installation.
- *
- * @author sanjeeb.sahoo@oracle.com
  */
-public class ZipUtil {
+public final class ZipUtil {
 
+    /**
+     * Cannot be instanciated.
+     */
+    private ZipUtil() {
+    }
+
+    /**
+     * Logger.
+     */
     private static final Logger LOGGER = Logger.getLogger(
             ZipUtil.class.getPackage().getName());
 
-    private static boolean needToExplode(File dest) throws Exception {
+    /**
+     * Test if a file needs to be a exploded in a directory.
+     * @param dest file to test
+     * @return {@code true} if needs to be exploded, {@code false} otherwise
+     * @throws Exception if an error occurs
+     */
+    private static boolean needToExplode(final File dest) throws Exception {
         if (new File(dest, "glassfish5").isDirectory()) {
             return false;
         }
@@ -45,24 +58,36 @@ public class ZipUtil {
         return true;
     }
 
-    public static void explode(URI in, File out) throws Exception {
+    /**
+     * Retrieve the content at the given URI and exploded it in the given
+     * directory.
+     * @param in input
+     * @param out output
+     * @throws Exception if an error occurs
+     */
+    public static void explode(final URI in, final File out) throws Exception {
         assert (in != null);
         LOGGER.entering("ZipUtil", "explode", new Object[]{in, out});
         if (!needToExplode(out)) {
             LOGGER.logp(Level.FINE, "ZipUtil", "explode",
                     "Skipping exploding at {0}", new Object[]{out});
         }
-        if (in != null) {
-            ZipInputStream zis = new ZipInputStream(in.toURL().openStream());
-            try {
-                extractZip(zis, out);
-            } finally {
-                zis.close();
-            }
+        ZipInputStream zis = new ZipInputStream(in.toURL().openStream());
+        try {
+            extractZip(zis, out);
+        } finally {
+            zis.close();
         }
     }
 
-    public static void extractZip(ZipInputStream zis, File destDir)
+    /**
+     * Extract the given zip input stream into the given directory.
+     * @param zis input stream
+     * @param destDir destination directory
+     * @throws IOException if an error occurs
+     */
+    @SuppressWarnings("checkstyle:MagicNumber")
+    public static void extractZip(final ZipInputStream zis, final File destDir)
             throws IOException {
 
         LOGGER.logp(Level.FINE, "ZipUtil", "extractZip", "destDir = {0}",

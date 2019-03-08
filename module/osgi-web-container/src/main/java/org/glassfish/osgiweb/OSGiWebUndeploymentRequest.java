@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -28,22 +28,31 @@ import org.osgi.framework.Bundle;
 import java.util.logging.Logger;
 
 /**
- * @author Sanjeeb.Sahoo@Sun.COM
+ * Undeployment request for the OSGi web container.
  */
-public class OSGiWebUndeploymentRequest extends OSGiUndeploymentRequest {
+public final class OSGiWebUndeploymentRequest extends OSGiUndeploymentRequest {
 
-    public OSGiWebUndeploymentRequest(Deployment deployer,
-            ServerEnvironmentImpl env, ActionReport reporter,
-            OSGiApplicationInfo osgiAppInfo) {
+    /**
+     * Create a new instance.
+     * @param deployer GlassFish deployer
+     * @param env GlassFish server environment
+     * @param reporter GlassFish command reporter
+     * @param osgiAppInfo application to undeploy
+     */
+    public OSGiWebUndeploymentRequest(final Deployment deployer,
+            final ServerEnvironmentImpl env, final ActionReport reporter,
+            final OSGiApplicationInfo osgiAppInfo) {
 
         super(deployer, env, reporter, osgiAppInfo);
     }
 
     @Override
     protected OSGiDeploymentContext getDeploymentContextImpl(
-            ActionReport reporter, Logger logger, ReadableArchive source,
-            UndeployCommandParameters undeployParams, ServerEnvironmentImpl env,
-            Bundle bundle) throws Exception {
+            final ActionReport reporter, final Logger logger,
+            final ReadableArchive source,
+            final UndeployCommandParameters undeployParams,
+            final ServerEnvironmentImpl env, final Bundle bundle)
+            throws Exception {
 
         return new OSGiWebDeploymentContext(reporter, logger, source,
                 undeployParams, env, bundle);
@@ -51,16 +60,7 @@ public class OSGiWebUndeploymentRequest extends OSGiUndeploymentRequest {
 
     @Override
     protected void postUndeploy() {
-        unregisterService();
-        deployCollidingBundle();
-    }
-
-    private void deployCollidingBundle() {
         ContextPathCollisionDetector.get()
                 .postUndeploy(getOsgiAppInfo().getBundle());
-    }
-
-    private void unregisterService() {
-        //TODO(Sahoo): Not Yet Implemented
     }
 }

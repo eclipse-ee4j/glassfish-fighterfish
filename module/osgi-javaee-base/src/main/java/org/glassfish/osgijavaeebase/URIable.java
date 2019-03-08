@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -18,11 +18,12 @@ package org.glassfish.osgijavaeebase;
 import java.net.URI;
 
 /**
- * @author Sanjeeb.Sahoo@Sun.COM
+ * A possibly nested archive that provides URI entries.
  */
 public interface URIable {
 
     /**
+     * Get an entry by name.
      * @param name the entry name relative to the root of the archive
      * @return the URI corresponding to the entry, null if no such entry found
      */
@@ -32,7 +33,8 @@ public interface URIable {
      * When this archive is embedded in another archive, this method returns the
      * distance from top.
      *
-     * @return
+     * @return a string indicating the path to the root of the top level
+     * archive, or an empty string if not nested.
      */
     String getDistanceFromTop();
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -18,17 +18,20 @@ package org.glassfish.osgiweb;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamException;
-import static javax.xml.stream.XMLStreamConstants.*;
 import java.io.InputStream;
+
+import static javax.xml.stream.XMLStreamConstants.END_DOCUMENT;
+import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
 
 /**
  * A mini parser to parse sun-web.xml and glassfish-web.xml for entries of
  * interest to us. Currently, we only read context-root value.
- *
- * @author Sanjeeb.Sahoo@Sun.COM
  */
-class SunWebXmlParser {
+final class SunWebXmlParser {
 
+    /**
+     * XML input factory.
+     */
     private static final XMLInputFactory XMLIF;
 
     static {
@@ -36,14 +39,18 @@ class SunWebXmlParser {
         XMLIF.setProperty(XMLInputFactory.SUPPORT_DTD, false);
     }
 
-    String contextRoot;
+    /**
+     * Context root.
+     */
+    private String contextRoot;
 
     /**
      * The caller should close the input stream.
-     *
      * @param in InputStream for sun-web.xml or glassfish-web.xml
+     * @throws XMLStreamException if a parsing error occurs
      */
-    SunWebXmlParser(InputStream in) throws XMLStreamException {
+    @SuppressWarnings("checkstyle:innerassignment")
+    SunWebXmlParser(final InputStream in) throws XMLStreamException {
         XMLStreamReader reader = XMLIF.createXMLStreamReader(in);
         try {
             int event;
@@ -62,6 +69,10 @@ class SunWebXmlParser {
         }
     }
 
+    /**
+     * Get the context root.
+     * @return context root
+     */
     public String getContextRoot() {
         return contextRoot;
     }

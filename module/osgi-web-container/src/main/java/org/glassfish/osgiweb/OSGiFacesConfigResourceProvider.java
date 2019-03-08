@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -25,29 +25,26 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Built-in
- * {@link com.sun.faces.config.configprovider.MetaInfFacesConfigResourceProvider}
- * can't discover resources named as xxx.faces-config.xml. That can only
- * discover resources named as faces-config.xml. This config resource provider
- * knows how to iterate over bundle entries in order to discover the resources
- * not found by mojarra resource provider. It is registered as a META-INF
- * service so that mojarra can discover it.
+ * Built-in provider can't discover resources named as xxx.faces-config.xml.
+ * That can only discover resources named as faces-config.xml. This config
+ * resource provider knows how to iterate over bundle entries in order to
+ * discover the resources not found by mojarra resource provider. It is
+ * registered as a META-INF service so that mojarra can discover it.
  *
- * @see
- * org.glassfish.osgiweb.OSGiWebModuleDecorator#discoverJSFConfigs(org.osgi.framework.Bundle,
- * java.util.Collection, java.util.Collection)
- *
- * @author Sanjeeb.Sahoo@Sun.COM
+ * @see org.glassfish.osgiweb.OSGiWebModuleDecorator#discoverJSFConfigs
  */
-public class OSGiFacesConfigResourceProvider implements
-        FacesConfigResourceProvider,ConfigurationResourceProvider {
+public final class OSGiFacesConfigResourceProvider implements
+        FacesConfigResourceProvider, ConfigurationResourceProvider {
 
+    /**
+     * Logger.
+     */
     private static final Logger LOGGER = Logger.getLogger(
             OSGiFacesConfigResourceProvider.class.getPackage().getName());
 
     @Override
     @SuppressWarnings("unchecked")
-    public Collection<URI> getResources(ServletContext context) {
+    public Collection<URI> getResources(final ServletContext context) {
         Collection<URI> uris = (Collection<URI>) context
                 .getAttribute(Constants.FACES_CONFIG_ATTR);
         if (uris == null) {
@@ -55,7 +52,8 @@ public class OSGiFacesConfigResourceProvider implements
         }
         // TODO(Sahoo): change to finer
         LOGGER.log(Level.INFO,
-                "Faces Config uris excluding the ones named as faces-config.xml = {0}",
+                "Faces Config uris excluding the ones named as"
+                + " faces-config.xml = {0}",
                 uris);
         return uris;
     }

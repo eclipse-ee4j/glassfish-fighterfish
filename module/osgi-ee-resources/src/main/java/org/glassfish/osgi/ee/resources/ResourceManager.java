@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -21,52 +21,50 @@ import org.osgi.framework.BundleContext;
 
 /**
  * Resource-Manager to export resources defined in GlassFish to OSGi's
- * service-registry
- *
- * @author Jagadish Ramu
+ * service-registry.
  */
 public interface ResourceManager {
 
     /**
-     * register all appropriate resources
+     * Register all appropriate resources.
      *
      * @param context bundle-context
      */
     void registerResources(BundleContext context);
 
     /**
-     * register the resource that is created or enabled
+     * Register the resource that is created or enabled.
      *
      * @param resource resource that is created or enabled
      * @param resRef resource-ref of the resource
      * @param bundleContext bundle-context
      */
-    void registerResource(BindableResource resource, ResourceRef resRef,
-            BundleContext bundleContext);
+    void registerResource(BindableResource resource,
+            ResourceRef resRef, BundleContext bundleContext);
 
     /**
-     * un-register the resource that is deleted or disabled
+     * Un-register the resource that is deleted or disabled.
      *
      * @param resource resource that is deleted or disabled
      * @param resRef resource-ref of the resource
      * @param bundleContext bundle-context
      */
-    void unRegisterResource(BindableResource resource, ResourceRef resRef,
-            BundleContext bundleContext);
+    void unRegisterResource(BindableResource resource,
+            ResourceRef resRef, BundleContext bundleContext);
 
     /**
-     * un-register all appropriate resources
+     * un-register all appropriate resources.
      *
      * @param context bundle-context
      */
     void unRegisterResources(BundleContext context);
 
     /**
-     * indicates whether the resource-manager can handle the resource in
-     * question
+     * Test if the manager can handle the given resource.
      *
      * @param resource resource to be handled
-     * @return boolean
+     * @return {@code true} if this manager handles the given resource,
+     * {@code false} otherwise
      */
     boolean handlesResource(BindableResource resource);
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -25,27 +25,44 @@ import org.osgi.service.url.URLConstants;
 import org.osgi.service.url.URLStreamHandlerService;
 
 import java.util.Properties;
-import java.util.logging.Logger;
 
 /**
  * An extender that listens to web application bundle's lifecycle
  * events and does the necessary deployment/undeployment.
- *
- * @author Sanjeeb.Sahoo@Sun.COM
  */
-public class WebExtender implements Extender {
+public final class WebExtender implements Extender {
 
-    private static final Logger LOGGER =
-            Logger.getLogger(WebExtender.class.getPackage().getName());
-
+    /**
+     * The bundle context.
+     */
     private final BundleContext context;
+
+    /**
+     * Service registration for the URL handler service.
+     */
     private ServiceRegistration urlHandlerService;
+
+    /**
+     * OSGi web module decorator.
+     */
     private OSGiWebModuleDecorator wmd;
+
+    /**
+     * Deployer.
+     */
     private OSGiWebDeployer deployer;
+
+    /**
+     * Service registration for the web module decorator.
+     */
     private ServiceRegistration wmdReg;
 
-    public WebExtender(BundleContext context) {
-        this.context = context;
+    /**
+     * Create a new instance.
+     * @param bndCtx the bundle context
+     */
+    public WebExtender(final BundleContext bndCtx) {
+        this.context = bndCtx;
     }
 
     @Override
@@ -66,11 +83,17 @@ public class WebExtender implements Extender {
         unregisterWmd();
     }
 
+    /**
+     * Register the deployer.
+     */
     private void registerDeployer() {
         deployer = new OSGiWebDeployer(context);
         deployer.register();
     }
 
+    /**
+     * Unregister the deployer.
+     */
     private void unregisterDeployer() {
         if (deployer != null) {
             deployer.unregister();
@@ -78,23 +101,32 @@ public class WebExtender implements Extender {
         }
     }
 
+    /**
+     * Register the URL handler service.
+     */
     @SuppressWarnings("unchecked")
     private void addURLHandler() {
-        Dictionary p = new Properties();
-        p.put(URLConstants.URL_HANDLER_PROTOCOL,
+        Dictionary props = new Properties();
+        props.put(URLConstants.URL_HANDLER_PROTOCOL,
                 new String[]{Constants.WEB_BUNDLE_SCHEME});
         urlHandlerService = context.registerService(
                 URLStreamHandlerService.class.getName(),
                 new WebBundleURLStreamHandlerService(),
-                p);
+                props);
     }
 
+    /**
+     * Unregister the URL handler.
+     */
     private void removeURLHandler() {
         if (urlHandlerService != null) {
             urlHandlerService.unregister();
         }
     }
 
+    /**
+     * Register the web module decorator as a service.
+     */
     private void registerWmd() {
         wmd = new OSGiWebModuleDecorator();
         // By registering this is OSGi service registry, it will automatically
@@ -104,8 +136,13 @@ public class WebExtender implements Extender {
                 WebModuleDecorator.class.getName(), wmd, null);
     }
 
+    /**
+     * Unregister the web module decorator.
+     */
     private void unregisterWmd() {
-        if (wmdReg == null) return;
+        if (wmdReg == null) {
+            return;
+        }
         wmdReg.unregister();
         // When we unregister the WebModuleDecorator from OSGi service registry,
         // it also gets removed from

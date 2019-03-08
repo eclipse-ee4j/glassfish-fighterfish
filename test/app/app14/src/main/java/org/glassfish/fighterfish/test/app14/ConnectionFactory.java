@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -19,9 +19,14 @@ package org.glassfish.fighterfish.test.app14;
 import java.sql.SQLException;
 
 /**
- * @author sanjeeb.sahoo@oracle.com
- *
+ * Service interface.
  */
 public interface ConnectionFactory {
-    java.sql.Connection getConnection() throws SQLException; 
+
+    /**
+     * Get the database connection.
+     * @return Connection
+     * @throws SQLException if an error occurs
+     */
+    java.sql.Connection getConnection() throws SQLException;
 }

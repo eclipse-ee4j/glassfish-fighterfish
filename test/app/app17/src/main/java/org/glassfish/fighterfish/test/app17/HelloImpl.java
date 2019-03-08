@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -17,17 +17,12 @@
 package org.glassfish.fighterfish.test.app17;
 
 /**
- * @author sanjeeb.sahoo@oracle.com
- *
+ * Implementation of the Hello service.
  */
-public class HelloImpl implements Hello {
+public final class HelloImpl implements Hello {
 
-    /* (non-Javadoc)
-     * @see org.glassfish.fighterfish.test.app17.Hello#sayHello()
-     */
     @Override
     public String sayHello() {
         return "Hello World";
     }
-
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -25,21 +25,31 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 /**
- * @author sanjeeb.sahoo@oracle.com
- *
+ * Implementation of {@link ConnectionFactory}.
  */
-public class ConnectionFactoryImpl implements ConnectionFactory {
+public final class ConnectionFactoryImpl implements ConnectionFactory {
 
-    private static final String DSNAME = "jdbc/__default"; // should use Config Admin to get this
+    /**
+     * Data source name.
+     */
+    // should use Config Admin to get this
+    private static final String DSNAME = "jdbc/__default";
+
+    /**
+     * Data source.
+     */
     private DataSource ds;
 
     @Override
     public Connection getConnection() throws SQLException {
-        // TODO Auto-generated method stub
         return ds.getConnection();
     }
 
-    public void activate(ComponentContext componentContext) {
+    /**
+     * Activate the data source.
+     * @param compCtx component context
+     */
+    public void activate(final ComponentContext compCtx) {
         System.out.println("ConnectionFactoryImpl.activate()");
         try {
             InitialContext ctx = new InitialContext();
@@ -49,10 +59,13 @@ public class ConnectionFactoryImpl implements ConnectionFactory {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-
     }
-    
-    public void deactivate(ComponentContext componentContext) {
+
+    /**
+     * Deactivate the data source.
+     * @param compCtx component context
+     */
+    public void deactivate(final ComponentContext compCtx) {
         System.out.println("ConnectionFactoryImpl.deactivate()");
     }
 }

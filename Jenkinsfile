@@ -23,8 +23,8 @@ pipeline {
     skipStagesAfterUnstable()
     // show timestamps in logs
     timestamps()
-    // global timeout, abort after 6 hours
-    timeout(time: 20, unit: 'MINUTES')
+    // global timeout
+    timeout(time: 40, unit: 'MINUTES')
   }
   agent {
     kubernetes {
@@ -77,8 +77,8 @@ spec:
     stage('build') {
       steps {
         container('build-container') {
-          timeout(time: 10, unit: 'MINUTES') {
-            sh 'mvn clean install'
+          timeout(time: 20, unit: 'MINUTES') {
+            sh 'mvn clean install -Pcopyright,checkstyle,spotbugs'
             junit testResults: '**/target/*-reports/*.xml', allowEmptyResults: true
           }
         }

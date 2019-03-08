@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -41,21 +41,30 @@ import org.osgi.util.tracker.ServiceTracker;
  * references to a service implementation (obtained from a service registry) and
  * also provides a mechanism to unget or return a service after its usage is
  * completed.
- *
- * @author Sivakumar Thyagarajan
  */
-class OSGiServiceFactory {
+final class OSGiServiceFactory {
 
-    private static Logger LOGGER = Logger.getLogger(
+    /**
+     * Logger.
+     */
+    private static final Logger LOGGER = Logger.getLogger(
             OSGiServiceFactory.class.getPackage().getName());
 
     /**
-     * Get a reference to the service of the provided <code>Type</code>
-     *
-     * @throws ServiceUnavailableException
+     * Cannot be instanciated.
+     */
+    private OSGiServiceFactory() {
+    }
+
+    /**
+     * Get a reference to the service of the provided {@code Type}.
+     * @param svcInjectionPoint injection point
+     * @return Object
+     * @throws ServiceUnavailableException if an error occurs
      */
     public static Object getService(final InjectionPoint svcInjectionPoint)
             throws ServiceUnavailableException {
+
         final OSGiService os
                 = svcInjectionPoint.getAnnotated().getAnnotation(
                         OSGiService.class);
@@ -64,31 +73,46 @@ class OSGiServiceFactory {
         return instance;
     }
 
+    /**
+     * Test if the service is available for the injection point.
+     * @param svcInjectionPoint injection point
+     * @return {@code true} if available, never {@code false}
+     * @throws ServiceUnavailableException if the service is not available
+     */
     public static boolean checkServiceAvailability(
             final InjectionPoint svcInjectionPoint)
             throws ServiceUnavailableException {
 
         final OSGiService os
-                = svcInjectionPoint.getAnnotated().getAnnotation(OSGiService.class);
+                = svcInjectionPoint.getAnnotated()
+                        .getAnnotation(OSGiService.class);
         //attempt to resolve a service. Attempt to create a static invocation
-        //handler while there is no active service, throws a 
+        //handler while there is no active service, throws a
         //<code>ServiceUnavailableException</code>
         new StaticInvocationHandler(os, svcInjectionPoint);
         return true;
     }
 
+    /**
+     * Create a proxy for the service.
+     * @param svcInjectionPoint injection point
+     * @return proxy object
+     * @throws ServiceUnavailableException if the service is not available
+     */
     private static Object createServiceProxy(
             final InjectionPoint svcInjectionPoint)
             throws ServiceUnavailableException {
+
         Type serviceType = svcInjectionPoint.getType();
-        final OSGiService os
-                = svcInjectionPoint.getAnnotated()
+        final OSGiService os = svcInjectionPoint.getAnnotated()
                         .getAnnotation(OSGiService.class);
 
-        InvocationHandler proxyInvHndlr = os.dynamic()
-                ? new DynamicInvocationHandler(os, svcInjectionPoint)
-                : new StaticInvocationHandler(os, svcInjectionPoint);
-
+        InvocationHandler proxyInvHndlr;
+        if (os.dynamic()) {
+            proxyInvHndlr = new DynamicInvocationHandler(os, svcInjectionPoint);
+        } else {
+            proxyInvHndlr = new StaticInvocationHandler(os, svcInjectionPoint);
+        }
         Object instance = Proxy.newProxyInstance(
                 Thread.currentThread().getContextClassLoader(),
                 new Class[]{(Class) serviceType},
@@ -96,8 +120,14 @@ class OSGiServiceFactory {
         return instance;
     }
 
+    /**
+     * Lookup the service with OSGi.
+     * @param svcInjectionPoint injection point
+     * @return Object
+     * @throws ServiceUnavailableException if the service is not available
+     */
     @SuppressWarnings("unchecked")
-    private static Object lookupService(InjectionPoint svcInjectionPoint)
+    private static Object lookupService(final InjectionPoint svcInjectionPoint)
             throws ServiceUnavailableException {
 
         Type serviceType = svcInjectionPoint.getType();
@@ -127,9 +157,12 @@ class OSGiServiceFactory {
 
             st.open();
 
-            Object service = ((os.waitTimeout() == -1)
-                    ? st.getService()
-                    : st.waitForService(os.waitTimeout()));
+            Object service;
+            if (os.waitTimeout() == -1) {
+                service = st.getService();
+            } else {
+                service = st.waitForService(os.waitTimeout());
+            }
             debug("service obtained from tracker" + service);
             if (service == null) {
                 throw new ServiceUnavailableException(
@@ -156,7 +189,15 @@ class OSGiServiceFactory {
         }
     }
 
-    private static String getFilter(Class serviceType, OSGiService os) {
+    /**
+     * Get the service filter defined for the injection point.
+     * @param serviceType service type to be injected
+     * @param os service instance
+     * @return filter
+     */
+    private static String getFilter(final Class serviceType,
+            final OSGiService os) {
+
         String objectClassClause = "(" + Constants.OBJECTCLASS + "="
                 + serviceType.getName() + ")";
         String filter = "(&" + objectClassClause + os.serviceCriteria() + ")";
@@ -165,19 +206,33 @@ class OSGiServiceFactory {
     }
 
     /**
-     * Unget the service
+     * Unget the service.
+     * @param serviceInstance service to unget
+     * @param svcInjectionPoint injection point
      */
-    public static void ungetService(Object serviceInstance,
-            InjectionPoint svcInjectionPoint) {
+    public static void ungetService(final Object serviceInstance,
+            final InjectionPoint svcInjectionPoint) {
+
         //XXX: not implemented
     }
 
-    private static void debug(String debugString) {
+    /**
+     * Log a message at the {@code FINE} level.
+     * @param msg message to log
+     */
+    private static void debug(final String msg) {
         LOGGER.logp(Level.FINE, "OSGiServiceFactory", "debug",
-                "OSGiServiceFactory:: {0}", new Object[]{debugString});
+                "OSGiServiceFactory:: {0}", new Object[]{msg});
     }
 
-    private static BundleContext getBundleContext(InjectionPoint svcInjectionPoint) {
+    /**
+     * Get the bundle context with the injection point class-loader.
+     * @param svcInjectionPoint injection point
+     * @return BundleContext
+     */
+    private static BundleContext getBundleContext(
+            final InjectionPoint svcInjectionPoint) {
+
         Class annotatedElt = svcInjectionPoint.getMember().getDeclaringClass();
         BundleContext bc = null;
         try {
@@ -186,11 +241,11 @@ class OSGiServiceFactory {
                     .getBundle().getBundleContext();
         } catch (ClassCastException cce) {
             LOGGER.logp(Level.SEVERE, "OSGiServiceFactory", "getBundleContext",
-                    "Expected annotated element {0} to be within an OSGi Bundle.",
+                    "Expected annotated element {0} to be within an OSGi"
+                    + " Bundle.",
                     new Object[]{cce});
             throw cce;
         }
-
         return bc;
     }
 
@@ -198,39 +253,51 @@ class OSGiServiceFactory {
      * If the service is marked as dynamic, when a method is invoked on a a
      * service proxy, an attempt is made to get a reference to the service and
      * then the method is invoked on the newly obtained service. This scheme
-     * should work for statless and/or idempotent service implementations that
-     * have a dynamic lifecycle that is not linked to the service consumer
-     * [service dynamism]
-     *
+     * should work for stateless and/or idempotent service implementations that
+     * have a dynamic life-cycle that is not linked to the service consumer
+     * [service dynamism].
      */
-    private static class DynamicInvocationHandler implements InvocationHandler {
+    private static class DynamicInvocationHandler
+            implements InvocationHandler {
 
-        /*
-         * TODO: we should track the lookedup service and
-         * only if it goes away should we look up a service.
+        // TODO we should track the lookedup service and
+        // only if it goes away should we look up a service.
+
+        /**
+         * OSGi service instance.
          */
-
         private final OSGiService os;
+
+        /**
+         * Injection point.
+         */
         private final InjectionPoint svcInjectionPoint;
 
-        public DynamicInvocationHandler(OSGiService os,
-                InjectionPoint svcInjectionPoint) {
+        /**
+         * Create a new instance.
+         * @param osgiService service instance
+         * @param injectionPoint injection point
+         */
+        DynamicInvocationHandler(final OSGiService osgiService,
+                final InjectionPoint injectionPoint) {
 
             debug("In DynamicInvocationHandler");
-            this.os = os;
-            this.svcInjectionPoint = svcInjectionPoint;
+            this.os = osgiService;
+            this.svcInjectionPoint = injectionPoint;
         }
 
         @Override
-        public Object invoke(Object proxy, Method method, Object[] args)
-                throws Throwable {
+        public Object invoke(final Object proxy, final Method method,
+                final Object[] args) throws Throwable {
+
             debug("looking a service as this is set to DYNAMIC=true");
             final Object instanceToUse = lookupService(svcInjectionPoint);
             debug("calling Method " + method + " on proxy");
 
-            //see [GLASSFISH-18370] And java doc of UndeclaredThrowableException
-            //when InvocationTargetException happened, we must get the real cause
-            //of InvocationTargetException
+            // see [GLASSFISH-18370] And java doc of
+            // UndeclaredThrowableException
+            // when InvocationTargetException happened, we must get the real
+            // cause of InvocationTargetException
             try {
                 return method.invoke(instanceToUse, args);
             } catch (InvocationTargetException e) {
@@ -248,27 +315,52 @@ class OSGiServiceFactory {
      */
     private static class StaticInvocationHandler implements InvocationHandler {
 
+        /**
+         * OSGi service instance.
+         */
         private final OSGiService os;
+
+        /**
+         * Injection point.
+         */
         private final InjectionPoint svcInjectionPoint;
 
+        /**
+         * Service reference.
+         */
         private ServiceReference svcReference = null;
+
+        /**
+         * Bundle context.
+         */
         private BundleContext bundleContext = null;
 
-        public StaticInvocationHandler(OSGiService os,
-                InjectionPoint svcInjectionPoint) {
+        /**
+         * Create a new instance.
+         * @param osgiService OSGi service
+         * @param injectionPoint injection point
+         */
+        StaticInvocationHandler(final OSGiService osgiService,
+                final InjectionPoint injectionPoint) {
 
             debug("In StaticInvocationHandler");
-            this.os = os;
-            this.svcInjectionPoint = svcInjectionPoint;
+            this.os = osgiService;
+            this.svcInjectionPoint = injectionPoint;
 
             // Get one service reference when the proxy is created
-            this.bundleContext = getBundleContext(svcInjectionPoint);
-            getServiceReference(svcInjectionPoint);
+            this.bundleContext = getBundleContext(injectionPoint);
+            getServiceReference(injectionPoint);
         }
 
+        /**
+         * Get the service reference for the given injection point.
+         * @param injectionPoint injection point
+         */
         @SuppressWarnings("unchecked")
-        private void getServiceReference(InjectionPoint svcInjectionPoint) {
-            Type serviceType = svcInjectionPoint.getType();
+        private void getServiceReference(
+                final InjectionPoint injectionPoint) {
+
+            Type serviceType = injectionPoint.getType();
             debug("lookup service" + serviceType);
 
             // Create the service tracker for this type.
@@ -295,14 +387,17 @@ class OSGiServiceFactory {
                 this.svcReference = st.getServiceReference();
                 if (this.svcReference == null) {
                     debug("ServiceReference obtained from ServiceTracker is "
-                            + "null. No matching services available at this point");
+                            + "null. No matching services available at this"
+                            + " point");
                     //No service at this point
                     throwServiceUnavailable();
                 }
-                debug("ServiceReference obtained from tracker:" + this.svcReference);
+                debug("ServiceReference obtained from tracker:"
+                        + this.svcReference);
             } catch (InvalidSyntaxException ise) {
                 ise.printStackTrace();
-                throw new ServiceUnavailableException("Invalid Filter specification",
+                throw new ServiceUnavailableException(
+                        "Invalid Filter specification",
                         ServiceException.FACTORY_EXCEPTION, ise);
             } catch (InterruptedException e) {
                 //Another thread interupted our wait for a service
@@ -320,23 +415,26 @@ class OSGiServiceFactory {
 
         @Override
         @SuppressWarnings("unchecked")
-        public Object invoke(Object proxy, Method method, Object[] args)
-                throws Throwable {
+        public Object invoke(final Object proxy, final Method method,
+                final Object[] args) throws Throwable {
+
             if (this.svcReference == null) {
-                //Earlier invocation has discovered that this service is unavailable
-                //so throw a service unavailable
+                // Earlier invocation has discovered that this service is
+                // unavailable
+                // so throw a service unavailable
                 throwServiceUnavailable();
             } else {
-                //Attempt to get a service based on the original ServiceReference
-                //obtained at instantiation time.
+                // Attempt to get a service based on the original
+                // ServiceReference
+                // obtained at instantiation time.
                 Object instanceToUse = this.bundleContext
                         .getService(this.svcReference);
                 if (instanceToUse == null) {
-                    // Service has vanished, so clear reference and throw svc 
+                    // Service has vanished, so clear reference and throw svc
                     // unavailable
 
-                    // clear service reference, so that subsequence invocations 
-                    // continue to throw ServiceUnavailable without needing 
+                    // clear service reference, so that subsequence invocations
+                    // continue to throw ServiceUnavailable without needing
                     // to check status again.
                     this.svcReference = null;
                     throwServiceUnavailable();
@@ -345,8 +443,10 @@ class OSGiServiceFactory {
                         + " as this is set to DYNAMIC=false");
                 debug("Calling Method " + method + " on Proxy");
 
-                // see [GLASSFISH-18370] And java doc of UndeclaredThrowableException
-                // when InvocationTargetException happened, we must get the real cause
+                // see [GLASSFISH-18370] And java doc of
+                // UndeclaredThrowableException
+                // when InvocationTargetException happened, we must get the
+                // real cause
                 // of InvocationTargetException
                 try {
                     return method.invoke(instanceToUse, args);
@@ -360,6 +460,9 @@ class OSGiServiceFactory {
             return null;
         }
 
+        /**
+         * Throw a {@code ServiceUnavailableException} exception.
+         */
         private void throwServiceUnavailable() {
             Type serviceType = svcInjectionPoint.getType();
             throw new ServiceUnavailableException("Service "

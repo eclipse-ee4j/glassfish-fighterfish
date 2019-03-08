@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -21,16 +21,25 @@ import org.osgi.framework.BundleContext;
 /**
  * An extender that registers a deployer capable of deploying/undeploying
  * OSGi/EJB bundles.
- *
- * @author Sanjeeb.Sahoo@Sun.COM
  */
-public class EJBExtender implements Extender {
+public final class EJBExtender implements Extender {
 
+    /**
+     * The bundle context.
+     */
     private final BundleContext context;
+
+    /**
+     * The deployer.
+     */
     private OSGiEJBDeployer deployer;
 
-    public EJBExtender(BundleContext context) {
-        this.context = context;
+    /**
+     * Create a new instance.
+     * @param bndCtx the bundle context
+     */
+    public EJBExtender(final BundleContext bndCtx) {
+        this.context = bndCtx;
     }
 
     @Override

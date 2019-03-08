@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -15,10 +15,16 @@
  */
 package org.glassfish.osgijavaeebase;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileFilter;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
 import java.net.URLConnection;
 import java.net.URI;
-import java.util.jar.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
@@ -26,23 +32,50 @@ import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.Channels;
 import java.nio.channels.WritableByteChannel;
 import java.nio.ByteBuffer;
+import java.util.jar.Attributes;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
+import java.util.jar.JarInputStream;
+import java.util.jar.JarOutputStream;
+import java.util.jar.Manifest;
 
 /**
  * A utility class to help reading/writing content of JarFile from/to stream.
- *
- * @author Sanjeeb.Sahoo@Sun.COM
  */
-public class JarHelper {
+public final class JarHelper {
 
+    /**
+     * Cannot be instanciated.
+     */
+    private JarHelper() {
+    }
+
+    /**
+     * Logger.
+     */
     private static final Logger LOGGER = Logger.getLogger(
             JarHelper.class.getPackage().getName());
 
-    public static interface Visitor {
+    /**
+     * Simple visitor interface.
+     */
+    public interface Visitor {
 
+        /**
+         * Visit an entry.
+         * @param je jar entry
+         */
         void visit(JarEntry je);
     }
 
-    public static void accept(JarInputStream jis, Visitor visitor)
+    /**
+     * Traverse a given jar with the given visitor.
+     * @param jis jar input stream
+     * @param visitor visitor instance
+     * @throws IOException if an error occurs
+     */
+    public static void accept(final JarInputStream jis,
+            final Visitor visitor)
             throws IOException {
 
         JarEntry je;
@@ -62,7 +95,9 @@ public class JarHelper {
      * @param os Output stream to write to
      * @param m Manifest to be written out - cannot be null
      */
-    public static void write(URLConnection con, OutputStream os, Manifest m) {
+    public static void write(final URLConnection con, final OutputStream os,
+            final Manifest m) {
+
         try {
             InputStream in = con.getInputStream();
             JarInputStream jis = null;
@@ -102,9 +137,11 @@ public class JarHelper {
      *
      * @param jis input stream to read from
      * @param jos output stream to write to
-     * @throws IOException
+     * @throws IOException if an error occurs
      */
-    public static void write(JarInputStream jis, JarOutputStream jos)
+    @SuppressWarnings("checkstyle:magicnumber")
+    public static void write(final JarInputStream jis,
+            final JarOutputStream jos)
             throws IOException {
 
         // Copy each entry from input to output
@@ -130,7 +167,7 @@ public class JarHelper {
      * @param dir Directory which contains the exploded bits
      * @param action A runnable to be called after output has been written
      * @return a InputStream
-     * @throws IOException
+     * @throws IOException if an error occurs
      */
     public static InputStream makeJar(final File dir, final Runnable action)
             throws IOException {
@@ -161,7 +198,7 @@ public class JarHelper {
                     final URI baseURI = dir.toURI();
                     dir.listFiles(new FileFilter() {
                         @Override
-                        public boolean accept(File f) {
+                        public boolean accept(final File f) {
                             try {
                                 URI entryURI = f.toURI();
                                 String entryPath = baseURI
@@ -213,12 +250,14 @@ public class JarHelper {
      * this method takes a byte buffer as argument. It clears the byte buffer at
      * the end of the operation.
      *
-     * @param in
-     * @param out
-     * @param byteBuffer
-     * @throws IOException
+     * @param in input stream
+     * @param out output stream
+     * @param byteBuffer byte buffer
+     * @throws IOException if an error occurs
      */
-    public static void copy(InputStream in, OutputStream out, ByteBuffer byteBuffer)
+    @SuppressWarnings("checkstyle:emptyblock")
+    public static void copy(final InputStream in, final OutputStream out,
+            final ByteBuffer byteBuffer)
             throws IOException {
 
         try {
@@ -233,6 +272,7 @@ public class JarHelper {
                     byteBuffer.rewind();
                     int written = 0;
                     while ((written += outChannel.write(byteBuffer)) < read) {
+                        // write all bytes
                     }
                     LOGGER.logp(Level.FINE, "JarHelper", "write",
                             "Copied {0} bytes", new Object[]{read});

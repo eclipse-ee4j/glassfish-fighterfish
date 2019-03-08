@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -24,7 +24,9 @@ import java.io.File;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.*;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -38,45 +40,55 @@ import java.util.concurrent.ConcurrentHashMap;
  * {@link org.apache.catalina.Context} object. So we need a way to demultiplex
  * the OSGi servlet context. This class also delegates to {@link HttpContext}
  * for resource resolutions and security.
- *
- * @author Sanjeeb.Sahoo@Sun.COM
  */
-public class OSGiServletContext extends ContextFacade {
+public final class OSGiServletContext extends ContextFacade {
 
+    /**
+     * The OSGi HTTP context.
+     */
     private final HttpContext httpContext;
 
+    /**
+     * Context attributes.
+     */
     private final Map<String, Object> attributes =
             new ConcurrentHashMap<String, Object>();
 
-    public OSGiServletContext(WebModule delegate, HttpContext httpContext) {
+    /**
+     * Create a new instance.
+     * @param webModule the delegate web module
+     * @param ctx the OSGi HTTP context
+     */
+    public OSGiServletContext(final WebModule webModule,
+            final HttpContext ctx) {
 
-        super(new File(delegate.getDocBase()), delegate.getContextPath(),
-                delegate.getClassLoader());
-        setUnwrappedContext(delegate);
-        setName(delegate.getName());
-        setPath(delegate.getPath());
-        setWebContainer(delegate.getWebContainer());
-        setJ2EEServer(delegate.getJ2EEServer());
-        setWebModuleConfig(delegate.getWebModuleConfig());
-        setParentClassLoader(delegate.getParentClassLoader());
-        setRealm(delegate.getRealm());
-        setParent(delegate.getParent());
+        super(new File(webModule.getDocBase()), webModule.getContextPath(),
+                webModule.getClassLoader());
+        setUnwrappedContext(webModule);
+        setName(webModule.getName());
+        setPath(webModule.getPath());
+        setWebContainer(webModule.getWebContainer());
+        setJ2EEServer(webModule.getJ2EEServer());
+        setWebModuleConfig(webModule.getWebModuleConfig());
+        setParentClassLoader(webModule.getParentClassLoader());
+        setRealm(webModule.getRealm());
+        setParent(webModule.getParent());
         // Set a new manager to have a different HttpSession for this context
         StandardManager mgr = new StandardManager();
         // we switch off Session Persistence due to issues in deserialization
         mgr.setPathname(null);
         setManager(mgr);
 //        mgr.setMaxActiveSessions(100);
-        this.httpContext = httpContext;
+        this.httpContext = ctx;
     }
 
     @Override
-    public Object getAttribute(String name) {
+    public Object getAttribute(final String name) {
         return attributes.get(name);
     }
 
     @Override
-    public void setAttribute(String name, Object value) {
+    public void setAttribute(final String name, final Object value) {
         attributes.put(name, value);
     }
 
@@ -86,26 +98,32 @@ public class OSGiServletContext extends ContextFacade {
     }
 
     @Override
-    public void removeAttribute(String name) {
+    public void removeAttribute(final String name) {
         attributes.remove(name);
     }
 
     @Override
-    public String getMimeType(String file) {
+    public String getMimeType(final String file) {
         String mimeType = httpContext.getMimeType(file);
-        return mimeType != null ? mimeType : super.getMimeType(file);
+        if (mimeType != null) {
+            return mimeType;
+        }
+        return super.getMimeType(file);
     }
 
     @Override
-    public URL getResource(String path) throws MalformedURLException {
+    public URL getResource(final String path) throws MalformedURLException {
         return httpContext.getResource(path);
     }
 
     @Override
-    public InputStream getResourceAsStream(String path) {
+    public InputStream getResourceAsStream(final String path) {
         try {
             URL url = getResource(path);
-            return url != null ? url.openStream() : null;
+            if (url != null) {
+                return url.openStream();
+            }
+            return null;
         } catch (Exception e) {
         }
         return null;

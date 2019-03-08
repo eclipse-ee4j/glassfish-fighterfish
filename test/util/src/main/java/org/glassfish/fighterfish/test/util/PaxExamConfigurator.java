@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -29,32 +29,63 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static org.glassfish.fighterfish.test.util.Constants.FW_CONFIG_FILE_NAME;
-import static org.ops4j.pax.exam.CoreOptions.*;
+import static org.ops4j.pax.exam.CoreOptions.bundle;
+import static org.ops4j.pax.exam.CoreOptions.cleanCaches;
+import static org.ops4j.pax.exam.CoreOptions.frameworkProperty;
+import static org.ops4j.pax.exam.CoreOptions.junitBundles;
+import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
+import static org.ops4j.pax.exam.CoreOptions.options;
+import static org.ops4j.pax.exam.CoreOptions.systemTimeout;
+import static org.ops4j.pax.exam.CoreOptions.workingDirectory;
 import static org.ops4j.pax.exam.OptionUtils.combine;
 
 /**
  * Provides common PAX configuration for all tests.
- *
- * @author Sanjeeb.Sahoo@Sun.COM
  */
-public class PaxExamConfigurator {
+public final class PaxExamConfigurator {
 
+    /**
+     * Logger.
+     */
     protected static final Logger LOGGER = Logger.getLogger(
             PaxExamConfigurator.class.getPackage().getName());
 
+    /**
+     * GlassFish install home.
+     */
     private final File gfHome;
+
+    /**
+     * Timeout configuration for PAX-EXAM system timeout.
+     */
     private final long timeout;
 
-    public PaxExamConfigurator(File gfHome, long timeout) {
-        this.gfHome = gfHome;
-        this.timeout = timeout;
+    /**
+     * Create a new instance.
+     * @param glassFishHome GlassFish install home
+     * @param sysTimeout PAX-EXAM system timeout
+     */
+    public PaxExamConfigurator(final File glassFishHome,
+            final long sysTimeout) {
+
+        this.gfHome = glassFishHome;
+        this.timeout = sysTimeout;
     }
 
+    /**
+     * Create all PAX-EXAM configuration options.
+     * @return Option[]
+     * @throws IOException if an error occurs while reading the config files
+     */
     public Option[] configure() throws IOException {
         return combine(combine(frameworkConfiguration(),
                 provisioningBundles()), paxConfiguration());
     }
 
+    /**
+     * Get the provisioning bundles options.
+     * @return Option[]
+     */
     private Option[] provisioningBundles() {
         final String version = Version.getVersion();
         LOGGER.logp(Level.INFO, "PaxExamConfigurator", "provisioningBundles",
@@ -100,6 +131,12 @@ public class PaxExamConfigurator {
         );
     }
 
+    /**
+     * Read the framework configuration file and return corresponding PAX
+     * options.
+     * @return Option[]
+     * @throws IOException if an error occurs while reading the config file
+     */
     private Option[] frameworkConfiguration() throws IOException {
         // We currently read framework options from a separate file,
         // but we could as well inline them here in code.
@@ -131,6 +168,10 @@ public class PaxExamConfigurator {
         return options.toArray(new Option[options.size()]);
     }
 
+    /**
+     * Create the PAX specific configuration.
+     * @return Option[]
+     */
     private Option[] paxConfiguration() {
         return options(systemTimeout(timeout), cleanCaches(true));
     }
@@ -138,10 +179,10 @@ public class PaxExamConfigurator {
     /**
      * Adapts properties to pax-exam options.
      *
-     * @param properties
-     * @return
+     * @param properties properties to convert to options
+     * @return List<Option>
      */
-    private List<Option> convertToOptions(Properties properties) {
+    private List<Option> convertToOptions(final Properties properties) {
         List<Option> options = new ArrayList<Option>();
         for (Map.Entry<Object, Object> entry : properties.entrySet()) {
             if (entry.getKey().equals(Constants.FRAMEWORK_STORAGE)) {
@@ -158,12 +199,18 @@ public class PaxExamConfigurator {
         return options;
     }
 
+    /**
+     * Read the framework config file into properties.
+     * @return Properties
+     * @throws IOException if an error occurs while reading the config file
+     */
     private Properties readFrameworkConfiguration() throws IOException {
         Properties properties = new Properties();
         LOGGER.logp(Level.INFO, "DefaultPaxExamConfiguration",
                 "readFrameworkConfiguration", "fwConfigFileName = {0}",
                 new Object[]{FW_CONFIG_FILE_NAME});
-        InputStream stream = getClass().getResourceAsStream(FW_CONFIG_FILE_NAME);
+        InputStream stream = getClass()
+                .getResourceAsStream(FW_CONFIG_FILE_NAME);
         if (stream != null) {
             try {
                 properties.load(stream);

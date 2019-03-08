@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -24,7 +24,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Servlet spec, the spec which defines the term Web Application, defines the
@@ -40,32 +43,38 @@ import java.util.*;
  * A WAB provides such a view of web application which is actually composed of a
  * host OSGi bundle and zero or more attached fragment bundles.
  *
- * @author Sanjeeb.Sahoo@Sun.COM
+ * Implementation Notes: We don't create virtual jar from directory type
+ * Bundle-ClassPath entry, because rfc #66 says that such entries should be
+ * treated like WEB-INF/classes/, which means, they must not be searched for
+ * web-fragments.xml.
  */
-public class WAB extends OSGiJavaEEArchive {
-    // Implementation Notes:
-    // We don't create virtual jar from directory type Bundle-ClassPath entry,
-    // because rfc #66 says that
-    // such entries should be treated like WEB-INF/classes/, which means, they
-    // must not be searched for
-    // web-fragments.xml.
+public final class WAB extends OSGiJavaEEArchive {
 
     /**
      * All Bundle-ClassPath entries of type jars are represented as
      * WEB-INF/lib/{N}.jar, where N is a number starting with 0.
      */
-    private final static String LIB_DIR = "WEB-INF/lib/";
-    private final static String CLASSES_DIR = "WEB-INF/classes/";
+    private static final String LIB_DIR = "WEB-INF/lib/";
 
-    public WAB(Bundle host, Bundle[] fragments) {
+    /**
+     * Classes directory.
+     */
+    private static final String CLASSES_DIR = "WEB-INF/classes/";
+
+    /**
+     * Create a new instance.
+     * @param host the host bundle.
+     * @param fragments the associated bundle fragments
+     */
+    public WAB(final Bundle host, final Bundle[] fragments) {
         super(fragments, host);
     }
 
     @Override
     @SuppressWarnings("unchecked")
     protected synchronized void init() {
-        List<Bundle> bundles = new ArrayList(Arrays.asList(fragments));
-        bundles.add(0, host);
+        List<Bundle> bundles = new ArrayList(Arrays.asList(getFragments()));
+        bundles.add(0, getHost());
         for (Bundle b : bundles) {
             final OSGiBundleArchive archive = getArchive(b);
             for (final String entry : Collections.list(archive.entries())) {
@@ -107,8 +116,8 @@ public class WAB extends OSGiJavaEEArchive {
                     final Archive subArchive =
                             getArchive(bcpEntry.getBundle())
                             .getSubArchive(bcpEntry.getName());
-                    for (final String subEntry :
-                            Collections.list(subArchive.entries())) {
+                    for (final String subEntry
+                            : Collections.list(subArchive.entries())) {
 
                         ArchiveEntry archiveEntry = new ArchiveEntry() {
                             @Override
@@ -124,7 +133,8 @@ public class WAB extends OSGiJavaEEArchive {
                             }
 
                             @Override
-                            public InputStream getInputStream() throws IOException {
+                            public InputStream getInputStream()
+                                    throws IOException {
                                 try {
                                     return getURI().toURL().openStream();
                                 } catch (URISyntaxException e) {
@@ -147,9 +157,11 @@ public class WAB extends OSGiJavaEEArchive {
                 // WEB-INF/lib/
                 if (bcpEntry.getName().startsWith(LIB_DIR)
                         && bcpEntry.getName().endsWith(JAR_EXT)) {
-                    String jarName = bcpEntry.getName().substring(LIB_DIR.length());
+                    String jarName = bcpEntry.getName().substring(
+                            LIB_DIR.length());
                     if (!jarName.contains("/")) {
-                        return; // This jar is already first level jar in WEB-INF/lib
+                        // This jar is already first level jar in WEB-INF/lib
+                        return;
                     }
                 }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -21,17 +21,30 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.charset.Charset;
 
 /**
- * @author Sanjeeb.Sahoo@Sun.COM
+ * URL helper.
  */
-public class URLHelper {
+public final class URLHelper {
 
-    public static String getResponse(URL request) throws IOException {
+    /**
+     * Cannot be instanciated.
+     */
+    private URLHelper() {
+    }
+
+    /**
+     * Open a URL and return the response body as a string.
+     * @param request URL to request
+     * @return String
+     * @throws IOException if an error occurs
+     */
+    public static String getResponse(final URL request) throws IOException {
         URLConnection yc = request.openConnection();
         BufferedReader in = new BufferedReader(
-                new InputStreamReader(
-                        yc.getInputStream()));
+                new InputStreamReader(yc.getInputStream(),
+                        Charset.defaultCharset()));
 
         StringBuilder sb = new StringBuilder();
         String inputLine;

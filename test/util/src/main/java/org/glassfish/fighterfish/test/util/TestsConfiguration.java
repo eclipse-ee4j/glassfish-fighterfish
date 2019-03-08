@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -19,10 +19,9 @@ import org.ops4j.pax.exam.Option;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
 import java.util.Properties;
-import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import static org.glassfish.fighterfish.test.util.Constants.EXAM_TIMEOUT_DEFAULT_VALUE;
 import static org.glassfish.fighterfish.test.util.Constants.EXAM_TIMEOUT_PROP;
 import static org.glassfish.fighterfish.test.util.Constants.FIGHTERFISH_TEST_TIMEOUT_DEFAULT_VALUE;
@@ -34,11 +33,18 @@ import static org.glassfish.fighterfish.test.util.Constants.INSTALL_ROOT_URI_PRO
  * Represents configuration common to all tests. It reads configuration
  * information from System properties and configures various underlying objects.
  * Depending on configuration, this also installs GlassFish.
- *
- * @author Sanjeeb.Sahoo@Sun.COM
  */
-public class TestsConfiguration {
+public final class TestsConfiguration {
 
+    /**
+     * Logger.
+     */
+    protected static final Logger LOGGER = Logger.getLogger(
+            TestsConfiguration.class.getPackage().getName());
+
+    /**
+     * GlassFish install home.
+     */
     private File gfHome;
 
     /**
@@ -51,19 +57,27 @@ public class TestsConfiguration {
      */
     private final long examTimeout;
 
-    protected static final Logger LOGGER = Logger.getLogger(
-            TestsConfiguration.class.getPackage().getName());
-
+    /**
+     * Singleton instance.
+     */
     private static TestsConfiguration instance;
 
-    public synchronized static TestsConfiguration getInstance() {
+    /**
+     * Get the singleton instance.
+     * @return TestsConfiguration
+     */
+    public static synchronized TestsConfiguration getInstance() {
         if (instance == null) {
             instance = new TestsConfiguration(System.getProperties());
         }
         return instance;
     }
 
-    private TestsConfiguration(Properties properties) {
+    /**
+     * Create a new instance.
+     * @param properties config properties
+     */
+    private TestsConfiguration(final Properties properties) {
         testTimeout = Long.parseLong(
                 properties.getProperty(FIGHTERFISH_TEST_TIMEOUT_PROP,
                         FIGHTERFISH_TEST_TIMEOUT_DEFAULT_VALUE));
@@ -86,18 +100,35 @@ public class TestsConfiguration {
         }
     }
 
+    /**
+     * Get the configured timeout.
+     * @return timeout
+     */
     public long getTimeout() {
         return testTimeout;
     }
 
+    /**
+     * Get the PAX-EXAM timeout.
+     * @return timeout
+     */
     public long getExamTimeout() {
         return examTimeout;
     }
 
+    /**
+     * Get the GlassFish install home.
+     * @return File
+     */
     private File getGfHome() {
         return gfHome;
     }
 
+    /**
+     * Get the PAX-EXAM options.
+     * @return Option[]
+     * @throws IOException  if an error occurs while reading the config file
+     */
     public Option[] getPaxExamConfiguration() throws IOException {
         return new PaxExamConfigurator(gfHome, examTimeout).configure();
     }

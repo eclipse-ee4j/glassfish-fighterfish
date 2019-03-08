@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -25,14 +25,26 @@ import org.osgi.util.tracker.ServiceTracker;
  * operation, so this class help test cases track availability of GlassFish. It
  * provides a convenient mechanism for tests to wait for GlassFish server to
  * start.
- *
- * @author Sanjeeb.Sahoo@Sun.COM
  */
-public class GlassFishTracker {
+public final class GlassFishTracker {
 
-    @SuppressWarnings("unchecked")
-    public static GlassFish waitForGfToStart(BundleContext context,
-            long timeout)
+    /**
+     * Cannot be instanciated.
+     */
+    private GlassFishTracker() {
+    }
+
+    /**
+     * Wait for GlassFish to start.
+     * @param context bundle context
+     * @param timeout wait timeout
+     * @return GlassFish
+     * @throws InterruptedException if an error occurs
+     * @throws GlassFishException if an error occurs
+     */
+    @SuppressWarnings({"unchecked", "checkstyle:MagicNumber"})
+    public static GlassFish waitForGfToStart(final BundleContext context,
+            final long timeout)
             throws InterruptedException, GlassFishException {
 
         ServiceTracker st = new ServiceTracker(context,
