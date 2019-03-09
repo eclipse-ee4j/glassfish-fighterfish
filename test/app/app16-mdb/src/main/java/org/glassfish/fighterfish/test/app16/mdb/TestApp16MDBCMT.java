@@ -21,24 +21,31 @@ import javax.ejb.ActivationConfigProperty;
 import javax.ejb.MessageDriven;
 import javax.interceptor.AroundInvoke;
 import javax.interceptor.InvocationContext;
-import javax.jms.MessageListener;
 
 /**
- * Message-Driven Bean implementation class for: TestApp16MDB
- * 
+ * Message-Driven Bean implementation class for: TestApp16MDB.
  */
 @MessageDriven(
-        activationConfig = { @ActivationConfigProperty(
-                propertyName = "destinationType", propertyValue = "javax.jms.Topic"
-        ) },
-        mappedName="jms/fighterfish.TestApp16Topic"
-        )
-public class TestApp16MDB_CMT extends TestApp16MDB_Base {
+        activationConfig = {
+            @ActivationConfigProperty(
+                    propertyName = "destinationType",
+                    propertyValue = "javax.jms.Topic"
+            )},
+        mappedName = "jms/fighterfish.TestApp16Topic"
+)
+@SuppressWarnings("checkstyle:DesignForExtension")
+public class TestApp16MDBCMT extends TestApp16MDBBase {
 
+    /**
+     * Interceptor for setEM.
+     * @param ctx invocation context
+     * @return Object
+     * @throws Exception if an error occurs
+     */
     @AroundInvoke
-    Object setEM(InvocationContext ctx) throws Exception {
+    Object setEM(final InvocationContext ctx) throws Exception {
         log("entering setEM()");
-        em = emf.createEntityManager();
+        em = getEmf().createEntityManager();
         try {
             Object result = ctx.proceed();
             return result;
@@ -47,5 +54,4 @@ public class TestApp16MDB_CMT extends TestApp16MDB_Base {
             log("exiting setEM()");
         }
     }
-
 }

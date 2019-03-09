@@ -15,8 +15,16 @@
  */
 package org.glassfish.fighterfish.test.util;
 
-import java.io.*;
-import java.lang.management.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.lang.management.LockInfo;
+import java.lang.management.ManagementFactory;
+import java.lang.management.MonitorInfo;
+import java.lang.management.ThreadInfo;
+import java.lang.management.ThreadMXBean;
 import java.util.Date;
 
 /**
@@ -24,10 +32,8 @@ import java.util.Date;
  * similar to the output of jstack command line tool.
  * Its {@link #toString()} returns the stack traces of all the threads by
  * calling underlying {@link ThreadMXBean}.
- *
- * @author Sanjeeb.Sahoo@Sun.COM
  */
-public class JStack {
+public final class JStack {
 
     @Override
     public String toString() {
@@ -35,7 +41,12 @@ public class JStack {
         return getAllStack(threadMXBean.dumpAllThreads(true, true));
     }
 
-    private static String getAllStack(ThreadInfo[] tis) {
+    /**
+     * Get all stack.
+     * @param tis thread infos
+     * @return stack descriptions
+     */
+    private static String getAllStack(final ThreadInfo[] tis) {
         if (tis == null) {
             return "null";
         }
@@ -50,7 +61,12 @@ public class JStack {
         return b.toString();
     }
 
-    private static String getStack(ThreadInfo ti) {
+    /**
+     * Get a single stack.
+     * @param ti thread info
+     * @return stack description
+     */
+    private static String getStack(final ThreadInfo ti) {
         // This method has been largely copied from ThreadInfo.java as
         // toString() of ThreadInfo
         StringBuilder sb = new StringBuilder("\"" + ti.getThreadName() + "\""
@@ -126,6 +142,9 @@ public class JStack {
 
     }
 
+    /**
+     * Print a stack trace to a file.
+     */
     public void printStackTrace() {
         File f = new File(System.getProperty("user.home"), "jstack.txt");
         System.out.println("JStack written out to " + f.getAbsolutePath());
@@ -139,7 +158,11 @@ public class JStack {
         }
     }
 
-    public void printStackTrace(OutputStream out) {
+    /**
+     * Print a stack trace to the given output stream.
+     * @param out output stream
+     */
+    public void printStackTrace(final OutputStream out) {
         final String s = toString();
         final PrintWriter printWriter = new PrintWriter(out);
         printWriter.println("Stack trace generated at " + new Date()
@@ -147,7 +170,11 @@ public class JStack {
         printWriter.flush();
     }
 
-    public static void main(String[] args) {
+    /**
+     * Main method.
+     * @param args command line arguments
+     */
+    public static void main(final String[] args) {
         new Thread() {
             {
                 setDaemon(false);

@@ -21,34 +21,58 @@ import org.osgi.framework.ServiceReference;
 import org.osgi.util.tracker.ServiceTracker;
 
 /**
- * @author Sanjeeb.Sahoo@Sun.COM
+ * OSGi utility class.
  */
-public class OSGiUtil {
+public final class OSGiUtil {
 
+    /**
+     * Cannot be instanciated.
+     */
+    private OSGiUtil() {
+    }
+
+    /**
+     * Get a service by type.
+     * @param <T> service type parameter
+     * @param ctx bundle context
+     * @param type service class
+     * @return T
+     */
     // TODO(Sahoo): Move the functionality to TestContext so that the service
     // references can be closed upon end of test
-    @SuppressWarnings("unchecked")
-    public static <T> T getService(BundleContext ctx, Class<T> type) {
+    @SuppressWarnings({"unchecked", "checkstyle:EmptyBlock"})
+    public static <T> T getService(final BundleContext ctx,
+            final Class<T> type) {
+
         ServiceTracker st = new ServiceTracker(ctx, type.getName(), null);
         st.open();
         try {
             return type.cast(st.getService());
         } finally {
-//            st.close();
+            // st.close();
         }
     }
 
-    @SuppressWarnings("unchecked")
-    public static <T> T getService(BundleContext ctx, Class<T> type,
-            long timeout)
+    /**
+     * Get a service by type.
+     * @param <T> service type parameter
+     * @param ctx bundle context
+     * @param type service type
+     * @param timeout wait timeout
+     * @return T
+     * @throws InterruptedException if an error occurs while waiting
+     */
+    @SuppressWarnings({"unchecked", "checkstyle:EmptyBlock"})
+    public static <T> T getService(final BundleContext ctx,
+            final Class<T> type, final long timeout)
             throws InterruptedException {
 
-        ServiceTracker<T,T> st = new ServiceTracker(ctx, type.getName(), null);
+        ServiceTracker<T, T> st = new ServiceTracker(ctx, type.getName(), null);
         st.open();
         try {
             return type.cast(st.waitForService(timeout));
         } finally {
-//            st.close();
+            // st.close();
         }
     }
 
@@ -57,22 +81,22 @@ public class OSGiUtil {
      * made available by a given bundle.
      *
      * @param ctx BundleContext that should be used to track the service
-     * @param b Bundle registering the service
+     * @param bnd Bundle registering the service
      * @param service FQN of the service type
      * @param timeout no of milliseconds to wait for the service to be available
      * before returning null
      * @return a reference to the service being tracked
-     * @throws InterruptedException
+     * @throws InterruptedException if an error occurs while waiting
      */
-    @SuppressWarnings("unchecked")
-    public static Object waitForService(BundleContext ctx, final Bundle b,
-            String service, long timeout)
+    @SuppressWarnings({"unchecked", "checkstyle:EmptyBlock"})
+    public static Object waitForService(final BundleContext ctx,
+            final Bundle bnd, final String service, final long timeout)
             throws InterruptedException {
 
         ServiceTracker st = new ServiceTracker(ctx, service, null) {
             @Override
-            public Object addingService(ServiceReference reference) {
-                if (reference.getBundle() == b) {
+            public Object addingService(final ServiceReference reference) {
+                if (reference.getBundle() == bnd) {
                     return reference;
                 } else {
                     return null;
@@ -80,8 +104,9 @@ public class OSGiUtil {
             }
 
             @Override
-            public void removedService(ServiceReference reference,
-                    Object service) {
+            public void removedService(final ServiceReference reference,
+                    final Object service) {
+
                 // no need to unget, as we don't get the service
                 // in addingService
             }
@@ -91,7 +116,7 @@ public class OSGiUtil {
         try {
             s = st.waitForService(timeout);
         } finally {
-//            st.close();
+            // st.close();
         }
         return s;
     }

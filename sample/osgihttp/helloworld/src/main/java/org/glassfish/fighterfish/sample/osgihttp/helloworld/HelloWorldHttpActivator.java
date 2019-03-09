@@ -23,22 +23,22 @@ import org.osgi.util.tracker.ServiceTracker;
  * The secondary reason for having this activator is that it causes HttpService
  * class to be loaded which in turn activates osgi-http bundle of GlassFish,
  * which uses lazy activation policy.
- *
- * @author Sanjeeb.Sahoo@Oracle.com
- *
  */
-public class HelloWorldHttpActivator implements BundleActivator {
+public final class HelloWorldHttpActivator implements BundleActivator {
 
-    volatile ServiceTracker tracker;
+    /**
+     * Service tracker for the OSGi HTTP service.
+     */
+    private volatile ServiceTracker tracker;
 
     @Override
     @SuppressWarnings("unchecked")
-    public void start(BundleContext context) throws Exception {
+    public void start(final BundleContext context) throws Exception {
         tracker = new ServiceTracker(context, HttpService.class.getName(),
                 null) {
 
             @Override
-            public Object addingService(ServiceReference reference) {
+            public Object addingService(final ServiceReference reference) {
                 HttpService http = HttpService.class.cast(
                         context.getService(reference));
                 try {
@@ -52,8 +52,9 @@ public class HelloWorldHttpActivator implements BundleActivator {
             }
 
             @Override
-            public void removedService(ServiceReference reference,
-                    Object service) {
+            public void removedService(final ServiceReference reference,
+                    final Object service) {
+
                 HttpService http = HttpService.class.cast(
                         context.getService(reference));
                 try {
@@ -69,7 +70,7 @@ public class HelloWorldHttpActivator implements BundleActivator {
     }
 
     @Override
-    public void stop(BundleContext context) throws Exception {
+    public void stop(final BundleContext context) throws Exception {
         tracker.close();
         tracker = null;
     }

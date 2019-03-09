@@ -21,16 +21,25 @@ import org.osgi.framework.BundleContext;
 /**
  * An extender that registers a deployer capable of deploying/undeploying
  * OSGi/EJB bundles.
- *
- * @author Sanjeeb.Sahoo@Sun.COM
  */
-public class EJBExtender implements Extender {
+public final class EJBExtender implements Extender {
 
+    /**
+     * The bundle context.
+     */
     private final BundleContext context;
+
+    /**
+     * The deployer.
+     */
     private OSGiEJBDeployer deployer;
 
-    public EJBExtender(BundleContext context) {
-        this.context = context;
+    /**
+     * Create a new instance.
+     * @param bndCtx the bundle context
+     */
+    public EJBExtender(final BundleContext bndCtx) {
+        this.context = bndCtx;
     }
 
     @Override

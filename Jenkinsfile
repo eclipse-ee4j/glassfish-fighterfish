@@ -78,7 +78,7 @@ spec:
       steps {
         container('build-container') {
           timeout(time: 10, unit: 'MINUTES') {
-            sh 'mvn clean install'
+            sh 'mvn clean install -Pcopyright,checkstyle'
             junit testResults: '**/target/*-reports/*.xml', allowEmptyResults: true
           }
         }

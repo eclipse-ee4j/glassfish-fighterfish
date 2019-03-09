@@ -18,12 +18,19 @@ package org.glassfish.osgihttp;
 import com.sun.enterprise.web.WebModule;
 
 /**
- *
- * @author Sanjeeb.Sahoo@Sun.COM
+ * Invocation context.
  */
 public interface InvocationContext {
 
+    /**
+     * The underlying GlassFish web module.
+     * @return WebModule
+     */
     WebModule getWebModule();
 
+    /**
+     * Set the underlying GlassFish web module.
+     * @param webModule new web module
+     */
     void setWebModule(WebModule webModule);
 }

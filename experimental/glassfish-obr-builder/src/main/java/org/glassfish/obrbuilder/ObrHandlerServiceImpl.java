@@ -15,8 +15,6 @@
  */
 package org.glassfish.obrbuilder;
 
-import static org.glassfish.obrbuilder.Logger.logger;
-
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileWriter;
@@ -66,27 +64,41 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.Filter;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.Version;
+import static org.glassfish.obrbuilder.Logger.LOGGER;
 
 /**
- * @author Sanjeeb.Sahoo@Sun.COM
- * @author TangYong(tangyong@cn.fujitsu.com)
+ * OBR handler service implementation.
  */
-class ObrHandlerServiceImpl implements ObrHandlerService {
+final class ObrHandlerServiceImpl implements ObrHandlerService {
 
-    // We maintain our own repository list which we use during resolution
-    // process.
-    // That way, we are not affected by any repository added by user to a shared
-    // instance of repository admin.
+    /**
+     * Repository list used during resolution process. That way, we are not
+     * affected by any repository added by user to a shared instance of
+     * repository admin.
+     */
     private final List<Repository> repositories = new ArrayList<Repository>();
 
-    private Future<List<HK2AnnotationDescriptor>>
-            futureHK2AnnotationDescriptor = null;
+    /**
+     * Future of the list of HK2 annotation descriptor.
+     */
+    private Future<List<HK2AnnotationDescriptor>> futureHK2AnnotDesc = null;
 
+    /**
+     * Bundle context.
+     */
     private final BundleContext context;
+
+    /**
+     * Repository admin.
+     */
     private RepositoryAdmin repoAdmin;
 
-    public ObrHandlerServiceImpl(BundleContext context) {
-        this.context = context;
+    /**
+     * Create a new instance.
+     * @param bndCtx bundle context
+     */
+    ObrHandlerServiceImpl(final BundleContext bndCtx) {
+        this.context = bndCtx;
     }
 
     @Override
@@ -96,12 +108,13 @@ class ObrHandlerServiceImpl implements ObrHandlerService {
             repoAdmin = new RepositoryAdminImpl(context, logger);
             repositories.add(repoAdmin.getSystemRepository());
         }
-
         return repoAdmin;
     }
 
     @Override
-    public synchronized void addRepository(URI obrUri) throws Exception {
+    public synchronized void addRepository(final URI obrUri)
+            throws Exception {
+
         if (isDirectory(obrUri)) {
             setupRepository(new File(obrUri), isSynchronous());
         } else {
@@ -115,7 +128,12 @@ class ObrHandlerServiceImpl implements ObrHandlerService {
         }
     }
 
-    private boolean isDirectory(URI obrUri) {
+    /**
+     * Test if the given URI is a directory.
+     * @param obrUri URI to test
+     * @return {@code true} if the URI is a directory, {@code false} otherwise
+     */
+    private static boolean isDirectory(final URI obrUri) {
         try {
             return new File(obrUri).isDirectory();
         } catch (Exception e) {
@@ -124,16 +142,23 @@ class ObrHandlerServiceImpl implements ObrHandlerService {
         return false;
     }
 
-    private void setupRepository(final File repoDir, boolean synchronous)
+    /**
+     * Setup the repository directory.
+     * @param repoDir repository directory
+     * @param synchronous asynchronous flag
+     * @throws Exception if an error occurs
+     */
+    private void setupRepository(final File repoDir, final boolean synchronous)
             throws Exception {
+
         if (synchronous) {
-            _setupRepository(repoDir);
+            doSetupRepository(repoDir);
         } else {
             Executors.newSingleThreadExecutor().submit(new Runnable() {
                 @Override
                 public void run() {
                     try {
-                        _setupRepository(repoDir);
+                        doSetupRepository(repoDir);
                     } catch (Exception e) {
                         throw new RuntimeException(e); // TODO(Sahoo): Proper
                         // Exception Handling
@@ -143,6 +168,10 @@ class ObrHandlerServiceImpl implements ObrHandlerService {
         }
     }
 
+    /**
+     * Get the asynchronous configuration value.
+     * @return boolean
+     */
     private boolean isSynchronous() {
         String property = context
                 .getProperty(Constants.INITIALIZE_OBR_SYNCHRONOUSLY);
@@ -152,7 +181,12 @@ class ObrHandlerServiceImpl implements ObrHandlerService {
                 || Boolean.TRUE.toString().equalsIgnoreCase(property);
     }
 
-    private synchronized void _setupRepository(final File repoDir)
+    /**
+     * Do the actual work of setting up the OBR repository directory.
+     * @param repoDir directory
+     * @throws Exception if an error occurs
+     */
+    private synchronized void doSetupRepository(final File repoDir)
             throws Exception {
 
         File repoFile = getRepositoryFile(repoDir);
@@ -161,44 +195,47 @@ class ObrHandlerServiceImpl implements ObrHandlerService {
             long t = System.currentTimeMillis();
             updateRepository(repoFile, repoDir);
             long t2 = System.currentTimeMillis();
-            logger.logp(Level.INFO, "ObrHandlerServiceImpl",
+            LOGGER.logp(Level.INFO, "ObrHandlerServiceImpl",
                     "_setupRepository",
                     "Thread #{0}: updateRepository took {1} ms", new Object[]{
                         tid, t2 - t});
         } else {
             // Scanning the whole repo dir and finding hk2 related annotations
-            futureHK2AnnotationDescriptor = Executors
+            futureHK2AnnotDesc = Executors
                     .newSingleThreadExecutor()
                     .submit(new Callable<List<HK2AnnotationDescriptor>>() {
 
-                @Override
-                public List<HK2AnnotationDescriptor> call() {
-                    try {
-                        List<File> repoFiles = findAllJars(repoDir);
-                        return scanHK2Annotations(repoFiles,
-                                buildRepoClassLoader(repoFiles));
-                    } catch (Exception e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-            });
+                        @Override
+                        public List<HK2AnnotationDescriptor> call() {
+                            try {
+                                List<File> repoFiles = findAllJars(repoDir);
+                                return scanHK2Annotations(repoFiles,
+                                        buildRepoClassLoader(repoFiles));
+                            } catch (Exception e) {
+                                throw new RuntimeException(e);
+                            }
+                        }
+                    });
 
             long t = System.currentTimeMillis();
             repoFile.createNewFile();
             createRepository(repoFile, repoDir);
             long t2 = System.currentTimeMillis();
-            logger.logp(Level.INFO, "ObrHandlerServiceImpl",
+            LOGGER.logp(Level.INFO, "ObrHandlerServiceImpl",
                     "_setupRepository",
                     "Thread #{0}: createRepository took {1} ms", new Object[]{
                         tid, t2 - t});
         }
     }
 
+    /**
+     * Add HK2 dependencies to resources.
+     */
     private void addHK2DepsToResources() {
-        if (futureHK2AnnotationDescriptor != null) {
+        if (futureHK2AnnotDesc != null) {
             List<HK2AnnotationDescriptor> hK2AnnotationDescriptor;
             try {
-                hK2AnnotationDescriptor = futureHK2AnnotationDescriptor.get();
+                hK2AnnotationDescriptor = futureHK2AnnotDesc.get();
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             } catch (ExecutionException e) {
@@ -206,8 +243,8 @@ class ObrHandlerServiceImpl implements ObrHandlerService {
             }
 
             if (!hK2AnnotationDescriptor.isEmpty()) {
-                for (HK2AnnotationDescriptor hk2AnnoDesc :
-                        hK2AnnotationDescriptor) {
+                for (HK2AnnotationDescriptor hk2AnnoDesc
+                        : hK2AnnotationDescriptor) {
                     String bundleSymbolicName = hk2AnnoDesc
                             .getTargetBundleSymbolicName();
                     String bundleVersion = hk2AnnoDesc.getTargetBundleVersion();
@@ -227,15 +264,15 @@ class ObrHandlerServiceImpl implements ObrHandlerService {
                         }
 
                         // adding import-service
-                        List<HK2InjectMetadata> injectionFieldMetaDatas =
-                                hk2AnnoDesc.getInjectionFieldMetaDatas();
+                        List<HK2InjectMetadata> injectionFieldMetaDatas
+                                = hk2AnnoDesc.getInjectionFieldMetaDatas();
                         for (HK2InjectMetadata injectionFieldMetaData
                                 : injectionFieldMetaDatas) {
 
                             RequirementImpl ri = new RequirementImpl(
                                     Capability.SERVICE);
-                            String injectionFieldClassName = 
-                                    injectionFieldMetaData
+                            String injectionFieldClassName
+                                    = injectionFieldMetaData
                                             .getInjectionFieldClassName();
                             ri.setFilter(createServiceFilter(
                                     injectionFieldClassName));
@@ -252,10 +289,14 @@ class ObrHandlerServiceImpl implements ObrHandlerService {
                 }
             }
         }
-
     }
 
-    private static String createServiceFilter(String injectClazz) {
+    /**
+     * Create an OSGi service filter for the given class.
+     * @param injectClazz class to filter
+     * @return String
+     */
+    private static String createServiceFilter(final String injectClazz) {
         StringBuilder filter = new StringBuilder();
         filter.append("(&(");
         filter.append(Capability.SERVICE);
@@ -265,7 +306,12 @@ class ObrHandlerServiceImpl implements ObrHandlerService {
         return filter.toString();
     }
 
-    private File getRepositoryFile(File repoDir) {
+    /**
+     * Get the repository descriptor.
+     * @param repoDir repository directory
+     * @return File
+     */
+    private File getRepositoryFile(final  File repoDir) {
         String extn = ".xml";
         String cacheDir = context.getProperty(Constants.HK2_CACHE_DIR);
         if (cacheDir == null) {
@@ -285,12 +331,11 @@ class ObrHandlerServiceImpl implements ObrHandlerService {
      * Create a new Repository from a directory by recursively traversing all
      * the jar files found there.
      *
-     * @param repoFile
-     * @param repoDir
-     * @return
-     * @throws IOException
+     * @param repoFile repository descriptor
+     * @param repoDir repository directory
+     * @throws IOException if an error occurs
      */
-    private void createRepository(File repoFile, File repoDir)
+    private void createRepository(final File repoFile, final File repoDir)
             throws IOException {
         createRepository(repoFile, repoDir, true);
     }
@@ -300,20 +345,21 @@ class ObrHandlerServiceImpl implements ObrHandlerService {
      * Create a new Repository from a directory by recursively traversing all
      * the jar files found there.
      *
-     * @param repoFile
-     * @param repoDir
-     * @return
-     * @throws IOException
+     * @param repoFile repository descriptor
+     * @param repoDir repository directory
+     * @param save flag to indicate if the repository should be saved to disk
+     * @throws IOException if an error occurs
      */
-    private void createRepository(File repoFile, File repoDir,
-            boolean save) throws IOException {
+    private void createRepository(final File repoFile, final File repoDir,
+            final boolean save) throws IOException {
+
         DataModelHelper dmh = getRepositoryAdmin().getHelper();
         List<Resource> resources = new ArrayList<Resource>();
         for (File jar : findAllJars(repoDir)) {
             Resource r = dmh.createResource(jar.toURI().toURL());
 
             if (r == null) {
-                logger.logp(Level.WARNING, "ObrHandlerServiceImpl",
+                LOGGER.logp(Level.WARNING, "ObrHandlerServiceImpl",
                         "createRepository", "{0} not an OSGi bundle", jar
                                 .toURI().toURL());
             } else {
@@ -322,21 +368,25 @@ class ObrHandlerServiceImpl implements ObrHandlerService {
         }
         Repository repository = dmh.repository(resources
                 .toArray(new Resource[resources.size()]));
-        logger.logp(Level.INFO, "ObrHandlerServiceImpl", "createRepository",
+        LOGGER.logp(Level.INFO, "ObrHandlerServiceImpl", "createRepository",
                 "Created {0} containing {1} resources.", new Object[]{
                     repoFile, resources.size()});
 
         repositories.add(repository);
-
         addHK2DepsToResources();
-
         if (repoFile != null && save) {
             saveRepository(repoFile, repository);
         }
     }
 
+    /**
+     * Scan HK2 annotations.
+     * @param repoFiles repository files
+     * @param cls class-loader
+     * @return list of annotation descriptor
+     */
     private List<HK2AnnotationDescriptor> scanHK2Annotations(
-            List<File> repoFiles, ClassLoader cls) {
+            final List<File> repoFiles, final ClassLoader cls) {
 
         // building class loader
         List<HK2AnnotationDescriptor> hK2AnnotationDescriptor = null;
@@ -379,19 +429,19 @@ class ObrHandlerServiceImpl implements ObrHandlerService {
 
                     // -6 because of .class
                     String className = je.getName().substring(0,
-                            je.getName().length() - 6);
+                            je.getName().length() - ".class".length());
                     className = className.replaceAll("/", "\\.");
                     Class<?> clazz = null;
                     try {
                         clazz = cls.loadClass(className);
                     } catch (ClassNotFoundException ex) {
-                        logger.logp(Level.WARNING, "ObrHandlerServiceImpl",
+                        LOGGER.logp(Level.WARNING, "ObrHandlerServiceImpl",
                                 "scanHK2Annotations",
                                 "Loading Class: {0} from Bundle: {1} failed.",
                                 new Object[]{className, bundleSymbolicName});
                         continue;
                     } catch (NoClassDefFoundError ex1) {
-                        logger.logp(Level.WARNING, "ObrHandlerServiceImpl",
+                        LOGGER.logp(Level.WARNING, "ObrHandlerServiceImpl",
                                 "scanHK2Annotations",
                                 "Loading Class: {0} from Bundle: {1} failed.",
                                 new Object[]{className, bundleSymbolicName});
@@ -437,9 +487,9 @@ class ObrHandlerServiceImpl implements ObrHandlerService {
                         }
 
                         if (isInject) {
-                            HK2InjectMetadata injectMetadata =
-                                    new HK2InjectMetadata(
-                                    field.getType().getCanonicalName(),
+                            HK2InjectMetadata injectMetadata
+                                    = new HK2InjectMetadata(
+                                            field.getType().getCanonicalName(),
                                             isOptional);
                             hk2AnnoDesc.getInjectionFieldMetaDatas()
                                     .add(injectMetadata);
@@ -449,8 +499,8 @@ class ObrHandlerServiceImpl implements ObrHandlerService {
 
                 if (hk2AnnoDesc != null) {
                     if (hK2AnnotationDescriptor == null) {
-                        hK2AnnotationDescriptor =
-                                new ArrayList<HK2AnnotationDescriptor>();
+                        hK2AnnotationDescriptor
+                                = new ArrayList<HK2AnnotationDescriptor>();
                     }
                     hK2AnnotationDescriptor.add(hk2AnnoDesc);
                 }
@@ -458,17 +508,19 @@ class ObrHandlerServiceImpl implements ObrHandlerService {
                 if (jarFile != null) {
                     jarFile.close();
                 }
-
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         }
-
         return hK2AnnotationDescriptor;
-
     }
 
-    private URLClassLoader buildRepoClassLoader(List<File> repoFiles) {
+    /**
+     * Build the class-loader for the repository.
+     * @param repoFiles repository files
+     * @return URLClassLoader
+     */
+    private URLClassLoader buildRepoClassLoader(final List<File> repoFiles) {
         URL[] urls = new URL[repoFiles.size()];
         URLClassLoader cls = null;
         for (int i = 0; i < repoFiles.size(); i++) {
@@ -484,24 +536,42 @@ class ObrHandlerServiceImpl implements ObrHandlerService {
         return cls;
     }
 
-    private void saveRepository(File repoFile, Repository repository)
-            throws IOException {
+    /**
+     * Save the repository.
+     * @param repoFile repository descriptor
+     * @param repository repository instance
+     * @throws IOException if an error occurs
+     */
+    private void saveRepository(final File repoFile,
+            final Repository repository) throws IOException {
+
         assert (repoFile != null);
-
         final FileWriter writer = new FileWriter(repoFile);
-
         getRepositoryAdmin().getHelper().writeRepository(repository, writer);
         writer.flush();
     }
 
-    private Repository loadRepository(File repoFile) throws Exception {
+    /**
+     * Load a repository from a descriptor.
+     * @param repoFile repository descriptor
+     * @return Repository
+     * @throws Exception if an error occurs
+     */
+    private Repository loadRepository(final File repoFile) throws Exception {
         assert (repoFile != null);
         return getRepositoryAdmin().getHelper().repository(
                 repoFile.toURI().toURL());
     }
 
-    private void updateRepository(File repoFile, final File repoDir)
+    /**
+     * Update the repository.
+     * @param repoFile repository descriptor
+     * @param repoDir repository directory
+     * @throws Exception if an error occurs
+     */
+    private void updateRepository(final File repoFile, final File repoDir)
             throws Exception {
+
         Repository repository = loadRepository(repoFile);
         repositories.add(repository);
         if (isObsoleteRepo(repository, repoFile, repoDir)) {
@@ -510,33 +580,33 @@ class ObrHandlerServiceImpl implements ObrHandlerService {
                     repoFile, repoDir);
 
             //Scanning the updatedJars and finding hk2 related annotations
-            futureHK2AnnotationDescriptor = Executors
+            futureHK2AnnotDesc = Executors
                     .newSingleThreadExecutor()
                     .submit(new Callable<List<HK2AnnotationDescriptor>>() {
 
-                @Override
-                public List<HK2AnnotationDescriptor> call() {
-                    try {
-                        List<File> repoFiles = findAllJars(repoDir);
-                        return scanHK2Annotations(updatedJarList,
-                                buildRepoClassLoader(repoFiles));
-                    } catch (Exception e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-            });
+                        @Override
+                        public List<HK2AnnotationDescriptor> call() {
+                            try {
+                                List<File> repoFiles = findAllJars(repoDir);
+                                return scanHK2Annotations(updatedJarList,
+                                        buildRepoClassLoader(repoFiles));
+                            } catch (Exception e) {
+                                throw new RuntimeException(e);
+                            }
+                        }
+                    });
 
             if (!repoFile.delete()) {
                 throw new IOException("Failed to delete "
                         + repoFile.getAbsolutePath());
             }
-            logger.logp(Level.INFO, "ObrHandlerServiceImpl",
+            LOGGER.logp(Level.INFO, "ObrHandlerServiceImpl",
                     "updateRepository", "Recreating {0}",
                     new Object[]{repoFile});
 
             DataModelHelper dmh = getRepositoryAdmin().getHelper();
 
-            if (updatedJarList.size() != 0) {
+            if (!updatedJarList.isEmpty()) {
                 for (File updatedJar : updatedJarList) {
                     JarFile jarFile;
                     Manifest mf;
@@ -594,7 +664,7 @@ class ObrHandlerServiceImpl implements ObrHandlerService {
                 addHK2DepsToResources();
             }
 
-            // finally, we must synchronize with repo dir in case that 
+            // finally, we must synchronize with repo dir in case that
             // 1: some resources have left repo dir
             // 2: some resources have been stale resources although bundle
             // jar name is not changed
@@ -607,8 +677,15 @@ class ObrHandlerServiceImpl implements ObrHandlerService {
         }
     }
 
-    private void synchronizeWithRepoDir(File repoDir, Repository repository,
-            List<File> updatedJarList) {
+    /**
+     * Synchronize with the repository directory.
+     * @param repoDir repository directory
+     * @param repository repository instance
+     * @param updatedJarList the updated JAR file list
+     */
+    private void synchronizeWithRepoDir(final File repoDir,
+            final Repository repository, final List<File> updatedJarList) {
+
         Resource[] resources = repository.getResources();
         for (int resIdx = 0; (resources != null)
                 && (resIdx < resources.length); resIdx++) {
@@ -674,8 +751,15 @@ class ObrHandlerServiceImpl implements ObrHandlerService {
 
     }
 
-    private List<File> obtainUpdatedJars(Repository repository, File repoFile,
-            File repoDir) {
+    /**
+     * Get the list of updated JAR files.
+     * @param repository repository instance
+     * @param repoFile the repository descriptor
+     * @param repoDir the repository directory
+     * @return list of JAR files
+     */
+    private List<File> obtainUpdatedJars(final Repository repository,
+            final File repoFile, final File repoDir) {
 
         List<File> updatedJarList = new ArrayList<File>();
         long lastModifiedTime = repoFile.lastModified();
@@ -728,8 +812,16 @@ class ObrHandlerServiceImpl implements ObrHandlerService {
         return updatedJarList;
     }
 
-    private boolean isObsoleteRepo(Repository repository, File repoFile,
-            File repoDir) {
+    /**
+     * Test if the repository is obsolete.
+     * @param repository repository instance
+     * @param repoFile repository descriptor
+     * @param repoDir repository directory
+     * @return {@code true} if obsolete, {@code false} otherwise
+     */
+    private static boolean isObsoleteRepo(final Repository repository,
+            final File repoFile, final File repoDir) {
+
         // TODO(Sahoo): Revisit this...
         // This method assumes that the cached repoFile has been created before
         // a newer jar is created.
@@ -756,7 +848,7 @@ class ObrHandlerServiceImpl implements ObrHandlerService {
         // now compare timestamp of each jar and take a sum of size of all jars.
         for (File jar : findAllJars(repoDir)) {
             if (jar.lastModified() > lastModifiedTime) {
-                logger.logp(Level.INFO, "ObrHandlerServiceImpl",
+                LOGGER.logp(Level.INFO, "ObrHandlerServiceImpl",
                         "isObsoleteRepo", "{0} is newer than {1}",
                         new Object[]{jar, repoFile});
                 return true;
@@ -770,7 +862,7 @@ class ObrHandlerServiceImpl implements ObrHandlerService {
             totalSize -= r.getSize();
         }
         if (totalSize != 0) {
-            logger.logp(Level.INFO, "ObrHandlerServiceImpl", "isObsoleteRepo",
+            LOGGER.logp(Level.INFO, "ObrHandlerServiceImpl", "isObsoleteRepo",
                     "Change in size detected by {0} bytes",
                     new Object[]{totalSize});
             return true;
@@ -778,11 +870,16 @@ class ObrHandlerServiceImpl implements ObrHandlerService {
         return false;
     }
 
-    private List<File> findAllJars(File repo) {
+    /**
+     * Find all JAR files in the given directory.
+     * @param repo directory
+     * @return list of JAR files
+     */
+    private static List<File> findAllJars(final File repo) {
         final List<File> files = new ArrayList<File>();
         repo.listFiles(new FileFilter() {
             @Override
-            public boolean accept(File pathname) {
+            public boolean accept(final File pathname) {
                 if (pathname.isDirectory()) {
                     pathname.listFiles(this);
                 } else if (pathname.getName().endsWith("jar")) {
@@ -794,17 +891,30 @@ class ObrHandlerServiceImpl implements ObrHandlerService {
         return files;
     }
 
-    private boolean resolve(final Resolver resolver, Resource resource) {
+    /**
+     * Resolve the given resource with the given resolver.
+     * @param resolver resolver to use
+     * @param resource resource to resolve
+     * @return {@code true} if resolved, {@code false} otherwise
+     */
+    private static boolean resolve(final Resolver resolver,
+            final Resource resource) {
+
         resolver.add(resource);
         boolean resolved = resolver.resolve();
-        logger.logp(Level.INFO, "ObrHandlerServiceImpl", "resolve",
+        LOGGER.logp(Level.INFO, "ObrHandlerServiceImpl", "resolve",
                 "At the end of first pass, resolver outcome is \n: {0}",
                 new Object[]{getResolverOutput(resolver)});
 
         return resolved;
     }
 
-    private Bundle getBundle(Resource resource) {
+    /**
+     * Get the bundle for a given resource.
+     * @param resource resource to match
+     * @return Bundle
+     */
+    private Bundle getBundle(final Resource resource) {
         for (Bundle b : context.getBundles()) {
             final String bsn = b.getSymbolicName();
             final Version bv = b.getVersion();
@@ -821,51 +931,78 @@ class ObrHandlerServiceImpl implements ObrHandlerService {
         return null;
     }
 
-    private Resource findResource(String name, String version) {
+    /**
+     * Find the bundle resource for a given bundle and version.
+     * @param name bundle symbolic name
+     * @param version bundle version
+     * @return Resource
+     */
+    private Resource findResource(final String name, final String version) {
         final RepositoryAdmin repositoryAdmin = getRepositoryAdmin();
         if (repositoryAdmin == null) {
-            logger.logp(
+            LOGGER.logp(
                     Level.WARNING,
                     "ObrHandlerServiceImpl",
                     "findResource",
-                    "OBR is not yet available, so can't find resource with name = {0} and version = {1} from repository",
+                    "OBR is not yet available, so can't find resource with name"
+                            + " = {0} and version = {1} from repository",
                     new Object[]{name, version});
             return null;
         }
         String s1 = "(symbolicname=" + name + ")";
         String s2 = "(version=" + version + ")";
-        String query = (version != null) ? "(&" + s1 + s2 + ")" : s1;
+        String query;
+        if (version != null) {
+            query = "(&" + s1 + s2 + ")";
+        } else {
+            query = s1;
+        }
         try {
             Resource[] resources = discoverResources(query);
-            logger.logp(
+            LOGGER.logp(
                     Level.INFO,
                     "ObrHandlerServiceImpl",
                     "findResource",
-                    "Using the first one from the list of {0} discovered bundles shown below: {1}",
+                    "Using the first one from the list of {0} discovered"
+                            + " bundles shown below: {1}",
                     new Object[]{resources.length, Arrays.toString(resources)});
-            return resources.length > 0 ? resources[0] : null;
+            if (resources.length > 0) {
+                return resources[0];
+            }
+            return null;
         } catch (InvalidSyntaxException e) {
             throw new RuntimeException(e); // TODO(Sahoo): Proper Exception
             // Handling
         }
     }
 
+    /**
+     * Discover the resources in a repository.
+     * @param filterExpr filter expression
+     * @return Resource[]
+     * @throws InvalidSyntaxException if an error occurs
+     */
     @SuppressWarnings("unchecked")
-    private Resource[] discoverResources(String filterExpr)
+    private Resource[] discoverResources(final String filterExpr)
             throws InvalidSyntaxException {
+
         // TODO(Sahoo): File a bug against Obr to add a suitable method to
         // Repository interface.
         // We can't use the following method, because we can't rely on the
         // RepositoryAdmin to have the correct
         // list of repositories. So, we do the discovery ourselves.
         // return getRepositoryAdmin().discoverResources(query);
-        Filter filter = filterExpr != null ? getRepositoryAdmin().getHelper()
-                .filter(filterExpr) : null;
+        Filter filter;
+        if (filterExpr != null) {
+            filter = getRepositoryAdmin().getHelper().filter(filterExpr);
+        } else {
+            filter = null;
+        }
         Resource[] resources;
         Repository[] repos = getRepositories();
         List<Resource> matchList = new ArrayList<Resource>();
-        for (int repoIdx = 0; (repos != null) && (repoIdx < repos.length)
-                ; repoIdx++) {
+        for (int repoIdx = 0; (repos != null)
+                && (repoIdx < repos.length); repoIdx++) {
 
             resources = repos[repoIdx].getResources();
             for (int resIdx = 0; (resources != null)
@@ -877,17 +1014,22 @@ class ObrHandlerServiceImpl implements ObrHandlerService {
                 }
             }
         }
-
         return matchList.toArray(new Resource[matchList.size()]);
     }
 
-    private StringBuffer getResolverOutput(Resolver resolver) {
+    /**
+     * Pretty print the resolver output.
+     * @param resolver resolver to print
+     * @return StringBuilder
+     */
+    private static StringBuilder getResolverOutput(final Resolver resolver) {
+
         Resource[] addedResources = resolver.getAddedResources();
         Resource[] requiredResources = resolver.getRequiredResources();
         Resource[] optionalResources = resolver.getOptionalResources();
         Reason[] unsatisfiedRequirements = resolver
                 .getUnsatisfiedRequirements();
-        StringBuffer sb = new StringBuffer("Added resources: [");
+        StringBuilder sb = new StringBuilder("Added resources: [");
         for (Resource r : addedResources) {
             sb.append("\n").append(r.getSymbolicName()).append(", ")
                     .append(r.getVersion()).append(", ").append(r.getURI());
@@ -908,6 +1050,10 @@ class ObrHandlerServiceImpl implements ObrHandlerService {
         return sb;
     }
 
+    /**
+     * Convert the repositories list to an array.
+     * @return Repository[]
+     */
     private Repository[] getRepositories() {
         return repositories.toArray(new Repository[repositories.size()]);
     }

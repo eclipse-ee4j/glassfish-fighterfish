@@ -17,8 +17,15 @@ package org.glassfish.fighterfish.test.app18;
 
 import javax.ejb.Local;
 
+/**
+ * EJB local interface.
+ */
 @Local
 public interface EjbLifecycleObserver {
 
-    void registered(String serviceName);
+    /**
+     * Emit a new service registered event.
+     * @param name service name
+     */
+    void registered(String name);
 }

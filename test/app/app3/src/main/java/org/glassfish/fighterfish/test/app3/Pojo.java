@@ -19,12 +19,16 @@ import java.io.Serializable;
 import javax.enterprise.context.SessionScoped;
 
 /**
- * @author sanjeeb.sahoo@oracle.com
- *
+ * Simple CDI bean.
  */
 @SessionScoped
+@SuppressWarnings("checkstyle:DesignForExtension")
 public class Pojo implements Serializable {
 
+    /**
+     * Greet.
+     * @return String
+     */
     public String sayHi() {
         return "Hello from POJO!";
     }

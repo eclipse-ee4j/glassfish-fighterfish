@@ -20,7 +20,6 @@ import org.apache.catalina.Request;
 import org.apache.catalina.Response;
 import org.apache.catalina.Wrapper;
 import org.apache.catalina.valves.ValveBase;
-import org.osgi.service.http.HttpContext;
 
 import javax.servlet.ServletException;
 import java.io.IOException;
@@ -38,19 +37,23 @@ import java.util.logging.Logger;
  * in Request object.
  * <p/>
  * See GLASSFISH-16764 for more details.
- *
- * @author Sanjeeb.Sahoo@Oracle.COM
  */
-public class OSGiHttpContextValve extends ValveBase {
+public final class OSGiHttpContextValve extends ValveBase {
 
+    /**
+     * Logger.
+     */
     private static final Logger LOGGER = Logger.getLogger(
             OSGiHttpContextValve.class.getPackage().getName());
 
+    /**
+     * Create a new instance.
+     */
     public OSGiHttpContextValve() {
     }
 
     @Override
-    public int invoke(Request request, Response response)
+    public int invoke(final Request request, final Response response)
             throws IOException, ServletException {
 
         LOGGER.entering("OSGiHttpContextValve", "invoke",
@@ -72,10 +75,9 @@ public class OSGiHttpContextValve extends ValveBase {
      * cycle, we have to reset a flag called unsuccessfulSessionFind that's
      * maintained inside the Request object. If we don't reset it, no session
      * corresponding to this OSGi Http Context will be found.
-     *
-     * @param request
+     * @param request request to process
      */
-    private void resetSessionFindAttr(Request request) {
+    private void resetSessionFindAttr(final Request request) {
         if (request instanceof org.apache.catalina.connector.Request) {
             org.apache.catalina.connector.Request.class.cast(request)
                     .setUnsuccessfulSessionFind(false);

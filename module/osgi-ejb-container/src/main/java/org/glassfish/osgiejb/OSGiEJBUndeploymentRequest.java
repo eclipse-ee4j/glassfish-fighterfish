@@ -29,16 +29,33 @@ import org.osgi.framework.Bundle;
 import java.util.logging.Logger;
 
 /**
- * @author Sanjeeb.Sahoo@Sun.COM
+ * Custom undeployment request for the OSGi EJB container.
  */
-public class OSGiEJBUndeploymentRequest extends OSGiUndeploymentRequest {
+public final class OSGiEJBUndeploymentRequest extends OSGiUndeploymentRequest {
 
-    public OSGiEJBUndeploymentRequest(Deployment deployer, ServerEnvironmentImpl env, ActionReport reporter, OSGiApplicationInfo osgiAppInfo) {
+    /**
+     * Create a new instance.
+     * @param deployer GlassFish deployer
+     * @param env GlassFish server environment
+     * @param reporter GlassFish command reporter
+     * @param osgiAppInfo deployed application
+     */
+    public OSGiEJBUndeploymentRequest(final Deployment deployer,
+            final ServerEnvironmentImpl env, final ActionReport reporter,
+            final OSGiApplicationInfo osgiAppInfo) {
+
         super(deployer, env, reporter, osgiAppInfo);
     }
 
     @Override
-    protected OSGiDeploymentContext getDeploymentContextImpl(ActionReport reporter, Logger logger, ReadableArchive source, UndeployCommandParameters undeployParams, ServerEnvironmentImpl env, Bundle bundle) throws Exception {
-        return new OSGiEJBDeploymentContext(reporter, logger, source, undeployParams, env, bundle);
+    protected OSGiDeploymentContext getDeploymentContextImpl(
+            final ActionReport reporter, final Logger logger,
+            final ReadableArchive source,
+            final UndeployCommandParameters undeployParams,
+            final ServerEnvironmentImpl env, final Bundle bundle)
+            throws Exception {
+
+        return new OSGiEJBDeploymentContext(reporter, logger, source,
+                undeployParams, env, bundle);
     }
 }

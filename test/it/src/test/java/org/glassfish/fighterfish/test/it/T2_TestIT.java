@@ -47,8 +47,6 @@ import static org.junit.Assert.*;
 /**
  * Test scenarios for various integration tests applications of FighterFish
  * project. The test applications can be found in test/testapp directory.
- *
- * @author Sanjeeb.Sahoo@Sun.COM
  */
 public class T2_TestIT extends AbstractTestObject {
 

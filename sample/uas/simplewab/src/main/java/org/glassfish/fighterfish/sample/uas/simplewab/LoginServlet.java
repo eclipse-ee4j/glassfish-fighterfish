@@ -27,21 +27,31 @@ import org.osgi.framework.ServiceException;
  * Servlet implementation class LoginServlet.
  */
 @WebServlet("/LoginServlet")
-public class LoginServlet extends HttpServlet {
+public final class LoginServlet extends HttpServlet {
 
+    /**
+     * Serialization UID.
+     */
     private static final long serialVersionUID = 1L;
 
+    /**
+     * User authentication service.
+     */
     @Inject
     @OSGiService(dynamic = true)
     private UserAuthService uas;
 
+    /**
+     * Create a new instance.
+     */
     public LoginServlet() {
         super();
     }
 
     @Override
-    protected void service(HttpServletRequest request,
-            HttpServletResponse response) throws ServletException, IOException {
+    protected void service(final HttpServletRequest request,
+            final HttpServletResponse response)
+            throws ServletException, IOException {
 
         response.setContentType("text/html");
         PrintWriter out = response.getWriter();

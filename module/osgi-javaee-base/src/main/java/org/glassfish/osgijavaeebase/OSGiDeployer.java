@@ -18,13 +18,30 @@ package org.glassfish.osgijavaeebase;
 import org.osgi.framework.Bundle;
 
 /**
- * @author Sanjeeb.Sahoo@Sun.COM
+ * Base interface for deploying OSGi applications.
  */
 public interface OSGiDeployer {
 
-    OSGiApplicationInfo deploy(Bundle b) throws DeploymentException;
+    /**
+     * Deploy the given bundle.
+     * @param bdn the bundle to deploy
+     * @return OSGiApplicationInfo
+     * @throws DeploymentException if an error occurs
+     */
+    OSGiApplicationInfo deploy(Bundle bdn) throws DeploymentException;
 
+    /**
+     * Undeploy the given bundle.
+     * @param osgiAppInfo the deployed application info
+     * @throws DeploymentException if an error occurs
+     */
     void undeploy(OSGiApplicationInfo osgiAppInfo) throws DeploymentException;
 
+    /**
+     * Test if this deployer handles the given bundle.
+     * @param bundle the bundle to test
+     * @return {@code true} if this deployer handles the given bundle,
+     * {@code false} otherwise
+     */
     boolean handles(Bundle bundle);
 }

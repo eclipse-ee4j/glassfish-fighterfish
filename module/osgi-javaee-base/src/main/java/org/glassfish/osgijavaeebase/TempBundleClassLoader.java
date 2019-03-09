@@ -28,27 +28,33 @@ import java.util.Enumeration;
  * This class loader delegates all stream handling (i.e. reading actual
  * class/resource data) operations to a delegate Bundle. It only defines the
  * Class using the byte codes.
- *
- * @author Sanjeeb.Sahoo@Sun.COM
  */
-public class TempBundleClassLoader extends ClassLoader {
+public final class TempBundleClassLoader extends ClassLoader {
 
+    /**
+     * Delegate class-loader.
+     */
     private final BundleClassLoader delegate;
 
-    public TempBundleClassLoader(BundleClassLoader delegate) {
+    /**
+     * Create a new instance.
+     * @param cl the delegate class-loader
+     */
+    public TempBundleClassLoader(final BundleClassLoader cl) {
         // Set our parent same as delegate's
-        super(delegate.getParent());
-        this.delegate = delegate;
+        super(cl.getParent());
+        this.delegate = cl;
     }
 
     /**
      * This method uses the delegate to use class bytes and then defines the
-     * class using this class loader
-     * @return 
-     * @throws java.lang.ClassNotFoundException
+     * class using this class loader.
+     * @return Class
+     * @throws java.lang.ClassNotFoundException if an error occurs
      */
     @Override
-    protected Class findClass(String name) throws ClassNotFoundException {
+    protected Class findClass(final String name)
+            throws ClassNotFoundException {
 
         String entryName = name.replace('.', '/') + ".class";
         URL url = delegate.getResource(entryName);
@@ -109,12 +115,14 @@ public class TempBundleClassLoader extends ClassLoader {
     }
 
     @Override
-    public URL getResource(String name) {
+    public URL getResource(final String name) {
         return delegate.getResource(name);
     }
 
     @Override
-    public Enumeration<URL> findResources(String name) throws IOException {
+    public Enumeration<URL> findResources(final String name)
+            throws IOException {
+
         return delegate.getResources(name);
     }
 
@@ -122,9 +130,13 @@ public class TempBundleClassLoader extends ClassLoader {
      * Returns the byte array from the given input stream.
      *
      * @param istream input stream to the class or resource
+     * @return byte array
      * @throws IOException if an i/o error
      */
-    private byte[] getClassData(InputStream istream) throws IOException {
+    @SuppressWarnings("checkstyle:magicnumber")
+    private byte[] getClassData(final InputStream istream)
+            throws IOException {
+
         BufferedInputStream bstream = new BufferedInputStream(istream);
         byte[] buf = new byte[4096];
         ByteArrayOutputStream bout = new ByteArrayOutputStream();
@@ -138,8 +150,6 @@ public class TempBundleClassLoader extends ClassLoader {
                 bstream.close();
             }
         }
-
         return bout.toByteArray();
     }
-
 }

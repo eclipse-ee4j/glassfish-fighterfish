@@ -30,19 +30,29 @@ import java.io.IOException;
  * Servlet implementation class TestServlet.
  */
 @WebServlet("/*")
-public class TestServlet extends HttpServlet {
+public final class TestServlet extends HttpServlet {
+
+    /**
+     * Serialization UID.
+     */
     private static final long serialVersionUID = 1L;
 
+    /**
+     * POJO instance.
+     */
     @Inject
     private Instance<Pojo> pojoInstance;
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+    protected void doGet(final HttpServletRequest req,
+            final HttpServletResponse resp)
             throws ServletException, IOException {
+
         Pojo pojo = (Pojo) this.pojoInstance.get();
         resp.setContentType("text/html");
         resp.getWriter().print("POJO Instance: " + pojo);
-        if (null != pojo)
+        if (null != pojo) {
             resp.getWriter().print("POJO message: " + pojo.sayHi());
+        }
     }
 }

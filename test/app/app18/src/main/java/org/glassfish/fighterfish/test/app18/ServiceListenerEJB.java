@@ -30,19 +30,29 @@ import javax.ejb.Startup;
 import javax.inject.Inject;
 
 /**
- * Session Bean implementation class ServiceListenerEJB
+ * Session Bean implementation class ServiceListenerEJB.
  */
 @Singleton
 @Startup
 @DependsOn("EjbLifecycleObserverEJB")
+@SuppressWarnings("checkstyle:DesignForExtension")
 public class ServiceListenerEJB {
 
+    /**
+     * Bundle context.
+     */
     @Inject
-    BundleContext bundleCtx;
+    private BundleContext bundleCtx;
 
+    /**
+     * OSGi service listener.
+     */
     @Inject
-    MyServiceListener listener;
+    private MyServiceListener listener;
 
+    /**
+     * Install the OSGi service listener.
+     */
     @PostConstruct
     public void installListener() {
         String filter = "(" + Constants.OBJECTCLASS + "="
@@ -54,6 +64,9 @@ public class ServiceListenerEJB {
         }
     }
 
+    /**
+     * Uninstall the OSGi service listener.
+     */
     @PreDestroy
     public void uninstallListener() {
         bundleCtx.removeServiceListener(listener);
@@ -61,19 +74,28 @@ public class ServiceListenerEJB {
                 + "Removed service listener " + listener);
     }
 
-    public static class MyServiceListener implements ServiceListener {
+    /**
+     * OSGi service listener to detect the foo service being registered.
+     */
+    private static final class MyServiceListener implements ServiceListener {
 
+        /**
+         * EJB life-cycle observer.
+         */
         @Inject
         @OSGiService(dynamic = true)
         private EjbLifecycleObserver observer;
 
         @Override
-        public synchronized void serviceChanged(ServiceEvent event) {
-            System.out.println(getClass().getName() + ".serviceChanged() " + event);
+        public synchronized void serviceChanged(final ServiceEvent event) {
+            System.out.println(getClass().getName() + ".serviceChanged() "
+                    + event);
             switch (event.getType()) {
                 case ServiceEvent.REGISTERED:
                     observer.registered(Foo.class.getName());
                     break;
+                default:
+                    System.out.println("Skipping event.");
             }
         }
     }

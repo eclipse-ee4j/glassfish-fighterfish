@@ -23,7 +23,7 @@ import org.osgi.framework.BundleContext;
 import javax.inject.Inject;
 
 /**
- * @author sanjeeb.sahoo@oracle.com
+ * Test2 using {@link FighterFishJUnitRunner}.
  */
 @RunWith(FighterFishJUnitRunner.class)
 public class T2_FFRunnerIT {

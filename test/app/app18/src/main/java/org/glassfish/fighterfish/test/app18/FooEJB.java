@@ -19,10 +19,11 @@ import javax.ejb.DependsOn;
 import javax.ejb.Singleton;
 
 /**
- * Session Bean implementation class FooEJB
+ * Session Bean implementation class FooEJB.
  */
 @Singleton
 @DependsOn("ServiceListenerEJB")
+@SuppressWarnings("checkstyle:DesignForExtension")
 public class FooEJB implements Foo {
 
     @Override

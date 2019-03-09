@@ -25,16 +25,17 @@ import java.util.logging.Logger;
  * As per WAB spec, resources must not be allowed from OSGI-INF or OSGI-OPT
  * dirs. So, we install a special dir context that takes care of this
  * requirement.
- *
- * @author sanjeeb.sahoo@oracle.com
  */
-class OSGiWebDirContext extends WebDirContext {
+final class OSGiWebDirContext extends WebDirContext {
 
+    /**
+     * Logger.
+     */
     private static final Logger LOGGER = Logger.getLogger(
             OSGiWebDirContext.class.getPackage().getName());
 
     @Override
-    protected File file(String name) {
+    protected File file(final String name) {
         final String s = name.toUpperCase();
         if (s.startsWith("/OSGI-INF/") || s.startsWith("/OSGI-OPT/")) {
             LOGGER.logp(Level.FINE, getClass().getSimpleName(), "file",

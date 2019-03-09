@@ -27,26 +27,42 @@ import org.osgi.service.http.NamespaceException;
  * activate() method and unregisters them in deactivate() method. It consumes a
  * service of type HttpService. The service reference is bound and unbound in
  * setHttp() and unsetHttp() method respectively as specified in scr.xml file.
- *
- * @author sanjeeb.sahoo@oracle.com
- *
  */
 public class HelloWorldHttpMain {
 
+    /**
+     * OSGi HTTP service.
+     */
     private HttpService http; // Set and unset by setHttp() and unsetHttp()
+
+    /**
+     * OSGi event administration.
+     */
     private EventAdmin eventAdmin;
     // methods that are called by SCR. See scr.xml
 
-    protected void activate(ComponentContext ctx) throws ServletException,
-            NamespaceException {
+    /**
+     * Activate the application.
+     * @param ctx component context
+     * @throws ServletException if an error occurs while registering the servlet
+     * @throws NamespaceException if an error occurs
+     */
+    protected final void activate(final ComponentContext ctx)
+            throws ServletException, NamespaceException {
+
         // One HttpContext maps to one ServletContext.
         // To demonstrate this functionality, we shall do the following:
-        // We will create one HttpContext and register Servlet1 and Servlet2 using this.
-        // We will then set an attribute in ServletContext and make sure we can read
+        // We will create one HttpContext and register Servlet1 and Servlet2
+        // using this.
+        // We will then set an attribute in ServletContext and make sure we
+        // can read
         // its value inside both Servlet's service().
-        // We will create a second HttpContext and register Servlet3 using the second one.
-        // We will show that Servlet3's ServletContext does not have the attribute set in Servlet1 or Servlet2's
-        // ServletContext. We will also show that Servlet1 and Servlet2 share the same HttpSession which is 
+        // We will create a second HttpContext and register Servlet3 using
+        // the second one.
+        // We will show that Servlet3's ServletContext does not have the
+        // attribute set in Servlet1 or Servlet2's
+        // ServletContext. We will also show that Servlet1 and Servlet2 share
+        // the same HttpSession which is
         // different from Servlet3.
         HttpContext httpCtx = http.createDefaultHttpContext();
         HttpServlet servlet1 = new HelloWorldServlet1();
@@ -55,25 +71,33 @@ public class HelloWorldHttpMain {
         HttpServlet servlet2 = new HelloWorldServlet2();
         http.registerServlet("/hello2", servlet2, null, httpCtx);
         System.out.println(servlet2.getServletContext());
-        servlet1.getServletContext().setAttribute(HelloWorldServlet1.AttrName,
-                new Integer(0));
+        servlet1.getServletContext().setAttribute(
+                HelloWorldServlet1.ATTRIBUTE_NAME, new Integer(0));
 
-        // Let's create another HttpContext and make sure that each context has its own
+        // Let's create another HttpContext and make sure that each context
+        // has its own
         // ServletContext and HttpSession.
         HttpContext httpCtx2 = http.createDefaultHttpContext();
         HttpServlet servlet3 = new HelloWorldServlet3();
         http.registerServlet("/hello3", servlet3, null, httpCtx2);
         System.out.println(servlet3.getServletContext());
         assert (servlet3.getServletContext() != servlet1.getServletContext());
-        if (eventAdmin != null) { // raise an event so that our test framework can catch it to proceed to test
+        if (eventAdmin != null) {
+            // raise an event so that our test framework can catch it to
+            // proceed to test
             Map props = new HashMap();
-            Event event = new Event(getClass().getPackage().getName().replace(".", "/"), props);
+            Event event = new Event(getClass().getPackage().getName()
+                    .replace(".", "/"), props);
             eventAdmin.postEvent(event);
             System.out.println("raised event " + event);
         }
     }
 
-    protected void deactivate(ComponentContext ctx) {
+    /**
+     * Deactivate the given component.
+     * @param ctx component context
+     */
+    protected final void deactivate(final ComponentContext ctx) {
         try {
             http.unregister("/hello1");
             http.unregister("/hello2");
@@ -87,20 +111,35 @@ public class HelloWorldHttpMain {
         }
     }
 
-    protected void setHttp(HttpService http) {
-        this.http = http;
+    /**
+     * Set the OSGi HTTP service.
+     * @param hs service instance
+     */
+    protected final void setHttp(final HttpService hs) {
+        this.http = hs;
     }
 
-    protected void unsetHttp(HttpService http) {
+    /**
+     * Unset the OSGi HTTP service.
+     * @param hs service instance
+     */
+    protected final void unsetHttp(final HttpService hs) {
         this.http = null;
     }
 
-    protected void setEventAdmin(EventAdmin eventAdmin) {
-        this.eventAdmin = eventAdmin;
+    /**
+     * Set the event admin.
+     * @param ea event admin instance
+     */
+    protected final void setEventAdmin(final EventAdmin ea) {
+        this.eventAdmin = ea;
     }
 
-    protected void unsetEventAdmin(EventAdmin eventAdmin) {
+    /**
+     * Unset the event admin.
+     * @param ea event admin instance.
+     */
+    protected final void unsetEventAdmin(final EventAdmin ea) {
         this.eventAdmin = null;
-
     }
 }

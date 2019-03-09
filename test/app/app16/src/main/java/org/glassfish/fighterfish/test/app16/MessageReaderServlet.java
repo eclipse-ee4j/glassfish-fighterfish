@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -13,7 +13,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  */
-
 package org.glassfish.fighterfish.test.app16;
 
 import org.glassfish.fighterfish.test.app16.entities.Message;
@@ -31,32 +30,38 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import javax.servlet.ServletException;
-import javax.servlet.ServletOutputStream;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * Servlet implementation class MessageReaderServlet
+ * Servlet implementation class MessageReaderServlet.
  */
 @WebServlet("/MessageReaderServlet")
-public class MessageReaderServlet extends HttpServlet {
-	private static final long serialVersionUID = 1L;
+public final class MessageReaderServlet extends HttpServlet {
 
-	@Inject
-    @OSGiService(dynamic = true, serviceCriteria = "(persistence-unit=test.app16.entities)")
-    private EntityManagerFactory emf;
-	
-    /* (non-Javadoc)
-     * @see javax.servlet.http.HttpServlet#service(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
+    /**
+     * Serialization UID.
      */
+    private static final long serialVersionUID = 1L;
+
+    /**
+     * Entity manager factory.
+     */
+    @Inject
+    @OSGiService(dynamic = true,
+            serviceCriteria = "(persistence-unit=test.app16.entities)")
+    private EntityManagerFactory emf;
+
     @Override
-    protected void service(HttpServletRequest arg0, HttpServletResponse arg1)
+    protected void service(final HttpServletRequest arg0,
+            final HttpServletResponse arg1)
             throws ServletException, IOException {
+
         PrintWriter out = arg1.getWriter();
-        out.print("<HTML> <HEAD> <TITLE> MessageReaderServlet" +
-                "</TITLE> </HEAD> <BODY BGCOLOR=white>");
+        out.print("<HTML> <HEAD> <TITLE> MessageReaderServlet"
+                + "</TITLE> </HEAD> <BODY BGCOLOR=white>");
         out.print("<p/>");
         EntityManager em = emf.createEntityManager();
         try {
@@ -66,9 +71,11 @@ public class MessageReaderServlet extends HttpServlet {
             cq.select(root);
             TypedQuery<Message> q = em.createQuery(cq);
             List<Message> resultList = q.getResultList();
-            out.print("Total number of messages: " + resultList.size() + "<p/>");
+            out.print("Total number of messages: " + resultList.size()
+                    + "<p/>");
             for (Message msg : resultList) {
-                System.out.println(getClass().getSimpleName() + ": " + msg.getValue() + "\n");
+                System.out.println(getClass().getSimpleName() + ": "
+                        + msg.getValue() + "\n");
                 out.print(msg.getValue() + "<p/>");
             }
         } finally {
@@ -76,6 +83,4 @@ public class MessageReaderServlet extends HttpServlet {
         }
         out.println("</BODY> </HTML> ");
     }
-       
-
 }

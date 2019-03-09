@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Distribution License v. 1.0, which is available at
@@ -7,7 +7,6 @@
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
-
 package org.glassfish.fighterfish.sample.uas.entities;
 
 import java.io.Serializable;
@@ -24,60 +23,113 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 /**
- * Entity implementation class for Entity: LoginAttempt
- * 
+ * Entity implementation class for Entity: LoginAttempt.
  */
+@SuppressWarnings("checkstyle:DesignForExtension")
 @Entity
-@NamedQueries(@NamedQuery(name = "LoginAttempt.findAll", query = "select o from LoginAttempt o"))
+@NamedQueries(
+        @NamedQuery(name = "LoginAttempt.findAll",
+                query = "select o from LoginAttempt o"))
 public class LoginAttempt implements Serializable {
-	@Id
-	@GeneratedValue
-	private long serialNumber;
 
-	private boolean successful;
+    /**
+     * Serial number.
+     */
+    @Id
+    @GeneratedValue
+    private long serialNumber;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	private UserCredential userCredential;
+    /**
+     * Login result.
+     */
+    private boolean successful;
 
-	@Temporal(TemporalType.TIMESTAMP)
-	Date timeStamp = new Date();
-	
-	private static final long serialVersionUID = 1L;
+    /**
+     * User credentials.
+     */
+    @ManyToOne(fetch = FetchType.LAZY)
+    private UserCredential userCredential;
 
-	public LoginAttempt() {
-		super();
-	}
+    /**
+     * Timestamp.
+     */
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date timeStamp = new Date();
 
-	public long getSerialNumber() {
-		return this.serialNumber;
-	}
+    /**
+     * Serialization UID.
+     */
+    private static final long serialVersionUID = 1L;
 
-	public boolean isSuccessful() {
-		return this.successful;
-	}
+    /**
+     * Create a new instance.
+     */
+    public LoginAttempt() {
+        super();
+    }
 
-	public void setSuccessful(boolean isSuccessful) {
-		this.successful = isSuccessful;
-	}
+    /**
+     * Get serial number.
+     * @return serial numner
+     */
+    public long getSerialNumber() {
+        return this.serialNumber;
+    }
 
-	public UserCredential getUserCredential() {
-		return this.userCredential;
-	}
+    /**
+     * Test if the login attempt is successful.
+     * @return {@code true} if successful, {@code false} otherwise
+     */
+    public boolean isSuccessful() {
+        return this.successful;
+    }
 
-	public void setUserCredential(UserCredential userCredential) {
-		this.userCredential = userCredential;
-	}
+    /**
+     * Set the login result.
+     * @param isSuccessful login result
+     */
+    public void setSuccessful(final boolean isSuccessful) {
+        this.successful = isSuccessful;
+    }
 
-	public Date getTimeStamp() {
-		return timeStamp;
-	}
+    /**
+     * Get the user credentials.
+     * @return UserCredential
+     */
+    public UserCredential getUserCredential() {
+        return this.userCredential;
+    }
+
+    /**
+     * Set the user credentials.
+     * @param creds new user credentials
+     */
+    public void setUserCredential(final UserCredential creds) {
+        this.userCredential = creds;
+    }
+
+    /**
+     * Get the timestamp.
+     * @return Date
+     */
+    public Date getTimeStamp() {
+        return timeStamp;
+    }
+
+    /**
+     * Set the new timestamp.
+     * @param tstamp new timestamp
+     */
+    public void setTimeStamp(final Date tstamp) {
+        this.timeStamp = tstamp;
+    }
 
     @Override
     public String toString() {
-        return "LoginAttempt: (" +
-                "serialNumber = " + serialNumber +
-                "user = "  + getUserCredential().getName() +
-                "isSucecssful = " + isSuccessful() +
-                ")";
+        return "LoginAttempt: ("
+                + "serialNumber = " + serialNumber
+                + "user = " + getUserCredential().getName()
+                + "isSucecssful = " + isSuccessful()
+                + ")";
     }
 }

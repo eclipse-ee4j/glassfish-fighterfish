@@ -23,25 +23,24 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /**
- * @author Sanjeeb.Sahoo@Sun.COM
+ * An enhancer is used to statically enhance the classes of a bundle and produce
+ * a new JarInputStream which can then be used to update the supplied bundle.
  */
 interface JPAEnhancer {
 
     /**
-     * An enhancer is used to statically enhance the classes of a bundle and
-     * produce a new JarInputStream which can then be used to update the
-     * supplied bundle. It returns null if no enhancement is needed, e.g., the
-     * bundle might have been enhanced already. An enhancer may have to explode
-     * the bundle in a directory so that it can scan the contents of the bundle
-     * using File or Jar APIs. If so, it is the responsibility of the enhancer
-     * to delete such temporary locations.
+     * Enhance the given bundles. An enhancer may have to explode the bundle in
+     * a directory so that it can scan the contents of the bundle using File or
+     * Jar APIs. If so, it is the responsibility of the enhancer to delete such
+     * temporary locations.
      *
-     * @param b Bundle to be enhanced
+     * @param bnd Bundle to be enhanced
      * @param persistenceXMLs objects corresponding to persistence.xmls present
      * in the bundle
      * @return a JarInputStream which contains the enhanced classes along with
-     * changed manifest
+     * changed manifest, or {@code null} if no enhancement is needed
+     * @throws IOException if an error occurs
      */
-    InputStream enhance(Bundle b, List<Persistence> persistenceXMLs)
+    InputStream enhance(Bundle bnd, List<Persistence> persistenceXMLs)
             throws IOException;
 }

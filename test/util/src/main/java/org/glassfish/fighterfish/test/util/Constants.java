@@ -17,13 +17,17 @@ package org.glassfish.fighterfish.test.util;
 
 /**
  * Constants used in various places.
- *
- * @author Sanjeeb.Sahoo@Sun.COM
  */
 public final class Constants {
 
     /**
-     * Name of the properties file containing OSGi framework configuration
+     * Create a new instance.
+     */
+    private Constants() {
+    }
+
+    /**
+     * Name of the properties file containing OSGi framework configuration.
      */
     static final String FW_CONFIG_FILE_NAME = "OSGiFramework.properties";
 

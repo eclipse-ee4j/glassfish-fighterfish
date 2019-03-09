@@ -25,16 +25,29 @@ import javax.sql.DataSource;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
-public class TestApp1Activator implements BundleActivator {
+/**
+ * Bundle activator.
+ */
+public final class TestApp1Activator implements BundleActivator {
 
+    /**
+     * Constant for the data source name.
+     */
     // We should configure this using Config Admin service
     public static final String DS_NAME = "jdbc/__default";
+
+    /**
+     * Constant for the table name.
+     */
     public static final String TABLE_NAME = "USERINFO";
 
+    /**
+     * The data source.
+     */
     private DataSource ds;
 
     @Override
-    public void start(BundleContext context) throws Exception {
+    public void start(final BundleContext context) throws Exception {
         InitialContext ctx = new InitialContext();
         Connection c = null;
         Statement s = null;
@@ -43,7 +56,8 @@ public class TestApp1Activator implements BundleActivator {
             c = ds.getConnection();
             s = c.createStatement();
             String sql = "create table " + TABLE_NAME
-                    + " (NAME VARCHAR(10) NOT NULL, PASSWORD VARCHAR(10) NOT NULL,"
+                    + " (NAME VARCHAR(10) NOT NULL, PASSWORD VARCHAR(10)"
+                    + " NOT NULL,"
                     + " PRIMARY KEY(NAME))";
             System.out.println("sql = " + sql);
             s.executeUpdate(sql);
@@ -63,7 +77,7 @@ public class TestApp1Activator implements BundleActivator {
     }
 
     @Override
-    public void stop(BundleContext context) throws Exception {
+    public void stop(final BundleContext context) throws Exception {
         Connection c = null;
         Statement s = null;
         try {

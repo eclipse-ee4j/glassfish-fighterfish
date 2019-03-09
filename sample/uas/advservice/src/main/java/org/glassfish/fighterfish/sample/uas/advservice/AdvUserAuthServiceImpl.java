@@ -21,16 +21,36 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.List;
 
-public class AdvUserAuthServiceImpl implements UserAuthService {
+/**
+ * Implementation of the user authentication service.
+ */
+public final class AdvUserAuthServiceImpl implements UserAuthService {
 
+    /**
+     * Minimum length for username.
+     */
+    private static final int MIN_NAME_LENGHT = 3;
+
+    /**
+     * Minimum password length.
+     */
+    private static final int MIN_PASWORD_LENGTH = 3;
+
+    /**
+     * Bundle activator.
+     */
     private final AdvSvcImplActivator activator;
 
-    public AdvUserAuthServiceImpl(AdvSvcImplActivator activator) {
-        this.activator = activator;
+    /**
+     * Create a new instance.
+     * @param bndActivator bundle activator
+     */
+    public AdvUserAuthServiceImpl(final AdvSvcImplActivator bndActivator) {
+        this.activator = bndActivator;
     }
 
     @Override
-    public boolean login(String name, String password) {
+    public boolean login(final String name, final String password) {
         boolean startedTX = startTX();
         try {
             EntityManager em = getEM();
@@ -39,9 +59,11 @@ public class AdvUserAuthServiceImpl implements UserAuthService {
             } catch (Throwable t) {
                 t.printStackTrace();
                 setRollbackOnly();
-                throw t instanceof RuntimeException
-                        ? RuntimeException.class.cast(t)
-                        : new RuntimeException(t);
+                if (t instanceof RuntimeException) {
+                    throw RuntimeException.class.cast(t);
+                } else {
+                    throw new RuntimeException(t);
+                }
             } finally {
                 em.close();
             }
@@ -53,8 +75,9 @@ public class AdvUserAuthServiceImpl implements UserAuthService {
     }
 
     @Override
-    public boolean register(@NotNull @Size(min = 3) String name,
-            @NotNull @Size(min = 3) String password) {
+    public boolean register(
+            @NotNull @Size(min = MIN_NAME_LENGHT) final String name,
+            @NotNull @Size(min = MIN_PASWORD_LENGTH) final String password) {
 
         boolean startedTX = startTX();
         try {
@@ -64,7 +87,11 @@ public class AdvUserAuthServiceImpl implements UserAuthService {
             } catch (Throwable t) {
                 t.printStackTrace();
                 setRollbackOnly();
-                throw t instanceof RuntimeException ? RuntimeException.class.cast(t) : new RuntimeException(t);
+                if (t instanceof RuntimeException) {
+                    throw RuntimeException.class.cast(t);
+                } else {
+                    throw new RuntimeException(t);
+                }
             } finally {
                 em.close();
             }
@@ -76,7 +103,7 @@ public class AdvUserAuthServiceImpl implements UserAuthService {
     }
 
     @Override
-    public boolean unregister(String name) {
+    public boolean unregister(final String name) {
         boolean startedTX = startTX();
         try {
             EntityManager em = getEM();
@@ -85,7 +112,11 @@ public class AdvUserAuthServiceImpl implements UserAuthService {
             } catch (Throwable t) {
                 t.printStackTrace();
                 setRollbackOnly();
-                throw t instanceof RuntimeException ? RuntimeException.class.cast(t) : new RuntimeException(t);
+                if (t instanceof RuntimeException) {
+                    throw RuntimeException.class.cast(t);
+                } else {
+                    throw new RuntimeException(t);
+                }
             } finally {
                 em.close();
             }
@@ -106,7 +137,11 @@ public class AdvUserAuthServiceImpl implements UserAuthService {
             } catch (Throwable t) {
                 t.printStackTrace();
                 setRollbackOnly();
-                throw t instanceof RuntimeException ? RuntimeException.class.cast(t) : new RuntimeException(t);
+                if (t instanceof RuntimeException) {
+                    throw RuntimeException.class.cast(t);
+                } else {
+                    throw new RuntimeException(t);
+                }
             } finally {
                 em.close();
             }
@@ -117,7 +152,16 @@ public class AdvUserAuthServiceImpl implements UserAuthService {
         }
     }
 
-    private boolean login2(String name, String password, EntityManager em) {
+    /**
+     * Actual implementation of the login method.
+     * @param name user name
+     * @param password user passowrd
+     * @param em entity manager
+     * @return {@code true} if authenticated, {@code false} otherwise
+     */
+    private boolean login2(final String name, final String password,
+            final EntityManager em) {
+
         UserCredential uc = em.find(UserCredential.class, name);
         boolean result = (uc != null && password.equals(uc.getPassword()));
         log("Logging in (" + name + ", " + password + ")");
@@ -134,7 +178,16 @@ public class AdvUserAuthServiceImpl implements UserAuthService {
         return result;
     }
 
-    private boolean register2(String name, String password, EntityManager em) {
+    /**
+     * Actual implementation of the register method.
+     * @param name user name
+     * @param password user password
+     * @param em entity manager
+     * @return {@code true} if registered, {@code false} otherwise
+     */
+    private boolean register2(final String name, final String password,
+            final EntityManager em) {
+
         UserCredential uc = em.find(UserCredential.class, name);
         if (uc != null) {
             return false;
@@ -147,7 +200,14 @@ public class AdvUserAuthServiceImpl implements UserAuthService {
         return true;
     }
 
-    private boolean unregister2(String name, EntityManager em) {
+    /**
+     * Actual implementation of the unregister method.
+     * @param name user name
+     * @param em entity manager
+     * @return {@code true} if unregistered, {@code false} otherwise
+     */
+    private boolean unregister2(final String name, final EntityManager em) {
+
         UserCredential uc = em.find(UserCredential.class, name);
         if (uc == null) {
             return false;
@@ -157,8 +217,13 @@ public class AdvUserAuthServiceImpl implements UserAuthService {
         return true;
     }
 
+    /**
+     * Actual implementation of the report method.
+     * @param em entity manager
+     * @return report string
+     */
     @SuppressWarnings("unchecked")
-    private String getReport2(EntityManager em) {
+    private String getReport2(final EntityManager em) {
         List<LoginAttempt> attempts = em
                 .createNamedQuery("LoginAttempt.findAll")
                 .getResultList();
@@ -170,7 +235,11 @@ public class AdvUserAuthServiceImpl implements UserAuthService {
         return report.toString();
     }
 
-    private void log(String msg) {
+    /**
+     * Log a message to the standard output.
+     * @param msg message to log
+     */
+    private void log(final String msg) {
         System.out.println("AdvUserAuthServiceImpl: " + msg);
     }
 
@@ -179,6 +248,7 @@ public class AdvUserAuthServiceImpl implements UserAuthService {
      *
      * @return true if started, else false
      */
+    @SuppressWarnings("checkstyle:MagicNumber")
     private boolean startTX() {
         UserTransaction utx = getUTX();
         try {
@@ -213,6 +283,9 @@ public class AdvUserAuthServiceImpl implements UserAuthService {
         }
     }
 
+    /**
+     * Set the user transaction as rollback only.
+     */
     private void setRollbackOnly() {
         UserTransaction utx = getUTX();
         try {
@@ -224,10 +297,18 @@ public class AdvUserAuthServiceImpl implements UserAuthService {
         }
     }
 
+    /**
+     * Get the user transaction.
+     * @return UserTransaction
+     */
     private UserTransaction getUTX() {
         return activator.getUTX();
     }
 
+    /**
+     * Get the entity manager.
+     * @return EntityManager
+     */
     private EntityManager getEM() {
         return activator.getEMF().createEntityManager();
     }

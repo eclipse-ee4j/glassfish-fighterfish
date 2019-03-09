@@ -27,21 +27,33 @@ import java.util.logging.Logger;
  * This activator is responsible for setting persistence provider resolver that
  * enables discovery of providers even if thread's context class loader is not
  * properly set.
- *
- * @author Sanjeeb.Sahoo@Sun.COM
  */
-public class OSGiJPAExtnBundleActivator implements BundleActivator {
+public final class OSGiJPAExtnBundleActivator implements BundleActivator {
 
+    /**
+     * Logger.
+     */
     private static final Logger LOGGER = Logger.getLogger(
             OSGiJPAExtnBundleActivator.class.getPackage().getName());
 
+    /**
+     * Property for enabling the hybrid provider resolver.
+     */
+    //CHECKSTYLE:OFF
     private static final String USE_OSGI_PROVIDER_RESOLVER
             = "org.glassfish.osgjpa.extension.useHybridPersistenceProviderResolver";
+    //CHECKSTYLE:ON
+
+    /**
+     * Property for enabling the caching on the provider resolver.
+     */
+    //CHECKSTYLE:OFF
     private static final String OSGI_PROVIDER_RESOLVER_CACHING_ENABLED
             = "org.glassfish.osgjpa.extension.hybridPersistenceProviderResolver.cachingEnabled";
+    //CHECKSTYLE:ON
 
     @Override
-    public void start(BundleContext context) throws Exception {
+    public void start(final BundleContext context) throws Exception {
         boolean useOSGiProviderResolver = Boolean.parseBoolean(context
                 .getProperty(USE_OSGI_PROVIDER_RESOLVER));
         if (useOSGiProviderResolver) {
@@ -61,7 +73,7 @@ public class OSGiJPAExtnBundleActivator implements BundleActivator {
     }
 
     @Override
-    public void stop(BundleContext context) throws Exception {
+    public void stop(final BundleContext context) throws Exception {
         PersistenceProviderResolverHolder.setPersistenceProviderResolver(null);
     }
 }

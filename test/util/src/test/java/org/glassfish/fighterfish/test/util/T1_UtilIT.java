@@ -27,8 +27,6 @@ import org.osgi.framework.BundleException;
 /**
  * This is an integration test for this module. The class name is suffixed with
  * IT so that it gets picked up by failsafe plugin only.
- *
- * @author Sanjeeb.Sahoo@Sun.COM
  */
 @RunWith(FighterFishJUnitRunner.class)
 public class T1_UtilIT {

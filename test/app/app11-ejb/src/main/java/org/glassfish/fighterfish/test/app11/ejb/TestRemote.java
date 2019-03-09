@@ -16,8 +16,18 @@
 
 package org.glassfish.fighterfish.test.app11.ejb;
 
-import javax.ejb.*;
+import javax.ejb.Remote;
+
+/**
+ * A remote EJB interface.
+ */
 @Remote
 public interface TestRemote {
-    String test(String s);
+
+    /**
+     * Test method.
+     * @param str test string
+     * @return String
+     */
+    String test(String str);
 }

@@ -1,6 +1,6 @@
 #!/bin/sh +x
 #
-# Copyright (c) 2013, 2018 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2013, 2019 Oracle and/or its affiliates. All rights reserved.
 #
 # This program and the accompanying materials are made available under the
 # terms of the Eclipse Public License v. 2.0, which is available at
@@ -31,14 +31,10 @@
 # testclass - refers to the individual JUnit test class that you may want to execute. i
 # When this is not specified, all tests are executed
 #
-# Author: sanjeeb.sahoo@oracle.com
-# Date: 23 Feb 2013
-
 set -e
 
 print_usage() {
  echo "Usage: $0 <glassfish.home> <ct.home> <ct.name> [test.class]"
- echo "e.g.: $0 /tmp/gf $HOME/WS/osgi/r4v42-final transaction SimpleUserTransactionTest"
  echo "If you don't supply the test class name, all tests from the test suite will get executed."
  echo "Test results will be reported in `pwd`/reports/osgi-ct.xml"
  exit 1
@@ -104,10 +100,10 @@ options="${debug} \
  -set org.glassfish.osgihttp.ContextPath / \
  -set com.sun.aas.installRoot ${gfhome} \
  -set gosh.args --nointeractive \
- -bundle $HOME/.m2/repository/org/glassfish/fighterfish/test.ct.misc.bundle.javax.servlet-api_2.5/1.0.0-SNAPSHOT/test.ct.misc.bundle.javax.servlet-api_2.5-1.0.0-SNAPSHOT.jar \
+ -bundle $HOME/.m2/repository/org/glassfish/fighterfish/fighterfish-test-ct-misc-bundle-servlet-api_2.5/3.0.0-SNAPSHOT/fighterfish-test-ct-misc-bundle-servlet-2.5-.jar \
  -bundle ${cthome}/cnf/repo/org.osgi.impl.service.log/org.osgi.impl.service.log-1.3.2.jar \
  -bundle ${gfhome}/modules/glassfish.jar \
- -bundle $HOME/.m2/repository/org/glassfish/fighterfish/test.ct.misc.bundle.delay/1.0.0-SNAPSHOT/test.ct.misc.bundle.delay-1.0.0-SNAPSHOT.jar \
+ -bundle $HOME/.m2/repository/org/glassfish/fighterfish/fighterfish-test-ct-misc-bundle-delay/3.0.0-SNAPSHOT/fighterfish-test-ct-misc-bundle-delay.jar \
  -target ${cthome}org.osgi.test.cases.${ctname}/generated/org.osgi.test.cases.${ctname}.jar \
  -report ${reportfile} \
  ${extraopt}"

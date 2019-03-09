@@ -15,7 +15,6 @@
  */
 package org.glassfish.osgiweb;
 
-import com.sun.enterprise.web.*;
 import com.sun.faces.spi.ConfigurationResourceProvider;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.hk2.classmodel.reflect.Types;
@@ -24,15 +23,21 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.Bundle;
 import org.glassfish.osgijavaeebase.OSGiBundleArchive;
 import org.glassfish.osgijavaeebase.BundleResource;
+import com.sun.enterprise.web.WebModule;
+import com.sun.enterprise.web.WebModuleDecorator;
 
-import javax.servlet.ServletContext;
 import java.lang.annotation.Annotation;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Set;
+import javax.servlet.ServletContext;
 
 import static com.sun.enterprise.web.Constants.DEFAULT_WEB_MODULE_PREFIX;
 
@@ -67,21 +72,26 @@ import static com.sun.enterprise.web.Constants.DEFAULT_WEB_MODULE_PREFIX;
  * @see org.glassfish.osgiweb.OSGiFacesConfigResourceProvider
  * @see org.glassfish.osgiweb.OSGiFaceletConfigResourceProvider
  * @see
- * org.glassfish.osgiweb.OSGiWebDeploymentContext.WABClassLoader#getResources(String)
- *
- * @author Sanjeeb.Sahoo@Sun.COM
+ * org.glassfish.osgiweb.OSGiWebDeploymentContext.WABClassLoader#getResources
  */
-public class OSGiWebModuleDecorator implements WebModuleDecorator {
+public final class OSGiWebModuleDecorator implements WebModuleDecorator {
 
-    private static final Logger logger = Logger.getLogger(
+    /**
+     * Logger.
+     */
+    private static final Logger LOGGER = Logger.getLogger(
             OSGiWebModuleDecorator.class.getPackage().getName());
 
+    /**
+     * Flag to indicate if the module is active.
+     */
     private boolean active = true;
 
     @Override
-    public void decorate(WebModule module) {
+    public void decorate(final WebModule module) {
         if (isActive()) {
-            BundleContext bctx = OSGiWebDeploymentRequest.getCurrentBundleContext();
+            BundleContext bctx = OSGiWebDeploymentRequest
+                    .getCurrentBundleContext();
             // We can be here when there are no web apps deployed and the first
             // webapp that gets deployed
             // is a WAB. In that case, the default_web_app gets loaded in the
@@ -114,10 +124,10 @@ public class OSGiWebModuleDecorator implements WebModuleDecorator {
      * Is this a default web web module that's configured in the virtual server
      * to handle '/' context path?
      *
-     * @param module
-     * @return
+     * @param module the GlassFish web module
+     * @return {@code true} if the module is default, {@code false} otherwise
      */
-    private boolean isDefaultWebModule(WebModule module) {
+    private boolean isDefaultWebModule(final WebModule module) {
         // Although default web module has a fixed name called
         // {@link com.sun.enterprise.web.Constants#DEFAULT_WEB_MODULE_NAME}
         // that name is not used when user configures a different web app as the
@@ -126,6 +136,10 @@ public class OSGiWebModuleDecorator implements WebModuleDecorator {
                 .startsWith(DEFAULT_WEB_MODULE_PREFIX);
     }
 
+    /**
+     * Test if mojarra is present. E.g. web profile VS full profile
+     * @return {@code true} if mojarra is present, {@code false} otherwise
+     */
     private boolean isMojarraPresent() {
         // We don't have a hard dependency on JSF or mojarra in our
         // Import-Package. So, we need to test if mojarra is available or not.
@@ -137,8 +151,14 @@ public class OSGiWebModuleDecorator implements WebModuleDecorator {
         }
     }
 
-    private void populateFacesInformation(WebModule module, BundleContext bctx,
-            ServletContext sc) {
+    /**
+     * Populate the faces information in the given servlet context.
+     * @param module the GlassFish web application module
+     * @param bctx the bundle context
+     * @param sc the servlet context
+     */
+    private void populateFacesInformation(final WebModule module,
+            final BundleContext bctx, final ServletContext sc) {
 
         Collection<URI> facesConfigs = new ArrayList<URI>();
         Collection<URI> faceletConfigs = new ArrayList<URI>();
@@ -151,11 +171,18 @@ public class OSGiWebModuleDecorator implements WebModuleDecorator {
                 facesAnnotatedClasses);
     }
 
+    /**
+     * Test if the module is active.
+     * @return {@code true} if active, {@code false} otherwise
+     */
     private synchronized boolean isActive() {
         return active;
     }
 
-    /* package */ synchronized void deActivate() {
+    /**
+     * De-activate this module.
+     */
+    synchronized void deActivate() {
         this.active = false;
     }
 
@@ -190,11 +217,15 @@ public class OSGiWebModuleDecorator implements WebModuleDecorator {
      * resource situation as reported in
      * https://glassfish.dev.java.net/issues/show_bug.cgi?id=12914, we only find
      * faces config resources that ends with .faces-config.xml.
+     * @param bnd application bundle
+     * @param facesConfigs faces config
+     * @param faceletConfigs facelet config
      */
-    private void discoverJSFConfigs(Bundle b, Collection<URI> facesConfigs,
-            Collection<URI> faceletConfigs) {
+    private void discoverJSFConfigs(final Bundle bnd,
+            final Collection<URI> facesConfigs,
+            final Collection<URI> faceletConfigs) {
 
-        OSGiBundleArchive archive = new OSGiBundleArchive(b);
+        OSGiBundleArchive archive = new OSGiBundleArchive(bnd);
         for (BundleResource r : archive) {
             final String path = r.getPath();
             if (path.startsWith("META-INF/")) {
@@ -210,8 +241,13 @@ public class OSGiWebModuleDecorator implements WebModuleDecorator {
         }
     }
 
-    private Map<Class<? extends Annotation>, Set<Class<? extends Object>>> scanFacesAnnotations(
-            WebModule wm) {
+    /**
+     * Scan the JSF annotations for a given module.
+     * @param wm the GlassFish web module
+     * @return map of scanned annotations
+     */
+    private Map<Class<? extends Annotation>, Set<Class<? extends Object>>>
+        scanFacesAnnotations(final WebModule wm) {
 
         final DeploymentContext dc = wm.getWebModuleConfig()
                 .getDeploymentContext();
@@ -220,7 +256,8 @@ public class OSGiWebModuleDecorator implements WebModuleDecorator {
             // it is not clear why we will ever be called with null
             // deployment context.
             // Just log a message and move on.
-            logger.fine("Can't process annotations as deployment context is not set.");
+            LOGGER.fine("Can't process annotations as deployment context is"
+                    + " not set.");
             return Collections.emptyMap();
         }
         final Types types = dc.getTransientAppMetaData(Types.class.getName(),
@@ -229,20 +266,30 @@ public class OSGiWebModuleDecorator implements WebModuleDecorator {
                 getClassLoader(wm));
     }
 
-    private Collection<URI> getURIs(WebModule wm) {
+    /**
+     * Get the resource URIs for a given web module.
+     * @param wm the GlassFish web module
+     * @return collection of URI
+     */
+    private Collection<URI> getURIs(final WebModule wm) {
         WebappClassLoader cl = getClassLoader(wm);
         Collection<URI> uris = new ArrayList<URI>();
         for (URL url : cl.getURLs()) {
             try {
                 uris.add(url.toURI());
             } catch (URISyntaxException e) {
-                logger.log(Level.WARNING, "Unable to process " + url, e);
+                LOGGER.log(Level.WARNING, "Unable to process " + url, e);
             }
         }
         return uris;
     }
 
-    private WebappClassLoader getClassLoader(WebModule wm) {
+    /**
+     * Get the application class-loader.
+     * @param wm the GlassFish web module
+     * @return WebappClassLoader
+     */
+    private WebappClassLoader getClassLoader(final WebModule wm) {
         WebappClassLoader cl = WebappClassLoader.class.cast(
                 wm.getWebModuleConfig().getDeploymentContext()
                         .getClassLoader());

@@ -29,17 +29,28 @@ import org.glassfish.osgicdi.OSGiService;
 import org.osgi.framework.ServiceException;
 
 /**
- * Example resource class hosted at the URI path "/login"
+ * Example resource class hosted at the URI path "/login".
  */
 @Path("/login")
 @RequestScoped
+@SuppressWarnings("checkstyle:DesignForExtension")
 public class MyResource {
 
+    /**
+     * URI info.
+     */
     @Context
-    UriInfo uriInfo;
-    @Context
-    Request request;
+    private UriInfo uriInfo;
 
+    /**
+     * Request.
+     */
+    @Context
+    private Request request;
+
+    /**
+     * User authentication service.
+     */
     @Inject
     @OSGiService(dynamic = true)
     private UserAuthService uas;
@@ -56,16 +67,23 @@ public class MyResource {
         return "Hi there!";
     }
 
+    /**
+     * Login to the application.
+     * @param req servlet request
+     * @param res servlet response
+     * @return {@code "Logged in"} if successful, {@code "Fail"} otherwise
+     * @throws ServletException if an error occurs
+     */
     @GET
     @Produces(MediaType.TEXT_HTML)
     @Consumes(MediaType.TEXT_PLAIN)
-    public String getLogin(
-            @Context HttpServletRequest request,
-            @Context HttpServletResponse response
-    ) throws ServletException {
+    public String login(
+            @Context final HttpServletRequest req,
+            @Context final HttpServletResponse res)
+            throws ServletException {
 
-        String name = request.getParameter("name");
-        String password = request.getParameter("password");
+        String name = req.getParameter("name");
+        String password = req.getParameter("password");
         try {
             if (uas.login(name, password)) {
                 return "Logged in";

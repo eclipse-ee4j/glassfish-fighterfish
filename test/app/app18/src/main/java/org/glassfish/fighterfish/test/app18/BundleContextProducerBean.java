@@ -22,15 +22,16 @@ import org.osgi.framework.FrameworkUtil;
 import javax.enterprise.inject.Produces;
 
 /**
- *
  * A simple producer bean which allows us to inject BundleContext of this
  * bundle.
- *
- * @author sanjeeb.sahoo@oracle.com
- *
  */
+@SuppressWarnings("checkstyle:DesignForExtension")
 public class BundleContextProducerBean {
 
+    /**
+     * Produce the bundle context bean.
+     * @return BundleContext
+     */
     @Produces
     public BundleContext getBundleContext() {
         Bundle bundle = FrameworkUtil.getBundle(getClass());

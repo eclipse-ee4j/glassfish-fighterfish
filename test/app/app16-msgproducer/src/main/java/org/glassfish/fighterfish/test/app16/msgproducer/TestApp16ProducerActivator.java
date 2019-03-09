@@ -21,22 +21,27 @@ import org.osgi.framework.Constants;
 import org.osgi.service.cm.ConfigurationException;
 import org.osgi.service.cm.ManagedService;
 
-import javax.jms.*;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
 import java.util.Dictionary;
 import java.util.Properties;
+import javax.jms.Connection;
+import javax.jms.ConnectionFactory;
+import javax.jms.Destination;
+import javax.jms.JMSException;
+import javax.jms.MessageProducer;
+import javax.jms.Session;
+import javax.jms.TextMessage;
 
 /**
- * @author sanjeeb.sahoo@oracle.com
- *
+ * Bundle activator.
  */
-public class TestApp16ProducerActivator implements BundleActivator {
+public final class TestApp16ProducerActivator implements BundleActivator {
 
     @Override
     @SuppressWarnings("unchecked")
-    public void start(BundleContext context) throws Exception {
+    public void start(final BundleContext context) throws Exception {
         System.out.println(
                 "Message producer started - "
                 + "waiting to be configured with topic name");
@@ -46,7 +51,7 @@ public class TestApp16ProducerActivator implements BundleActivator {
         context.registerService(ManagedService.class.getName(),
                 new ManagedService() {
             @Override
-            public void updated(Dictionary properties)
+            public void updated(final Dictionary properties)
                     throws ConfigurationException {
                 if (properties != null) {
                     String destinationName = (String) properties
@@ -66,24 +71,24 @@ public class TestApp16ProducerActivator implements BundleActivator {
      * Create connection. Create session from connection; false means session is
      * not transacted. Create producer and text message. Send messages, varying
      * text slightly. Send end-of-messages message. Finally, close connection.
+     * @param cfName connection factory name
+     * @param destName destination name
+     * @param noOfMsgs number of messages
      */
     @SuppressWarnings("unchecked")
-    private void sendMessage(String connectionFactoryName,
-            String destinationName, int noOfMsgs) {
+    private void sendMessage(final String cfName, final String destName,
+            final int noOfMsgs) {
 
         Connection connection = null;
         try {
             InitialContext ctx = new InitialContext();
-
-            ConnectionFactory connectionFactory = (ConnectionFactory) ctx
-                    .lookup(connectionFactoryName);
-
+            ConnectionFactory connectionFactory =
+                    (ConnectionFactory) ctx.lookup(cfName);
             connection = connectionFactory.createConnection();
-
             Session session = connection.createSession(false,
                     Session.AUTO_ACKNOWLEDGE);
 
-            Destination dest = (Destination) ctx.lookup(destinationName);
+            Destination dest = (Destination) ctx.lookup(destName);
             MessageProducer producer = session.createProducer(dest);
             TextMessage message = session.createTextMessage();
 
@@ -93,9 +98,7 @@ public class TestApp16ProducerActivator implements BundleActivator {
                 producer.send(message);
             }
 
-            /*
-             * Send a non-text control message indicating end of messages.
-             */
+            // Send a non-text control message indicating end of messages.
             producer.send(session.createMessage());
         } catch (JMSException e) {
             System.err.println("Exception occurred: " + e.toString());
@@ -112,6 +115,6 @@ public class TestApp16ProducerActivator implements BundleActivator {
     }
 
     @Override
-    public void stop(BundleContext context) throws Exception {
+    public void stop(final BundleContext context) throws Exception {
     }
 }

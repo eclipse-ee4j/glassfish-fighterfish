@@ -35,27 +35,28 @@ import java.net.URL;
  * may implement an authentication mecha-nism that is implementation-dependent.
  * <p/>
  * {@code org.osgi.service.http.HttpService#createDefaultHttpContext()}
- *
- * @author Sanjeeb.Sahoo@Sun.COM
  */
-public class DefaultHttpContext implements HttpContext {
+public final class DefaultHttpContext implements HttpContext {
 
-    /*
-    * TODO(Sahoo): getMimeType() to use default-web.xml.
-    */
+    // TODO(Sahoo): getMimeType() to use default-web.xml.
 
     /**
      * Bundle for which this context is created.
      */
     private final Bundle registeringBundle;
 
-    public DefaultHttpContext(Bundle registeringBundle) {
-        this.registeringBundle = registeringBundle;
+    /**
+     * Create a new instance.
+     * @param bnd the registering bundle
+     */
+    public DefaultHttpContext(final Bundle bnd) {
+        this.registeringBundle = bnd;
     }
 
     @Override
-    public boolean handleSecurity(HttpServletRequest httpServletRequest,
-            HttpServletResponse httpServletResponse) throws IOException {
+    public boolean handleSecurity(final HttpServletRequest httpServletRequest,
+            final HttpServletResponse httpServletResponse)
+            throws IOException {
 
         // TODO(Sahoo):
         return true;
@@ -66,7 +67,7 @@ public class DefaultHttpContext implements HttpContext {
      * @return URL
      */
     @Override
-    public URL getResource(String s) {
+    public URL getResource(final String s) {
         /*
          * As per the spec (OSGi R4 Compendium, section #102.4):
          * the default implementation must map the resource request to the
@@ -80,7 +81,7 @@ public class DefaultHttpContext implements HttpContext {
     }
 
     @Override
-    public String getMimeType(String s) {
+    public String getMimeType(final String s) {
         return null;
     }
 }

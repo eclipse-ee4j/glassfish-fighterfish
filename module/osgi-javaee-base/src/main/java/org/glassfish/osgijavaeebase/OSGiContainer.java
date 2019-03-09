@@ -15,15 +15,22 @@
  */
 package org.glassfish.osgijavaeebase;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Dictionary;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.util.tracker.ServiceTracker;
-
-import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import static org.osgi.framework.Constants.ACTIVATION_LAZY;
 import static org.osgi.framework.Constants.BUNDLE_ACTIVATIONPOLICY;
@@ -31,19 +38,29 @@ import static org.osgi.framework.Constants.BUNDLE_ACTIVATIONPOLICY;
 /**
  * This class is primarily responsible for deployment and undeployment of EE
  * artifacts of an OSGi bundle.
- *
- * @author Sanjeeb.Sahoo@Sun.COM
  */
 public class OSGiContainer {
 
-    // Context in which this object is operating.
+    /**
+     * Context in which this object is operating.
+     */
     private BundleContext context;
 
-    protected Map<Bundle, OSGiApplicationInfo> applications
+    /**
+     * Applications managed.
+     */
+    private final Map<Bundle, OSGiApplicationInfo> applications
             = new HashMap<Bundle, OSGiApplicationInfo>();
-    protected Map<OSGiApplicationInfo, ServiceRegistration> regs
+
+    /**
+     * Services registered by applications.
+     */
+    private final Map<OSGiApplicationInfo, ServiceRegistration> regs
             = new HashMap<OSGiApplicationInfo, ServiceRegistration>();
 
+    /**
+     * Service tracker for deployer service.
+     */
     private ServiceTracker deployerTracker;
 
     /**
@@ -52,22 +69,54 @@ public class OSGiContainer {
     private final List<ServiceReference/*OSGiDeployer*/> sortedDeployerRefs
             = new ArrayList<ServiceReference>();
 
+    /**
+     * Flag to track shutdown state.
+     */
     private boolean shutdown = false;
 
+    /**
+     * Logger.
+     */
     private static final Logger LOGGER = Logger.getLogger(
             OSGiContainer.class.getPackage().getName());
 
+    /**
+     * Create a new instance.
+     * @param ctx bundle context
+     */
     protected OSGiContainer(final BundleContext ctx) {
         this.context = ctx;
         deployerTracker = new OSGiDeployerTracker();
     }
 
+    /**
+     * Init the container.
+     */
     protected void init() {
         // no need to deployAll, as that will happen when tracker is notified
         // of each deployer.
         deployerTracker.open();
     }
 
+    /**
+     * Get the applications currently deployed.
+     * @return map of bundle to application info
+     */
+    protected Map<Bundle, OSGiApplicationInfo> getApplications() {
+        return applications;
+    }
+
+    /**
+     * Get the service registered by the applications currently deployed.
+     * @return map of application info to service registration
+     */
+    protected Map<OSGiApplicationInfo, ServiceRegistration> getRegs() {
+        return regs;
+    }
+
+    /**
+     * Shutdown the container.
+     */
     protected synchronized void shutdown() {
         undeployAll();
         assert (applications.isEmpty() && regs.isEmpty());
@@ -80,20 +129,30 @@ public class OSGiContainer {
         context = null;
     }
 
+    /**
+     * Test if the container is shutdown.
+     * @return {@code true} if shutdown, {@code false} otherwise
+     */
     public boolean isShutdown() {
         return shutdown;
     }
 
-    private synchronized OSGiApplicationInfo redeploy(Bundle b)
+    /**
+     * Redeploy the given application.
+     * @param bundle the bundle of the application
+     * @return the new application info
+     * @throws Exception if an error occurs
+     */
+    private synchronized OSGiApplicationInfo redeploy(final Bundle bundle)
             throws Exception {
 
         if (isShutdown()) {
             return null;
         }
-        if (isDeployed(b)) {
-            undeploy(b);
+        if (isDeployed(bundle)) {
+            undeploy(bundle);
         }
-        return deploy(b);
+        return deploy(bundle);
     }
 
     /**
@@ -102,10 +161,10 @@ public class OSGiContainer {
      * deployment framework can handle concurrent requests or not.
      *
      * @param b Bundle to be deployed.
-     * @return
+     * @return {@link OSGiApplicationInfo} instance
      */
     @SuppressWarnings("unchecked")
-    public synchronized OSGiApplicationInfo deploy(Bundle b) {
+    public synchronized OSGiApplicationInfo deploy(final Bundle b) {
         if (isShutdown()) {
             return null;
         }
@@ -114,7 +173,8 @@ public class OSGiContainer {
         // state to STOPPING, then cancel the deployment operation.
         if (b.getState() == Bundle.STOPPING) {
             LOGGER.logp(Level.INFO, "OSGiContainer", "deploy",
-                    "Bundle {0} is already moved to STOPPING state, so it won't be deployed.",
+                    "Bundle {0} is already moved to STOPPING state"
+                            + "so it won't be deployed.",
                     new Object[]{b});
             return null;
         }
@@ -134,7 +194,8 @@ public class OSGiContainer {
                 .getService(osgiDeployerRef);
         if (osgiDeployer == null) {
             LOGGER.logp(Level.WARNING, "OSGiContainer", "deploy",
-                    "Bundle {0} can't be deployed because corresponding deployer {1} has vanished!!!",
+                    "Bundle {0} can't be deployed because corresponding"
+                            + " deployer {1} has vanished!",
                     new Object[]{b,
                         osgiDeployer});
             return null;
@@ -156,8 +217,10 @@ public class OSGiContainer {
         regs.put(osgiAppInfo, reg);
         LOGGER.logp(Level.INFO, "OSGiContainer", "deploy",
                 "deployed bundle {0} at {1}",
-                new Object[]{osgiAppInfo.getBundle(), osgiAppInfo.getAppInfo()
-                        .getSource().getURI()});
+                new Object[]{
+                    osgiAppInfo.getBundle(),
+                    osgiAppInfo.getAppInfo().getSource().getURI()
+                });
         return osgiAppInfo;
     }
 
@@ -166,39 +229,42 @@ public class OSGiContainer {
      * because we don't know if GlassFish deployment framework can handle
      * concurrent requests or not.
      *
-     * @param b Bundle to be undeployed
+     * @param bundle Bundle to be undeployed
      */
     @SuppressWarnings("unchecked")
-    public synchronized void undeploy(Bundle b) {
+    public synchronized void undeploy(final Bundle bundle) {
         if (isShutdown()) {
             return;
         }
-        OSGiApplicationInfo osgiAppInfo = applications.get(b);
+        OSGiApplicationInfo osgiAppInfo = applications.get(bundle);
         if (osgiAppInfo == null) {
-            throw new RuntimeException("No applications for bundle " + b);
+            throw new RuntimeException("No applications for bundle " + bundle);
         }
-        applications.remove(b);
+        applications.remove(bundle);
         regs.remove(osgiAppInfo).unregister();
         ServiceReference osgiDeployerRef = osgiAppInfo.getDeployer();
         OSGiDeployer osgiDeployer = (OSGiDeployer) context
                 .getService(osgiDeployerRef);
         if (osgiDeployer == null) {
             LOGGER.logp(Level.WARNING, "OSGiContainer", "undeploy",
-                    "Failed to undeploy {0}, because corresponding deployer does not exist",
-                    new Object[]{b});
+                    "Failed to undeploy {0}, because corresponding deployer"
+                    + " does not exist",
+                    new Object[]{bundle});
             return;
         }
         try {
             osgiDeployer.undeploy(osgiAppInfo);
             LOGGER.logp(Level.INFO, "OSGiContainer", "undeploy",
-                    "Undeployed bundle {0}", new Object[]{b});
+                    "Undeployed bundle {0}", new Object[]{bundle});
         } catch (Exception e) {
             LOGGER.logp(Level.WARNING, "OSGiContainer", "undeploy",
-                    "Failed to undeploy bundle " + b, e);
-            return;
+                    "Failed to undeploy bundle " + bundle, e);
         }
     }
 
+    /**
+     * Undeploys all applications.
+     */
     public synchronized void undeployAll() {
         // Take a copy of the entries as undeploy changes the underlying map.
         for (Bundle b : new HashSet<Bundle>(applications.keySet())) {
@@ -212,32 +278,52 @@ public class OSGiContainer {
         }
     }
 
-    public synchronized boolean isDeployed(Bundle bundle) {
+    /**
+     * Test if the application bundle is deployed.
+     * @param bundle the bundle of the application to test
+     * @return {@code true} if deployed, {@code false} otherwise
+     */
+    public synchronized boolean isDeployed(final Bundle bundle) {
         return applications.containsKey(bundle);
     }
 
-    /*package*/
-    boolean isReady(Bundle b) {
-        final int state = b.getState();
+    /**
+     * Test if the application bundle is in active state, or starting if the
+     *  bundle is configured to be lazy.
+     * @param bundle the bundle of the application to test
+     * @return {@code true} if ready, {@code false} otherwise
+     */
+    final boolean isReady(final Bundle bundle) {
+        final int state = bundle.getState();
         final boolean isActive = (state & Bundle.ACTIVE) != 0;
         final boolean isStarting = (state & Bundle.STARTING) != 0;
-        final boolean isReady = isActive || (isLazy(b) && isStarting);
+        final boolean isReady = isActive || (isLazy(bundle) && isStarting);
         return isReady;
     }
 
-    /*package*/ static boolean isLazy(Bundle bundle) {
+    /**
+     * Test if the application bundle is lazy.
+     * @param bundle the bundle of the application to test
+     * @return {@code true} if lazy, {@code false} otherwise
+     */
+    static boolean isLazy(final Bundle bundle) {
         return ACTIVATION_LAZY.equals(
                 bundle.getHeaders().get(BUNDLE_ACTIVATIONPOLICY));
     }
 
+    /**
+     * Select the deployer for the given bundle.
+     * @param bundle the application bundle
+     * @return the deployer service reference if found, or {@code null}
+     */
     @SuppressWarnings("unchecked")
-    private ServiceReference/*OSGiDeployer*/ selectDeployer(Bundle b) {
+    private ServiceReference selectDeployer(final Bundle bundle) {
         // deployerRefs is already sorted in descending order of ranking
         for (ServiceReference deployerRef : sortedDeployerRefs) {
             OSGiDeployer deployer = OSGiDeployer.class.cast(context
                     .getService(deployerRef));
             if (deployer != null) {
-                if (deployer.handles(b)) {
+                if (deployer.handles(bundle)) {
                     return deployerRef;
                 }
             }
@@ -245,31 +331,41 @@ public class OSGiContainer {
         return null;
     }
 
+    /**
+     * Get the applications currently deployed.
+     * @return array of application info
+     */
     public synchronized OSGiApplicationInfo[] getDeployedApps() {
         // must return a snapshot, because it is used from
         // DeployerRemovedThread.
         return applications.values().toArray(new OSGiApplicationInfo[0]);
     }
 
+    /**
+     * Custom service tracker to track {@link OSGiDeployer} service instances.
+     */
     private class OSGiDeployerTracker extends ServiceTracker {
 
+        /**
+         * Create a new instance.
+         */
         @SuppressWarnings("unchecked")
-        public OSGiDeployerTracker() {
+        OSGiDeployerTracker() {
             super(OSGiContainer.this.context, OSGiDeployer.class.getName(),
                     null);
         }
 
         @Override
         @SuppressWarnings("unchecked")
-        public Object addingService(ServiceReference reference) {
+        public Object addingService(final ServiceReference reference) {
             deployerAdded(reference);
             return super.addingService(reference);
         }
 
         @Override
         @SuppressWarnings("unchecked")
-        public void removedService(ServiceReference reference,
-                Object service) {
+        public void removedService(final ServiceReference reference,
+                final Object service) {
 
             deployerRemoved(reference);
             super.removedService(reference, service);
@@ -277,7 +373,11 @@ public class OSGiContainer {
 
     }
 
-    private synchronized void deployerAdded(ServiceReference reference) {
+    /**
+     * Add the service reference of a deployer service instance that was added.
+     * @param reference the deployer service reference
+     */
+    private synchronized void deployerAdded(final ServiceReference reference) {
         if (isShutdown()) {
             return;
         }
@@ -287,7 +387,12 @@ public class OSGiContainer {
         new DeployerAddedThread(reference).start();
     }
 
-    private void deployerRemoved(ServiceReference reference) {
+    /**
+     * Remove the service reference of a deployer service instance that was
+     * removed.
+     * @param reference the deployer service reference
+     */
+    private void deployerRemoved(final ServiceReference reference) {
         if (isShutdown()) {
             return;
         }
@@ -295,12 +400,23 @@ public class OSGiContainer {
         new DeployerRemovedThread(reference).start();
     }
 
-    private class DeployerAddedThread extends Thread {
+    /**
+     * A thread to re-deploy the bundles handled by a given deployer when it is
+     *  added.
+     */
+    private final class DeployerAddedThread extends Thread {
 
-        ServiceReference newDeployerRef;
+        /**
+         * The deployer service reference.
+         */
+        private final ServiceReference newDeployerRef;
 
-        private DeployerAddedThread(ServiceReference newDeployerRef) {
-            this.newDeployerRef = newDeployerRef;
+        /**
+         * Create a new instance.
+         * @param ref the new deployer service reference
+         */
+        private DeployerAddedThread(final ServiceReference ref) {
+            this.newDeployerRef = ref;
         }
 
         @Override
@@ -327,12 +443,23 @@ public class OSGiContainer {
         }
     }
 
-    private class DeployerRemovedThread extends Thread {
+    /**
+     * A thread to re-deploy the applications handled by a given deployer
+     * when it is removed.
+     */
+    private final class DeployerRemovedThread extends Thread {
 
-        ServiceReference oldDeployerRef;
+        /**
+         * The deployer service reference.
+         */
+        private final ServiceReference oldDeployerRef;
 
-        private DeployerRemovedThread(ServiceReference oldDeployerRef) {
-            this.oldDeployerRef = oldDeployerRef;
+        /**
+         * Create a new instance.
+         * @param ref the old deployer service reference
+         */
+        private DeployerRemovedThread(final ServiceReference ref) {
+            this.oldDeployerRef = ref;
         }
 
         @Override

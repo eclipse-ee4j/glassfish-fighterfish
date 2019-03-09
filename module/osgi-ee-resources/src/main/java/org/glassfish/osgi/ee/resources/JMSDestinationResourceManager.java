@@ -30,31 +30,30 @@ import java.util.Properties;
 
 /**
  * Resource-Manager to export jms-destinations (JMS-RA admin-object-resources)
- * in GlassFish to OSGi's service-registry
- *
- * @author Jagadish Ramu
+ * in GlassFish to OSGi's service-registry.
  */
-public class JMSDestinationResourceManager extends BaseResourceManager
+public final class JMSDestinationResourceManager extends BaseResourceManager
         implements ResourceManager {
 
-    public JMSDestinationResourceManager(Habitat habitat) {
+    /**
+     * Create a new instance.
+     * @param habitat component locator
+     */
+    public JMSDestinationResourceManager(final Habitat habitat) {
         super(habitat);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public void registerResources(BundleContext context) {
+    public void registerResources(final BundleContext context) {
         registerJmsResources(context);
     }
 
     /**
-     * registers the admin-object-resource in service-registry
+     * Registers the admin-object-resource in service-registry.
      *
      * @param context bundle-context
      */
-    public void registerJmsResources(BundleContext context) {
+    public void registerJmsResources(final BundleContext context) {
         Resources resources = getHabitat().getComponent(Domain.class)
                 .getResources();
         Collection<AdminObjectResource> administeredObjectResources =
@@ -68,13 +67,11 @@ public class JMSDestinationResourceManager extends BaseResourceManager
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     @SuppressWarnings("unchecked")
-    public void registerResource(BindableResource resource, ResourceRef resRef,
-            BundleContext bundleContext) {
+    public void registerResource(final BindableResource resource,
+            final ResourceRef resRef, final BundleContext bundleContext) {
+
         AdminObjectResource adminObjectResource =
                 (AdminObjectResource) resource;
         if (adminObjectResource.getEnabled().equalsIgnoreCase("true")) {
@@ -82,7 +79,7 @@ public class JMSDestinationResourceManager extends BaseResourceManager
                     .equalsIgnoreCase("true")) {
                 String defnName = adminObjectResource.getResType();
                 Class claz = null;
-                Class intf[] = null;
+                Class[] intf = null;
 
                 if (defnName.equals(Constants.QUEUE)) {
                     claz = Queue.class;
@@ -108,11 +105,8 @@ public class JMSDestinationResourceManager extends BaseResourceManager
 
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public boolean handlesResource(BindableResource resource) {
+    public boolean handlesResource(final BindableResource resource) {
         boolean result = false;
         if (resource instanceof AdminObjectResource) {
             if (isJmsResource((AdminObjectResource) resource)) {
@@ -123,13 +117,13 @@ public class JMSDestinationResourceManager extends BaseResourceManager
     }
 
     /**
-     * determines whether the resource is a JMS-RA's resource
+     * Test if the given resource is a JMS-RA resource.
      *
      * @param resource admin-object-resource
-     * @return boolean
+     * @return {@code true} if a jms resource, {@code false} otherwise
      */
     @SuppressWarnings("unchecked")
-    private boolean isJmsResource(AdminObjectResource resource) {
+    private boolean isJmsResource(final AdminObjectResource resource) {
         boolean result = false;
         String raName = resource.getResAdapter();
         if (raName.equals(Constants.DEFAULT_JMS_ADAPTER)) {

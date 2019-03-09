@@ -23,15 +23,24 @@ import org.osgi.framework.ServiceRegistration;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class JDBCActivator implements BundleActivator {
+/**
+ * Bundle activator for the OSGi JDBC module.
+ */
+public final class JDBCActivator implements BundleActivator {
 
+    /**
+     * Logger.
+     */
     private static final Logger LOGGER = Logger.getLogger(
             JDBCActivator.class.getPackage().getName());
 
+    /**
+     * Service registration for the JDBC extender service.
+     */
     private ServiceRegistration extenderReg;
 
     @Override
-    public void start(BundleContext bundleContext) throws Exception {
+    public void start(final BundleContext bundleContext) throws Exception {
         JDBCExtender extender = new JDBCExtender(bundleContext);
         extenderReg = bundleContext.registerService(
                 Extender.class.getName(), extender, null);
@@ -39,14 +48,18 @@ public class JDBCActivator implements BundleActivator {
     }
 
     @Override
-    public void stop(BundleContext bundleContext) throws Exception {
+    public void stop(final BundleContext bundleContext) throws Exception {
         debug("Bundle de-activated");
         extenderReg.unregister();
     }
 
-    private void debug(String s) {
+    /**
+     * Log a {@code FINE} message.
+     * @param msg message to log
+     */
+    private void debug(final String msg) {
         if (LOGGER.isLoggable(Level.FINEST)) {
-            LOGGER.log(Level.FINEST, "[osgi-jdbc] : {0}", s);
+            LOGGER.log(Level.FINEST, "[osgi-jdbc] : {0}", msg);
         }
     }
 }

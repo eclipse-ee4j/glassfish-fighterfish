@@ -19,13 +19,14 @@ package org.glassfish.fighterfish.test.app11.ejb;
 import javax.ejb.Stateless;
 
 /**
- * Session Bean implementation class TestBean
+ * Stateless implementation of the remote EJB interface.
  */
 @Stateless
+@SuppressWarnings("checkstyle:DesignForExtension")
 public class TestBean implements TestRemote {
+
     @Override
-    public String test(String s) {
+    public String test(final String s) {
         return s.toUpperCase();
     }
-
 }

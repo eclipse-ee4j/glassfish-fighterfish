@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -20,21 +20,23 @@ import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
 /**
- * A <code>BundleActivator</code> that registers the simple stock quote
- * service implementation in the OSGi Service registry
- * [osgi bundle activator]
- * 
- * @author Sivakumar Thyagarajan
- * @author Tang Yong
+ * A{@code BundleActivator} that registers the simple stock quote
+ * service implementation in the OSGi Service registry.
  */
-public class SimpleServiceActivator implements BundleActivator {
-    public void start(BundleContext context) throws Exception {
+public final class SimpleServiceActivator implements BundleActivator {
+
+    @Override
+    public void start(final BundleContext context) throws Exception {
         System.out.println("SimpleServiceActivator::start");
-        context.registerService(StockQuoteService.class.getName(), new SimpleStockQuoteServiceImpl(), null);
-        System.out.println("SimpleServiceActivator::registration of Stock quote service successful");
+        context.registerService(StockQuoteService.class.getName(),
+                new SimpleStockQuoteServiceImpl(),
+                null);
+        System.out.println("SimpleServiceActivator::registration of Stock"
+                + " quote service successful");
     }
 
-    public void stop(BundleContext context) throws Exception {
+    @Override
+    public void stop(final BundleContext context) throws Exception {
         System.out.println("SimpleServiceActivator stopped");
     }
 }

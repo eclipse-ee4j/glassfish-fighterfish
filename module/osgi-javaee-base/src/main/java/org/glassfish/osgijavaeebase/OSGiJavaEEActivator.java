@@ -24,19 +24,30 @@ import org.osgi.service.url.URLStreamHandlerService;
 import org.osgi.service.url.URLConstants;
 
 import static org.glassfish.osgijavaeebase.OSGiBundleArchive.EmbeddedJarURLStreamHandlerService;
-import static org.glassfish.osgijavaeebase.OSGiBundleArchive.EmbeddedJarURLStreamHandlerService.*;
+import static org.glassfish.osgijavaeebase.OSGiBundleArchive.EmbeddedJarURLStreamHandlerService.EMBEDDED_JAR_SCHEME;
 
 /**
- * @author Sanjeeb.Sahoo@Sun.COM
+ * Bundle activator that registers {@link JavaEEExtender} as a service.
  */
-public class OSGiJavaEEActivator implements BundleActivator {
+public final class OSGiJavaEEActivator implements BundleActivator {
 
+    /**
+     * The extender manager.
+     */
     private ExtenderManager extenderManager;
+
+    /**
+     * The service registration for {@link EmbeddedJarURLStreamHandlerService}.
+     */
     private ServiceRegistration urlHandlerServiceRegistration;
+
+    /**
+     * The service registration for {@link JavaEEExtender}.
+     */
     private ServiceRegistration javaeeExtenderServiceRegistration;
 
     @Override
-    public void start(BundleContext context) throws Exception {
+    public void start(final BundleContext context) throws Exception {
         addURLHandler(context);
         extenderManager = new ExtenderManager(context);
         extenderManager.start();
@@ -44,24 +55,37 @@ public class OSGiJavaEEActivator implements BundleActivator {
     }
 
     @Override
-    public void stop(BundleContext context) throws Exception {
+    public void stop(final BundleContext context) throws Exception {
         removeExtender();
         extenderManager.stop();
         removeURLHandler();
     }
 
-    private void addExtender(BundleContext context) {
+    /**
+     * Create an instance of {@link JavaEEExtender} and register it as an OSGi
+     * service.
+     * @param context the bundle context
+     */
+    private void addExtender(final BundleContext context) {
         JavaEEExtender extender = new JavaEEExtender(context);
         javaeeExtenderServiceRegistration = context
                 .registerService(Extender.class.getName(), extender, null);
     }
 
+    /**
+     * Unregisters the extender service.
+     */
     private void removeExtender() {
         javaeeExtenderServiceRegistration.unregister();
     }
 
+    /**
+     * Create a new instance of {@link EmbeddedJarURLStreamHandlerService} and
+     * register it as an OSGi service.
+     * @param context the bundle context
+     */
     @SuppressWarnings("unchecked")
-    private void addURLHandler(BundleContext context) {
+    private void addURLHandler(final BundleContext context) {
         Dictionary p = new Properties();
         p.put(URLConstants.URL_HANDLER_PROTOCOL, EMBEDDED_JAR_SCHEME);
         urlHandlerServiceRegistration = context
@@ -69,6 +93,9 @@ public class OSGiJavaEEActivator implements BundleActivator {
                         new EmbeddedJarURLStreamHandlerService(), p);
     }
 
+    /**
+     * Unregisters the URL handler service.
+     */
     private void removeURLHandler() {
         if (urlHandlerServiceRegistration != null) {
             urlHandlerServiceRegistration.unregister();

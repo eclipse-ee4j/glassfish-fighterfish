@@ -16,32 +16,50 @@
 
 package org.glassfish.osgijdbc;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
+import java.net.URI;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.net.URLConnection;
 import org.glassfish.osgijavaeebase.JarHelper;
 import org.osgi.service.url.AbstractURLStreamHandlerService;
 
-import java.io.*;
-import java.net.*;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
-import java.util.jar.*;
+import java.util.jar.Manifest;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-
-public class JDBCDriverURLStreamHandlerService extends
+/**
+ * URL handler service for JDBC driver.
+ */
+public final class JDBCDriverURLStreamHandlerService extends
         AbstractURLStreamHandlerService {
 
+    /**
+     * Logger.
+     */
     private static final Logger LOGGER = Logger.getLogger(
             JDBCDriverURLStreamHandlerService.class.getPackage().getName());
 
+    /**
+     * API class-loader.
+     */
     private final ClassLoader apiClassLoader;
 
-    public JDBCDriverURLStreamHandlerService(ClassLoader apiClassLoader){
-        this.apiClassLoader = apiClassLoader;
+    /**
+     * Create a new instance.
+     * @param cl class-loader
+     */
+    public JDBCDriverURLStreamHandlerService(final ClassLoader cl) {
+        this.apiClassLoader = cl;
     }
 
     @Override
-    public URLConnection openConnection(URL u) throws IOException {
+    public URLConnection openConnection(final URL u) throws IOException {
         assert (Constants.JDBC_DRIVER_SCHEME.equals(u.getProtocol()));
         try {
             debug("jdbc driver openConnection()");
@@ -97,16 +115,22 @@ public class JDBCDriverURLStreamHandlerService extends
     }
 
     @Override
-    protected void setURL(URL u, String protocol, String host, int port,
-            String auth, String user, String path, String query, String ref) {
+    @SuppressWarnings("checkstyle:ParameterNumber")
+    protected void setURL(final URL u, final String protocol, final String host,
+            final int port, final String auth, final String user,
+            final String path, final String query, final String ref) {
 
         super.setURL(u, protocol, host, port, auth, user, path, query, ref);
         debug("jdbc driver setURL()");
     }
 
-    private void debug(String s) {
-        if(LOGGER.isLoggable(Level.FINEST)){
-            LOGGER.log(Level.FINEST, "[osgi-jdbc] : {0}", s);
+    /**
+     * Log a {@code FINE} message.
+     * @param msg message to log
+     */
+    private void debug(final String msg) {
+        if (LOGGER.isLoggable(Level.FINEST)) {
+            LOGGER.log(Level.FINEST, "[osgi-jdbc] : {0}", msg);
         }
     }
 }

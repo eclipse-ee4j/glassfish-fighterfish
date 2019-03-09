@@ -23,39 +23,77 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * @author Sanjeeb.Sahoo@Sun.COM
+ * Utility that holds an instance of {@link InvocationContext}.
  */
-public class InvocationContextMgr {
+public final class InvocationContextMgr {
 
-    private static final InvocationContext invCtx = new InvocationContext() {
+    /**
+     * Cannot be instanciated.
+     */
+    private InvocationContextMgr() {
+    }
+
+    /**
+     * The invocation context instance.
+     */
+    private static final InvocationContext INVOCATION_CTX =
+            new InvocationContextImpl();
+
+    /**
+     * Get the invocation context.
+     * @return InvocationContext
+     */
+    public static InvocationContext getInvocationContext() {
+        return INVOCATION_CTX;
+    }
+
+    /**
+     * Implementation of {@link InvocationContext}.
+     */
+    private static final class InvocationContextImpl
+            implements InvocationContext {
+
+        /**
+         * Logger.
+         */
         private final Logger logger = Logger.getLogger(
-                getClass().getPackage().getName());
+                InvocationContextImpl.class.getPackage().getName());
 
-        private final ThreadLocal<WeakReference<ServletContext>> currentSC
-                = new InheritableThreadLocal<WeakReference<ServletContext>>();
+        /**
+         * Thread local to access the current servlet context.
+         */
+        private final ThreadLocal<WeakReference<ServletContext>> currentSC =
+                new InheritableThreadLocal<WeakReference<ServletContext>>();
 
-        private final ThreadLocal<WeakReference<WebModule>> currentWM
-                = new InheritableThreadLocal<WeakReference<WebModule>>();
+        /**
+         * Thread local to access the current web module.
+         */
+        private final ThreadLocal<WeakReference<WebModule>> currentWM =
+                new InheritableThreadLocal<WeakReference<WebModule>>();
 
         @Override
         public WebModule getWebModule() {
             WeakReference<WebModule> current = currentWM.get();
-            WebModule result = current != null ? current.get() : null;
+            WebModule result;
+            if (current != null) {
+                result = current.get();
+            } else {
+                result = null;
+            }
             logger.logp(Level.FINE, "InvocationContextMgr", "getWebModule",
                     "result = {0}", new Object[]{result});
             return result;
         }
 
         @Override
-        public void setWebModule(WebModule webModule) {
+        public void setWebModule(final WebModule webModule) {
             logger.logp(Level.FINE, "InvocationContextMgr", "setWebModule",
                     "webModule = {0}", new Object[]{webModule});
-            currentWM.set(webModule != null
-                    ? new WeakReference<WebModule>(webModule) : null);
+            if (webModule != null) {
+                currentWM.set(new WeakReference<WebModule>(webModule));
+            } else {
+                currentWM.set(null);
+            }
         }
-    };
-
-    public static InvocationContext getInvocationContext() {
-        return invCtx;
     }
 }

@@ -21,24 +21,33 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 
 /**
- * ResourceProxy that can delegate to actual objects upon usage.<br>
+ * ResourceProxy that can delegate to actual objects upon usage.
  * Does not cache the actual object as the actual object can be
- * re-configured<br>
- *
- * @author Jagadish Ramu
+ * re-configured.
  */
-public class ResourceProxy implements InvocationHandler, Invalidate {
+public final class ResourceProxy implements InvocationHandler, Invalidate {
 
+    /**
+     * Resource JNDI name.
+     */
     private final String jndiName;
+
+    /**
+     * Flag to indicate if the resource is invalidated.
+     */
     private boolean invalidated = false;
 
-    public ResourceProxy(String jndiName) {
-        this.jndiName = jndiName;
+    /**
+     * Create a new instance.
+     * @param jName JNDI name
+     */
+    public ResourceProxy(final String jName) {
+        this.jndiName = jName;
     }
 
     @Override
-    public Object invoke(Object proxy, Method method, Object[] args)
-            throws Throwable {
+    public Object invoke(final Object proxy, final Method method,
+            final Object[] args) throws Throwable {
 
         Object result = null;
         if (method.getName().equals("invalidate")) {
@@ -52,6 +61,7 @@ public class ResourceProxy implements InvocationHandler, Invalidate {
     /**
      * It is possible that reconfiguration of resource will happen.<br>
      * Always do lookup.
+     * @return Object
      */
     private Object getActualObject() {
         if (!invalidated) {

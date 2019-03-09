@@ -26,10 +26,8 @@ import org.jvnet.hk2.annotations.Service;
  * environment.
  *
  * @see OSGiJPAExtnBundleActivator
- *
- * @author Sanjeeb.Sahoo@Sun.COM
  */
 @Service
-@RunLevel(value=StartupRunLevel.VAL)
+@RunLevel(value = StartupRunLevel.VAL)
 public class JPAStartupService {
 }

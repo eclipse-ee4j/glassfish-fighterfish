@@ -20,39 +20,59 @@ import org.glassfish.osgicdi.OSGiService;
 
 import javax.inject.Inject;
 import javax.jms.JMSException;
-import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.TextMessage;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import org.glassfish.fighterfish.test.app16.entities.Message;
 
 /**
- * @author sanjeeb.sahoo@oracle.com
- *
+ * Base class for MDB implementations.
  */
-public class TestApp16MDB_Base  implements MessageListener{
+public class TestApp16MDBBase  implements MessageListener {
 
+    /**
+     * Entity manager factory.
+     */
     @Inject
-    @OSGiService(dynamic = true, serviceCriteria = "(persistence-unit=test.app16.entities)")
-    protected EntityManagerFactory emf;
+    @OSGiService(dynamic = true,
+            serviceCriteria = "(persistence-unit=test.app16.entities)")
+    private EntityManagerFactory emf;
+
+    /**
+     * Entity manager.
+     */
+    @SuppressWarnings("checkstyle:VisibilityModifier")
     protected EntityManager em;
 
     /**
-     * 
+     * Create a new instance.
      */
-    public TestApp16MDB_Base() {
-        super();
+    protected TestApp16MDBBase() {
     }
 
     /**
-     * @see MessageListener#onMessage(Message)
+     * Get the entity manager factory.
+     * @return EntityManagerFactory
      */
-    public void onMessage(Message message) {
-        String str = null;
+    protected EntityManagerFactory getEmf() {
+        return emf;
+    }
+
+    /**
+     * This implementation persists the message in database.
+     * @param message incoming message
+     */
+    @Override
+    public void onMessage(final javax.jms.Message message) {
+        if (message == null) {
+            throw new IllegalArgumentException("message is null");
+        }
+        String str;
         if (message instanceof TextMessage) {
             try {
                 str = TextMessage.class.cast(message).getText();
-                org.glassfish.fighterfish.test.app16.entities.Message msg = new org.glassfish.fighterfish.test.app16.entities.Message();
+                Message msg = new Message();
                 msg.setValue(str);
                 em.persist(msg);
                 log(str);
@@ -60,15 +80,17 @@ public class TestApp16MDB_Base  implements MessageListener{
                 // ignore
             }
         } else {
-            log(message.toString() + " is being ignored as it is not a TextMessage");
+            log(message.toString()
+                    + " is being ignored as it is not a TextMessage");
         }
     }
 
     /**
-     * @param str
+     * Log a message to the standard output.
+     * @param msg message to log
      */
-    protected void log(String str) {
-        System.out.println(getClass().getSimpleName() + ": " + str);
+    protected static void log(final String msg) {
+        System.out.println(TestApp16MDBBase.class.getSimpleName()
+                + ": " + msg);
     }
-
 }

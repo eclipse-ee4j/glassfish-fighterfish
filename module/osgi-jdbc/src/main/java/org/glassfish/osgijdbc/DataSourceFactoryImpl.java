@@ -21,35 +21,63 @@ import org.osgi.service.jdbc.DataSourceFactory;
 import javax.sql.ConnectionPoolDataSource;
 import javax.sql.DataSource;
 import javax.sql.XADataSource;
-import java.beans.*;
+import java.beans.BeanInfo;
+import java.beans.IntrospectionException;
+import java.beans.Introspector;
+import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.sql.Driver;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.Dictionary;
+import java.util.Iterator;
+import java.util.Locale;
+import java.util.Properties;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class DataSourceFactoryImpl implements DataSourceFactory {
+/**
+ * Data source factory implementation.
+ */
+public final class DataSourceFactoryImpl implements DataSourceFactory {
 
+    /**
+     * Logger.
+     */
     private static final Logger LOGGER = Logger.getLogger(
             DataSourceFactoryImpl.class.getPackage().getName());
 
+    /**
+     * Default locale.
+     */
     private static final Locale LOCALE = Locale.getDefault();
 
-    // represents the driver implementation class names for various types
-    // java.sql.Driver, javax.sql.DataSource,
-    // javax.sql.ConnectionPoolDataSource, javax.sql.XADataSource
+    /**
+     * Represents the driver implementation class names for various types.
+     * E.g. java.sql.Driver, javax.sql.DataSource,
+     * javax.sql.ConnectionPoolDataSource, javax.sql.XADataSource
+     */
     private final Dictionary header;
+
+    /**
+     * Bundle context of the driver.
+     */
     private final BundleContext driverBundleContext;
 
-    public DataSourceFactoryImpl(BundleContext context) {
+    /**
+     * Create a new instance.
+     * @param context the driver bundle context
+     */
+    public DataSourceFactoryImpl(final BundleContext context) {
         this.header = context.getBundle().getHeaders();
         this.driverBundleContext = context;
     }
 
     @Override
-    public DataSource createDataSource(Properties props) throws SQLException {
+    public DataSource createDataSource(final Properties props)
+            throws SQLException {
+
         String dataSourceClass = (String) header
                 .get(Constants.DS.replace('.', '_'));
         try {
@@ -65,14 +93,15 @@ public class DataSourceFactoryImpl implements DataSourceFactory {
 
     @Override
     public ConnectionPoolDataSource createConnectionPoolDataSource(
-            Properties props) throws SQLException {
+            final Properties props) throws SQLException {
 
         String cpdsClassName = (String) header
                 .get(Constants.CPDS.replace('.', '_'));
         try {
             Class cpdsClass = driverBundleContext.getBundle()
                     .loadClass(cpdsClassName);
-            ConnectionPoolDataSource cpds = (ConnectionPoolDataSource) cpdsClass.newInstance();
+            ConnectionPoolDataSource cpds = (ConnectionPoolDataSource)
+                    cpdsClass.newInstance();
             populateBean(props, cpdsClass, cpds);
             return cpds;
         } catch (Exception e) {
@@ -81,7 +110,7 @@ public class DataSourceFactoryImpl implements DataSourceFactory {
     }
 
     @Override
-    public XADataSource createXADataSource(Properties props)
+    public XADataSource createXADataSource(final Properties props)
             throws SQLException {
 
         String xadsClassName = (String) header
@@ -98,7 +127,7 @@ public class DataSourceFactoryImpl implements DataSourceFactory {
     }
 
     @Override
-    public Driver createDriver(Properties props) throws SQLException {
+    public Driver createDriver(final Properties props) throws SQLException {
 
         String driverClassName = (String) header
                 .get(Constants.DRIVER.replace('.', '_'));
@@ -116,8 +145,18 @@ public class DataSourceFactoryImpl implements DataSourceFactory {
         }
     }
 
-    private void populateBean(Properties properties, Class clazz,
-            Object object) throws IntrospectionException,
+    /**
+     * Populate the given bean.
+     * @param properties config properties
+     * @param clazz the bean class
+     * @param object the bean instance
+     * @throws IntrospectionException if an error occurs during reflection
+     * @throws IllegalAccessException if an error occurs during reflection
+     * @throws InvocationTargetException if an error occurs during reflection
+     * @throws SQLException if some setter are not found / available
+     */
+    private void populateBean(final Properties properties, final Class clazz,
+            final Object object) throws IntrospectionException,
             IllegalAccessException, InvocationTargetException, SQLException {
 
         if (properties == null) {
@@ -184,8 +223,8 @@ public class DataSourceFactoryImpl implements DataSourceFactory {
                         setter.invoke(object, result);
                     } else {
                         throw new SQLException(
-                                "Unable to find the setter method for property [ "
-                                + propertyName + " ]");
+                                "Unable to find the setter method for"
+                                + " property [ " + propertyName + " ]");
                     }
                     break;
                 }
@@ -197,13 +236,20 @@ public class DataSourceFactoryImpl implements DataSourceFactory {
         }
     }
 
+    /**
+     * Hook for pre destroy action.
+     */
     public void preDestroy() {
         debug("predestroy() called");
     }
 
-    private static void debug(String s) {
+    /**
+     * Log a {@code FINE} message.
+     * @param msg message to log
+     */
+    private static void debug(final String msg) {
         if (LOGGER.isLoggable(Level.FINEST)) {
-            LOGGER.log(Level.FINEST, "[osgi-jdbc] : {0}", s);
+            LOGGER.log(Level.FINEST, "[osgi-jdbc] : {0}", msg);
         }
     }
 }

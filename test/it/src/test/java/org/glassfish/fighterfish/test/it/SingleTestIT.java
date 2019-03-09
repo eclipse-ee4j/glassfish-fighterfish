@@ -31,8 +31,6 @@ import static org.junit.Assert.assertNotNull;
 /**
  * This class demonstrates how simple it is to write a test scenario using
  * pax-exam and the simple abstractions provided by our test.util bundle.
- *
- * @author Sanjeeb.Sahoo@Sun.COM
  */
 public class SingleTestIT extends AbstractTestObject {
 

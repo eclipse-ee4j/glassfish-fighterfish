@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2013, 2018 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2013, 2019 Oracle and/or its affiliates. All rights reserved.
 #
 # This program and the accompanying materials are made available under the
 # terms of the Eclipse Public License v. 2.0, which is available at
@@ -28,8 +28,6 @@
 # ct.home - specifies where OSGi CT has been checked out
 # ct.name - refers to the OSGi CT test suite that we want to run. e.g., http|transaction|webcontainer
 #
-# Author: sanjeeb.sahoo@oracle.com
-# Date: 23 Feb 2013
 
 -target = ${ct.home}/org.osgi.test.cases.${ct.name}/generated/org.osgi.test.cases.${ct.name}.jar;version=file
 
@@ -48,9 +46,9 @@
 # where as GlassFish starts all the OSGi services after its core services are started. So, this delay bundle
 # introduces a 10 second delay so that CTs don't start running before services are available.
 -runbundles = \
- ${user.home}/.m2/repository/org/glassfish/fighterfish/test.ct.misc.bundle.javax.servlet-api_2.5/1.0.0-SNAPSHOT/test.ct.misc.bundle.javax.servlet-api_2.5-1.0.0-SNAPSHOT.jar;version=file, \
+ ${user.home}/.m2/repository/org/glassfish/fighterfish/fighterfish-test-ct-misc-bundle/3.0.0-SNAPSHOT/fighterfish-test-ct-misc-bundle-servlet-2.5.jar;version=file, \
  ${glassfish.home}/modules/glassfish.jar;version=file, \
- ${user.home}/.m2/repository/org/glassfish/fighterfish/test.ct.misc.bundle.delay/1.0.0-SNAPSHOT/test.ct.misc.bundle.delay-1.0.0-SNAPSHOT.jar;version=file
+ ${user.home}/.m2/repository/org/glassfish/fighterfish/test.ct.misc.bundle.delay/3.0.0-SNAPSHOT/fighterfish-test-ct-misc-bundle-delay.jar;version=file
     
 # Start VM in debug mode to allow us to easily attach a debugger.
 # All options that are needed to start a debugger are passed in one string with ',' as a delim.
@@ -79,4 +77,3 @@
 # Equinox options
 #   osgi.resolverMode=strict, \
 #   osgi.compatibility.bootdelegation=false, \
-

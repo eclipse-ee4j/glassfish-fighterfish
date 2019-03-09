@@ -21,21 +21,24 @@ import org.glassfish.osgijavaeebase.Extender;
 import org.osgi.framework.ServiceRegistration;
 
 /**
- * @author Sanjeeb.Sahoo@Sun.COM
+ * Bundle activator for this module.
  */
-public class OSGiWebContainerActivator implements BundleActivator {
+public final class OSGiWebContainerActivator implements BundleActivator {
 
+    /**
+     * Service registration for the Web extender service.
+     */
     private ServiceRegistration extenderReg;
 
     @Override
-    public void start(BundleContext context) throws Exception {
+    public void start(final BundleContext context) throws Exception {
         WebExtender webExtender = new WebExtender(context);
         extenderReg = context.registerService(Extender.class.getName(),
                 webExtender, null);
     }
 
     @Override
-    public void stop(BundleContext context) throws Exception {
+    public void stop(final BundleContext context) throws Exception {
         // Call unregister so that ExtenderManager will stop with a valid
         // BundleContext
         extenderReg.unregister();

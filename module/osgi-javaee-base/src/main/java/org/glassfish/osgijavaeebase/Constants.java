@@ -16,14 +16,26 @@
 package org.glassfish.osgijavaeebase;
 
 /**
- * @author Sanjeeb.Sahoo@Sun.COM
+ * Common constants for the base module.
  */
-public class Constants {
+public final class Constants {
 
-    // Protocol used both in Felix and Equinox to read content of a bundle
-    // directly from a jar or directory as opposed to first copying it to
-    // bundle cache and then reading from there.
+    /**
+     * Cannot be instanciated.
+     */
+    private Constants() {
+    }
+
+    /**
+     * Protocol used both in Felix and Equinox to read content of a bundle
+     * directly from a jar or directory as opposed to first copying it to
+     * bundle cache and then reading from there.
+     */
     public static final String REFERENCE_PROTOCOL = "reference:";
+
+    /**
+     * File protocol.
+     */
     public static final String FILE_PROTOCOL = "file:";
 
 }

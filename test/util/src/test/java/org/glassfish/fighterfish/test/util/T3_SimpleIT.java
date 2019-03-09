@@ -34,7 +34,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 /**
- * @author sanjeeb.sahoo@oracle.com
+ * Test3.
  */
 @RunWith(PaxExam.class)
 @ExamReactorStrategy(PerClass.class)

@@ -18,11 +18,13 @@ package org.glassfish.fighterfish.test.app18;
 import javax.ejb.Local;
 
 /**
- * @author sanjeeb.sahoo@oracle.com
- *
+ * EJB local interface.
  */
 @Local
 public interface Foo {
 
+    /**
+     * Test method.
+     */
     void bar();
 }

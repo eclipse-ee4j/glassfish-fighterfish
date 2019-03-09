@@ -25,45 +25,71 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 /**
- * @author sanjeeb.sahoo@oracle.com
- * 
+ * Department entity.
  */
 @Entity
+@SuppressWarnings("checkstyle:DesignForExtension")
 public class Department implements java.io.Serializable {
 
     /**
-     * 
+     * Serialization UID.
      */
     private static final long serialVersionUID = -6707620916711314356L;
 
+    /**
+     * Department name.
+     */
     // Absence of @GeneratedValue annotation means
     // user is responsible for setting id.
-    @Id
     // name is the PK of this entity.
+    @Id
     private String name;
 
+    /**
+     * Employees in the department.
+     */
     @OneToMany(mappedBy = "department", cascade = CascadeType.ALL)
     private Collection<Employee> employees = new ArrayList<Employee>();
 
+    /**
+     * Create a new instance.
+     */
     protected Department() {
-        // Every entity bean must have a default public or protected constructor
+        // Every entity bean must have a default public or protected
+        // constructor
     }
 
-    public Department(String name) {
-        if (name == null || name.length() == 0) {
+    /**
+     * Create a new instance.
+     * @param depName department name
+     */
+    public Department(final String depName) {
+        if (depName == null || depName.length() == 0) {
             throw new IllegalArgumentException("name is empty");
         }
-        this.name = name;
+        this.name = depName;
     }
 
+    /**
+     * Get the department name.
+     * @return String
+     */
     public String getName() {
         return name;
     }
 
-    public void addEmployee(Employee e) {
-        employees.add(e);
+    /**
+     * Add an employee to the department.
+     * @param emp employee to add
+     */
+    public void addEmployee(final Employee emp) {
+        employees.add(emp);
     }
 
+    /**
+     * Get the employees in the department.
+     * @return collection of employee
+     */
     public Collection<Employee> getEmployees() {
         return employees;
     }

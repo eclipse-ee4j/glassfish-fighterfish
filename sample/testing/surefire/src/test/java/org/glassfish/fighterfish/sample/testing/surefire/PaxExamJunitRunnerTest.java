@@ -58,8 +58,6 @@ import static org.junit.Assert.assertThat;
  *
  * @see TestContext
  * @see TestsConfiguration
- *
- * @author sanjeeb.sahoo@oracle.com
  */
 @RunWith(PaxExam.class)
 @ExamReactorStrategy(PerClass.class)

@@ -24,7 +24,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Modifier;
-import java.util.*;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
@@ -32,40 +40,92 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 
-public class JDBCDriverLoader {
+import static org.glassfish.osgijdbc.Constants.DRIVER;
 
+/**
+ * Utility to load JDBC drivers.
+ */
+public final class JDBCDriverLoader {
+
+    /**
+     * Logger.
+     */
     private static final Logger LOGGER = Logger.getLogger(
             JDBCDriverLoader.class.getPackage().getName());
 
-    private static final String DRIVER_INTERFACE_NAME = "java.sql.Driver";
+    /**
+     * Constant for JDBC driver SPI file.
+     */
     private static final String META_INF_SERVICES_DRIVER_FILE =
             "META-INF/services/java.sql.Driver";
+
+    /**
+     * Constant for GlassFish vendor mapping file location.
+     */
     private static final String DBVENDOR_MAPPINGS_ROOT = System.getProperty(
             SystemPropertyConstants.INSTALL_ROOT_PROPERTY) + File.separator
             + "lib" + File.separator + "install" + File.separator + "databases"
             + File.separator + "dbvendormapping" + File.separator;
 
+    /**
+     * Constant for the data source properties file name.
+     */
     private static final String DS_PROPERTIES = "ds.properties";
+
+    /**
+     * Constant for the connection pool data source properties file name.
+     */
     private static final String CPDS_PROPERTIES = "cpds.properties";
+
+    /**
+     * Constant for the transaction properties file name.
+     */
     private static final String XADS_PROPERTIES = "xads.properties";
+
+    /**
+     * Constant for the driver properties file name.
+     */
     private static final String DRIVER_PROPERTIES = "driver.properties";
+
+    /**
+     * Constant for the db vendor properties file name.
+     */
     private static final String VENDOR_PROPERTIES = "dbvendor.properties";
 
+    /**
+     * Default locale.
+     */
     private static final Locale LOCALE = Locale.getDefault();
 
+    /**
+     * Db vendor mappings.
+     */
     public static final Map<String, Map<String, String>> DB_VENDOR_MAPPINGS =
             new HashMap<String, Map<String, String>>();
 
+    /**
+     * Load all mappings.
+     */
     static {
         loadMappings();
     }
 
+    /**
+     * Class-loader to use for loading the driver.
+     */
     private final ClassLoader cl;
 
-    public JDBCDriverLoader(ClassLoader cl) {
-        this.cl = cl;
+    /**
+     * Create a new instance.
+     * @param cloader class-loader to use
+     */
+    public JDBCDriverLoader(final ClassLoader cloader) {
+        this.cl = cloader;
     }
 
+    /**
+     * Load the configuration properties from all files.
+     */
     @SuppressWarnings("unchecked")
     private static void loadMappings() {
         DB_VENDOR_MAPPINGS.put(Constants.DS,
@@ -80,7 +140,12 @@ public class JDBCDriverLoader {
                 ((Map) loadProperties(VENDOR_PROPERTIES)));
     }
 
-    private static Properties loadProperties(String type) {
+    /**
+     * Load config properties for a config source.
+     * @param type the config source
+     * @return Properties
+     */
+    private static Properties loadProperties(final String type) {
         Properties fileProperties = new Properties();
         String fileName = DBVENDOR_MAPPINGS_ROOT + type;
         File mappingFile = new File(fileName);
@@ -95,7 +160,8 @@ public class JDBCDriverLoader {
                 }
             } catch (IOException ioe) {
                 LOGGER.log(Level.FINE,
-                        "IO Exception while loading properties file [ {0} ] : {1}",
+                        "IO Exception while loading properties file [ {0} ]"
+                                + " : {1}",
                         new Object[]{mappingFile.getAbsolutePath(), ioe});
             }
         } else {
@@ -116,7 +182,13 @@ public class JDBCDriverLoader {
         return vendors.keySet();
     }
 
-    private String getDBVendor(String className, String type) {
+    /**
+     * Get the db vendor mapping for the given class name and type.
+     * @param className requested class name
+     * @param type requested type
+     * @return vendor mapping
+     */
+    private String getDBVendor(final String className, final String type) {
         String dbVendor = null;
         Map map = DB_VENDOR_MAPPINGS.get(type);
         Set entrySet = map.entrySet();
@@ -131,7 +203,15 @@ public class JDBCDriverLoader {
         return dbVendor;
     }
 
-    private String getImplClassNameFromMapping(String dbVendor, String resType) {
+    /**
+     * Get the implementation class from the given mapping.
+     * @param dbVendor the request mapping
+     * @param resType the request type
+     * @return the implementation class name
+     */
+    private String getImplClassNameFromMapping(final String dbVendor,
+            final String resType) {
+
         Map fileProperties = DB_VENDOR_MAPPINGS.get(resType);
         if (fileProperties == null) {
             throw new IllegalStateException(
@@ -140,13 +220,19 @@ public class JDBCDriverLoader {
         return (String) fileProperties.get(dbVendor.toUpperCase(LOCALE));
     }
 
-    public Properties loadDriverInformation(File f) {
+    /**
+     * Load driver info from file.
+     * @param file input file
+     * @return Properties
+     */
+    @SuppressWarnings("checkstyle:MethodLength")
+    public Properties loadDriverInformation(final File file) {
         String implClass;
         JarFile jarFile = null;
 
         Properties properties = new Properties();
         try {
-            jarFile = new JarFile(f);
+            jarFile = new JarFile(file);
             Enumeration e = jarFile.entries();
             while (e.hasMoreElements()) {
 
@@ -161,7 +247,7 @@ public class JDBCDriverLoader {
                         implClass = processMetaInfServicesDriverFile(metaInf);
                         if (implClass != null) {
                             if (isLoaded(implClass, Constants.DRIVER, cl)) {
-                                String vendor = getVendorFromManifest(f);
+                                String vendor = getVendorFromManifest(file);
 
                                 Set<String> dbVendorNames =
                                         getDatabaseVendorNames();
@@ -195,7 +281,7 @@ public class JDBCDriverLoader {
                                 } else if (vendor != null) {
 
                                     Set<String> dsClasses =
-                                            getImplClassesByIteration(f,
+                                            getImplClassesByIteration(file,
                                                     Constants.DS, vendor, cl);
                                     if (dsClasses.size() == 1) {
                                         properties.put(Constants.DS,
@@ -203,7 +289,7 @@ public class JDBCDriverLoader {
                                     }
 
                                     Set<String> cpdsClasses =
-                                            getImplClassesByIteration(f,
+                                            getImplClassesByIteration(file,
                                                     Constants.CPDS, vendor, cl);
                                     if (cpdsClasses.size() == 1) {
                                         properties.put(Constants.CPDS,
@@ -211,7 +297,7 @@ public class JDBCDriverLoader {
                                     }
 
                                     Set<String> xadsClasses =
-                                            getImplClassesByIteration(f,
+                                            getImplClassesByIteration(file,
                                                     Constants.XADS, vendor, cl);
                                     if (xadsClasses.size() == 1) {
                                         properties.put(Constants.XADS,
@@ -311,16 +397,24 @@ public class JDBCDriverLoader {
             return properties;
         } else {
             throw new RuntimeException("Unable to introspect jar [ "
-                    + f.getName() + " ] for Driver Class, "
+                    + file.getName() + " ] for Driver Class, "
                     + "no implementation for java.sql.Driver is found");
         }
     }
 
-    private void detectImplClasses(Properties properties, String dbVendor) {
+    /**
+     * Detect implementation classes.
+     * @param properties result properties
+     * @param dbVendor the requested vendor
+     */
+    private void detectImplClasses(final Properties properties,
+            final String dbVendor) {
+
         String xads = getImplClassNameFromMapping(dbVendor, Constants.XADS);
         String cpds = getImplClassNameFromMapping(dbVendor, Constants.CPDS);
         String ds = getImplClassNameFromMapping(dbVendor, Constants.DS);
-        String driver = getImplClassNameFromMapping(dbVendor, Constants.DRIVER);
+        String driver = getImplClassNameFromMapping(dbVendor,
+                Constants.DRIVER);
 
         properties.put(Constants.XADS, xads);
         properties.put(Constants.CPDS, cpds);
@@ -328,14 +422,23 @@ public class JDBCDriverLoader {
         properties.put(Constants.DRIVER, driver);
     }
 
-    private Set<String> getImplClassesByIteration(File f, String resType,
-            String dbVendor, ClassLoader cl) {
+    /**
+     * Get the implementation classes iteratively.
+     * @param file the input file
+     * @param resType the requested type
+     * @param dbVendor the requested vendor
+     * @param cloader the class-loader to use
+     * @return list of implementation class names
+     */
+    private Set<String> getImplClassesByIteration(final File file,
+            final String resType, final String dbVendor,
+            final ClassLoader cloader) {
 
         SortedSet<String> implClassNames = new TreeSet<String>();
         String implClass;
         JarFile jarFile = null;
         try {
-            jarFile = new JarFile(f);
+            jarFile = new JarFile(file);
             Enumeration e = jarFile.entries();
             while (e.hasMoreElements()) {
 
@@ -343,7 +446,7 @@ public class JDBCDriverLoader {
                 if (zipEntry != null) {
 
                     String entry = zipEntry.getName();
-                    if (DRIVER_INTERFACE_NAME.equals(resType)) {
+                    if (DRIVER.equals(resType)) {
                         if (META_INF_SERVICES_DRIVER_FILE.equals(entry)) {
 
                             InputStream inputStream = jarFile
@@ -351,10 +454,10 @@ public class JDBCDriverLoader {
                             implClass = processMetaInfServicesDriverFile(
                                     inputStream);
                             if (implClass != null) {
-                                if (isLoaded(implClass, resType, cl)) {
+                                if (isLoaded(implClass, resType, cloader)) {
                                     //Add to the implClassNames only if vendor
                                     // name matches.
-                                    if (isVendorSpecific(f, dbVendor,
+                                    if (isVendorSpecific(file, dbVendor,
                                             implClass)) {
                                         implClassNames.add(implClass);
                                     }
@@ -379,8 +482,8 @@ public class JDBCDriverLoader {
                                         .contains("DRIVER")) {
                             implClass = getClassName(entry);
                             if (implClass != null) {
-                                if (isLoaded(implClass, resType, cl)) {
-                                    if (isVendorSpecific(f, dbVendor,
+                                if (isLoaded(implClass, resType, cloader)) {
+                                    if (isVendorSpecific(file, dbVendor,
                                             implClass)) {
                                         implClassNames.add(implClass);
                                     }
@@ -404,11 +507,17 @@ public class JDBCDriverLoader {
             }
         }
         // Could be one or many depending on the connection definition class
-        // name 
+        // name
         return implClassNames;
     }
 
-    private boolean isNotAbstract(Class cls) {
+    /**
+     * Test if the given class is not abstract.
+     * @param cls the class to check
+     * @return {@code true} if the class is not abstract, {@code false}
+     * otherwise
+     */
+    private boolean isNotAbstract(final Class cls) {
         int modifier = cls.getModifiers();
         return !Modifier.isAbstract(modifier);
     }
@@ -419,10 +528,12 @@ public class JDBCDriverLoader {
      * the META-INF/services/java.sql.Driver file contains the name of the
      * driver class.
      *
-     * @param inputStream
+     * @param inputStream input stream
      * @return driver implementation class name
      */
-    private String processMetaInfServicesDriverFile(InputStream inputStream) {
+    private String processMetaInfServicesDriverFile(
+            final InputStream inputStream) {
+
         String driverClassName = null;
         InputStreamReader reader = null;
         BufferedReader bufferedReader = null;
@@ -435,7 +546,8 @@ public class JDBCDriverLoader {
             }
         } catch (IOException ioex) {
             LOGGER.log(Level.FINEST,
-                    "DriverLoader : exception while processing META-INF directory for DriverClassName {0}",
+                    "DriverLoader : exception while processing META-INF"
+                    + " directory for DriverClassName {0}",
                     ioex);
         } finally {
             try {
@@ -444,7 +556,8 @@ public class JDBCDriverLoader {
                 }
             } catch (IOException ex) {
                 LOGGER.log(Level.FINE,
-                        "Error while closing file handle after reading META-INF file : ",
+                        "Error while closing file handle after reading"
+                        + " META-INF file : ",
                         ex);
             }
             try {
@@ -453,7 +566,8 @@ public class JDBCDriverLoader {
                 }
             } catch (IOException ex) {
                 LOGGER.log(Level.FINE,
-                        "Error while closing file handle after reading META-INF file : ",
+                        "Error while closing file handle after reading"
+                        + " META-INF file : ",
                         ex);
             }
         }
@@ -465,10 +579,12 @@ public class JDBCDriverLoader {
      * impl.
      *
      * @param classname class
+     * @param resType request type
+     * @param loader class-loader to use
      * @return boolean indicating whether the class is loaded or not
      */
-    private boolean isLoaded(String classname, String resType,
-            ClassLoader loader) {
+    private boolean isLoaded(final String classname, final String resType,
+            final ClassLoader loader) {
         Class cls;
         try {
             cls = loader.loadClass(classname);
@@ -486,7 +602,7 @@ public class JDBCDriverLoader {
      * @param resType resource-type
      * @return boolean indicating the status
      */
-    private boolean isResType(Class cls, String resType) {
+    private boolean isResType(final Class cls, final String resType) {
         boolean isResType = false;
         if (cls != null) {
             if (Constants.DS.equals(resType)) {
@@ -494,7 +610,8 @@ public class JDBCDriverLoader {
                     isResType = isNotAbstract(cls);
                 }
             } else if (Constants.CPDS.equals(resType)) {
-                if (javax.sql.ConnectionPoolDataSource.class.isAssignableFrom(cls)) {
+                if (javax.sql.ConnectionPoolDataSource.class
+                        .isAssignableFrom(cls)) {
                     isResType = isNotAbstract(cls);
                 }
             } else if (Constants.XADS.equals(resType)) {
@@ -510,19 +627,36 @@ public class JDBCDriverLoader {
         return isResType;
     }
 
-    private String getClassName(String classname) {
-        classname = classname.replaceAll("/", ".");
-        classname = classname.substring(0, classname.lastIndexOf(".class"));
-        return classname;
+    /**
+     * Get the class name from a JAR entry name.
+     * @param entryName the JAR entry name
+     * @return class name
+     */
+    private String getClassName(final String entryName) {
+        String zeClassName =  entryName.replaceAll("/", ".");
+        zeClassName = zeClassName.substring(0,
+                entryName.lastIndexOf(".class"));
+        return zeClassName;
     }
 
-    private boolean isVendorSpecific(File f, String dbVendor, String className) {
+    /**
+     * Test if a class name is vendor specific.
+     * @param file JAR file
+     * @param dbVendor request vendor
+     * @param className class name to test
+     * @return {@code true} if the class is vendor specific, {@code false}
+     * otherwise
+     */
+    private boolean isVendorSpecific(final File file, final String dbVendor,
+            final String className) {
+
         //File could be a jdbc jar file or a normal jar file
         boolean isVendorSpecific = false;
-        String vendor = getVendorFromManifest(f);
+        String vendor = getVendorFromManifest(file);
 
         if (vendor == null) {
-            //might have to do this part by going through the class names or some other method.
+            //might have to do this part by going through the class names or
+            // some other method.
             //dbVendor might be used in this portion
             if (isVendorSpecific(dbVendor, className)) {
                 isVendorSpecific = true;
@@ -547,7 +681,9 @@ public class JDBCDriverLoader {
      * @param className class name
      * @return true if the className in question is vendor specific.
      */
-    private boolean isVendorSpecific(String dbVendor, String className) {
+    private boolean isVendorSpecific(final String dbVendor,
+            final String className) {
+
         return className.toUpperCase(LOCALE)
                 .contains(dbVendor.toUpperCase(LOCALE));
     }
@@ -559,7 +695,7 @@ public class JDBCDriverLoader {
      * @return null if no manifest entry found.
      */
     @SuppressWarnings("deprecation")
-    private String getVendorFromManifest(File f) {
+    private String getVendorFromManifest(final File f) {
         String vendor = null;
         JarFile jarFile = null;
         try {

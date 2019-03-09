@@ -21,21 +21,24 @@ import org.glassfish.osgijavaeebase.Extender;
 import org.osgi.framework.ServiceRegistration;
 
 /**
- * @author Sanjeeb.Sahoo@Sun.COM
+ * Bundle activator for the OSGi EJB module.
  */
-public class OSGiEJBContainerActivator implements BundleActivator {
+public final class OSGiEJBContainerActivator implements BundleActivator {
 
+    /**
+     * Service registration for the EJB extender service.
+     */
     private ServiceRegistration ejbExtenderReg;
 
     @Override
-    public void start(BundleContext context) throws Exception {
+    public void start(final BundleContext context) throws Exception {
         EJBExtender ejbExtender = new EJBExtender(context);
         ejbExtenderReg = context.registerService(Extender.class.getName(),
                 ejbExtender, null);
     }
 
     @Override
-    public void stop(BundleContext context) throws Exception {
+    public void stop(final BundleContext context) throws Exception {
         // Unregister so that ExtenderManager can stop Extender with an active
         // bundle ctx
         ejbExtenderReg.unregister();

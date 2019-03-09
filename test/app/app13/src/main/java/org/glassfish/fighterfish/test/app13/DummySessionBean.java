@@ -22,10 +22,11 @@ import javax.ejb.Stateless;
  * Session Bean implementation class DummySessionBean.
  */
 @Stateless
+@SuppressWarnings("checkstyle:DesignForExtension")
 public class DummySessionBean implements DummySessionBeanLocal {
 
     /**
-     * Default constructor. 
+     * Create a new instance.
      */
     public DummySessionBean() {
     }

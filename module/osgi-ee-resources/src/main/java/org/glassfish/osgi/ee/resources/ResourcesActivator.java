@@ -23,14 +23,24 @@ import org.osgi.framework.ServiceRegistration;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class ResourcesActivator implements BundleActivator {
+/**
+ * Bundle activator for the OSGi EE module.
+ */
+public final class ResourcesActivator implements BundleActivator {
 
+    /**
+     * Logger.
+     */
     private static final Logger LOGGER = Logger.getLogger(
             ResourcesActivator.class.getPackage().getName());
+
+    /**
+     * Service registration for the extender service.
+     */
     private ServiceRegistration extenderReg;
 
     @Override
-    public void start(BundleContext bundleContext) throws Exception {
+    public void start(final BundleContext bundleContext) throws Exception {
         ResourcesExtender extender = new ResourcesExtender(bundleContext);
         extenderReg = bundleContext.registerService(Extender.class.getName(),
                 extender, null);
@@ -38,14 +48,18 @@ public class ResourcesActivator implements BundleActivator {
     }
 
     @Override
-    public void stop(BundleContext bundleContext) throws Exception {
+    public void stop(final BundleContext bundleContext) throws Exception {
         debug("Bundle de-activated");
         extenderReg.unregister();
     }
 
-    private void debug(String s) {
+    /**
+     * Log a message at the {@code FINEST} level.
+     * @param msg message to log
+     */
+    private void debug(final String msg) {
         if (LOGGER.isLoggable(Level.FINEST)) {
-            LOGGER.log(Level.FINEST, "[osgi-ee-resources] : {0}", s);
+            LOGGER.log(Level.FINEST, "[osgi-ee-resources] : {0}", msg);
         }
     }
 }

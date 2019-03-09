@@ -19,21 +19,30 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.NoneScoped;
 
 /**
- * @author sanjeeb.sahoo@oracle.com
- *
+ * Simple JSF managed bean.
  */
 @ManagedBean
 @NoneScoped
-public class Bean {
+public final class Bean {
 
-    protected String foo = "bar";
+    /**
+     * Foo.
+     */
+    private String foo = "bar";
 
+    /**
+     * Get foo.
+     * @return String
+     */
     public String getFoo() {
         return foo;
     }
 
-    public void setFoo(String foo) {
-        this.foo = foo;
+    /**
+     * Set foo.
+     * @param newFoo the new value of foo
+     */
+    public void setFoo(final String newFoo) {
+        this.foo = newFoo;
     }
-
 }

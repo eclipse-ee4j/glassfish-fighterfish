@@ -27,28 +27,39 @@ import javax.interceptor.InvocationContext;
 import javax.transaction.UserTransaction;
 
 /**
- * Message-Driven Bean implementation class for: TestApp16MDB_BMT
- *
+ * Message-Driven Bean implementation class for: TestApp16MDB_BMT.
  */
 @MessageDriven(
         activationConfig = {
             @ActivationConfigProperty(
-                    propertyName = "destinationType", propertyValue = "javax.jms.Topic"
+                    propertyName = "destinationType",
+                    propertyValue = "javax.jms.Topic"
             )},
         mappedName = "jms/fighterfish.TestApp16Topic"
 )
 @TransactionManagement(TransactionManagementType.BEAN)
-public class TestApp16MDB_BMT extends TestApp16MDB_Base {
+@SuppressWarnings("checkstyle:DesignForExtension")
+public class TestApp16MDBBMT extends TestApp16MDBBase {
 
+    /**
+     * User transaction.
+     */
     @Inject
     @OSGiService
-    UserTransaction utx;
+    private UserTransaction utx;
 
+    /**
+     * Interceptor for setEM.
+     *
+     * @param ctx invocation context
+     * @return Object
+     * @throws Exception if an error occurs
+     */
     @AroundInvoke
-    Object setEM(InvocationContext ctx) throws Exception {
+    Object setEM(final InvocationContext ctx) throws Exception {
         log("entering setEM()");
         utx.begin();
-        em = emf.createEntityManager();
+        em = getEmf().createEntityManager();
         em.joinTransaction();
         try {
             Object result = ctx.proceed();

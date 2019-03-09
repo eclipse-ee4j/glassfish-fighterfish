@@ -16,38 +16,70 @@
 package org.glassfish.fighterfish.test.app16.entities;
 
 import java.io.Serializable;
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 
 /**
  * Entity implementation class for Entity: Message.
- *
  */
 @Entity
+@SuppressWarnings("checkstyle:DesignForExtension")
 public class Message implements Serializable {
 
+    /**
+     * Serialization UID.
+     */
+    private static final long serialVersionUID = 1L;
+
+    /**
+     * Message id.
+     */
     @Id
     @GeneratedValue
     private Long id;
-    private String value;
-    private static final long serialVersionUID = 1L;
 
+    /**
+     * Message value.
+     */
+    private String val;
+
+    /**
+     * Create a new instance.
+     */
     public Message() {
         super();
     }
 
+    /**
+     * Get the message id.
+     * @return Long
+     */
     public Long getId() {
         return this.id;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    /**
+     * Set the message id.
+     * @param newId id to set
+     */
+    public void setId(final Long newId) {
+        this.id = newId;
     }
 
+    /**
+     * Get the message value.
+     * @return String
+     */
     public String getValue() {
-        return this.value;
+        return this.val;
     }
 
-    public void setValue(String value) {
-        this.value = value;
+    /**
+     * Set the message value.
+     * @param newValue value to set
+     */
+    public void setValue(final String newValue) {
+        this.val = newValue;
     }
 }

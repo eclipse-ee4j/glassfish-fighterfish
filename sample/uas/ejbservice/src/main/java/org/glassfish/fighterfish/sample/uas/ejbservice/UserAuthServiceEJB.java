@@ -24,19 +24,23 @@ import java.util.List;
  */
 @Stateless
 @Local({UserAuthService.class})
-public class UserAuthServiceEJB implements UserAuthService {
+public final class UserAuthServiceEJB implements UserAuthService {
 
+    /**
+     * Entity manager.
+     */
     @PersistenceContext
     private EntityManager em;
 
     /**
-     * Default constructor.
+     * Create a new instance.
      */
     public UserAuthServiceEJB() {
     }
 
     @Override
-    public boolean login(String name, String password) {
+    public boolean login(final String name, final String password) {
+
         log("Logging in (" + name + ", " + password + ")");
         UserCredential uc = em.find(UserCredential.class, name);
         boolean result = (uc != null && password.equals(uc.getPassword()));
@@ -55,7 +59,7 @@ public class UserAuthServiceEJB implements UserAuthService {
     }
 
     @Override
-    public boolean register(String name, String password) {
+    public boolean register(final String name, final String password) {
         log("Registering (" + name + ", " + password + ")");
         UserCredential uc = em.find(UserCredential.class, name);
         if (uc != null) {
@@ -69,7 +73,7 @@ public class UserAuthServiceEJB implements UserAuthService {
     }
 
     @Override
-    public boolean unregister(String name) {
+    public boolean unregister(final String name) {
         log("Unregistering (" + name + ")");
         UserCredential uc = em.find(UserCredential.class, name);
         if (uc == null) {
@@ -93,7 +97,11 @@ public class UserAuthServiceEJB implements UserAuthService {
         return report.toString();
     }
 
-    private void log(String msg) {
+    /**
+     * Log a message to the standard output.
+     * @param msg message to log
+     */
+    private void log(final String msg) {
         System.out.println("UserAuthServiceEJB: " + msg);
     }
 }

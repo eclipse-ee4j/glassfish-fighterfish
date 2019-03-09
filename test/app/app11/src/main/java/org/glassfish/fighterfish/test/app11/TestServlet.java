@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -16,7 +16,6 @@
 
 package org.glassfish.fighterfish.test.app11;
 
-import org.glassfish.fighterfish.test.app11.ejb.*;
 import javax.ejb.EJB;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
@@ -24,14 +23,25 @@ import javax.servlet.ServletResponse;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import java.io.IOException;
+import org.glassfish.fighterfish.test.app11.ejb.TestRemote;
 
+/**
+ * Test servlet that injects a remote EJB.
+ */
 @WebServlet("/TestServlet")
-public class TestServlet extends HttpServlet {
+public final class TestServlet extends HttpServlet {
 
-    @EJB TestRemote ejb;
+    /**
+     * TestRemote service.
+     */
+    @EJB
+    private TestRemote ejb;
 
     @Override
-    public void service(ServletRequest req, ServletResponse res) throws ServletException, IOException {
+    public void service(final ServletRequest req,
+            final ServletResponse res)
+            throws ServletException, IOException {
+
         System.out.println("EJB is " + ejb);
         res.getWriter().print("\nEJB is " + ejb + "\n");
         res.getWriter().print(ejb.test("Hello World") + "\n");

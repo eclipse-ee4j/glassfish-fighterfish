@@ -19,12 +19,14 @@ package org.glassfish.fighterfish.test.app11.ejb;
 import javax.ejb.Stateless;
 
 /**
- * @author Sanjeeb.Sahoo@Sun.COM
+ * Stateless implementation of the local EJB interface.
  */
 @Stateless
-public class TestLocalBean implements TestLocal{
+@SuppressWarnings("checkstyle:DesignForExtension")
+public class TestLocalBean implements TestLocal {
+
     @Override
-    public String test(String s) {
+    public String test(final String s) {
         return s.toUpperCase();
     }
 }

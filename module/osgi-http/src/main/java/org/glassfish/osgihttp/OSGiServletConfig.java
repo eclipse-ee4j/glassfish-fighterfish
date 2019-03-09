@@ -24,25 +24,43 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @author Sanjeeb.Sahoo@Sun.COM
+ * Custom servlet config.
  */
-public class OSGiServletConfig implements ServletConfig {
+public final class OSGiServletConfig implements ServletConfig {
 
+    /**
+     * Servlet name.
+     */
     private final String servletName;
-    private final ServletContext servletContext;
-    private final Map<String, String> initParams = new HashMap<String, String>();
 
-    public OSGiServletConfig(String servletName,
-            ServletContext servletContext,
-            Dictionary initParams) {
-        this.servletName = servletName;
-        this.servletContext = servletContext;
-        if (initParams != null) {
-            Enumeration e = initParams.keys();
+    /**
+     * The servlet context.
+     */
+    private final ServletContext servletContext;
+
+    /**
+     * The servlet init parameters.
+     */
+    private final Map<String, String> initParams =
+            new HashMap<String, String>();
+
+    /**
+     * Create a new instance.
+     * @param sName the servlet name
+     * @param sCtx the servlet context
+     * @param sInitparams the servlet init parameters
+     */
+    public OSGiServletConfig(final String sName, final ServletContext sCtx,
+            final Dictionary sInitparams) {
+
+        this.servletName = sName;
+        this.servletContext = sCtx;
+        if (sInitparams != null) {
+            Enumeration e = sInitparams.keys();
             while (e.hasMoreElements()) {
                 final Object key = e.nextElement();
                 this.initParams.put((String) key,
-                        (String) initParams.get(key));
+                        (String) sInitparams.get(key));
             }
         }
     }
@@ -58,8 +76,8 @@ public class OSGiServletConfig implements ServletConfig {
     }
 
     @Override
-    public String getInitParameter(String name) {
-        return initParams.get(name);
+    public String getInitParameter(final String paramName) {
+        return initParams.get(paramName);
     }
 
     @Override
@@ -68,9 +86,9 @@ public class OSGiServletConfig implements ServletConfig {
     }
 
     /**
+     * Get the servlet init parameters.
      * @return an unmodifiable map of {@link #initParams}
      */
-    /* package */
     Map<String, String> getInitParameters() {
         return Collections.unmodifiableMap(initParams);
     }

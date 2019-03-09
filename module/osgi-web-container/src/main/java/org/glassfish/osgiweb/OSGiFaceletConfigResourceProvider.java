@@ -25,28 +25,26 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Built-in
- * {@link com.sun.faces.config.configprovider.MetaInfFacesConfigResourceProvider}
- * can't discover resources named as xxx.taglib.xml. This config resource
- * provider knows how to iterate over bundle entries in order to discover the
- * resources. It is registered as a META-INF service so that mojarra can
- * discover it.
+ * Built-in provider can't discover resources named as xxx.taglib.xml. This
+ * config resource provider knows how to iterate over bundle entries in order to
+ * discover the resources. It is registered as a META-INF service so that
+ * mojarra can discover it.
  *
- * @see
- * org.glassfish.osgiweb.OSGiWebModuleDecorator#discoverJSFConfigs(org.osgi.framework.Bundle,
- * java.util.Collection, java.util.Collection)
- *
- * @author Sanjeeb.Sahoo@Sun.COM
+ * @see org.glassfish.osgiweb.OSGiWebModuleDecorator#discoverJSFConfigs
  */
-public class OSGiFaceletConfigResourceProvider implements
+public final class OSGiFaceletConfigResourceProvider implements
         FaceletConfigResourceProvider, ConfigurationResourceProvider {
 
+    /**
+     * Logger.
+     */
     private static final Logger LOGGER = Logger.getLogger(
             OSGiFaceletConfigResourceProvider.class.getPackage().getName());
 
     @Override
     @SuppressWarnings("unchecked")
-    public Collection<URI> getResources(ServletContext context) {
+    public Collection<URI> getResources(final ServletContext context) {
+
         Collection<URI> uris = (Collection<URI>) context
                 .getAttribute(Constants.FACELET_CONFIG_ATTR);
         if (uris == null) {

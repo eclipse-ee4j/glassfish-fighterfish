@@ -16,23 +16,68 @@
 package org.glassfish.osgijdbc;
 
 /**
- * Constants that will be used by osgi-jdbc module.
- *
- * @author Jagadish Ramu
+ * Constants used by this module.
  */
-public interface Constants {
+public final class Constants {
 
-    String JNDI_NAME = "jndi-name";
+    /**
+     * Cannot be instanciated.
+     */
+    private Constants() {
+    }
 
-    String DS = "javax.sql.DataSource";
-    String CPDS = "javax.sql.ConnectionPoolDataSource";
-    String XADS = "javax.sql.XADataSource";
-    String DRIVER = "java.sql.Driver";
-    String DBVENDOR = "dbvendor";
+    /**
+     * Property name for JNDI name property.
+     */
+    public static final String JNDI_NAME = "jndi-name";
 
-    String JDBC_DRIVER_SCHEME = "jdbcdriver";
-    String OSGI_RFC_122 = "OSGI_RFC_122";
-    String IMPL_VERSION = "Implementation-Version";
-    String IMPL_VENDOR = "Implementation-Vendor";
-    String IMPL_TITLE = "Implementation-Title";
+    /**
+     * Property name for {@code javax.sql.DataSource}.
+     */
+    public static final  String DS = "javax.sql.DataSource";
+
+    /**
+     * Property name for {@code javax.sql.ConnectionPoolDataSource}.
+     */
+    public static final  String CPDS = "javax.sql.ConnectionPoolDataSource";
+
+    /**
+     * Property name for {@code javax.sql.XADataSource}.
+     */
+    public static final  String XADS = "javax.sql.XADataSource";
+
+    /**
+     * Property name for {@code java.sql.Driver}.
+     */
+    public static final  String DRIVER = "java.sql.Driver";
+
+    /**
+     * Constant for db vendor.
+     */
+    public static final  String DBVENDOR = "dbvendor";
+
+    /**
+     * Constant for JDBC driver URI scheme.
+     */
+    public static final  String JDBC_DRIVER_SCHEME = "jdbcdriver";
+
+    /**
+     * Constant for {@code OSGI_RFC_122}.
+     */
+    public static final  String OSGI_RFC_122 = "OSGI_RFC_122";
+
+    /**
+     * Constant for {@Code Implementation-Version} manifest entry.
+     */
+    public static final  String IMPL_VERSION = "Implementation-Version";
+
+    /**
+     * Constant for {@Code Implementation-Vendor} manifest entry.
+     */
+    public static final  String IMPL_VENDOR = "Implementation-Vendor";
+
+    /**
+     * Constant for {@Code Implementation-Title} manifest entry.
+     */
+    public static final  String IMPL_TITLE = "Implementation-Title";
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -23,161 +23,237 @@ import javax.faces.validator.ValidatorException;
 import java.util.Random;
 
 /**
- * @author sanjeeb.sahoo@oracle.com
- * 
+ *  Simple bean.
  */
-public class UserNumberBean {
-    Integer userNumber = null;
-    Integer randomInt = null;
-    String response = null;
+public final class UserNumberBean {
 
-    protected String[] status = null;
+    /**
+     * The number.
+     */
+    private Integer userNumber = null;
 
-    private int maximum = 0;
-    private boolean maximumSet = false;
+    /**
+     * Random int.
+     */
+    private Integer randomInt = null;
 
-    private int minimum = 0;
-    private boolean minimumSet = false;
+    /**
+     * Statuses.
+     */
+    private String[] status = null;
 
+    /**
+     * Max.
+     */
+    private int max = 0;
+
+    /**
+     * Maximum set flag.
+     */
+    private boolean maxSet = false;
+
+    /**
+     * Minimum.
+     */
+    private int min = 0;
+
+    /**
+     * Minimum set flag.
+     */
+    private boolean minSet = false;
+
+    /**
+     * Create a new instance.
+     */
+    @SuppressWarnings("checkstyle:MagicNumber")
     public UserNumberBean() {
         Random randomGR = new Random();
-        do
-            this.randomInt = new Integer(randomGR.nextInt(10));
-        while (this.randomInt.intValue() == 0);
+        do {
+            this.randomInt = randomGR.nextInt(10);
+        } while (this.randomInt == 0);
         System.out.println("Duke's number: " + this.randomInt);
     }
 
-    public void setUserNumber(Integer user_number) {
-        this.userNumber = user_number;
+    /**
+     * Set the user number.
+     * @param number number to set
+     */
+    public void setUserNumber(final Integer number) {
+        this.userNumber = number;
         System.out.println("Set userNumber " + this.userNumber);
     }
 
+    /**
+     * Get the user number.
+     * @return Integer
+     */
     public Integer getUserNumber() {
         System.out.println("get userNumber " + this.userNumber);
         return this.userNumber;
     }
 
+    /**
+     * Get the response.
+     * @return String
+     */
     public String getResponse() {
         if ((this.userNumber != null)
-                && (this.userNumber.compareTo(this.randomInt) == 0))
+                && (this.userNumber.compareTo(this.randomInt) == 0)) {
             return "Yay! You got it!";
+        }
         if (this.userNumber == null) {
             return "Sorry, " + this.userNumber
                     + " is incorrect. Try a larger number.";
         }
-
-        int num = this.userNumber.intValue();
-        if (num > this.randomInt.intValue()) {
+        int num = this.userNumber;
+        if (num > this.randomInt) {
             return "Sorry, " + this.userNumber
                     + " is incorrect. Try a smaller number.";
         }
-
         return "Sorry, " + this.userNumber
                 + " is incorrect. Try a larger number.";
     }
 
+    /**
+     * Get the status.
+     * @return String[]
+     */
     public String[] getStatus() {
         return this.status;
     }
 
-    public void setStatus(String[] newStatus) {
+    /**
+     * Set the status.
+     * @param newStatus the new status to set
+     */
+    public void setStatus(final String[] newStatus) {
         this.status = newStatus;
     }
 
+    /**
+     * Get the max.
+     * @return int
+     */
     public int getMaximum() {
-        return this.maximum;
+        return this.max;
     }
 
-    public void setMaximum(int maximum) {
-        this.maximum = maximum;
-        this.maximumSet = true;
+    /**
+     * Set the max.
+     * @param newMax the new max to set
+     */
+    public void setMaximum(final int newMax) {
+        this.max = newMax;
+        this.maxSet = true;
     }
 
+    /**
+     * Get the min.
+     * @return int
+     */
     public int getMinimum() {
-        return this.minimum;
+        return this.min;
     }
 
-    public void setMinimum(int minimum) {
-        this.minimum = minimum;
-        this.minimumSet = true;
+    /**
+     * Set the min.
+     * @param newMin the new min to set
+     */
+    public void setMinimum(final int newMin) {
+        this.min = newMin;
+        this.minSet = true;
     }
 
-    public void validate(FacesContext context, UIComponent component,
-            Object value) throws ValidatorException {
-        if ((context == null) || (component == null)) {
+    /**
+     * Message ID for not in range validation.
+     */
+    private static final String NOT_IN_RANGE =
+            "javax.faces.validator.LongRangeValidator.NOT_IN_RANGE";
+
+    /**
+     * Message id for maximum validation.
+     */
+    private static final String MAXIMUM =
+            "javax.faces.validator.LongRangeValidator.MAXIMUM";
+
+    /**
+     * Message id for minimum validation.
+     */
+    private static final String MINIMUM =
+            "javax.faces.validator.LongRangeValidator.MINIMUM";
+
+    /**
+     * Message id for type validation.
+     */
+    private static final String TYPE =
+            "javax.faces.validator.LongRangeValidator.TYPE";
+
+    /**
+     * Valid the UI component.
+     * @param ctx faces context
+     * @param comp UI component
+     * @param value user number
+     * @throws ValidatorException if an error occurs
+     */
+    public void validate(final FacesContext ctx, final UIComponent comp,
+            final Object value) throws ValidatorException {
+        if ((ctx == null) || (comp == null)) {
             throw new NullPointerException();
         }
-        if (value != null)
+        if (value != null) {
             try {
                 int converted = intValue(value);
-                if ((this.maximumSet) && (converted > this.maximum)) {
-                    if (this.minimumSet) {
+                if ((this.maxSet) && (converted > this.max)) {
+                    if (this.minSet) {
                         throw new ValidatorException(
-                                MessageFactory
-                                        .getMessage(
-                                                context,
-                                                "javax.faces.validator.LongRangeValidator.NOT_IN_RANGE",
-                                                new Object[] {
-                                                        new Integer(
-                                                                this.minimum),
-                                                        new Integer(
-                                                                this.maximum),
-                                                        MessageFactory
-                                                                .getLabel(
-                                                                        context,
-                                                                        component) }));
+                                MessageFactory.getMessage(ctx, NOT_IN_RANGE,
+                                        new Object[]{this.min, this.max,
+                                            MessageFactory.getLabel(ctx, comp)
+                                        }));
                     }
-
                     throw new ValidatorException(
-                            MessageFactory
-                                    .getMessage(
-                                            context,
-                                            "javax.faces.validator.LongRangeValidator.MAXIMUM",
-                                            new Object[] {
-                                                    new Integer(this.maximum),
-                                                    MessageFactory.getLabel(
-                                                            context, component) }));
+                            MessageFactory.getMessage(ctx, MAXIMUM,
+                                    new Object[]{this.max,
+                                        MessageFactory.getLabel(ctx, comp)
+                                    }));
                 }
-
-                if ((this.minimumSet) && (converted < this.minimum)) {
-                    if (this.maximumSet) {
+                if ((this.minSet) && (converted < this.min)) {
+                    if (this.maxSet) {
                         throw new ValidatorException(
-                                MessageFactory
-                                        .getMessage(
-                                                context,
-                                                "javax.faces.validator.LongRangeValidator.NOT_IN_RANGE",
-                                                new Object[] {
-                                                        new Double(this.minimum),
-                                                        new Double(this.maximum),
-                                                        MessageFactory
-                                                                .getLabel(
-                                                                        context,
-                                                                        component) }));
+                                MessageFactory.getMessage(ctx, NOT_IN_RANGE,
+                                        new Object[]{new Double(this.min),
+                                            new Double(this.max),
+                                            MessageFactory.getLabel(ctx, comp)
+                                        }));
                     }
-
                     throw new ValidatorException(
-                            MessageFactory
-                                    .getMessage(
-                                            context,
-                                            "javax.faces.validator.LongRangeValidator.MINIMUM",
-                                            new Object[] {
-                                                    new Integer(this.minimum),
-                                                    MessageFactory.getLabel(
-                                                            context, component) }));
+                            MessageFactory.getMessage(ctx, MINIMUM,
+                                    new Object[]{this.min,
+                                        MessageFactory.getLabel(ctx, comp)
+                                    }));
                 }
-
             } catch (NumberFormatException e) {
-                throw new ValidatorException(MessageFactory.getMessage(context,
-                        "javax.faces.validator.LongRangeValidator.TYPE",
-                        new Object[] { MessageFactory.getLabel(context,
-                                component) }));
+                throw new ValidatorException(MessageFactory.getMessage(ctx,
+                        TYPE,
+                        new Object[]{MessageFactory.getLabel(ctx, comp)}));
             }
+        }
     }
 
-    private int intValue(Object attributeValue) throws NumberFormatException {
-        if ((attributeValue instanceof Number)) {
-            return ((Number) attributeValue).intValue();
+    /**
+     * Convert an object to an integer.
+     * @param value the object to convert
+     * @return int
+     * @throws NumberFormatException if an error occurs
+     * @throws IllegalArgumentException if value is {@code null}
+     */
+    private int intValue(final Object value) throws NumberFormatException {
+        if (value == null) {
+            throw new IllegalArgumentException("value is null");
         }
-        return Integer.parseInt(attributeValue.toString());
+        if ((value instanceof Number)) {
+            return ((Number) value).intValue();
+        }
+        return Integer.parseInt(value.toString());
     }
 }

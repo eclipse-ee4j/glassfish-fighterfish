@@ -1,6 +1,6 @@
 #!/bin/sh +x
 #
-# Copyright (c) 2013, 2018 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2013, 2019 Oracle and/or its affiliates. All rights reserved.
 #
 # This program and the accompanying materials are made available under the
 # terms of the Eclipse Public License v. 2.0, which is available at
@@ -29,13 +29,10 @@
 # cthome - specifies where OSGi CT has been checked out
 # ctname - refers to the OSGi CT test suite that we want to run. e.g., http|transaction|webcontainer
 #
-# Author: sanjeeb.sahoo@oracle.com
-# Date: 23 Feb 2013
 
 set -e
 print_usage() {
  echo "Usage: $0 <glassfish.home> <OSGi CT Home> <CT Name> [bnd file name]"
- echo "e.g.: $0 /tmp/glassfish3/glassfish /space/ss141213/WS/osgi/r4v42-final transaction"
  echo "Test results will be reported in `pwd`/reports/"
  exit 1
 }

@@ -16,29 +16,78 @@
 package org.glassfish.osgi.ee.resources;
 
 /**
- * Constants that will be used by osgi-ee-resources module
- *
- * @author Jagadish Ramu
+ * Constants used by this module.
  */
-public interface Constants {
+public final class Constants {
 
-    String JNDI_NAME = "jndi-name";
+    /**
+     * Cannot be instanciated.
+     */
+    private Constants() {
+    }
 
-    String DS = "javax.sql.DataSource";
-    String CPDS = "javax.sql.ConnectionPoolDataSource";
-    String XADS = "javax.sql.XADataSource";
-    String DRIVER = "java.sql.Driver";
+    /**
+     * Property name for JNDI name property.
+     */
+    public static final String JNDI_NAME = "jndi-name";
 
-    String DEFAULT_JMS_ADAPTER = "jmsra";
+    /**
+     * Property name for {@code javax.sql.DataSource}.
+     */
+    public static final  String DS = "javax.sql.DataSource";
 
-    //JMS - Connection Factories
-    String QUEUE_CF = "javax.jms.QueueConnectionFactory";
-    String TOPIC_CF = "javax.jms.TopicConnectionFactory";
-    String UNIFIED_CF = "javax.jms.ConnectionFactory";
+    /**
+     * Property name for {@code javax.sql.ConnectionPoolDataSource}.
+     */
+    public static final  String CPDS = "javax.sql.ConnectionPoolDataSource";
 
-    //Admin Object Resources - Destinations
-    String QUEUE = "javax.jms.Queue";
-    String TOPIC = "javax.jms.Topic";
-    String DESTINATION = "javax.jms.Destination";
+    /**
+     * Property name for {@code javax.sql.XADataSource}.
+     */
+    public static final  String XADS = "javax.sql.XADataSource";
+
+    /**
+     * Property name for {@code java.sql.Driver}.
+     */
+    public static final  String DRIVER = "java.sql.Driver";
+
+    /**
+     * Constant for the default JMS adapter.
+     */
+    public static final  String DEFAULT_JMS_ADAPTER = "jmsra";
+
+    // JMS - Connection Factories
+
+    /**
+     * Property name for JMS queue connection factory.
+     */
+    public static final  String QUEUE_CF = "javax.jms.QueueConnectionFactory";
+
+    /**
+     * Property name for JMS topic connection factory.
+     */
+    public static final  String TOPIC_CF = "javax.jms.TopicConnectionFactory";
+
+    /**
+     * Property name for JMS connection factory.
+     */
+    public static final  String UNIFIED_CF = "javax.jms.ConnectionFactory";
+
+    // Admin Object Resources - Destinations
+
+    /**
+     * Property name for JMS queue.
+     */
+    public static final  String QUEUE = "javax.jms.Queue";
+
+    /**
+     * Property name for JMS topic.
+     */
+    public static final  String TOPIC = "javax.jms.Topic";
+
+    /**
+     * Property name for JMS destination.
+     */
+    public static final  String DESTINATION = "javax.jms.Destination";
 
 }

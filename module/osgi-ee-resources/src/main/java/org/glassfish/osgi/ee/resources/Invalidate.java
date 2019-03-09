@@ -16,14 +16,12 @@
 package org.glassfish.osgi.ee.resources;
 
 /**
- * Contract to invalidate an object (proxy)
- *
- * @author Jagadish Ramu
+ * Contract to invalidate an object (proxy).
  */
 public interface Invalidate {
 
     /**
-     * invalidates the object
+     * Invalidates the object.
      */
     void invalidate();
 }

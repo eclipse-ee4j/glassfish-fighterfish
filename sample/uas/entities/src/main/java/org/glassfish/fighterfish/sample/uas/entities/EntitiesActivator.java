@@ -20,14 +20,12 @@ import org.osgi.framework.BundleContext;
 
 /**
  * This activator is responsible for registering an EMF as an OSGi service.
- *
- * @author Sanjeeb Sahoo
  */
-public class EntitiesActivator implements BundleActivator {
+public final class EntitiesActivator implements BundleActivator {
 
     @Override
     @SuppressWarnings("unchecked")
-    public void start(BundleContext context) throws Exception {
+    public void start(final BundleContext context) throws Exception {
         final String puName = "sample.uas.entities";
         EntityManagerFactory emf = createEMF(puName);
         Dictionary props = new Properties();
@@ -37,6 +35,11 @@ public class EntitiesActivator implements BundleActivator {
         log("registered " + emf);
     }
 
+    /**
+     * Create the entity manager factory.
+     * @param puName persistence unit name
+     * @return EntityManagerFactory
+     */
     private EntityManagerFactory createEMF(final String puName) {
         ClassLoader old = Thread.currentThread().getContextClassLoader();
         try {
@@ -61,10 +64,14 @@ public class EntitiesActivator implements BundleActivator {
     }
 
     @Override
-    public void stop(BundleContext context) throws Exception {
+    public void stop(final BundleContext context) throws Exception {
     }
 
-    private void log(String msg) {
+    /**
+     * Log a message to the standard output.
+     * @param msg message to log
+     */
+    private void log(final String msg) {
         System.out.println("EntitiesActivator: " + msg);
     }
 }

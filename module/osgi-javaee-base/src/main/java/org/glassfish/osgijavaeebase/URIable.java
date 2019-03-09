@@ -18,11 +18,12 @@ package org.glassfish.osgijavaeebase;
 import java.net.URI;
 
 /**
- * @author Sanjeeb.Sahoo@Sun.COM
+ * A possibly nested archive that provides URI entries.
  */
 public interface URIable {
 
     /**
+     * Get an entry by name.
      * @param name the entry name relative to the root of the archive
      * @return the URI corresponding to the entry, null if no such entry found
      */
@@ -32,7 +33,8 @@ public interface URIable {
      * When this archive is embedded in another archive, this method returns the
      * distance from top.
      *
-     * @return
+     * @return a string indicating the path to the root of the top level
+     * archive, or an empty string if not nested.
      */
     String getDistanceFromTop();
 }

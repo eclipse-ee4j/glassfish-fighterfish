@@ -20,58 +20,121 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.ServiceReference;
 
 /**
- * @author Sanjeeb.Sahoo@Sun.COM
+ * Represents a deployed OSGi application.
  */
-public class OSGiApplicationInfo {
+public final class OSGiApplicationInfo {
 
+    /**
+     * GlassFish application info.
+     */
     private ApplicationInfo appInfo;
+
+    /**
+     * Flag that indicates if the application deployed from a directory.
+     */
     private boolean isDirectoryDeployment;
+
+    /**
+     * The bundle.
+     */
     private Bundle bundle;
+
+    /**
+     * The application class-loader.
+     */
     private final ClassLoader classLoader;
+
+    /**
+     * The deployer OSGi service reference.
+     */
     private ServiceReference osgiDeployerRef;
 
-    public OSGiApplicationInfo(ApplicationInfo appInfo,
-            boolean directoryDeployment, Bundle bundle,
-            ClassLoader classLoader) {
+    /**
+     * Create a new instance.
+     * @param gfAppInfo the GlassFish application info
+     * @param directoryDeployment flag for directory deployment
+     * @param bnd the application bundle
+     * @param cl the application class-loader
+     */
+    public OSGiApplicationInfo(final ApplicationInfo gfAppInfo,
+            final boolean directoryDeployment, final Bundle bnd,
+            final ClassLoader cl) {
 
-        this.appInfo = appInfo;
+        this.appInfo = gfAppInfo;
         isDirectoryDeployment = directoryDeployment;
-        this.bundle = bundle;
-        this.classLoader = classLoader;
+        this.bundle = bnd;
+        this.classLoader = cl;
     }
 
+    /**
+     * Get the underlying GlassFish application info.
+     * @return ApplicationInfo
+     */
     public ApplicationInfo getAppInfo() {
         return appInfo;
     }
 
-    public void setAppInfo(ApplicationInfo appInfo) {
-        this.appInfo = appInfo;
+    /**
+     * Set the underlying GlassFish application info.
+     * @param gfAppInfo the application to set
+     */
+    public void setAppInfo(final ApplicationInfo gfAppInfo) {
+        this.appInfo = gfAppInfo;
     }
 
+    /**
+     * Indicate if the application is deployed from a directory.
+     * @return {@code true} if deployed from a directory, {@code false}
+     * otherwise
+     */
     public boolean isDirectoryDeployment() {
         return isDirectoryDeployment;
     }
 
-    public void setDirectoryDeployment(boolean directoryDeployment) {
-        isDirectoryDeployment = directoryDeployment;
+    /**
+     * Set the directory deployment flag.
+     * @param dirDeplFlag the new value for the directory deployment flag
+     */
+    public void setDirectoryDeployment(final boolean dirDeplFlag) {
+        isDirectoryDeployment = dirDeplFlag;
     }
 
+    /**
+     * Get the application bundle.
+     * @return Bundle
+     */
     public Bundle getBundle() {
         return bundle;
     }
 
-    public void setBundle(Bundle bundle) {
-        this.bundle = bundle;
+    /**
+     * Set the application bundle.
+     * @param bnd the new application bundle
+     */
+    public void setBundle(final Bundle bnd) {
+        this.bundle = bnd;
     }
 
+    /**
+     * Get the deployer OSGi service reference.
+     * @return ServiceReference
+     */
     public ServiceReference getDeployer() {
         return osgiDeployerRef;
     }
 
-    public void setDeployer(ServiceReference osgiDeployerRef) {
-        this.osgiDeployerRef = osgiDeployerRef;
+    /**
+     * Set the deployer OSGi service reference.
+     * @param ref the new reference
+     */
+    public void setDeployer(final ServiceReference ref) {
+        this.osgiDeployerRef = ref;
     }
 
+    /**
+     * Get the application class-loader.
+     * @return ClassLoader
+     */
     public ClassLoader getClassLoader() {
         return classLoader;
     }

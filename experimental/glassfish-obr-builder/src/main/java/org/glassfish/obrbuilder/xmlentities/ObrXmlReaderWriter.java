@@ -25,8 +25,6 @@ import java.net.URI;
 
 /**
  * Utility class to marshall and unmarshall to and from an obr.xml.
- *
- * @author Sanjeeb.Sahoo@Sun.COM
  */
 public class ObrXmlReaderWriter {
     /*

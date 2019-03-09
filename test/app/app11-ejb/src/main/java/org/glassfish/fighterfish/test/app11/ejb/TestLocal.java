@@ -19,9 +19,15 @@ package org.glassfish.fighterfish.test.app11.ejb;
 import javax.ejb.Local;
 
 /**
- * @author Sanjeeb.Sahoo@Sun.COM
+ * Local EJB interface.
  */
 @Local
 public interface TestLocal {
-    String test(String s);
+
+    /**
+     * Test method.
+     * @param str test string
+     * @return String
+     */
+    String test(String str);
 }

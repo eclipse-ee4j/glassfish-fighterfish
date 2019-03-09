@@ -24,32 +24,34 @@ import org.glassfish.osgicdi.OSGiService;
 import org.osgi.framework.ServiceException;
 
 /**
- * Servlet implementation class ReportServlet
+ * Servlet implementation class ReportServlet.
  */
 @WebServlet("/ReportServlet")
-public class ReportServlet extends HttpServlet {
+public final class ReportServlet extends HttpServlet {
 
+    /**
+     * Serialization UID.
+     */
     private static final long serialVersionUID = 1L;
 
+    /**
+     * User authentication service.
+     */
     @Inject
     @OSGiService(dynamic = true)
     private UserAuthService uas;
 
     /**
-     * Default constructor.
+     * Create a new instance.
      */
     public ReportServlet() {
-        // TODO Auto-generated constructor stub
     }
 
-    /**
-     * @param request
-     * @param response
-     * @throws java.io.IOException
-     * @see HttpServlet#service(HttpServletRequest request, HttpServletResponse
-     * response)
-     */
-    protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    @Override
+    protected void service(final HttpServletRequest request,
+            final HttpServletResponse response)
+            throws ServletException, IOException {
+
         response.setContentType("text/html");
         PrintWriter out = response.getWriter();
         out.println("<HTML> <HEAD> <TITLE> Report "

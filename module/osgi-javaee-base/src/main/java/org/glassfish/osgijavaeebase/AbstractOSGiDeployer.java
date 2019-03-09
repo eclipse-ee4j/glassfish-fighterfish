@@ -33,40 +33,93 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * @author Sanjeeb.Sahoo@Sun.COM
+ * Abstract implementation of {@link OSGiDeployer}.
  */
 public abstract class AbstractOSGiDeployer implements OSGiDeployer {
 
     /**
      * Various request processing states.
      */
-    public static enum State {
+    public enum State {
+        /**
+         * Deployment in progress.
+         */
         DEPLOYING,
+        /**
+         * Deployment.
+         */
         DEPLOYED,
+        /**
+         * Deployment failed.
+         */
         FAILED,
+        /**
+         * Undeployment in progress.
+         */
         UNDEPLOYING,
+        /**
+         * Undeployed.
+         */
         UNDEPLOYED
     }
 
+    /**
+     * Logger.
+     */
     private static final Logger LOGGER = Logger.getLogger(
             AbstractOSGiDeployer.class.getPackage().getName());
 
+    /**
+     * The bundle context.
+     */
     private final BundleContext bundleContext;
+
+    /**
+     * The service registration for {@link OSGiDeployer}.
+     */
     private ServiceRegistration serviceReg;
+
+    /**
+     * The service rank to register the {@link OSGiDeployer} service.
+     */
     private final int rank;
 
+    /**
+     * The GlassFish deployer.
+     */
     private final Deployment deployer = Globals.get(Deployment.class);
+
+    /**
+     * The GlassFish archive factory.
+     */
     private final ArchiveFactory archiveFactory = Globals.get(
             ArchiveFactory.class);
+
+    /**
+     * The GlassFish server environment.
+     */
     private final ServerEnvironmentImpl env = Globals.get(
             ServerEnvironmentImpl.class);
 
-    protected AbstractOSGiDeployer(BundleContext bundleContext, int rank) {
-        this.bundleContext = bundleContext;
-        this.rank = rank;
+    /**
+     * Create a new instance.
+     *
+     * @param ctx the bundle context
+     * @param svcRank the deployer service rank
+     */
+    protected AbstractOSGiDeployer(final BundleContext ctx,
+            final int svcRank) {
+
+        this.bundleContext = ctx;
+        this.rank = svcRank;
     }
 
-    public BundleContext getBundleContext() {
+    /**
+     * Get the bundle context.
+     *
+     * @return BundleContext
+     */
+    public final BundleContext getBundleContext() {
         return bundleContext;
     }
 
@@ -74,7 +127,7 @@ public abstract class AbstractOSGiDeployer implements OSGiDeployer {
      * Registers this as an OSGi service.
      */
     @SuppressWarnings("unchecked")
-    public void register() {
+    public final void register() {
         Dictionary properties = new Properties();
         properties.put(org.osgi.framework.Constants.SERVICE_RANKING, rank);
         serviceReg = bundleContext.registerService(
@@ -86,38 +139,42 @@ public abstract class AbstractOSGiDeployer implements OSGiDeployer {
      * itself, it first undeploys all applications that were deployed using
      * itself.
      */
-    public void unregister() {
+    public final void unregister() {
         // Why do we undeployAll while unregistering ourselves, but not
         // deployAll during registering ourselves?
         // That's because, if we first unregister and rely on serviceRemoved()
         // method to notify the OSGiContainer
         // to undeploy apps, OSGiContainer can't undeploy, because we are no
-        // longer available.  
+        // longer available.
         undeployAll();
         serviceReg.unregister();
     }
 
     @Override
-    public OSGiApplicationInfo deploy(Bundle b) throws DeploymentException {
-        raiseEvent(State.DEPLOYING, b, null);
+    public final OSGiApplicationInfo deploy(final Bundle bnd)
+            throws DeploymentException {
+
+        raiseEvent(State.DEPLOYING, bnd, null);
         ActionReport report = getReport();
         OSGiDeploymentRequest request = createOSGiDeploymentRequest(deployer,
-                archiveFactory, env, report, b);
+                archiveFactory, env, report, bnd);
         OSGiApplicationInfo osgiAppInfo = request.execute();
         if (osgiAppInfo == null) {
             final Throwable throwable = report.getFailureCause();
-            raiseEvent(State.FAILED, b, throwable);
-            throw new DeploymentException("Deployment of " + b
+            raiseEvent(State.FAILED, bnd, throwable);
+            throw new DeploymentException("Deployment of " + bnd
                     + " failed because of following reason: "
                     + report.getMessage(),
                     throwable);
         }
-        raiseEvent(State.DEPLOYED, b, null);
+        raiseEvent(State.DEPLOYED, bnd, null);
         return osgiAppInfo;
     }
 
     @Override
-    public void undeploy(OSGiApplicationInfo osgiAppInfo) throws DeploymentException {
+    public final void undeploy(final OSGiApplicationInfo osgiAppInfo)
+            throws DeploymentException {
+
         final Bundle b = osgiAppInfo.getBundle();
         raiseEvent(State.UNDEPLOYING, b, null);
         ActionReport report = getReport();
@@ -134,8 +191,13 @@ public abstract class AbstractOSGiDeployer implements OSGiDeployer {
         }
     }
 
-    protected ActionReport getReport() {
-        // First of all, we can't get a reference to GlassFish service when 
+    /**
+     * Get the GlassFish command reporter.
+     *
+     * @return ActionReport
+     */
+    protected final ActionReport getReport() {
+        // First of all, we can't get a reference to GlassFish service when
         // server is stopping, because
         // GlassFish is first unregistered from registry when shutdown is
         // called. Even if we we cache a reference to
@@ -150,7 +212,7 @@ public abstract class AbstractOSGiDeployer implements OSGiDeployer {
      * Undeploys all bundles which have been deployed using this deployer.
      */
     @SuppressWarnings("unchecked")
-    public void undeployAll() {
+    public final void undeployAll() {
         ServiceTracker st = new ServiceTracker(bundleContext,
                 OSGiContainer.class.getName(), null);
         st.open();
@@ -165,9 +227,9 @@ public abstract class AbstractOSGiDeployer implements OSGiDeployer {
                     try {
                         c.undeploy(app.getBundle());
                     } catch (Exception e) {
-                        LOGGER.logp(Level.WARNING, "WebExtender", "undeployAll",
-                                "Failed to undeploy bundle " + app.getBundle()
-                                , e);
+                        LOGGER.logp(Level.WARNING, "WebExtender",
+                                "undeployAll", "Failed to undeploy bundle "
+                                + app.getBundle(), e);
                     }
                 }
             }
@@ -176,22 +238,42 @@ public abstract class AbstractOSGiDeployer implements OSGiDeployer {
         }
     }
 
+    /**
+     * Create an OSGi deployment request.
+     *
+     * @param gfDeployer the GlassFish deployer
+     * @param gfArchiveFactory the GlassFish archive factory
+     * @param gfServerEnv the GlassFish server environment
+     * @param gfCmdReporter the GlassFish command reporter
+     * @param bnd the application bundle
+     * @return OSGiDeploymentRequest
+     */
     protected abstract OSGiDeploymentRequest createOSGiDeploymentRequest(
-            Deployment deployer, ArchiveFactory archiveFactory,
-            ServerEnvironmentImpl env, ActionReport reporter, Bundle b);
+            Deployment gfDeployer, ArchiveFactory gfArchiveFactory,
+            ServerEnvironmentImpl gfServerEnv, ActionReport gfCmdReporter,
+            Bundle bnd);
 
+    /**
+     * Create an OSGi undeployment request.
+     *
+     * @param gfDeployer the GlassFish deployer
+     * @param gfServerEnv the GlassFish server environment
+     * @param gfCmdReporter the GlassFish command reporter
+     * @param osgiAppInfo the deployed application info
+     * @return OSGiUndeploymentRequest
+     */
     protected abstract OSGiUndeploymentRequest createOSGiUndeploymentRequest(
-            Deployment deployer, ServerEnvironmentImpl env,
-            ActionReport reporter, OSGiApplicationInfo osgiAppInfo);
+            Deployment gfDeployer, ServerEnvironmentImpl gfServerEnv,
+            ActionReport gfCmdReporter, OSGiApplicationInfo osgiAppInfo);
 
     /**
      * Integration with Event Admin Service happens here.
      *
-     * @param state
-     * @param appBundle
-     * @param throwable
+     * @param state bundle state
+     * @param bnd the bundle
+     * @param throwable the exception at the source of the event
      */
-    protected void raiseEvent(State state, Bundle appBundle,
-            Throwable throwable) {
+    protected void raiseEvent(final State state, final Bundle bnd,
+            final Throwable throwable) {
     }
 }

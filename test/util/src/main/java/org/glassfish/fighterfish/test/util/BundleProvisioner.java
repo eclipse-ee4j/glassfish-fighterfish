@@ -26,32 +26,42 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * @author Sanjeeb.Sahoo@Sun.COM
+ * Bundle provisioner.
  */
-public class BundleProvisioner {
+public final class BundleProvisioner {
 
     /**
      * List of bundles installed by a test method.
      */
     private final List<Bundle> testBundles = new ArrayList<Bundle>();
 
+    /**
+     * Bundle context.
+     */
     private final BundleContext ctx;
 
+    /**
+     * Logger.
+     */
     private static final Logger LOGGER = Logger.getLogger(
             BundleProvisioner.class.getPackage().getName());
 
-    public BundleProvisioner(BundleContext ctx) {
-        this.ctx = ctx;
+    /**
+     * Create a new instance.
+     * @param bndCtx bundle context
+     */
+    public BundleProvisioner(final BundleContext bndCtx) {
+        this.ctx = bndCtx;
     }
 
     /**
      * Install a bundle and add it to the list of bundles.
      *
-     * @param location
-     * @return
-     * @throws BundleException
+     * @param location bundle location
+     * @return Bundle
+     * @throws BundleException if an error occurs
      */
-    protected Bundle installTestBundle(String location)
+    protected Bundle installTestBundle(final String location)
             throws BundleException {
 
         LOGGER.logp(Level.INFO, "AbstractTestObject", "installBundle",
@@ -65,12 +75,14 @@ public class BundleProvisioner {
     }
 
     /**
-     * Uninstall a bundle if it has been installed by
+     * Uninstall a bundle if it has been installed by.
      *
-     * @param bundle
-     * @throws BundleException
+     * @param bundle bundle uninstall
+     * @throws BundleException if an error occurs
      */
-    protected void uninstallTestBundle(Bundle bundle) throws BundleException {
+    protected void uninstallTestBundle(final Bundle bundle)
+            throws BundleException {
+
         if (testBundles.remove(bundle)) {
             if (bundle.getState() != Bundle.UNINSTALLED) {
                 LOGGER.logp(Level.INFO, "AbstractTestObject",
@@ -91,6 +103,10 @@ public class BundleProvisioner {
         }
     }
 
+    /**
+     * Uninstall all bundles.
+     * @throws BundleException if an error occurs
+     */
     protected void uninstallAllTestBundles() throws BundleException {
         // take a copy because uninstallTstBundle removes from this list
         for (Bundle b : testBundles.toArray(new Bundle[0])) {

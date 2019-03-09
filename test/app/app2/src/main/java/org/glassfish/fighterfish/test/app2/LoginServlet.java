@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -26,16 +26,27 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.PrintWriter;
 
 /**
- * Servlet implementation class LoginServlet
+ * Servlet implementation class LoginServlet.
  */
 @WebServlet("/LoginServlet")
-public class LoginServlet extends HttpServlet {
-    private static final long serialVersionUID = 1L;
-    @EJB
-    UserAuthServiceEJB userAuthService;
+public final class LoginServlet extends HttpServlet {
 
-    public void service(HttpServletRequest req, HttpServletResponse resp)
+    /**
+     * Serialization UID.
+     */
+    private static final long serialVersionUID = 1L;
+
+    /**
+     * User authentication service.
+     */
+    @EJB
+    private UserAuthServiceEJB userAuthService;
+
+    @Override
+    public void service(final HttpServletRequest req,
+            final HttpServletResponse resp)
             throws ServletException, java.io.IOException {
+
         resp.setContentType("text/html");
         PrintWriter out = resp.getWriter();
         out.println("<HTML> <HEAD> <TITLE> Login "
@@ -56,5 +67,4 @@ public class LoginServlet extends HttpServlet {
         }
         out.println("</BODY> </HTML> ");
     }
-
 }

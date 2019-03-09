@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -22,7 +22,6 @@ import org.glassfish.fighterfish.test.app8.entities.Employee;
 import javax.annotation.Resource;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
 import javax.persistence.PersistenceUnit;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -34,23 +33,33 @@ import javax.transaction.UserTransaction;
 import java.io.PrintWriter;
 
 /**
- * Servlet implementation class CRUDServlet
+ * Servlet implementation class CRUDServlet.
  */
 @WebServlet("/crud")
-public class CRUDServlet extends HttpServlet {
+public final class CRUDServlet extends HttpServlet {
+
     /**
-     * 
+     * Serialization UID.
      */
     private static final long serialVersionUID = 9133422911516243972L;
 
+    /**
+     * Entity manager factory.
+     */
     @PersistenceUnit
-    EntityManagerFactory emf;
+    private EntityManagerFactory emf;
 
+    /**
+     * User transaction.
+     */
     @Resource
-    UserTransaction utx;
+    private UserTransaction utx;
 
-    public void service(HttpServletRequest req, HttpServletResponse resp)
+    @Override
+    public void service(final HttpServletRequest req,
+            final HttpServletResponse resp)
             throws ServletException, java.io.IOException {
+
         resp.setContentType("text/html");
         PrintWriter out = resp.getWriter();
         out.print("<HTML> <HEAD> <TITLE> Employee-Department CRUD"
@@ -84,8 +93,9 @@ public class CRUDServlet extends HttpServlet {
                 String employeeId = (String) req.getParameter("employeeId");
                 Employee e = em.find(Employee.class,
                         Integer.parseInt(employeeId));
-                if (e != null)
+                if (e != null) {
                     em.remove(e);
+                }
                 out.print("Deleted " + e);
                 out.print("\n");
             } else if ("createDepartment".equals(action)) {
@@ -102,8 +112,9 @@ public class CRUDServlet extends HttpServlet {
             } else if ("deleteDepartment".equals(action)) {
                 String name = (String) req.getParameter("departmentName");
                 Department d = em.find(Department.class, name);
-                if (d != null)
+                if (d != null) {
                     em.remove(d);
+                }
                 out.print("Deleted " + d);
                 out.print("\n");
             }
@@ -112,6 +123,5 @@ public class CRUDServlet extends HttpServlet {
             e.printStackTrace(out);
         }
         out.println("</BODY> </HTML> ");
-
     }
 }

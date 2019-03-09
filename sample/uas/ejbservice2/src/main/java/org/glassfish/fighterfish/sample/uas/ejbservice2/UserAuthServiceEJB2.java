@@ -26,21 +26,24 @@ import java.util.List;
  */
 @Stateless
 @Local({UserAuthService.class})
-public class UserAuthServiceEJB2 implements UserAuthService {
+public final class UserAuthServiceEJB2 implements UserAuthService {
 
+    /**
+     * Entity manager factory.
+     */
     @Inject
     @OSGiService(dynamic = true,
             serviceCriteria = "(persistence-unit=sample.uas.entities)")
     private EntityManagerFactory emf;
 
     /**
-     * Default constructor.
+     * Create a new instance.
      */
     public UserAuthServiceEJB2() {
     }
 
     @Override
-    public boolean login(String name, String password) {
+    public boolean login(final String name, final String password) {
         log("Logging in (" + name + ", " + password + ")");
         EntityManager em = emf.createEntityManager();
         try {
@@ -64,7 +67,7 @@ public class UserAuthServiceEJB2 implements UserAuthService {
     }
 
     @Override
-    public boolean register(String name, String password) {
+    public boolean register(final String name, final String password) {
         log("Registering (" + name + ", " + password + ")");
         EntityManager em = emf.createEntityManager();
         try {
@@ -83,7 +86,7 @@ public class UserAuthServiceEJB2 implements UserAuthService {
     }
 
     @Override
-    public boolean unregister(String name) {
+    public boolean unregister(final String name) {
         log("Unregistering (" + name + ")");
         EntityManager em = emf.createEntityManager();
         try {
@@ -117,7 +120,11 @@ public class UserAuthServiceEJB2 implements UserAuthService {
         }
     }
 
-    private void log(String msg) {
+    /**
+     * Log a message to the standard output.
+     * @param msg message to log
+     */
+    private void log(final String msg) {
         System.out.println(UserAuthServiceEJB2.class.getSimpleName()
                 + ": " + msg);
     }

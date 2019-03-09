@@ -16,11 +16,16 @@
 package org.glassfish.osgi.ee.resources;
 
 import com.sun.appserv.connectors.internal.api.ConnectorsUtil;
-import com.sun.enterprise.config.serverbeans.*;
+import com.sun.enterprise.config.serverbeans.BindableResource;
+import com.sun.enterprise.config.serverbeans.Domain;
+import com.sun.enterprise.config.serverbeans.ResourcePool;
+import com.sun.enterprise.config.serverbeans.ResourceRef;
+import com.sun.enterprise.config.serverbeans.Resources;
+import com.sun.enterprise.config.serverbeans.Server;
+import com.sun.enterprise.config.serverbeans.Servers;
 import org.glassfish.connectors.config.ConnectorConnectionPool;
 import org.glassfish.internal.api.ServerContext;
 import org.glassfish.jdbc.config.JdbcConnectionPool;
-import org.jvnet.hk2.config.*;
 import org.osgi.framework.BundleContext;
 
 import java.beans.PropertyChangeEvent;
@@ -29,6 +34,18 @@ import java.util.Collection;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import org.jvnet.hk2.config.Changed;
+import org.jvnet.hk2.config.ConfigBeanProxy;
+import org.jvnet.hk2.config.ConfigListener;
+import org.jvnet.hk2.config.ConfigSupport;
+import org.jvnet.hk2.config.NotProcessed;
+import org.jvnet.hk2.config.ObservableBean;
+import org.jvnet.hk2.config.UnprocessedChangeEvents;
+
+import static org.jvnet.hk2.config.Changed.TYPE.ADD;
+import static org.jvnet.hk2.config.Changed.TYPE.CHANGE;
+import static org.jvnet.hk2.config.Changed.TYPE.REMOVE;
 
 /**
  * A service to export resources in GlassFish to OSGi's service-registry.<br>
@@ -46,35 +63,79 @@ import java.util.logging.Logger;
  * javax.jms.QueueConnectionFactory / javax.jms.TopicConnectionFactory</i> <br>
  * For JMS Destinations : <i>javax.jms.Queue / javax.jms.Topic</i> <br>
  *
- * @author Jagadish Ramu
  */
-public class ResourceProviderService implements ConfigListener {
+public final class ResourceProviderService implements ConfigListener {
 
+    /**
+     * Logger.
+     */
     private static final Logger LOGGER = Logger.getLogger(
             ResourceProviderService.class.getPackage().getName());
 
+    /**
+     * Component locator.
+     */
     private final Habitat habitat;
+
+    /**
+     * Resources.
+     */
     private final Resources resources;
+
+    /**
+     * GlassFish servers config bean.
+     */
     private final Servers servers;
-    //config-bean proxy objects so as to listen to changes to these configuration.
+
+    // config-bean proxy objects so as to listen to changes to these
+    // configuration.
+
+    /**
+     * Server config bean proxy object.
+     */
     private ObservableBean serverConfigBean;
+
+    /**
+     * Resources config bean proxy object.
+     */
     private ObservableBean resourcesConfigBean;
+
+    /**
+     * Bundle context.
+     */
     private final BundleContext bundleContext;
+
+    /**
+     * Resource helper.
+     */
     private final ResourceHelper resourceHelper;
+
+    /**
+     * Resource manager.
+     */
     private final Collection<ResourceManager> resourceManagers;
 
+    /**
+     * Create a new instance.
+     * @param hab component locator
+     * @param bndCtx bundle context
+     */
+    public ResourceProviderService(final Habitat hab,
+            final BundleContext bndCtx) {
 
-    public ResourceProviderService(Habitat habitat, BundleContext bundleContext) {
-        this.habitat = habitat;
-        this.bundleContext = bundleContext;
-        servers = habitat.getComponent(Servers.class);
-        resources = habitat.getComponent(Domain.class).getResources();
-        resourceHelper = new ResourceHelper(habitat);
+        this.habitat = hab;
+        this.bundleContext = bndCtx;
+        servers = hab.getComponent(Servers.class);
+        resources = hab.getComponent(Domain.class).getResources();
+        resourceHelper = new ResourceHelper(hab);
         resourceManagers = new ArrayList<ResourceManager>();
         initializeResourceManagers();
         postConstruct();
     }
 
+    /**
+     * Initialize the resource managers.
+     */
     private void initializeResourceManagers() {
         resourceManagers.add(new JDBCResourceManager(habitat));
         if (runtimeSupportsJMS()) {
@@ -82,12 +143,18 @@ public class ResourceProviderService implements ConfigListener {
         }
     }
 
+    /**
+     * Register the resources.
+     */
     public void registerResources() {
         for (ResourceManager rm : resourceManagers) {
             rm.registerResources(bundleContext);
         }
     }
 
+    /**
+     * Unregister the resources.
+     */
     public void unRegisterResources() {
         for (ResourceManager rm : resourceManagers) {
             rm.unRegisterResources(bundleContext);
@@ -96,7 +163,7 @@ public class ResourceProviderService implements ConfigListener {
     }
 
     /**
-     * un-register config bean proxy change listeners
+     * Unregister config bean proxy change listeners.
      */
     public void preDestroy() {
         if (serverConfigBean != null) {
@@ -108,9 +175,9 @@ public class ResourceProviderService implements ConfigListener {
     }
 
     /**
-     * register config bean proxy change listeners
+     * Register config bean proxy change listeners.
      */
-    public final void postConstruct() {
+    public void postConstruct() {
         List<Server> serversList = servers.getServer();
         ServerContext context = habitat.getComponent(ServerContext.class);
         String instanceName = context.getInstanceName();
@@ -129,31 +196,51 @@ public class ResourceProviderService implements ConfigListener {
     }
 
     /**
-     * Notification that @Configured objects that were injected have changed
-     * @return
+     * Notification that {@code @Configured} objects that were injected have
+     * changed.
+     * @return UnprocessedChangeEvents
      * @param events list of changes
      */
     @Override
-    public UnprocessedChangeEvents changed(PropertyChangeEvent[] events) {
+    public UnprocessedChangeEvents changed(
+            final PropertyChangeEvent[] events) {
+
         return ConfigSupport.sortAndDispatch(events,
                 new PropertyChangeHandler(events, this), LOGGER);
     }
 
-    private static class PropertyChangeHandler implements Changed {
+    /**
+     * Config change listener.
+     */
+    private static final class PropertyChangeHandler implements Changed {
 
+        /**
+         * Config change events.
+         */
         private final PropertyChangeEvent[] events;
+
+        /**
+         * Resource provider service.
+         */
         private final ResourceProviderService rps;
 
-        private PropertyChangeHandler(PropertyChangeEvent[] events,
-                ResourceProviderService rps) {
+        /**
+         * Create a new instance.
+         * @param evts config change events
+         * @param resProviderSvc resource provider service
+         */
+        PropertyChangeHandler(final PropertyChangeEvent[] evts,
+                final ResourceProviderService resProviderSvc) {
 
-            this.events = events;
-            this.rps = rps;
+            this.events = evts;
+            this.rps = resProviderSvc;
         }
 
         @Override
+        @SuppressWarnings("checkstyle:EmptyBlock")
         public <T extends ConfigBeanProxy> NotProcessed changed(
-                Changed.TYPE type, Class<T> changedType, T changedInstance) {
+                final Changed.TYPE type, final Class<T> changedType,
+                final T changedInstance) {
 
             NotProcessed np;
             try {
@@ -196,11 +283,16 @@ public class ResourceProviderService implements ConfigListener {
                 return np;
             } finally {
             }
-
         }
 
+        /**
+         * Handle a remove event.
+         * @param <T> type of the removed instance
+         * @param removedInstance removed instance
+         * @return NotProcessed
+         */
         private <T extends ConfigBeanProxy> NotProcessed handleRemoveEvent(
-                T removedInstance) {
+                final T removedInstance) {
 
             if (removedInstance instanceof ResourceRef) {
                 ResourceRef resourceRef = (ResourceRef) removedInstance;
@@ -220,8 +312,14 @@ public class ResourceProviderService implements ConfigListener {
             return null;
         }
 
+        /**
+         * Handle a change event.
+         * @param <T> type of the changed object
+         * @param changedInstance changed object
+         * @return NotProcessed
+         */
         private <T extends ConfigBeanProxy> NotProcessed handleChangeEvent(
-                T changedInstance) {
+                final T changedInstance) {
 
             //TODO Handle other attribute changes (jndi-name)
             if (changedInstance instanceof ResourceRef) {
@@ -311,16 +409,17 @@ public class ResourceProviderService implements ConfigListener {
         /**
          * This method un-register and register resource again.
          *
-         * @param bindableResources
+         * @param bindableResources resources to register
          */
         private void reRegisterResource(
-                Collection<BindableResource> bindableResources) {
+                final Collection<BindableResource> bindableResources) {
 
             for (BindableResource resource : bindableResources) {
                 if (Boolean.valueOf(resource.getEnabled())) {
                     ResourceRef resRef = rps.resourceHelper
                             .getResourceRef(resource.getJndiName());
-                    if (resRef != null && Boolean.valueOf(resRef.getEnabled())) {
+                    if (resRef != null
+                            && Boolean.valueOf(resRef.getEnabled())) {
                         unRegisterResource(resource);
                         registerResource(resource);
                     }
@@ -328,33 +427,58 @@ public class ResourceProviderService implements ConfigListener {
             }
         }
 
-        private void unRegisterResource(BindableResource bindableResource) {
+        /**
+         * Unregister the given resource.
+         * @param bindableResource resource to unregister
+         */
+        private void unRegisterResource(
+                final BindableResource bindableResource) {
+
             Collection<ResourceManager> resourceManagers =
                     rps.getResourceManagers(bindableResource);
             for (ResourceManager rm : resourceManagers) {
                 ResourceRef ref = rps.resourceHelper
                         .getResourceRef(bindableResource.getJndiName());
-                rm.unRegisterResource(bindableResource, ref, rps.bundleContext);
+                rm.unRegisterResource(bindableResource, ref,
+                        rps.bundleContext);
             }
         }
 
-        private void registerResource(BindableResource bindableResource,
-                ResourceRef ref) {
+        /**
+         * Register the given resource.
+         * @param bindableResource resource config bean
+         * @param ref resource reference
+         */
+        private void registerResource(final BindableResource bindableResource,
+                final ResourceRef ref) {
             Collection<ResourceManager> resourceManagers =
                     rps.getResourceManagers(bindableResource);
             for (ResourceManager rm : resourceManagers) {
-                rm.registerResource(bindableResource, ref, rps.bundleContext);
+                rm.registerResource(bindableResource, ref,
+                        rps.bundleContext);
             }
         }
 
-        private void registerResource(BindableResource bindableResource) {
+        /**
+         * Register the given resource.
+         * @param bindableResource resource config bean
+         */
+        private void registerResource(
+                final BindableResource bindableResource) {
+
             ResourceRef ref = rps.resourceHelper
                     .getResourceRef(bindableResource.getJndiName());
             registerResource(bindableResource, ref);
         }
 
+        /**
+         * Handle a add event.
+         * @param <T> type of the added object
+         * @param addedInstance added object
+         * @return NotProcessed
+         */
         private <T extends ConfigBeanProxy> NotProcessed handleAddEvent(
-                T addedInstance) {
+                final T addedInstance) {
 
             if (addedInstance instanceof ResourceRef) {
                 ResourceRef resourceRef = (ResourceRef) addedInstance;
@@ -371,13 +495,12 @@ public class ResourceProviderService implements ConfigListener {
     }
 
     /**
-     * get the list of resource-managers that can handle the resource
-     *
+     * Get the list of resource-managers that can handle the resource.
      * @param resource resource
      * @return list of resource-managers
      */
     private Collection<ResourceManager> getResourceManagers(
-            BindableResource resource) {
+            final BindableResource resource) {
 
         Collection<ResourceManager> rms = new ArrayList<ResourceManager>();
         for (ResourceManager rm : resourceManagers) {
@@ -388,6 +511,10 @@ public class ResourceProviderService implements ConfigListener {
         return rms;
     }
 
+    /**
+     * Test if the runtime support JMS.
+     * @return {@code true} if the runtime supports JMS, {@code false} otherwise
+     */
     private boolean runtimeSupportsJMS() {
         boolean supports = false;
         try {
@@ -399,10 +526,16 @@ public class ResourceProviderService implements ConfigListener {
         return supports;
     }
 
+    /**
+     * Register the given JMS resources.
+     * @param resManagers manager of the resources to register
+     * @param hab component locator
+     */
     private void registerJMSResources(
-            Collection<ResourceManager> resourceManagers, Habitat habitat) {
+            final Collection<ResourceManager> resManagers,
+            final Habitat hab) {
 
-        resourceManagers.add(new JMSResourceManager(habitat));
-        resourceManagers.add(new JMSDestinationResourceManager(habitat));
+        resManagers.add(new JMSResourceManager(hab));
+        resManagers.add(new JMSDestinationResourceManager(hab));
     }
 }

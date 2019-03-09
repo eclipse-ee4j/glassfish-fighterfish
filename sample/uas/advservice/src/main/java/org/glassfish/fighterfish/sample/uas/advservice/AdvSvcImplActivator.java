@@ -20,18 +20,35 @@ import org.osgi.util.tracker.ServiceTracker;
 
 import org.glassfish.fighterfish.sample.uas.api.UserAuthService;
 
-public class AdvSvcImplActivator implements BundleActivator {
+/**
+ * Bundle activator for the advanced user authentication service.
+ */
+public final class AdvSvcImplActivator implements BundleActivator {
 
+    /**
+     * Transaction tracker.
+     */
     private volatile ServiceTracker txTracker;
+
+    /**
+     * Entity manager factory tracker.
+     */
     private volatile ServiceTracker emfTracker;
-    private static String PUNAME = "sample.uas.entities"; // should be a configuration property
+
+    /**
+     * Persistence unit name.
+     */
+    // should be a configuration property
+    private static final String PUNAME = "sample.uas.entities";
 
     @Override
-    public void start(BundleContext context) throws Exception {
-        txTracker = new ServiceTracker(context, UserTransaction.class.getName(), null);
+    public void start(final BundleContext context) throws Exception {
+        txTracker = new ServiceTracker(context,
+                UserTransaction.class.getName(), null);
         txTracker.open();
         Filter filter = context.createFilter("(&"
-                + "(" + Constants.OBJECTCLASS + "=" + EntityManagerFactory.class.getName() + ")"
+                + "(" + Constants.OBJECTCLASS + "="
+                + EntityManagerFactory.class.getName() + ")"
                 + "(persistence-unit=" + PUNAME + ")"
                 + ")");
         emfTracker = new ServiceTracker(context, filter, null);
@@ -41,15 +58,23 @@ public class AdvSvcImplActivator implements BundleActivator {
     }
 
     @Override
-    public void stop(BundleContext context) throws Exception {
+    public void stop(final BundleContext context) throws Exception {
         txTracker.close();
         emfTracker.close();
     }
 
+    /**
+     * Get the user transaction.
+     * @return UserTransaction
+     */
     public UserTransaction getUTX() {
         return (UserTransaction) txTracker.getService();
     }
 
+    /**
+     * Get the EntityManagerFactory.
+     * @return EntityManagerFactory
+     */
     public EntityManagerFactory getEMF() {
         return (EntityManagerFactory) emfTracker.getService();
     }

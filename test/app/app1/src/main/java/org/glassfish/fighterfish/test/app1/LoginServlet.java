@@ -28,16 +28,24 @@ import java.io.PrintWriter;
  * Servlet implementation class LoginServlet.
  */
 @WebServlet("/LoginServlet")
-public class LoginServlet extends HttpServlet {
+public final class LoginServlet extends HttpServlet {
 
+    /**
+     * Serialization UID.
+     */
     private static final long serialVersionUID = 1L;
 
+    /**
+     * User authentication service.
+     */
     @EJB
-    UserAuthServiceEJB userAuthService;
+    private UserAuthServiceEJB userAuthService;
 
     @Override
-    public void service(HttpServletRequest req, HttpServletResponse resp)
+    public void service(final HttpServletRequest req,
+            final HttpServletResponse resp)
             throws ServletException, java.io.IOException {
+
         resp.setContentType("text/html");
         PrintWriter out = resp.getWriter();
         out.println("<HTML> <HEAD> <TITLE> Login "

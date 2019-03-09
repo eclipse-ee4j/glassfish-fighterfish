@@ -16,11 +16,28 @@
 package org.glassfish.osgiejb;
 
 /**
- * @author Sanjeeb.Sahoo@Sun.COM
+ * Constants for this module.
  */
-public class Constants {
+public final class Constants {
 
+    /**
+     * Cannot be instanciated.
+     */
+    private Constants() {
+    }
+
+    /**
+     * Constant for {@code Export-EJB} manifest entry.
+     */
     public static final String EXPORT_EJB = "Export-EJB";
+
+    /**
+     * Constant for value {@code ALL} of {@code Export-EJB} manifest entry.
+     */
     public static final String EXPORT_EJB_ALL = "ALL";
+
+    /**
+     * Constant for value {@code NONE} of {@code Export-EJB} manifest entry.
+     */
     public static final String EXPORT_EJB_NONE = "NONE";
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -24,46 +24,39 @@ import javax.sql.DataSource;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.sql.Statement;
 
 /**
- * @author sanjeeb.sahoo@oracle.com
- *
+ * Bundle activator.
  */
-public class TestApp14Activator implements BundleActivator {
+public final class TestApp14Activator implements BundleActivator {
 
     // We should configure this using Config Admin service
-    public static final String dsName = "jdbc/__default";
+    /**
+     * Data source name.
+     */
+    public static final String DS_NAME = "jdbc/__default";
 
     @Override
-    public void start(BundleContext context) throws Exception {
+    public void start(final BundleContext context) throws Exception {
         InitialContext ctx = new InitialContext();
-        Connection c = null;
-        Statement s = null;
         try {
-            final DataSource ds = (DataSource) ctx.lookup(dsName);
+            final DataSource ds = (DataSource) ctx.lookup(DS_NAME);
             System.out.println("TestApp14Activator.start() " + ds);
             ds.getConnection().close(); // just testing
-            context.registerService(ConnectionFactory.class.getName(), new ConnectionFactory() {
+            context.registerService(ConnectionFactory.class.getName(),
+                    new ConnectionFactory() {
 
                 @Override
                 public Connection getConnection() throws SQLException {
                     return ds.getConnection();
                 }
-                
-            }
-            , null);
+            }, null);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-
     }
 
-    /* (non-Javadoc)
-     * @see org.osgi.framework.BundleActivator#stop(org.osgi.framework.BundleContext)
-     */
     @Override
-    public void stop(BundleContext context) throws Exception {
+    public void stop(final BundleContext context) throws Exception {
     }
-
 }

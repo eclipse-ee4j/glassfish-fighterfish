@@ -13,21 +13,30 @@ import org.glassfish.fighterfish.sample.uas.api.UserAuthService;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
-public class SimpleActivator implements BundleActivator {
+/**
+ * Bundle activator for this service.
+ */
+public final class SimpleActivator implements BundleActivator {
 
     @Override
-    public void start(BundleContext context) throws Exception {
-        context.registerService(UserAuthService.class.getName(), new UserAuthServiceImpl(), null);
+    public void start(final BundleContext context) throws Exception {
+        context.registerService(UserAuthService.class.getName(),
+                new UserAuthServiceImpl(), null);
         log("Registered service");
     }
 
     @Override
-    public void stop(BundleContext context) throws Exception {
-        // No need to unregister, as the service gets unregistered automatically when bundle stops.
+    public void stop(final BundleContext context) throws Exception {
+        // No need to unregister, as the service gets unregistered
+        // automatically when bundle stops.
     }
 
-    static void log(String string) {
-        System.out.println("UserAuthService: " + string);
+    /**
+     * Log a message.
+     * @param msg message to log
+     */
+    static void log(final String msg) {
+        System.out.println("UserAuthService: " + msg);
     }
 
 }

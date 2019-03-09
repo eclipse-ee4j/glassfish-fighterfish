@@ -20,10 +20,20 @@ import java.io.InputStream;
 import java.util.Properties;
 
 /**
- * @author Sanjeeb.Sahoo@Sun.COM
+ * This class holds version values populated from the build.
  */
-public class Version {
+public final class Version {
 
+    /**
+     * Cannot be instanciated.
+     */
+    private Version() {
+    }
+
+    /**
+     * Get the main fighterfish version.
+     * @return version string
+     */
     public static String getVersion() {
         Properties props = new Properties();
         final InputStream stream = Version.class.getResourceAsStream(

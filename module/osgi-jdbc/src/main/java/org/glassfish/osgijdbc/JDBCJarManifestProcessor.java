@@ -21,33 +21,67 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.*;
-import java.util.jar.*;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Properties;
+import java.util.StringTokenizer;
+import java.util.jar.Attributes;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
+import java.util.jar.JarInputStream;
+import java.util.jar.Manifest;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static org.osgi.framework.Constants.*;
+import static org.glassfish.osgijdbc.Constants.IMPL_VERSION;
+import static org.glassfish.osgijdbc.Constants.OSGI_RFC_122;
+import static org.osgi.framework.Constants.BUNDLE_CLASSPATH;
+import static org.osgi.framework.Constants.BUNDLE_MANIFESTVERSION;
+import static org.osgi.framework.Constants.BUNDLE_SYMBOLICNAME;
+import static org.osgi.framework.Constants.BUNDLE_VERSION;
+import static org.osgi.framework.Constants.DYNAMICIMPORT_PACKAGE;
+import static org.osgi.framework.Constants.EXPORT_PACKAGE;
 
-public class JDBCJarManifestProcessor {
+/**
+ * Manifest processor.
+ */
+public final class JDBCJarManifestProcessor {
 
+    /**
+     * Logger.
+     */
     private static final Logger LOGGER = Logger.getLogger(
             JDBCJarManifestProcessor.class.getPackage().getName());
+
+    /**
+     * Constant for the default bundle manifest version.
+     */
     private static final String DEFAULT_MAN_VERSION = "2";
-    private static final String IMPLEMENTATION_VERSION =
-            "Implementation-Version";
+
+    /**
+     * Default locale.
+     */
     private static final Locale LOCALE = Locale.getDefault();
 
-    public static final String OSGI_RFC_122 = "OSGI_RFC_122";
+    /**
+     * Cannot be instanciated.
+     */
+    private JDBCJarManifestProcessor() {
+    }
 
     /**
      * Reads content of the given URL, uses it to come up with a new Manifest.
      *
      * @param url URL which is used to read the original Manifest and other data
+     * @param cl class-loader to use
      * @return a new Manifest
-     * @throws java.io.IOException
+     * @throws java.io.IOException if an error occurs
      */
-    public static Manifest processManifest(URL url, ClassLoader cl)
-            throws IOException {
+    public static Manifest processManifest(final URL url,
+            final ClassLoader cl) throws IOException {
 
         final JarInputStream jis = new JarInputStream(url.openStream());
 
@@ -56,7 +90,7 @@ public class JDBCJarManifestProcessor {
             File file = new File(url.toURI());
 
             List<String> embeddedJars = getEmbeddedJarsList(file);
-            StringBuffer bundleClassPath = deriveBundleClassPath(embeddedJars);
+            StringBuilder bundleClassPath = deriveBundleClassPath(embeddedJars);
 
             JDBCDriverLoader loader = new JDBCDriverLoader(cl);
             Properties properties = loader.loadDriverInformation(file);
@@ -87,7 +121,7 @@ public class JDBCJarManifestProcessor {
                     defaultSymName);
 
             String version = oldManifest.getMainAttributes()
-                    .getValue(IMPLEMENTATION_VERSION);
+                    .getValue(IMPL_VERSION);
             if (isOSGiCompatibleVersion(version)) {
                 process(queryParams, attrs, BUNDLE_VERSION, version);
             }
@@ -110,7 +144,13 @@ public class JDBCJarManifestProcessor {
         }
     }
 
-    private static boolean isOSGiCompatibleVersion(String version) {
+    /**
+     * Check if the given version is OSGi compatible.
+     * @param version the version to test
+     * @return {@code true} if the version is compatible, {@code false}
+     * otherwise
+     */
+    private static boolean isOSGiCompatibleVersion(final String version) {
         boolean isCompatible = false;
         try {
             if (version != null) {
@@ -127,10 +167,15 @@ public class JDBCJarManifestProcessor {
         return isCompatible;
     }
 
-    private static StringBuffer deriveBundleClassPath(
-            List<String> embeddedJars) {
+    /**
+     * Create a bundle class-path string from the given list of JAR file names.
+     * @param embeddedJars the input list
+     * @return StringBuilder
+     */
+    private static StringBuilder deriveBundleClassPath(
+            final List<String> embeddedJars) {
 
-        StringBuffer bundleClasspath = new StringBuffer(".");
+        StringBuilder bundleClasspath = new StringBuilder(".");
         for (int i = 0; i < embeddedJars.size(); i++) {
             bundleClasspath = bundleClasspath.append(",");
             bundleClasspath = bundleClasspath.append(embeddedJars.get(i));
@@ -138,7 +183,13 @@ public class JDBCJarManifestProcessor {
         return bundleClasspath;
     }
 
-    private static List<String> getEmbeddedJarsList(File file)
+    /**
+     * Get the list of nested jar files inside the given file.
+     * @param file the outer JAR file
+     * @return list of nested jar file names
+     * @throws IOException if an error occurs
+     */
+    private static List<String> getEmbeddedJarsList(final File file)
             throws IOException {
 
         List<String> jarsList = new ArrayList<String>();
@@ -154,7 +205,12 @@ public class JDBCJarManifestProcessor {
         return jarsList;
     }
 
-    private static Properties readQueryParams(URL url) {
+    /**
+     * Read the query parameters of a given URL.
+     * @param url the input URL
+     * @return Properties
+     */
+    private static Properties readQueryParams(final URL url) {
         Properties queryParams = new Properties();
         String query = url.getQuery();
         if (query != null) {
@@ -179,10 +235,17 @@ public class JDBCJarManifestProcessor {
         return queryParams;
     }
 
-    private static void process(Properties deployerOptions,
-            Attributes developerOptions,
-            String key,
-            String defaultOption) {
+    /**
+     * Process option, deployer trumps developer.
+     * @param deployerOptions deployer options
+     * @param developerOptions developer options
+     * @param key option key
+     * @param defaultOption default value
+     */
+    private static void process(final Properties deployerOptions,
+            final Attributes developerOptions, final String key,
+            final String defaultOption) {
+
         String deployerOption = deployerOptions.getProperty(key);
         String developerOption = developerOptions.getValue(key);
         String finalOption = defaultOption;
@@ -191,7 +254,8 @@ public class JDBCJarManifestProcessor {
         } else if (developerOption != null) {
             finalOption = developerOption;
         }
-        if (finalOption == null ? developerOption != null : !finalOption
+        if ((finalOption == null && developerOption != null)
+                || finalOption != null && !finalOption
                 .equals(developerOption)) {
             developerOptions.putValue(key, finalOption);
         }

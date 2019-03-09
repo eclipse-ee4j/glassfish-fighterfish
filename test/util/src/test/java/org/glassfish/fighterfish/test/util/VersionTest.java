@@ -20,7 +20,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 /**
- * @author Sanjeeb.Sahoo@Sun.COM
+ * Version test.
  */
 public class VersionTest {
 

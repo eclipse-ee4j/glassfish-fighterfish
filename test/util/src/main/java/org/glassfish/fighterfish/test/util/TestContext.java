@@ -22,7 +22,6 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.FrameworkUtil;
 
-import java.io.File;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
@@ -39,54 +38,93 @@ import java.util.logging.Logger;
  * it by calling {@link #destroy} at the end of the test method. When a test
  * context is destroyed, all changes done so far will be rolled back. This
  * includes any bundles deployed. any domain configuration made, etc.
- *
- * @author Sanjeeb.Sahoo@Sun.COM
  */
-public class TestContext {
+public final class TestContext {
+
+    /**
+     * Logger.
+     */
+    private static final Logger LOGGER = Logger.getLogger(
+            TestContext.class.getPackage().getName());
 
     // TODO(Sahoo): Group related methods into separate interfaces.
     // TODO(Sahoo): Add methods from OSGiUtil here.
     // TODO(Sahoo): Use fluent API
     // TODO(Sahoo): Explore possibility of automatically controlling life cycle
     // of a TestContext
+    /**
+     * Test ID.
+     */
     private final String testID;
-    private static final AtomicInteger testIdGen = new AtomicInteger(0);
 
     /**
-     * BundleContext associated with the test
+     * Test ID generator.
      */
-    private BundleContext ctx;
+    private static final AtomicInteger TEST_ID_GEN = new AtomicInteger(0);
 
-    private BundleProvisioner bundleProvisioner;
-    private EnterpriseResourceProvisioner resourceProvisioner;
+    /**
+     * BundleContext associated with the test.
+     */
+    private final BundleContext ctx;
 
-    private static final Logger LOGGER = Logger.getLogger(
-            TestContext.class.getPackage().getName());
+    /**
+     * Bundle provisioner.
+     */
+    private final BundleProvisioner bundleProvisioner;
 
-    private TestContext(String testID, BundleContext ctx) {
+    /**
+     * Resource bundle provisioner.
+     */
+    private final EnterpriseResourceProvisioner resourceProvisioner;
+
+    /**
+     * Create a new instance.
+     * @param id test id
+     * @param bndCtx bundle contexct
+     */
+    private TestContext(final String id, final BundleContext bndCtx) {
         LOGGER.log(Level.INFO, "Creating test context for test id: {0}",
-                testID);
-        this.ctx = ctx;
-        this.testID = testID;
-        bundleProvisioner = new BundleProvisioner(ctx);
-        resourceProvisioner = new EnterpriseResourceProvisioner(ctx);
+                id);
+        this.ctx = bndCtx;
+        this.testID = id;
+        bundleProvisioner = new BundleProvisioner(bndCtx);
+        resourceProvisioner = new EnterpriseResourceProvisioner(bndCtx);
     }
 
-    public static TestContext create(Class testClass)
+    /**
+     * Create a test context.
+     * @param testClass test class
+     * @return TestContext
+     * @throws GlassFishException if an error occurs
+     * @throws InterruptedException if an error occurs
+     */
+    public static TestContext create(final Class testClass)
             throws GlassFishException, InterruptedException {
 
-        BundleContext ctx = FrameworkUtil.getBundle(testClass).getBundleContext();
+        BundleContext ctx = FrameworkUtil.getBundle(testClass)
+                .getBundleContext();
         TestContext tc = new TestContext(getNextTestId(testClass), ctx);
         tc.getGlassFish();
         tc.configureEmbeddedDerby();
         return tc;
     }
 
-    private static String getNextTestId(Class testClass) {
+    /**
+     * Get the next test id.
+     * @param testClass test class
+     * @return String
+     */
+    private static String getNextTestId(final Class testClass) {
         // Don't use something : as that interefers with asadmin command syntax
-        return testClass.getName() + "-" + String.valueOf(testIdGen.incrementAndGet());
+        return testClass.getName() + "-" + String.valueOf(
+                TEST_ID_GEN.incrementAndGet());
     }
 
+    /**
+     * Destroy the test context.
+     * @throws BundleException if an error occurs
+     * @throws GlassFishException if an error occurs
+     */
     public void destroy() throws BundleException, GlassFishException {
 
         LOGGER.log(Level.INFO, "Destroying test context for test id: {0}",
@@ -104,12 +142,12 @@ public class TestContext {
      * time for deployment to take place successfully. If deployment fails or
      * does not happen within the configured times, it throws TimeoutException.
      *
-     * @param bundle
+     * @param bundle bundle to deploy
      * @return ServletContext associated with the deployed web application
-     * @throws BundleException
-     * @throws InterruptedException
+     * @throws BundleException if an error occurs
+     * @throws InterruptedException if an error occurs while waiting
      */
-    public WebAppBundle deployWebAppBundle(Bundle bundle)
+    public WebAppBundle deployWebAppBundle(final Bundle bundle)
             throws BundleException, InterruptedException {
 
         WebAppBundle webAppBundle = new WebAppBundle(getBundleContext(),
@@ -119,7 +157,15 @@ public class TestContext {
         return webAppBundle;
     }
 
-    public WebAppBundle deployWebAppBundle(String location)
+    /**
+     * Deploy the given OSGi Web Application bundle with the given bundle
+     *  location.
+     * @param location bundle location
+     * @return WebAppBundle
+     * @throws BundleException if an error occurs
+     * @throws InterruptedException if an error occurs while waiting
+     */
+    public WebAppBundle deployWebAppBundle(final String location)
             throws BundleException, InterruptedException {
 
         return deployWebAppBundle(installBundle(location));
@@ -132,11 +178,11 @@ public class TestContext {
      *
      * @param bundle Entity bundle to be deployed
      * @return a handle to the deployed application
-     * @throws BundleException
-     * @throws InterruptedException
-     * @throws TimeoutException
+     * @throws BundleException if an error occurs
+     * @throws InterruptedException if an error occurs while waiting
+     * @throws TimeoutException if the timeout is reached
      */
-    public EntityBundle deployEntityBundle(Bundle bundle)
+    public EntityBundle deployEntityBundle(final Bundle bundle)
             throws BundleException, InterruptedException {
 
         EntityBundle entityBundle = new EntityBundle(getBundleContext(),
@@ -146,7 +192,14 @@ public class TestContext {
         return entityBundle;
     }
 
-    public EntityBundle deployEntityBundle(String location)
+    /**
+     * Deploy the given entity bundle.
+     * @param location bundle location
+     * @return EntityBundle
+     * @throws BundleException if an error occurs
+     * @throws InterruptedException if an error occurs while waiting
+     */
+    public EntityBundle deployEntityBundle(final String location)
             throws BundleException, InterruptedException {
         return deployEntityBundle(installBundle(location));
     }
@@ -161,11 +214,12 @@ public class TestContext {
      * @param services Services that are expected to be made available by this
      * EJB bundle if deployment is successful.
      * @return a handle to the deployed application
-     * @throws BundleException
-     * @throws InterruptedException
-     * @throws TimeoutException
+     * @throws BundleException if an error occurs
+     * @throws InterruptedException if an error occurs while waiting
+     * @throws TimeoutException if the timeout is reached
      */
-    public EjbBundle deployEjbBundle(Bundle bundle, String[] services)
+    public EjbBundle deployEjbBundle(final Bundle bundle,
+            final String[] services)
             throws BundleException, InterruptedException {
 
         EjbBundle ejbBundle = new EjbBundle(getBundleContext(), bundle,
@@ -175,12 +229,27 @@ public class TestContext {
         return ejbBundle;
     }
 
-    public EjbBundle deployEjbBundle(String location, String[] services)
+    /**
+     * Deploy the given EJB OSGi bundle by bundle location.
+     * @param location bundle location
+     * @param services services provided by the bundle
+     * @return EjbBundle
+     * @throws BundleException if an error occurs
+     * @throws InterruptedException if an error occurs while waiting
+     */
+    public EjbBundle deployEjbBundle(final String location,
+            final String[] services)
             throws BundleException, InterruptedException {
 
         return deployEjbBundle(installBundle(location), services);
     }
 
+    /**
+     * Get the GlassFish service.
+     * @return GlassFish
+     * @throws GlassFishException if an error occurs
+     * @throws InterruptedException if an error occurs while waiting
+     */
     public GlassFish getGlassFish()
             throws GlassFishException, InterruptedException {
 
@@ -188,6 +257,11 @@ public class TestContext {
                 TestsConfiguration.getInstance().getTimeout());
     }
 
+    /**
+     * Configure embedded derby.
+     * @throws GlassFishException if an error occurs
+     * @throws InterruptedException if an error occurs while waiting
+     */
     public void configureEmbeddedDerby()
             throws GlassFishException, InterruptedException {
 
@@ -196,6 +270,10 @@ public class TestContext {
                 testID);
     }
 
+    /**
+     * Get the bundle context.
+     * @return BundleContext
+     */
     public BundleContext getBundleContext() {
         return ctx;
     }
@@ -206,30 +284,56 @@ public class TestContext {
      *
      * @param location a URI string from which the bundle content will be read
      * @return installed bundle object
-     * @throws BundleException
+     * @throws BundleException if an error occurs
      */
-    public Bundle installBundle(String location) throws BundleException {
+    public Bundle installBundle(
+            final String location) throws BundleException {
+
         return bundleProvisioner.installTestBundle(location);
     }
 
-    public void createJmsCF(String cfName)
+    /**
+     * Create a JMS connection factory.
+     * @param cfName factory name
+     * @throws GlassFishException if an error occurs
+     * @throws InterruptedException if an error occurs while waiting
+     */
+    public void createJmsCF(final String cfName)
             throws GlassFishException, InterruptedException {
 
         resourceProvisioner.createJmsCF(getGlassFish(), cfName);
     }
 
-    public void createJmsTopic(String topicName)
+    /**
+     * Create a JMS topic.
+     * @param topicName topic name
+     * @throws GlassFishException if an error occurs
+     * @throws InterruptedException if an error occurs while waiting
+     */
+    public void createJmsTopic(final String topicName)
             throws GlassFishException, InterruptedException {
 
         resourceProvisioner.createJmsTopic(getGlassFish(), topicName);
     }
 
+    /**
+     * Get the calling class.
+     * @return Class
+     */
     private static Class getCallingClass() {
         return new SecurityManager1().getCallingClass();
     }
 
-    static class SecurityManager1 extends SecurityManager {
+    /**
+     * Dummy security manager used to implement {@link #getCallingClass()}.
+     */
+    private static final class SecurityManager1 extends SecurityManager {
 
+        /**
+         * Get the calling class.
+         * @return Class
+         */
+        @SuppressWarnings("checkstyle:MagicNumber")
         private Class getCallingClass() {
             // At depth 6 (starting index is 0), we find user's test class.
             return getClassContext()[6];

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -13,49 +13,92 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  */
-
 package org.glassfish.obrbuilder;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @author TangYong(tangyong@cn.fujitsu.com)
+ * Annotation descriptor.
  */
-public class HK2AnnotationDescriptor {
-	private String targetBundleSymbolicName;
-	private String targetBundleVersion;
+public final class HK2AnnotationDescriptor {
 
-	private List<HK2InjectMetadata> injectionFieldMetaDatas = new ArrayList<HK2InjectMetadata>();
-	private List<String> contractClassNames = new ArrayList<String>();
+    /**
+     * Target bundle symbolic name.
+     */
+    private String targetBundleSymbolicName;
 
-	public HK2AnnotationDescriptor(String bundleSymbolicName, String bundleVersion){
-		this.targetBundleSymbolicName = bundleSymbolicName;
-		this.targetBundleVersion = bundleVersion;
-	}
-	
-	public String getTargetBundleSymbolicName() {
-		return targetBundleSymbolicName;
-	}
+    /**
+     * Target bundle version.
+     */
+    private String targetBundleVersion;
 
-	public void setTargetBundleSymbolicName(String targetBundleSymbolicName) {
-		this.targetBundleSymbolicName = targetBundleSymbolicName;
-	}
+    /**
+     * Injection field metadatas.
+     */
+    private final List<HK2InjectMetadata> injectionFieldMetaDatas =
+            new ArrayList<HK2InjectMetadata>();
 
-	public String getTargetBundleVersion() {
-		return targetBundleVersion;
-	}
+    /**
+     * Contract class names.
+     */
+    private final List<String> contractClassNames = new ArrayList<String>();
 
-	public void setTargetBundleVersion(String targetBundleVersion) {
-		this.targetBundleVersion = targetBundleVersion;
-	}
+    /**
+     * Create a new instance.
+     * @param bsn bundle symbolic name
+     * @param bv bundle version
+     */
+    public HK2AnnotationDescriptor(final String bsn, final String bv) {
+        this.targetBundleSymbolicName = bsn;
+        this.targetBundleVersion = bv;
+    }
 
-	public List<HK2InjectMetadata> getInjectionFieldMetaDatas() {
-		return injectionFieldMetaDatas;
-	}
-	
-	public List<String> getContractClassNames() {
-		return contractClassNames;
-	}
+    /**
+     * Get the target bundle symbolic name.
+     * @return String
+     */
+    public String getTargetBundleSymbolicName() {
+        return targetBundleSymbolicName;
+    }
 
+    /**
+     * Set the target bundle symbolic name.
+     * @param targetBsn new target bundle symbolic name
+     */
+    public void setTargetBundleSymbolicName(final String targetBsn) {
+        this.targetBundleSymbolicName = targetBsn;
+    }
+
+    /**
+     * Get the target bundle version.
+     * @return String
+     */
+    public String getTargetBundleVersion() {
+        return targetBundleVersion;
+    }
+
+    /**
+     * Set the target bundle version.
+     * @param targetBv new target bundle version
+     */
+    public void setTargetBundleVersion(final String targetBv) {
+        this.targetBundleVersion = targetBv;
+    }
+
+    /**
+     * Get the injection field metadatas.
+     * @return list of HK2InjectMetadata
+     */
+    public List<HK2InjectMetadata> getInjectionFieldMetaDatas() {
+        return injectionFieldMetaDatas;
+    }
+
+    /**
+     * Get the contract class names.
+     * @return list of class names
+     */
+    public List<String> getContractClassNames() {
+        return contractClassNames;
+    }
 }

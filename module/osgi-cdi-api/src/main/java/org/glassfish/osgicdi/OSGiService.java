@@ -38,13 +38,10 @@ import javax.inject.Qualifier;
  * <code>OSGiServiceExtension</code> discovers and instantiates the service
  * implementing the service interface type of the injection point, and makes it
  * available for injection to that injection point.
- *
- * @author Sivakumar Thyagarajan
  */
 @Qualifier
 @Target({TYPE, METHOD, PARAMETER, FIELD})
 @Retention(RetentionPolicy.RUNTIME)
-
 public @interface OSGiService {
 
     /**
@@ -59,7 +56,7 @@ public @interface OSGiService {
      * away (deregistered by the service provider or stopped), then a new
      * instance of the service is obtained from the OSGi service registry. This
      * is ideal for stateless and/or idempotent services or service
-     * implementations whose lifecycle may be shorter than the client's
+     * implementations whose life-cycle may be shorter than the client's
      * lifecycle.
      *
      * If the value of this annotation element is false, an instance of the
@@ -69,10 +66,10 @@ public @interface OSGiService {
      * attempt is made to get another instance of the service and a
      * <code>ServiceUnavailableException</code> is thrown on method invocation.
      * This is ideal for stateful or contextual services and for references to
-     * service implementations whose lifecycle is well-known and is known to be
-     * greater than the lifecycle of the client.
+     * service implementations whose life-cycle is well-known and is known to be
+     * greater than the life-cycle of the client.
      *
-     * @return
+     * @return {@code true} if dynamic, {@code false} otherwise
      */
     boolean dynamic() default false;
 
@@ -80,7 +77,7 @@ public @interface OSGiService {
      * Service discovery criteria.The string provided must match the Filter
      * syntax specified in the OSGi Core Specification.
      *
-     * @return
+     * @return service criteria
      */
     String serviceCriteria() default "";
 
@@ -89,10 +86,8 @@ public @interface OSGiService {
      * matches the criteria specified to be available in the OSGi Service
      * registry.
      *
-     * 0 indicates indefinite wait. -1 indicates that the service is returned
-     * immediately if available or a null is returned if not available.
-     *
-     * @return
+     * @return 0 indicates indefinite wait. -1 indicates that the service is
+     * returned immediately if available or a null is returned if not available.
      */
     int waitTimeout() default -1;
 }

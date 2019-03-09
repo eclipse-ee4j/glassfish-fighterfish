@@ -30,11 +30,16 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * @author Sanjeeb.Sahoo@Sun.COM
+ * Represents an EJB bundle.
  */
-public class EJBBundle extends OSGiJavaEEArchive {
+public final class EJBBundle extends OSGiJavaEEArchive {
 
-    public EJBBundle(Bundle[] fragments, Bundle host) {
+    /**
+     * Create a new instance.
+     * @param fragments bundle fragments
+     * @param host host bundle
+     */
+    public EJBBundle(final Bundle[] fragments, final Bundle host) {
         super(fragments, host);
     }
 
@@ -85,7 +90,7 @@ public class EJBBundle extends OSGiJavaEEArchive {
                     }
                 }
 
-                private void visitBCPEntry(BCPEntry bcpEntry) {
+                private void visitBCPEntry(final BCPEntry bcpEntry) {
                     try {
                         final Archive subArchive = getArchive(
                                 bcpEntry.getBundle())
@@ -97,7 +102,9 @@ public class EJBBundle extends OSGiJavaEEArchive {
                     }
                 }
 
-                private void addEntriesForSubArchive(Archive subArchive) {
+                private void addEntriesForSubArchive(
+                        final Archive subArchive) {
+
                     final URIable uriableArchive = (URIable) subArchive;
                     for (final String subEntry : Collections.list(
                             subArchive.entries())) {
@@ -125,7 +132,8 @@ public class EJBBundle extends OSGiJavaEEArchive {
                                 }
                             }
                         };
-                        getEntries().put(archiveEntry.getName(), archiveEntry);
+                        getEntries().put(archiveEntry.getName(),
+                                archiveEntry);
                     }
                 }
             });

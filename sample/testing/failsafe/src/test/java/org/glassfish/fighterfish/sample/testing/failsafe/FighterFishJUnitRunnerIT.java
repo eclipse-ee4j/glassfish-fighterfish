@@ -31,8 +31,6 @@ import javax.inject.Inject;
  * properties. See the pom.xml to see various configuration options. If you
  * chose to control those options from code, then you can provide in a method in
  * test class annotated with @Configuration.
- *
- * @author sanjeeb.sahoo@oracle.com
  */
 @RunWith(FighterFishJUnitRunner.class)
 public class FighterFishJUnitRunnerIT {

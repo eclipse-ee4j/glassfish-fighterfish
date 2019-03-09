@@ -24,17 +24,23 @@ import org.osgi.framework.ServiceException;
  * the service is used, and then the method is invoked on the newly obtained
  * service. If the service cannot be discovered or a reference obtained, the
  * <code>ServiceUnavailableException</code> is thrown.
- *
- * @author Sivakumar Thyagarajan
  */
-public class ServiceUnavailableException extends ServiceException {
+public final class ServiceUnavailableException extends ServiceException {
 
+    /**
+     * Serialization UID.
+     */
     private static final long serialVersionUID = -8776963108373969053L;
 
     /**
-     * {@inheritDoc}
+     * Create a new instance.
+     * @param msg exception message
+     * @param type exception type
+     * @param cause exception cause
      */
-    public ServiceUnavailableException(String msg, int type, Throwable cause) {
+    public ServiceUnavailableException(final String msg, final int type,
+            final Throwable cause) {
+
         super(msg, type, cause);
     }
 
