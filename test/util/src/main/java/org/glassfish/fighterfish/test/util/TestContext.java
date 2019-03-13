@@ -180,7 +180,6 @@ public final class TestContext {
      * @return a handle to the deployed application
      * @throws BundleException if an error occurs
      * @throws InterruptedException if an error occurs while waiting
-     * @throws TimeoutException if the timeout is reached
      */
     public EntityBundle deployEntityBundle(final Bundle bundle)
             throws BundleException, InterruptedException {
@@ -216,7 +215,6 @@ public final class TestContext {
      * @return a handle to the deployed application
      * @throws BundleException if an error occurs
      * @throws InterruptedException if an error occurs while waiting
-     * @throws TimeoutException if the timeout is reached
      */
     public EjbBundle deployEjbBundle(final Bundle bundle,
             final String[] services)
