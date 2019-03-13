@@ -135,7 +135,7 @@ public final class WebAppBundle {
      * @throws TimeoutException if deployment takes longer than the specified
      * timeout value.
      */
-    @SuppressFBWarnings(value="DLS_DEAD_LOCAL_STORE")
+    @SuppressFBWarnings(value = "DLS_DEAD_LOCAL_STORE")
     public ServletContext deploy(final long timeout, final TimeUnit timeUnit)
             throws InterruptedException, BundleException, TimeoutException {
 
