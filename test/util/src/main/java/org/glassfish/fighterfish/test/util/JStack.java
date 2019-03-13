@@ -19,12 +19,14 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.lang.management.LockInfo;
 import java.lang.management.ManagementFactory;
 import java.lang.management.MonitorInfo;
 import java.lang.management.ThreadInfo;
 import java.lang.management.ThreadMXBean;
+import java.nio.charset.Charset;
 import java.util.Date;
 
 /**
@@ -164,7 +166,8 @@ public final class JStack {
      */
     public void printStackTrace(final OutputStream out) {
         final String s = toString();
-        final PrintWriter printWriter = new PrintWriter(out);
+        final PrintWriter printWriter = new PrintWriter(
+                new OutputStreamWriter(out, Charset.defaultCharset()));
         printWriter.println("Stack trace generated at " + new Date()
                 + "\n" + s);
         printWriter.flush();

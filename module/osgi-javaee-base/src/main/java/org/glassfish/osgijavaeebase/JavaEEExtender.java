@@ -303,7 +303,7 @@ public final class JavaEEExtender implements Extender {
             long timeOut;
             String time = context.getProperty(DEPLOYMENT_TIMEOUT);
             if (time != null) {
-                timeOut = Long.valueOf(time);
+                timeOut = Long.parseLong(time);
             } else {
                 timeOut = DEFAULT_DEPLOYMENT_TIMEOUT;
             }

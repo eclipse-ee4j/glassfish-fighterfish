@@ -15,6 +15,7 @@
  */
 package org.glassfish.fighterfish.test.util;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
@@ -30,6 +31,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import org.apache.http.client.config.RequestConfig;
@@ -133,6 +135,7 @@ public final class WebAppBundle {
      * @throws TimeoutException if deployment takes longer than the specified
      * timeout value.
      */
+    @SuppressFBWarnings(value="DLS_DEAD_LOCAL_STORE")
     public ServletContext deploy(final long timeout, final TimeUnit timeUnit)
             throws InterruptedException, BundleException, TimeoutException {
 
@@ -324,8 +327,8 @@ public final class WebAppBundle {
             }
 
             BufferedReader in = new BufferedReader(
-                    new InputStreamReader(
-                            response.getEntity().getContent()));
+                    new InputStreamReader(response.getEntity().getContent(),
+                            Charset.defaultCharset()));
 
             String inputLine;
             StringBuilder sb = new StringBuilder();

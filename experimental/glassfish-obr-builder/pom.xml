@@ -28,6 +28,10 @@
     <artifactId>glassfish-obr-builder</artifactId>
     <name>FighterFish Experiment OBR Builder</name>
 
+    <properties>
+        <spotbugs.skip>true</spotbugs.skip>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>org.osgi</groupId>

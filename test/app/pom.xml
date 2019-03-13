@@ -32,6 +32,7 @@
         <maven.deploy.skip>true</maven.deploy.skip>
         <maven.javadoc.skip>true</maven.javadoc.skip>
         <osgi.includefile>${basedir}/osgi.properties</osgi.includefile>
+        <spotbugs.skip>true</spotbugs.skip>
     </properties>
 
     <modules>

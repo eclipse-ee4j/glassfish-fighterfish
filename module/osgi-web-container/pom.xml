@@ -27,6 +27,10 @@
     <artifactId>osgi-web-container</artifactId>
     <name>FighterFish OSGi Web Container</name>
 
+    <properties>
+        <spotbugs.exclude>${project.basedir}/exclude.xml</spotbugs.exclude>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>org.glassfish.fighterfish</groupId>

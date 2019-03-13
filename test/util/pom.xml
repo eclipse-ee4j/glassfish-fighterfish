@@ -35,6 +35,8 @@
     <properties>
         <stage.dir>${project.build.directory}/stage</stage.dir>
         <glassfish.install.dir>${stage.dir}/glassfish5/glassfish</glassfish.install.dir>
+        <maven.deploy.skip>false</maven.deploy.skip>
+        <maven.javadoc.skip>false</maven.javadoc.skip>
     </properties>
 
     <build>
@@ -220,6 +222,11 @@
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpcore-osgi</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.github.spotbugs</groupId>
+            <artifactId>spotbugs-annotations</artifactId>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>javax</groupId>

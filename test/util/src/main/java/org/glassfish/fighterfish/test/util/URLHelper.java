@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.charset.Charset;
 
 /**
  * URL helper.
@@ -42,8 +43,8 @@ public final class URLHelper {
     public static String getResponse(final URL request) throws IOException {
         URLConnection yc = request.openConnection();
         BufferedReader in = new BufferedReader(
-                new InputStreamReader(
-                        yc.getInputStream()));
+                new InputStreamReader(yc.getInputStream(),
+                        Charset.defaultCharset()));
 
         StringBuilder sb = new StringBuilder();
         String inputLine;

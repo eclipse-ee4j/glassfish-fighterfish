@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Modifier;
+import java.nio.charset.Charset;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -525,8 +526,8 @@ public final class JDBCDriverLoader {
     /**
      * Reads the META-INF/services/java.sql.Driver file contents and returns the
      * driver implementation class name. In case of JDBC-4.0 drivers or above,
-     * the META-INF/services/java.sql.Driver file contains the name of the
-     * driver class.
+     * the {@code META-INF/services/java.sql.Driver} file contains the name of
+     * the driver class.
      *
      * @param inputStream input stream
      * @return driver implementation class name
@@ -538,7 +539,8 @@ public final class JDBCDriverLoader {
         InputStreamReader reader = null;
         BufferedReader bufferedReader = null;
         try {
-            reader = new InputStreamReader(inputStream);
+            reader = new InputStreamReader(inputStream,
+                    Charset.defaultCharset());
             bufferedReader = new BufferedReader(reader);
             String line;
             while ((line = bufferedReader.readLine()) != null) {
