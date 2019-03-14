@@ -29,7 +29,7 @@
     <dependencies>
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
-            <artifactId>javax.persistence</artifactId>
+            <artifactId>jakarta.persistence</artifactId>
             <scope>provided</scope>
         </dependency>
     </dependencies>

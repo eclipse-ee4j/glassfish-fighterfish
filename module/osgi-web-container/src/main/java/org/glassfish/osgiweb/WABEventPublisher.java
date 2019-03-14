@@ -117,7 +117,7 @@ final class WABEventPublisher {
             final Throwable ex) {
 
         String topic;
-        Map<Object, Object> props = new HashMap<Object, Object>();
+        Map<String, Object> props = new HashMap<String, Object>();
         props.put(EVENT_PROPERTY_BUNDLE_SYMBOLICNAME,
                 appBundle.getSymbolicName());
         props.put(EVENT_PROPERTY_BUNDLE_ID, appBundle.getBundleId());
