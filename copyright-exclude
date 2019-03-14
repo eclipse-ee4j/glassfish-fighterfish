@@ -11,6 +11,7 @@ copyright-exclude
 .class
 .txt
 .pdf
+.odt
 META-INF/services/
 META-INF/hiddenservices/
 META-INF/hk2-locator/
