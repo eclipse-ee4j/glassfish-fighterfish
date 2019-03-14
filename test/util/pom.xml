@@ -140,7 +140,8 @@
                         <!--<fighterfish.test.timeout>2000000</fighterfish.test.timeout>-->
                     </systemPropertyVariables>
                     <classpathDependencyExcludes>
-                        <classpathDependencyExcludes>javax:javaee-web-api</classpathDependencyExcludes>
+                        <classpathDependencyExcludes>javax.*:*</classpathDependencyExcludes>
+                        <classpathDependencyExcludes>jakarta.*:*</classpathDependencyExcludes>
                         <classpathDependencyExcludes>org.glassfish.hk2:*</classpathDependencyExcludes>
                         <classpathDependencyExcludes>org.glassfish.fighterfish:*</classpathDependencyExcludes>
                     </classpathDependencyExcludes>
@@ -229,9 +230,12 @@
             <optional>true</optional>
         </dependency>
         <dependency>
-            <groupId>javax</groupId>
-            <artifactId>javaee-web-api</artifactId>
-            <optional>true</optional>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>javax.inject</groupId>
+            <artifactId>javax.inject</artifactId>
         </dependency>
         <dependency>
             <groupId>org.glassfish.fighterfish</groupId>

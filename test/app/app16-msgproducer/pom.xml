@@ -39,8 +39,8 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>javax</groupId>
-            <artifactId>javaee-api</artifactId>
+            <groupId>javax.jms</groupId>
+            <artifactId>javax.jms-api</artifactId>
             <scope>provided</scope>
         </dependency>
     </dependencies>

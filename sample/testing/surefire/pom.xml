@@ -73,8 +73,7 @@
                         <fighterfish.test.setup.timeout>200000</fighterfish.test.setup.timeout>
                     </systemPropertyVariables>
                     <classpathDependencyExcludes>
-                        <classpathDependencyExclude>javax:javaee-api</classpathDependencyExclude>
-                        <classpathDependencyExclude>javax:javaee-web-api</classpathDependencyExclude>
+                        <classpathDependencyExclude>javax.inject:javax.inject</classpathDependencyExclude>
                     </classpathDependencyExcludes>
                 </configuration>
             </plugin>
@@ -94,8 +93,8 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>javax</groupId>
-            <artifactId>javaee-web-api</artifactId>
+            <groupId>javax.inject</groupId>
+            <artifactId>javax.inject</artifactId>
             <scope>provided</scope>
         </dependency>
     </dependencies>
