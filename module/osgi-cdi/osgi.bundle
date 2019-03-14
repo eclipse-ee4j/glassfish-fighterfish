@@ -14,8 +14,9 @@
 # SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
 #
 
-Export-Package: org.glassfish.osgicdi, org.glassfish.osgicdi.impl
+# Yes, we export with version 1.0
+Export-Package: org.glassfish.osgicdi; version=1.0
 Import-Package: javax.inject; version="[1.0, 3.0)", \
                 javax.enterprise.*; version="[1.0, 3.0)", \
-                org.glassfish.osgicdi, \
+                org.glassfish.osgicdi; version="[1.0, 2.0)", \
                 *
