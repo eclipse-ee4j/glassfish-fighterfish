@@ -38,12 +38,11 @@
     </module>
 
     <module name="SuppressWarningsFilter" />
-    <module name="SuppressionCommentFilter"/>
 
     <module name="TreeWalker">
 
+        <module name="SuppressionCommentFilter"/>
         <module name="SuppressWarningsHolder" />
-        <module name="FileContentsHolder"/>
 
         <module name="JavadocMethod"/>
         <module name="JavadocType"/>
