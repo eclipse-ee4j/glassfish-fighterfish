@@ -4,7 +4,7 @@ OSGi Application Development using GlassFish Server.
 
 ## Build
 
-You must build Helidon using JDK 8. You also need Maven. We recommend 3.5 or
+You must build using JDK 8. You also need Maven. We recommend 3.5 or
  newer.
 
 **Full build**
