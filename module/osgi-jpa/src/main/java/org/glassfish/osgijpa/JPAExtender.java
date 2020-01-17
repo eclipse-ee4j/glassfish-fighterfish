@@ -275,8 +275,9 @@ public final class JPAExtender implements Extender, SynchronousBundleListener {
                 break;
             case ASYNCHRONOUS:
                 executorService.submit(runnable);
+                break;
             default:
-                throw new IllegalArgumentException("Unkown policy");
+                throw new IllegalArgumentException("Unknown policy");
         }
     }
 
