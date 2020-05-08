@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (c) 2018, 2019 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2018, 2020 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0, which is available at
@@ -17,62 +17,21 @@
 
 -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+
     <parent>
         <groupId>org.eclipse.ee4j</groupId>
         <artifactId>project</artifactId>
         <version>1.0.5</version>
     </parent>
+
     <groupId>org.glassfish.fighterfish</groupId>
     <artifactId>fighterfish-parent</artifactId>
-    <packaging>pom</packaging>
     <version>3.0.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+
     <name>FighterFish Parent</name>
-
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <spotbugs.skip>false</spotbugs.skip>
-        <spotbugs.threshold>High</spotbugs.threshold>
-        <osgi.includefile>${basedir}/osgi.bundle</osgi.includefile>
-
-        <!-- version properties -->
-        <eclipselink.version>2.7.4</eclipselink.version>
-        <felix.bundlerepository.version>2.0.10</felix.bundlerepository.version>
-        <felix.gogo.command.version>1.0.2</felix.gogo.command.version>
-        <felix.gogo.runtime.version>1.0.10</felix.gogo.runtime.version>
-        <felix.gogo.shell.version>1.0.0</felix.gogo.shell.version>
-        <felix.version>5.6.10</felix.version>
-        <glassfish.version>5.1.0</glassfish.version>
-        <hk2.osgi-resource-locator.version>1.0.1</hk2.osgi-resource-locator.version>
-        <hk2.version>2.5.0</hk2.version>
-        <httpclient-osgi.version>4.5.5</httpclient-osgi.version>
-        <httpcore-osgi.version>4.4.9</httpcore-osgi.version>
-        <jakarta.ejb-api.version>3.2.5</jakarta.ejb-api.version>
-        <jakarta.el-api.version>3.0.2</jakarta.el-api.version>
-        <jakarta.el-impl.version>3.0.2</jakarta.el-impl.version>
-        <jakarta.enterprise.cdi-api.version>2.0.1</jakarta.enterprise.cdi-api.version>
-        <jakarta.faces-api.version>2.3.1</jakarta.faces-api.version>
-        <jakarta.faces-impl.version>2.3.9</jakarta.faces-impl.version>
-        <jakarta.interceptor-api.version>1.2.4</jakarta.interceptor-api.version>
-        <jakarta.jms-api.version>2.0.2</jakarta.jms-api.version>
-        <jakarta.persistence-api.version>2.2.2</jakarta.persistence-api.version>
-        <jakarta.servlet-api.version>4.0.2</jakarta.servlet-api.version>
-        <jakarta.transaction-api.version>1.3.2</jakarta.transaction-api.version>
-        <jakarta.validation-api.version>2.0.1</jakarta.validation-api.version>
-        <jakarta.ws.rs-api.version>2.1.5</jakarta.ws.rs-api.version>
-        <javax.inject.version>1</javax.inject.version>
-        <jersey.version>2.28</jersey.version>
-        <junit.version>4.12</junit.version>
-        <osgi.version>6.0.0</osgi.version>
-        <pax-exam.version>4.13.1</pax-exam.version>
-        <pax-url.version>2.6.1</pax-url.version>
-        <slf4j.version>1.7.26</slf4j.version>
-        <spotbugs-annotations.version>3.1.3</spotbugs-annotations.version>
-    </properties>
-
     <licenses>
         <license>
             <name>EPL 2.0</name>
@@ -85,17 +44,6 @@
             <distribution>repo</distribution>
         </license>
     </licenses>
-
-    <issueManagement>
-        <system>github</system>
-        <url>https://github.com/eclipse-ee4j/glassfish-fighterfish/issues/</url>
-    </issueManagement>
-
-    <scm>
-        <connection>scm:git:https://github.com/eclipse-ee4j/glassfish-fighterfish.git</connection>
-        <developerConnection>scm:git:git@github.com:eclipse-ee4j/glassfish-fighterfish.git</developerConnection>
-        <url>https://github.com/eclipse-ee4j/glassfish-fighterfish/tree/master/module/parent-pom</url>
-    </scm>
 
     <developers>
         <developer>
@@ -151,228 +99,57 @@
         <module>experimental</module>
     </modules>
 
-    <build>
-        <finalName>${project.artifactId}</finalName>
-        <pluginManagement>
-            <plugins>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-compiler-plugin</artifactId>
-                    <configuration>
-                        <source>1.6</source>
-                        <target>1.6</target>
-                        <compilerArgs>
-                            <arg>-Xlint:unchecked</arg>
-                        </compilerArgs>
-                    </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>org.glassfish.hk2</groupId>
-                    <artifactId>hk2-inhabitant-generator</artifactId>
-                    <version>${hk2.version}</version>
-                    <configuration>
-                        <supportedProjectTypes>jar,ejb,war,glassfish-jar</supportedProjectTypes>
-                    </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-jar-plugin</artifactId>
-                    <configuration>
-                        <archive>
-                            <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
-                        </archive>
-                    </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.felix</groupId>
-                    <artifactId>maven-bundle-plugin</artifactId>
-                    <version>2.3.4</version>
-                    <extensions>true</extensions>
-                    <configuration>
-                        <supportedProjectTypes>
-                            <supportedProjectType>bundle</supportedProjectType>
-                            <supportedProjectType>jar</supportedProjectType>
-                            <supportedProjectType>war</supportedProjectType>
-                            <supportedProjectType>ejb</supportedProjectType>
-                        </supportedProjectTypes>
-                        <instructions>
-                            <Export-Package />
-                            <_include>-${osgi.includefile}</_include>
-                        </instructions>
-                    </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>com.sun.enterprise</groupId>
-                    <artifactId>osgiversion-maven-plugin</artifactId>
-                    <version>${hk2.version}</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-enforcer-plugin</artifactId>
-                    <version>1.4.1</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-dependency-plugin</artifactId>
-                    <version>3.1.1</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-failsafe-plugin</artifactId>
-                    <version>2.12.2</version>
-                    <configuration>
-                        <argLine>-Dfile.encoding=UTF-8</argLine>
-                    </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-surefire-plugin</artifactId>
-                    <version>2.10</version>
-                    <configuration>
-                        <argLine>-Dfile.encoding=UTF-8</argLine>
-                    </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-antrun-plugin</artifactId>
-                    <version>1.6</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-ejb-plugin</artifactId>
-                    <version>3.0.1</version>
-                    <configuration>
-                        <ejbVersion>3.1</ejbVersion>
-                        <archive>
-                            <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
-                        </archive>
-                    </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-war-plugin</artifactId>
-                    <version>3.2.2</version>
-                    <configuration>
-                        <outputFileNameMapping>@{artifactId}@.@{extension}@</outputFileNameMapping>
-                        <failOnMissingWebXml>false</failOnMissingWebXml>
-                        <archive>
-                            <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
-                            <manifestEntries>
-                                <Bundle-ClassPath>WEB-INF/classes</Bundle-ClassPath>
-                            </manifestEntries>
-                        </archive>
-                    </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.servicemix.tooling</groupId>
-                    <artifactId>depends-maven-plugin</artifactId>
-                    <version>1.4.0</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.glassfish.copyright</groupId>
-                    <artifactId>glassfish-copyright-maven-plugin</artifactId>
-                    <version>2.1</version>
-                    <configuration>
-                        <excludeFile>${copyright.exclude}</excludeFile>
-                        <scm>git</scm>
-                        <debug>false</debug>
-                        <scmOnly>true</scmOnly>
-                        <warn>true</warn>
-                        <ignoreYear>false</ignoreYear>
-                        <useComma>true</useComma>
-                        <doHidden>true</doHidden>
-                    </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>org.commonjava.maven.plugins</groupId>
-                    <artifactId>directory-maven-plugin</artifactId>
-                    <version>0.3.1</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-checkstyle-plugin</artifactId>
-                    <version>2.17</version>
-                    <configuration>
-                        <sourceDirectory>${project.build.sourceDirectory}</sourceDirectory>
-                    </configuration>
-                    <dependencies>
-                        <dependency>
-                            <groupId>com.puppycrawl.tools</groupId>
-                            <artifactId>checkstyle</artifactId>
-                            <version>8.18</version>
-                            <exclusions>
-                                <exclusion>
-                                    <groupId>com.sun</groupId>
-                                    <artifactId>tools</artifactId>
-                                </exclusion>
-                            </exclusions>
-                        </dependency>
-                    </dependencies>
-                </plugin>
-                <plugin>
-                    <groupId>com.github.spotbugs</groupId>
-                    <artifactId>spotbugs-maven-plugin</artifactId>
-                    <version>3.1.11</version>
-                    <configuration>
-                        <skip>${spotbugs.skip}</skip>
-                        <threshold>${spotbugs.threshold}</threshold>
-                        <excludeFilterFile>${spotbugs.exclude}</excludeFilterFile>
-                        <xmlOutput>true</xmlOutput>
-                    </configuration>
-                </plugin>
-            </plugins>
-        </pluginManagement>
-        <plugins>
-            <plugin>
-                <groupId>org.commonjava.maven.plugins</groupId>
-                <artifactId>directory-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>generate-top-parent-basedir</id>
-                        <goals>
-                            <goal>highest-basedir</goal>
-                        </goals>
-                        <phase>validate</phase>
-                        <configuration>
-                            <property>top.parent.basedir</property>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>bundle-manifest</id>
-                        <phase>process-classes</phase>
-                        <goals>
-                            <goal>manifest</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-enforcer-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>enforce</goal>
-                        </goals>
-                        <configuration>
-                            <rules>
-                                <requireJavaVersion>
-                                    <version>[1.8.0,)</version>
-                                    <message>You need JDK8+</message>
-                                </requireJavaVersion>
-                            </rules>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
+    <scm>
+        <connection>scm:git:https://github.com/eclipse-ee4j/glassfish-fighterfish.git</connection>
+        <developerConnection>scm:git:git@github.com:eclipse-ee4j/glassfish-fighterfish.git</developerConnection>
+        <url>https://github.com/eclipse-ee4j/glassfish-fighterfish/tree/master/module/parent-pom</url>
+    </scm>
+    <issueManagement>
+        <system>github</system>
+        <url>https://github.com/eclipse-ee4j/glassfish-fighterfish/issues/</url>
+    </issueManagement>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <spotbugs.skip>false</spotbugs.skip>
+        <spotbugs.threshold>High</spotbugs.threshold>
+        <osgi.includefile>${basedir}/osgi.bundle</osgi.includefile>
+
+        <!-- version properties -->
+        <eclipselink.version>2.7.4</eclipselink.version>
+        <felix.bundlerepository.version>2.0.10</felix.bundlerepository.version>
+        <felix.gogo.command.version>1.0.2</felix.gogo.command.version>
+        <felix.gogo.runtime.version>1.0.10</felix.gogo.runtime.version>
+        <felix.gogo.shell.version>1.0.0</felix.gogo.shell.version>
+        <felix.version>5.6.10</felix.version>
+        <glassfish.version>5.1.0</glassfish.version>
+        <hk2.osgi-resource-locator.version>1.0.1</hk2.osgi-resource-locator.version>
+        <hk2.version>2.5.0</hk2.version>
+        <httpclient-osgi.version>4.5.5</httpclient-osgi.version>
+        <httpcore-osgi.version>4.4.9</httpcore-osgi.version>
+        <jakarta.ejb-api.version>3.2.5</jakarta.ejb-api.version>
+        <jakarta.el-api.version>3.0.2</jakarta.el-api.version>
+        <jakarta.el-impl.version>3.0.2</jakarta.el-impl.version>
+        <jakarta.enterprise.cdi-api.version>2.0.1</jakarta.enterprise.cdi-api.version>
+        <jakarta.faces-api.version>2.3.1</jakarta.faces-api.version>
+        <jakarta.faces-impl.version>2.3.9</jakarta.faces-impl.version>
+        <jakarta.interceptor-api.version>1.2.4</jakarta.interceptor-api.version>
+        <jakarta.jms-api.version>2.0.2</jakarta.jms-api.version>
+        <jakarta.persistence-api.version>2.2.2</jakarta.persistence-api.version>
+        <jakarta.servlet-api.version>4.0.2</jakarta.servlet-api.version>
+        <jakarta.transaction-api.version>1.3.2</jakarta.transaction-api.version>
+        <jakarta.validation-api.version>2.0.1</jakarta.validation-api.version>
+        <jakarta.ws.rs-api.version>2.1.5</jakarta.ws.rs-api.version>
+        <javax.inject.version>1</javax.inject.version>
+        <jersey.version>2.28</jersey.version>
+        <junit.version>4.12</junit.version>
+        <osgi.version>6.0.0</osgi.version>
+        <pax-exam.version>4.13.1</pax-exam.version>
+        <pax-url.version>2.6.1</pax-url.version>
+        <slf4j.version>1.7.26</slf4j.version>
+        <spotbugs-annotations.version>3.1.3</spotbugs-annotations.version>
+    </properties>
 
     <dependencyManagement>
         <dependencies>
@@ -656,6 +433,232 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
+
+    <build>
+        <finalName>${project.artifactId}</finalName>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-enforcer-plugin</artifactId>
+                    <version>1.4.1</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <configuration>
+                        <source>1.8</source>
+                        <target>1.8</target>
+                        <compilerArgs>
+                            <arg>-Xlint:unchecked</arg>
+                        </compilerArgs>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.glassfish.hk2</groupId>
+                    <artifactId>hk2-inhabitant-generator</artifactId>
+                    <version>${hk2.version}</version>
+                    <configuration>
+                        <supportedProjectTypes>jar,ejb,war,glassfish-jar</supportedProjectTypes>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.felix</groupId>
+                    <artifactId>maven-bundle-plugin</artifactId>
+                    <version>2.3.4</version>
+                    <extensions>true</extensions>
+                    <configuration>
+                        <supportedProjectTypes>
+                            <supportedProjectType>bundle</supportedProjectType>
+                            <supportedProjectType>jar</supportedProjectType>
+                            <supportedProjectType>war</supportedProjectType>
+                            <supportedProjectType>ejb</supportedProjectType>
+                        </supportedProjectTypes>
+                        <instructions>
+                            <Export-Package />
+                            <_include>-${osgi.includefile}</_include>
+                        </instructions>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-jar-plugin</artifactId>
+                    <configuration>
+                        <archive>
+                            <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
+                        </archive>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>com.sun.enterprise</groupId>
+                    <artifactId>osgiversion-maven-plugin</artifactId>
+                    <version>${hk2.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-dependency-plugin</artifactId>
+                    <version>3.1.1</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>2.10</version>
+                    <configuration>
+                        <argLine>-Dfile.encoding=UTF-8</argLine>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-failsafe-plugin</artifactId>
+                    <version>2.12.2</version>
+                    <configuration>
+                        <argLine>-Dfile.encoding=UTF-8</argLine>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-antrun-plugin</artifactId>
+                    <version>1.6</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-ejb-plugin</artifactId>
+                    <version>3.0.1</version>
+                    <configuration>
+                        <ejbVersion>3.1</ejbVersion>
+                        <archive>
+                            <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
+                        </archive>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-war-plugin</artifactId>
+                    <version>3.2.2</version>
+                    <configuration>
+                        <outputFileNameMapping>@{artifactId}@.@{extension}@</outputFileNameMapping>
+                        <failOnMissingWebXml>false</failOnMissingWebXml>
+                        <archive>
+                            <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
+                            <manifestEntries>
+                                <Bundle-ClassPath>WEB-INF/classes</Bundle-ClassPath>
+                            </manifestEntries>
+                        </archive>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.servicemix.tooling</groupId>
+                    <artifactId>depends-maven-plugin</artifactId>
+                    <version>1.4.0</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.glassfish.copyright</groupId>
+                    <artifactId>glassfish-copyright-maven-plugin</artifactId>
+                    <version>2.1</version>
+                    <configuration>
+                        <excludeFile>${copyright.exclude}</excludeFile>
+                        <scm>git</scm>
+                        <debug>false</debug>
+                        <scmOnly>true</scmOnly>
+                        <warn>true</warn>
+                        <ignoreYear>false</ignoreYear>
+                        <useComma>true</useComma>
+                        <doHidden>true</doHidden>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.commonjava.maven.plugins</groupId>
+                    <artifactId>directory-maven-plugin</artifactId>
+                    <version>0.3.1</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-checkstyle-plugin</artifactId>
+                    <version>2.17</version>
+                    <configuration>
+                        <sourceDirectory>${project.build.sourceDirectory}</sourceDirectory>
+                    </configuration>
+                    <dependencies>
+                        <dependency>
+                            <groupId>com.puppycrawl.tools</groupId>
+                            <artifactId>checkstyle</artifactId>
+                            <version>8.18</version>
+                            <exclusions>
+                                <exclusion>
+                                    <groupId>com.sun</groupId>
+                                    <artifactId>tools</artifactId>
+                                </exclusion>
+                            </exclusions>
+                        </dependency>
+                    </dependencies>
+                </plugin>
+                <plugin>
+                    <groupId>com.github.spotbugs</groupId>
+                    <artifactId>spotbugs-maven-plugin</artifactId>
+                    <version>3.1.11</version>
+                    <configuration>
+                        <skip>${spotbugs.skip}</skip>
+                        <threshold>${spotbugs.threshold}</threshold>
+                        <excludeFilterFile>${spotbugs.exclude}</excludeFilterFile>
+                        <xmlOutput>true</xmlOutput>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+        <plugins>
+            <plugin>
+                <groupId>org.commonjava.maven.plugins</groupId>
+                <artifactId>directory-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>generate-top-parent-basedir</id>
+                        <goals>
+                            <goal>highest-basedir</goal>
+                        </goals>
+                        <phase>validate</phase>
+                        <configuration>
+                            <property>top.parent.basedir</property>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <requireJavaVersion>
+                                    <version>[1.8.0,)</version>
+                                    <message>You need JDK8+</message>
+                                </requireJavaVersion>
+                                <requireMavenVersion>
+                                    <version>3.5.4</version>
+                                </requireMavenVersion>
+                            </rules>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>bundle-manifest</id>
+                        <phase>process-classes</phase>
+                        <goals>
+                            <goal>manifest</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 
     <profiles>
         <profile>
