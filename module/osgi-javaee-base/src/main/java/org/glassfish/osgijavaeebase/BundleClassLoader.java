@@ -15,12 +15,12 @@
  */
 package org.glassfish.osgijavaeebase;
 
-import org.osgi.framework.Bundle;
-
 import java.io.IOException;
 import java.net.URL;
 import java.util.Enumeration;
 import java.util.NoSuchElementException;
+
+import org.osgi.framework.Bundle;
 
 /**
  * This is a delegating class loader. It always delegates to OSGi bundle's class loader. ClassLoader.defineClass() is
@@ -38,7 +38,7 @@ public final class BundleClassLoader extends ClassLoader {
 
     /**
      * Create a new instance.
-     * 
+     *
      * @param bnd the bundle
      */
     public BundleClassLoader(final Bundle bnd) {

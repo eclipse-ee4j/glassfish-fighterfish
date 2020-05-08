@@ -15,6 +15,10 @@
  */
 package org.glassfish.osgijavaeebase;
 
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+import java.util.logging.Logger;
+
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.api.deployment.OpsParams;
@@ -23,10 +27,6 @@ import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.deployment.common.DeploymentContextImpl;
 import org.glassfish.internal.api.ClassLoaderHierarchy;
 import org.osgi.framework.Bundle;
-
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
-import java.util.logging.Logger;
 
 /**
  * Custom GlassFish deployment context.
@@ -50,7 +50,7 @@ public abstract class OSGiDeploymentContext extends DeploymentContextImpl {
 
     /**
      * Create a new instance.
-     * 
+     *
      * @param actionReport GlassFish command reporter
      * @param logger logger
      * @param source application archive
@@ -73,7 +73,7 @@ public abstract class OSGiDeploymentContext extends DeploymentContextImpl {
 
     /**
      * Setup the class-loader.
-     * 
+     *
      * @throws Exception if an error occurs
      */
     protected abstract void setupClassLoader() throws Exception;
@@ -104,7 +104,7 @@ public abstract class OSGiDeploymentContext extends DeploymentContextImpl {
 
     /**
      * Set the final class-loader.
-     * 
+     *
      * @param cl class-loader
      */
     public final void setFinalClassLoader(final ClassLoader cl) {
@@ -113,7 +113,7 @@ public abstract class OSGiDeploymentContext extends DeploymentContextImpl {
 
     /**
      * Get the temporary class-loader.
-     * 
+     *
      * @return class-loader
      */
     public final ClassLoader getShareableTempClassLoader() {
@@ -122,7 +122,7 @@ public abstract class OSGiDeploymentContext extends DeploymentContextImpl {
 
     /**
      * Set the temporary class-loader.
-     * 
+     *
      * @param cl class-loader
      */
     public final void setShareableTempClassLoader(final ClassLoader cl) {
@@ -137,7 +137,7 @@ public abstract class OSGiDeploymentContext extends DeploymentContextImpl {
 
     /**
      * Get the application bundle.
-     * 
+     *
      * @return Bundle
      */
     public Bundle getBundle() {

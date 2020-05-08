@@ -15,29 +15,12 @@
  */
 package org.glassfish.osgiweb;
 
-import com.sun.enterprise.module.common_impl.CompositeEnumeration;
-import org.apache.naming.resources.WebDirContext;
-import org.glassfish.osgijavaeebase.OSGiArchiveHandler;
-import org.glassfish.osgijavaeebase.OSGiDeploymentContext;
-import org.glassfish.osgijavaeebase.BundleClassLoader;
-import org.glassfish.internal.api.Globals;
-import org.glassfish.internal.api.ClassLoaderHierarchy;
-import org.glassfish.web.loader.WebappClassLoader;
-import org.glassfish.api.ActionReport;
-import org.glassfish.api.admin.ServerEnvironment;
-import org.glassfish.api.deployment.archive.ReadableArchive;
-import org.glassfish.api.deployment.OpsParams;
-import org.osgi.framework.Bundle;
-
+import java.io.File;
 import java.io.FileFilter;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URL;
-import java.util.jar.JarFile;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.io.IOException;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -46,6 +29,24 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.jar.JarFile;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import org.apache.naming.resources.WebDirContext;
+import org.glassfish.api.ActionReport;
+import org.glassfish.api.admin.ServerEnvironment;
+import org.glassfish.api.deployment.OpsParams;
+import org.glassfish.api.deployment.archive.ReadableArchive;
+import org.glassfish.internal.api.ClassLoaderHierarchy;
+import org.glassfish.internal.api.Globals;
+import org.glassfish.osgijavaeebase.BundleClassLoader;
+import org.glassfish.osgijavaeebase.OSGiArchiveHandler;
+import org.glassfish.osgijavaeebase.OSGiDeploymentContext;
+import org.glassfish.web.loader.WebappClassLoader;
+import org.osgi.framework.Bundle;
+
+import com.sun.enterprise.module.common_impl.CompositeEnumeration;
 
 /**
  * This is at the heart of WAB support. It is responsible for setting up a class loader for the WAB. In theory, a WAB's
@@ -81,7 +82,7 @@ class OSGiWebDeploymentContext extends OSGiDeploymentContext {
 
     // CHECKSTYLE:OFF
     static {
-        Map<String, String> map = new HashMap<String, String>();
+        Map<String, String> map = new HashMap<>();
 
         // This is for the custom AnnotationProvider. Note that Mojarra
         // surprising uses different nomenclature than what is used by JDK SPI.
@@ -103,7 +104,7 @@ class OSGiWebDeploymentContext extends OSGiDeploymentContext {
 
     /**
      * Create a new instance.
-     * 
+     *
      * @param actionReport GlassFish command reporter
      * @param logger logger
      * @param source Application archive
@@ -121,9 +122,9 @@ class OSGiWebDeploymentContext extends OSGiDeploymentContext {
         setArchiveHandler(new OSGiArchiveHandler() {
             @Override
             public List<URI> getClassPathURIs(final ReadableArchive archive) {
-                final List<URI> uris = new ArrayList<URI>();
+                final List<URI> uris = new ArrayList<>();
                 File base = getSourceDir();
-                assert (base != null && base.isDirectory());
+                assert base != null && base.isDirectory();
                 uris.add(new File(base, "WEB-INF/classes/").toURI());
                 new File(base, "WEB-INF/lib/").listFiles(new FileFilter() {
                     @Override
@@ -224,7 +225,7 @@ class OSGiWebDeploymentContext extends OSGiDeploymentContext {
         @Override
         public Enumeration<URL> getResources(final String name) throws IOException {
 
-            List<Enumeration<URL>> enumerators = new ArrayList<Enumeration<URL>>();
+            List<Enumeration<URL>> enumerators = new ArrayList<>();
             final String mappedResourcePath = HIDDEN_SERVICES_MAP.get(name);
             if (mappedResourcePath != null) {
                 return getClass().getClassLoader().getResources(mappedResourcePath);
@@ -253,7 +254,7 @@ class OSGiWebDeploymentContext extends OSGiDeploymentContext {
 
         /**
          * Create a new instance.
-         * 
+         *
          * @param parent the parent class-loader
          */
         WABClassLoader(final ClassLoader parent) {
@@ -281,7 +282,7 @@ class OSGiWebDeploymentContext extends OSGiDeploymentContext {
                     @Override
                     public boolean accept(final File pathname) {
                         String fileName = pathname.getName();
-                        return (fileName.endsWith(".jar") && pathname.isFile());
+                        return fileName.endsWith(".jar") && pathname.isFile();
                     }
                 })) {
                     try {

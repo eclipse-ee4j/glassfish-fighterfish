@@ -32,7 +32,7 @@ public final class SimpleActivator implements BundleActivator {
 
     /**
      * Log a message.
-     * 
+     *
      * @param msg message to log
      */
     static void log(final String msg) {

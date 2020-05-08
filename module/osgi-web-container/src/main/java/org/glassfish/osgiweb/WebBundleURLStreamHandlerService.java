@@ -15,8 +15,7 @@
  */
 package org.glassfish.osgiweb;
 
-import org.glassfish.osgijavaeebase.JarHelper;
-import org.osgi.service.url.AbstractURLStreamHandlerService;
+import static org.glassfish.osgiweb.Constants.WEB_BUNDLE_SCHEME;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -33,7 +32,8 @@ import java.util.jar.Manifest;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static org.glassfish.osgiweb.Constants.WEB_BUNDLE_SCHEME;
+import org.glassfish.osgijavaeebase.JarHelper;
+import org.osgi.service.url.AbstractURLStreamHandlerService;
 
 /**
  * A {@link org.osgi.service.url.URLStreamHandlerService} for webbundle scheme. It is responsible for not only adding
@@ -67,7 +67,7 @@ public final class WebBundleURLStreamHandlerService extends AbstractURLStreamHan
     @Override
     public URLConnection openConnection(final URL u) throws IOException {
 
-        assert (WEB_BUNDLE_SCHEME.equals(u.getProtocol()));
+        assert WEB_BUNDLE_SCHEME.equals(u.getProtocol());
         final URL embeddedURL = new URL(u.getPath());
         final URLConnection con = embeddedURL.openConnection();
         return new URLConnection(embeddedURL) {
@@ -221,7 +221,7 @@ public final class WebBundleURLStreamHandlerService extends AbstractURLStreamHan
 
         /**
          * Create a new instance.
-         * 
+         *
          * @param is input stream
          * @param os output stream
          */

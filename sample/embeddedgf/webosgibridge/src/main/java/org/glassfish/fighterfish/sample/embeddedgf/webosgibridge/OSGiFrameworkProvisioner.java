@@ -10,12 +10,6 @@
 
 package org.glassfish.fighterfish.sample.embeddedgf.webosgibridge;
 
-import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.BundleException;
-import org.osgi.framework.launch.Framework;
-import org.osgi.framework.launch.FrameworkFactory;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -34,10 +28,17 @@ import java.util.ServiceConfigurationError;
 import java.util.ServiceLoader;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.servlet.ServletContext;
+
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.BundleException;
+import org.osgi.framework.launch.Framework;
+import org.osgi.framework.launch.FrameworkFactory;
 
 /**
  * Utility class to provision an OSGi framework.
@@ -104,7 +105,7 @@ public final class OSGiFrameworkProvisioner {
 
     /**
      * Create a new instance.
-     * 
+     *
      * @param sc servlet context
      * @param configFilePath framework config file path
      * @param jndiName framework JNDI name
@@ -124,7 +125,7 @@ public final class OSGiFrameworkProvisioner {
         log(Bundle.class + " is loaded by " + Bundle.class.getClassLoader());
         try {
             createFramework();
-            assert (framework != null);
+            assert framework != null;
             framework.init();
             installBundles();
             framework.start();
@@ -211,7 +212,7 @@ public final class OSGiFrameworkProvisioner {
 
     /**
      * Create the JNDI initial context.
-     * 
+     *
      * @return Context
      * @throws NamingException if an error occurs
      */
@@ -224,13 +225,13 @@ public final class OSGiFrameworkProvisioner {
 
     /**
      * Create the framework loader.
-     * 
+     *
      * @return a class loader capable of finding OSGi frameworks.
      */
     private ClassLoader createFrameworkLoader() {
         // We need to create a URLClassLoader for Felix to be able to attach
         // framework extensions
-        List<URL> urls = new ArrayList<URL>();
+        List<URL> urls = new ArrayList<>();
         for (String s : servletContext.getResourcePaths(FW_DIR)) {
             if (s.endsWith(".jar")) {
                 try {
@@ -248,12 +249,12 @@ public final class OSGiFrameworkProvisioner {
 
     /**
      * Install all bundles.
-     * 
+     *
      * @throws Exception if an error occurs
      */
     private void installBundles() throws Exception {
         BundleContext bctx = framework.getBundleContext();
-        ArrayList<Bundle> installed = new ArrayList<Bundle>();
+        ArrayList<Bundle> installed = new ArrayList<>();
         for (URL url : findBundles()) {
             this.log("Installing bundle [" + url + "]");
             Bundle bundle = bctx.installBundle(url.toExternalForm());
@@ -271,12 +272,12 @@ public final class OSGiFrameworkProvisioner {
 
     /**
      * Find all bundles.
-     * 
+     *
      * @return list of bundle URL
      * @throws Exception if an error occurs
      */
     private List<URL> findBundles() throws Exception {
-        ArrayList<URL> list = new ArrayList<URL>();
+        ArrayList<URL> list = new ArrayList<>();
         for (Object o : this.servletContext.getResourcePaths(BUNDLES_DIR)) {
             String name = (String) o;
             if (name.endsWith(".jar")) {
@@ -291,7 +292,7 @@ public final class OSGiFrameworkProvisioner {
 
     /**
      * Set the JNDI name of the OSGi framework.
-     * 
+     *
      * @param jndiName JNDI name
      */
     private void setOsgiFrameworkJndiName(final String jndiName) {
@@ -302,7 +303,7 @@ public final class OSGiFrameworkProvisioner {
 
     /**
      * Set the config file path of the OSGi framework.
-     * 
+     *
      * @param configFilePath config file path
      */
     private void setOsgiFrameworkConfigPath(final String configFilePath) {
@@ -318,7 +319,7 @@ public final class OSGiFrameworkProvisioner {
 
     /**
      * Read the OSGi framework configuration from the framework config file.
-     * 
+     *
      * @return map of config values
      */
     private Map<String, String> getConfig() {
@@ -350,7 +351,7 @@ public final class OSGiFrameworkProvisioner {
             }
         }
         Util.substVars(props);
-        HashMap<String, String> map = new HashMap<String, String>();
+        HashMap<String, String> map = new HashMap<>();
         for (Object key : props.keySet()) {
             map.put(key.toString(), (String) props.get(key));
         }
@@ -360,7 +361,7 @@ public final class OSGiFrameworkProvisioner {
 
     /**
      * Create a pretty description of the given map.
-     * 
+     *
      * @param map the input map
      * @return pretty string
      */
@@ -374,7 +375,7 @@ public final class OSGiFrameworkProvisioner {
 
     /**
      * Log a message at the {code INFO} level.
-     * 
+     *
      * @param msg message to log
      */
     private static void log(final String msg) {
@@ -383,7 +384,7 @@ public final class OSGiFrameworkProvisioner {
 
     /**
      * Log a message at the {code INFO} level.
-     * 
+     *
      * @param msg message to log
      * @param ex exception
      */

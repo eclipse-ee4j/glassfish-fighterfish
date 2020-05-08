@@ -9,9 +9,7 @@
  */
 package org.glassfish.fighterfish.sample.uas.advservice;
 
-import org.glassfish.fighterfish.sample.uas.api.UserAuthService;
-import org.glassfish.fighterfish.sample.uas.entities.LoginAttempt;
-import org.glassfish.fighterfish.sample.uas.entities.UserCredential;
+import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.transaction.NotSupportedException;
@@ -19,7 +17,10 @@ import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import java.util.List;
+
+import org.glassfish.fighterfish.sample.uas.api.UserAuthService;
+import org.glassfish.fighterfish.sample.uas.entities.LoginAttempt;
+import org.glassfish.fighterfish.sample.uas.entities.UserCredential;
 
 /**
  * Implementation of the user authentication service.
@@ -43,7 +44,7 @@ public final class AdvUserAuthServiceImpl implements UserAuthService {
 
     /**
      * Create a new instance.
-     * 
+     *
      * @param bndActivator bundle activator
      */
     public AdvUserAuthServiceImpl(final AdvSvcImplActivator bndActivator) {
@@ -153,7 +154,7 @@ public final class AdvUserAuthServiceImpl implements UserAuthService {
 
     /**
      * Actual implementation of the login method.
-     * 
+     *
      * @param name user name
      * @param password user passowrd
      * @param em entity manager
@@ -162,7 +163,7 @@ public final class AdvUserAuthServiceImpl implements UserAuthService {
     private boolean login2(final String name, final String password, final EntityManager em) {
 
         UserCredential uc = em.find(UserCredential.class, name);
-        boolean result = (uc != null && password.equals(uc.getPassword()));
+        boolean result = uc != null && password.equals(uc.getPassword());
         log("Logging in (" + name + ", " + password + ")");
         if (uc != null) {
             LoginAttempt attempt = new LoginAttempt();
@@ -179,7 +180,7 @@ public final class AdvUserAuthServiceImpl implements UserAuthService {
 
     /**
      * Actual implementation of the register method.
-     * 
+     *
      * @param name user name
      * @param password user password
      * @param em entity manager
@@ -201,7 +202,7 @@ public final class AdvUserAuthServiceImpl implements UserAuthService {
 
     /**
      * Actual implementation of the unregister method.
-     * 
+     *
      * @param name user name
      * @param em entity manager
      * @return {@code true} if unregistered, {@code false} otherwise
@@ -219,7 +220,7 @@ public final class AdvUserAuthServiceImpl implements UserAuthService {
 
     /**
      * Actual implementation of the report method.
-     * 
+     *
      * @param em entity manager
      * @return report string
      */
@@ -236,7 +237,7 @@ public final class AdvUserAuthServiceImpl implements UserAuthService {
 
     /**
      * Log a message to the standard output.
-     * 
+     *
      * @param msg message to log
      */
     private void log(final String msg) {
@@ -298,7 +299,7 @@ public final class AdvUserAuthServiceImpl implements UserAuthService {
 
     /**
      * Get the user transaction.
-     * 
+     *
      * @return UserTransaction
      */
     private UserTransaction getUTX() {
@@ -307,7 +308,7 @@ public final class AdvUserAuthServiceImpl implements UserAuthService {
 
     /**
      * Get the entity manager.
-     * 
+     *
      * @return EntityManager
      */
     private EntityManager getEM() {

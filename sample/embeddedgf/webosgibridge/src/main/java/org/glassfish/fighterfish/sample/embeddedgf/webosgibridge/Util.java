@@ -68,7 +68,7 @@ public final class Util {
         // If there is currently no cycle map, then create
         // one for detecting cycles for this invocation.
         if (cycleMap == null) {
-            cycleMap = new HashMap<String, String>();
+            cycleMap = new HashMap<>();
         }
 
         // Put the current key in the cycle map.
@@ -100,13 +100,13 @@ public final class Util {
             }
             while (stopDelim >= 0) {
                 int idx = val.indexOf(DELIM_START, startDelim + DELIM_START.length());
-                if ((idx < 0) || (idx > stopDelim)) {
+                if (idx < 0 || idx > stopDelim) {
                     break;
                 } else if (idx < stopDelim) {
                     startDelim = idx;
                 }
             }
-        } while ((startDelim > stopDelim) && (stopDelim >= 0));
+        } while (startDelim > stopDelim && stopDelim >= 0);
 
         // At this point, we have found a variable placeholder so
         // we must perform a variable substitution on it.
@@ -121,7 +121,7 @@ public final class Util {
 
         // Get the value of the deepest nested variable placeholder.
         // Try to configuration properties first.
-        String substValue = (configProps != null) ? configProps.getProperty(variable, null) : null;
+        String substValue = configProps != null ? configProps.getProperty(variable, null) : null;
         if (substValue == null) {
             // Ignore unknown property values.
             substValue = System.getProperty(variable, "");
@@ -147,7 +147,7 @@ public final class Util {
 
     /**
      * Resolve the given properties.
-     * 
+     *
      * @param props properties to resolve
      */
     public static void substVars(final Properties props) {

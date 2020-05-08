@@ -16,12 +16,12 @@
 
 package org.glassfish.osgi.ee.resources;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.glassfish.embeddable.GlassFish;
 import org.glassfish.osgijavaeebase.Extender;
 import org.osgi.framework.BundleContext;
-
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * EE resources extender.
@@ -50,7 +50,7 @@ public final class ResourcesExtender implements Extender {
 
     /**
      * Create a new instance.
-     * 
+     *
      * @param context bundle context
      */
     public ResourcesExtender(final BundleContext context) {
@@ -75,7 +75,7 @@ public final class ResourcesExtender implements Extender {
 
     /**
      * Log a message at the {@code FINEST} level.
-     * 
+     *
      * @param msg message to log
      */
     private void debug(final String msg) {

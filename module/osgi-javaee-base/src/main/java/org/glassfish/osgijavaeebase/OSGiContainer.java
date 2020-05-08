@@ -15,6 +15,9 @@
  */
 package org.glassfish.osgijavaeebase;
 
+import static org.osgi.framework.Constants.ACTIVATION_LAZY;
+import static org.osgi.framework.Constants.BUNDLE_ACTIVATIONPOLICY;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Dictionary;
@@ -32,9 +35,6 @@ import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.util.tracker.ServiceTracker;
 
-import static org.osgi.framework.Constants.ACTIVATION_LAZY;
-import static org.osgi.framework.Constants.BUNDLE_ACTIVATIONPOLICY;
-
 /**
  * This class is primarily responsible for deployment and undeployment of EE artifacts of an OSGi bundle.
  */
@@ -48,12 +48,12 @@ public class OSGiContainer {
     /**
      * Applications managed.
      */
-    private final Map<Bundle, OSGiApplicationInfo> applications = new HashMap<Bundle, OSGiApplicationInfo>();
+    private final Map<Bundle, OSGiApplicationInfo> applications = new HashMap<>();
 
     /**
      * Services registered by applications.
      */
-    private final Map<OSGiApplicationInfo, ServiceRegistration> regs = new HashMap<OSGiApplicationInfo, ServiceRegistration>();
+    private final Map<OSGiApplicationInfo, ServiceRegistration> regs = new HashMap<>();
 
     /**
      * Service tracker for deployer service.
@@ -63,7 +63,7 @@ public class OSGiContainer {
     /**
      * Sorted in descending order of service ranking.
      */
-    private final List<ServiceReference/* OSGiDeployer */> sortedDeployerRefs = new ArrayList<ServiceReference>();
+    private final List<ServiceReference/* OSGiDeployer */> sortedDeployerRefs = new ArrayList<>();
 
     /**
      * Flag to track shutdown state.
@@ -77,7 +77,7 @@ public class OSGiContainer {
 
     /**
      * Create a new instance.
-     * 
+     *
      * @param ctx bundle context
      */
     protected OSGiContainer(final BundleContext ctx) {
@@ -96,7 +96,7 @@ public class OSGiContainer {
 
     /**
      * Get the applications currently deployed.
-     * 
+     *
      * @return map of bundle to application info
      */
     protected Map<Bundle, OSGiApplicationInfo> getApplications() {
@@ -105,7 +105,7 @@ public class OSGiContainer {
 
     /**
      * Get the service registered by the applications currently deployed.
-     * 
+     *
      * @return map of application info to service registration
      */
     protected Map<OSGiApplicationInfo, ServiceRegistration> getRegs() {
@@ -117,7 +117,7 @@ public class OSGiContainer {
      */
     protected synchronized void shutdown() {
         undeployAll();
-        assert (applications.isEmpty() && regs.isEmpty());
+        assert applications.isEmpty() && regs.isEmpty();
         applications.clear();
         regs.clear();
         sortedDeployerRefs.clear();
@@ -129,7 +129,7 @@ public class OSGiContainer {
 
     /**
      * Test if the container is shutdown.
-     * 
+     *
      * @return {@code true} if shutdown, {@code false} otherwise
      */
     public boolean isShutdown() {
@@ -138,7 +138,7 @@ public class OSGiContainer {
 
     /**
      * Redeploy the given application.
-     * 
+     *
      * @param bundle the bundle of the application
      * @return the new application info
      * @throws Exception if an error occurs
@@ -245,7 +245,7 @@ public class OSGiContainer {
      */
     public synchronized void undeployAll() {
         // Take a copy of the entries as undeploy changes the underlying map.
-        for (Bundle b : new HashSet<Bundle>(applications.keySet())) {
+        for (Bundle b : new HashSet<>(applications.keySet())) {
             try {
                 undeploy(b);
             } catch (Exception e) {
@@ -256,7 +256,7 @@ public class OSGiContainer {
 
     /**
      * Test if the application bundle is deployed.
-     * 
+     *
      * @param bundle the bundle of the application to test
      * @return {@code true} if deployed, {@code false} otherwise
      */
@@ -266,7 +266,7 @@ public class OSGiContainer {
 
     /**
      * Test if the application bundle is in active state, or starting if the bundle is configured to be lazy.
-     * 
+     *
      * @param bundle the bundle of the application to test
      * @return {@code true} if ready, {@code false} otherwise
      */
@@ -274,13 +274,13 @@ public class OSGiContainer {
         final int state = bundle.getState();
         final boolean isActive = (state & Bundle.ACTIVE) != 0;
         final boolean isStarting = (state & Bundle.STARTING) != 0;
-        final boolean isReady = isActive || (isLazy(bundle) && isStarting);
+        final boolean isReady = isActive || isLazy(bundle) && isStarting;
         return isReady;
     }
 
     /**
      * Test if the application bundle is lazy.
-     * 
+     *
      * @param bundle the bundle of the application to test
      * @return {@code true} if lazy, {@code false} otherwise
      */
@@ -290,7 +290,7 @@ public class OSGiContainer {
 
     /**
      * Select the deployer for the given bundle.
-     * 
+     *
      * @param bundle the application bundle
      * @return the deployer service reference if found, or {@code null}
      */
@@ -310,7 +310,7 @@ public class OSGiContainer {
 
     /**
      * Get the applications currently deployed.
-     * 
+     *
      * @return array of application info
      */
     public synchronized OSGiApplicationInfo[] getDeployedApps() {
@@ -351,7 +351,7 @@ public class OSGiContainer {
 
     /**
      * Add the service reference of a deployer service instance that was added.
-     * 
+     *
      * @param reference the deployer service reference
      */
     private synchronized void deployerAdded(final ServiceReference reference) {
@@ -366,7 +366,7 @@ public class OSGiContainer {
 
     /**
      * Remove the service reference of a deployer service instance that was removed.
-     * 
+     *
      * @param reference the deployer service reference
      */
     private void deployerRemoved(final ServiceReference reference) {
@@ -389,7 +389,7 @@ public class OSGiContainer {
 
         /**
          * Create a new instance.
-         * 
+         *
          * @param ref the new deployer service reference
          */
         private DeployerAddedThread(final ServiceReference ref) {
@@ -429,7 +429,7 @@ public class OSGiContainer {
 
         /**
          * Create a new instance.
-         * 
+         *
          * @param ref the old deployer service reference
          */
         private DeployerRemovedThread(final ServiceReference ref) {

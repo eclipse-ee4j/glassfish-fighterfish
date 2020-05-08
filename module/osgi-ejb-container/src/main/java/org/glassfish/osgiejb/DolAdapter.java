@@ -36,7 +36,7 @@ final class DolAdapter {
 
     /**
      * Convert GlassFish EjbDescriptor to fighterfish EJB descriptor.
-     * 
+     *
      * @param ejbDescriptors instances to convert
      * @return converted instances
      */
@@ -44,7 +44,7 @@ final class DolAdapter {
     static Collection<EjbDescriptor> convert(final Collection<com.sun.enterprise.deployment.EjbDescriptor> ejbDescriptors) {
         // CHECKSTYLE:ON
 
-        Collection<EjbDescriptor> result = new ArrayList<EjbDescriptor>(ejbDescriptors.size());
+        Collection<EjbDescriptor> result = new ArrayList<>(ejbDescriptors.size());
         for (com.sun.enterprise.deployment.EjbDescriptor ejbDescriptor : ejbDescriptors) {
             Class[] interfaces;
             // CHECKSTYLE:OFF
@@ -68,14 +68,14 @@ final class DolAdapter {
 
         /**
          * Get the name.
-         * 
+         *
          * @return name
          */
         String getName();
 
         /**
          * Get the type.
-         * 
+         *
          * @return type
          */
         String getType();
@@ -88,21 +88,21 @@ final class DolAdapter {
 
         /**
          * Get the session type.
-         * 
+         *
          * @return session type
          */
         String getSessionType();
 
         /**
          * Get the local business class names.
-         * 
+         *
          * @return set of class names
          */
         Set<String> getLocalBusinessClassNames();
 
         /**
          * Get the portable JNDI name.
-         * 
+         *
          * @param lbi business class name
          * @return portable JNDI name
          */
@@ -121,7 +121,7 @@ final class DolAdapter {
 
         /**
          * Create a new instance.
-         * 
+         *
          * @param desc delegate instance
          */
         EJbDolInvocationHandler(final com.sun.enterprise.deployment.EjbDescriptor desc) {
@@ -133,15 +133,6 @@ final class DolAdapter {
 
             Method m = delegate.getClass().getMethod(method.getName(), method.getParameterTypes());
             return m.invoke(delegate, args);
-        }
-
-        /**
-         * Get the delegate descriptor.
-         * 
-         * @return delegate descriptor
-         */
-        public com.sun.enterprise.deployment.EjbDescriptor getDelegate() {
-            return delegate;
         }
     }
 }

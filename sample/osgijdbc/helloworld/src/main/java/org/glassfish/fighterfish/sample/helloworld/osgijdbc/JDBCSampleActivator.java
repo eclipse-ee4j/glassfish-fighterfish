@@ -75,7 +75,7 @@ public final class JDBCSampleActivator implements BundleActivator {
 
     /**
      * Log a message to the standard output.
-     * 
+     *
      * @param msg message to log
      */
     private void debug(final String msg) {

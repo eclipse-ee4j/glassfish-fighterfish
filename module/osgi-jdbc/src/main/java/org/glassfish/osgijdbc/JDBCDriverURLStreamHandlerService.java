@@ -24,14 +24,14 @@ import java.net.URI;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.net.URLConnection;
-import org.glassfish.osgijavaeebase.JarHelper;
-import org.osgi.service.url.AbstractURLStreamHandlerService;
-
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.jar.Manifest;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import org.glassfish.osgijavaeebase.JarHelper;
+import org.osgi.service.url.AbstractURLStreamHandlerService;
 
 /**
  * URL handler service for JDBC driver.
@@ -50,7 +50,7 @@ public final class JDBCDriverURLStreamHandlerService extends AbstractURLStreamHa
 
     /**
      * Create a new instance.
-     * 
+     *
      * @param cl class-loader
      */
     public JDBCDriverURLStreamHandlerService(final ClassLoader cl) {
@@ -59,7 +59,7 @@ public final class JDBCDriverURLStreamHandlerService extends AbstractURLStreamHa
 
     @Override
     public URLConnection openConnection(final URL u) throws IOException {
-        assert (Constants.JDBC_DRIVER_SCHEME.equals(u.getProtocol()));
+        assert Constants.JDBC_DRIVER_SCHEME.equals(u.getProtocol());
         try {
             debug("jdbc driver openConnection()");
             // final URL[] urls = getURLs(u);
@@ -121,7 +121,7 @@ public final class JDBCDriverURLStreamHandlerService extends AbstractURLStreamHa
 
     /**
      * Log a {@code FINE} message.
-     * 
+     *
      * @param msg message to log
      */
     private void debug(final String msg) {

@@ -15,13 +15,14 @@
  */
 package org.glassfish.osgihttp;
 
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
 import java.util.Collections;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
 
 /**
  * Custom servlet config.
@@ -41,23 +42,22 @@ public final class OSGiServletConfig implements ServletConfig {
     /**
      * The servlet init parameters.
      */
-    private final Map<String, String> initParams = new HashMap<String, String>();
+    private final Map<String, String> initParams = new HashMap<>();
 
     /**
      * Create a new instance.
-     * 
+     *
      * @param sName the servlet name
      * @param sCtx the servlet context
      * @param sInitparams the servlet init parameters
      */
-    public OSGiServletConfig(final String sName, final ServletContext sCtx, final Dictionary sInitparams) {
-
+    public OSGiServletConfig(String sName, ServletContext sCtx, Dictionary sInitparams) {
         this.servletName = sName;
         this.servletContext = sCtx;
         if (sInitparams != null) {
             Enumeration e = sInitparams.keys();
             while (e.hasMoreElements()) {
-                final Object key = e.nextElement();
+                Object key = e.nextElement();
                 this.initParams.put((String) key, (String) sInitparams.get(key));
             }
         }
@@ -85,7 +85,7 @@ public final class OSGiServletConfig implements ServletConfig {
 
     /**
      * Get the servlet init parameters.
-     * 
+     *
      * @return an unmodifiable map of {@link #initParams}
      */
     Map<String, String> getInitParameters() {

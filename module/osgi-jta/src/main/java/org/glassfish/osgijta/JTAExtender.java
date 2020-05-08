@@ -15,18 +15,19 @@
  */
 package org.glassfish.osgijta;
 
-import org.glassfish.osgijavaeebase.Extender;
-import org.osgi.framework.BundleContext;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.transaction.TransactionManager;
 import javax.transaction.TransactionSynchronizationRegistry;
 import javax.transaction.UserTransaction;
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
+
+import org.glassfish.osgijavaeebase.Extender;
+import org.osgi.framework.BundleContext;
 
 /**
  * JTA extender.
@@ -51,7 +52,7 @@ public final class JTAExtender implements Extender {
 
     /**
      * Create a new instance.
-     * 
+     *
      * @param bndCtx bundle context
      */
     public JTAExtender(final BundleContext bndCtx) {
@@ -67,7 +68,7 @@ public final class JTAExtender implements Extender {
 
     /**
      * Register a proxy service for the given class and JNDI name.
-     * 
+     *
      * @param zeClass the class to proxy
      * @param zeJndiName the JNDI name to use
      */
@@ -87,23 +88,17 @@ public final class JTAExtender implements Extender {
     private class MyInvocationHandler implements InvocationHandler {
 
         /**
-         * The class to proxy.
-         */
-        private final Class<?> clazz;
-
-        /**
          * The JNDI name.
          */
         private final String jndiName;
 
         /**
          * Create a new instance.
-         * 
+         *
          * @param zeClass the class to proxy
          * @param zeJndiName the JNDI name to use
          */
         MyInvocationHandler(final Class<?> zeClass, final String zeJndiName) {
-            this.clazz = zeClass;
             this.jndiName = zeJndiName;
         }
 
@@ -127,7 +122,7 @@ public final class JTAExtender implements Extender {
 
     /**
      * Create the JNDI initial context.
-     * 
+     *
      * @return InitialContext
      * @throws NamingException if an error occurs
      */

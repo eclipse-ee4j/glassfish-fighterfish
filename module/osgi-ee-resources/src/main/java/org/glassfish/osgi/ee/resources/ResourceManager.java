@@ -15,9 +15,10 @@
  */
 package org.glassfish.osgi.ee.resources;
 
+import org.osgi.framework.BundleContext;
+
 import com.sun.enterprise.config.serverbeans.BindableResource;
 import com.sun.enterprise.config.serverbeans.ResourceRef;
-import org.osgi.framework.BundleContext;
 
 /**
  * Resource-Manager to export resources defined in GlassFish to OSGi's service-registry.

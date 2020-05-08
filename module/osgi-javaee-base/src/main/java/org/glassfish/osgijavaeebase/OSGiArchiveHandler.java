@@ -15,9 +15,10 @@
  */
 package org.glassfish.osgijavaeebase;
 
-import com.sun.enterprise.deploy.shared.AbstractArchiveHandler;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.archive.ReadableArchive;
+
+import com.sun.enterprise.deploy.shared.AbstractArchiveHandler;
 
 /**
  * This implementation is specialized for OSGi-ed WAR files. It can be extended for different type of OSGi archives. It
@@ -27,7 +28,7 @@ public class OSGiArchiveHandler extends AbstractArchiveHandler {
 
     /**
      * This implementation returns {@code OSGiBundle}.
-     * 
+     *
      * @return {@code OSGiBundle}
      */
     @Override
@@ -37,7 +38,7 @@ public class OSGiArchiveHandler extends AbstractArchiveHandler {
 
     /**
      * This implementation always returns false.
-     * 
+     *
      * @return {@code false}
      */
     @Override
@@ -49,7 +50,7 @@ public class OSGiArchiveHandler extends AbstractArchiveHandler {
 
     /**
      * This implementation always throws a {@code RuntimeException}, this method should not be called.
-     * 
+     *
      * @param parent parent class-loader
      * @param context deployment context
      * @throws RuntimeException always
@@ -63,7 +64,7 @@ public class OSGiArchiveHandler extends AbstractArchiveHandler {
 
     /**
      * This implementation derives the application name from the archive name.
-     * 
+     *
      * @param archive application archive
      * @return String
      */
@@ -79,7 +80,7 @@ public class OSGiArchiveHandler extends AbstractArchiveHandler {
 
     /**
      * This implementation derives the application anme from the archive name.
-     * 
+     *
      * @param archive application archive
      * @param context deployment context
      * @return String

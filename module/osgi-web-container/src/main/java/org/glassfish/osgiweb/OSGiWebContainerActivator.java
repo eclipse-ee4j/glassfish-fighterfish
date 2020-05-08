@@ -15,9 +15,9 @@
  */
 package org.glassfish.osgiweb;
 
+import org.glassfish.osgijavaeebase.Extender;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
-import org.glassfish.osgijavaeebase.Extender;
 import org.osgi.framework.ServiceRegistration;
 
 /**

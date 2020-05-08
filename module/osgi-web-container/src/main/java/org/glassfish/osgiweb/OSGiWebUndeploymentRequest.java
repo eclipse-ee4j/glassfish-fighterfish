@@ -15,17 +15,17 @@
  */
 package org.glassfish.osgiweb;
 
-import org.glassfish.osgijavaeebase.OSGiUndeploymentRequest;
-import org.glassfish.osgijavaeebase.OSGiDeploymentContext;
-import org.glassfish.osgijavaeebase.OSGiApplicationInfo;
-import org.glassfish.api.ActionReport;
-import org.glassfish.api.deployment.archive.ReadableArchive;
-import org.glassfish.api.deployment.UndeployCommandParameters;
-import org.glassfish.server.ServerEnvironmentImpl;
-import org.glassfish.internal.deployment.Deployment;
-import org.osgi.framework.Bundle;
-
 import java.util.logging.Logger;
+
+import org.glassfish.api.ActionReport;
+import org.glassfish.api.deployment.UndeployCommandParameters;
+import org.glassfish.api.deployment.archive.ReadableArchive;
+import org.glassfish.internal.deployment.Deployment;
+import org.glassfish.osgijavaeebase.OSGiApplicationInfo;
+import org.glassfish.osgijavaeebase.OSGiDeploymentContext;
+import org.glassfish.osgijavaeebase.OSGiUndeploymentRequest;
+import org.glassfish.server.ServerEnvironmentImpl;
+import org.osgi.framework.Bundle;
 
 /**
  * Undeployment request for the OSGi web container.
@@ -34,7 +34,7 @@ public final class OSGiWebUndeploymentRequest extends OSGiUndeploymentRequest {
 
     /**
      * Create a new instance.
-     * 
+     *
      * @param deployer GlassFish deployer
      * @param env GlassFish server environment
      * @param reporter GlassFish command reporter

@@ -15,6 +15,8 @@
  */
 package org.glassfish.osgiweb;
 
+import static org.glassfish.osgiweb.Util.getContextPath;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -26,13 +28,11 @@ import java.util.logging.Logger;
 
 import org.glassfish.osgijavaeebase.OSGiApplicationInfo;
 import org.glassfish.osgijavaeebase.OSGiContainer;
-import org.osgi.util.tracker.ServiceTracker;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleEvent;
 import org.osgi.framework.BundleListener;
 import org.osgi.framework.BundleReference;
-
-import static org.glassfish.osgiweb.Util.getContextPath;
+import org.osgi.util.tracker.ServiceTracker;
 
 /**
  * Detects collision in Web-ContextPath.
@@ -53,12 +53,12 @@ final class ContextPathCollisionDetector implements BundleListener {
     /**
      * What is the currently deployed bundle for a given context path.
      */
-    private final Map<String, Long> contextPath2WabMap = new HashMap<String, Long>();
+    private final Map<String, Long> contextPath2WabMap = new HashMap<>();
 
     /**
      * What are the colliding WABs for a given context path in addition to the currently deploying/deployed bundle.
      */
-    private final Map<String, List<Long>> contextPath2CollidingWabsMap = new HashMap<String, List<Long>>();
+    private final Map<String, List<Long>> contextPath2CollidingWabsMap = new HashMap<>();
 
     /**
      * Service tracker to track the {@code OSGiContainer} service.
@@ -81,11 +81,11 @@ final class ContextPathCollisionDetector implements BundleListener {
 
     /**
      * Get the singleton instance.
-     * 
+     *
      * @return ContextPathCollisionDetector
      */
     public static ContextPathCollisionDetector get() {
-        assert (SELF != null);
+        assert SELF != null;
         return SELF;
     }
 
@@ -100,7 +100,7 @@ final class ContextPathCollisionDetector implements BundleListener {
 
     /**
      * Check context path collision before a deploy action.
-     * 
+     *
      * @param bundle the bundle to check
      * @throws ContextPathCollisionException if a collision is detected
      */
@@ -114,7 +114,7 @@ final class ContextPathCollisionDetector implements BundleListener {
         Long deployedBundle = getCurrentlyDeployedBundle(contextPath);
         final Long bundleId = bundle.getBundleId();
         if (deployedBundle == null) {
-            assert (getCollidingWabs(contextPath).isEmpty());
+            assert getCollidingWabs(contextPath).isEmpty();
             setCurrentlyDeployedBundle(contextPath, bundleId);
         } else {
             // There are two possibilities, viz:
@@ -137,7 +137,7 @@ final class ContextPathCollisionDetector implements BundleListener {
 
     /**
      * Deploy colliding bundle post undeploy of a given bundle.
-     * 
+     *
      * @param bundle the bundle being undeployed
      */
     public synchronized void postUndeploy(final Bundle bundle) {
@@ -147,7 +147,7 @@ final class ContextPathCollisionDetector implements BundleListener {
         Long bundleId = bundle.getBundleId();
         String contextPath = getContextPath(bundle);
         Long deployedBundle = getCurrentlyDeployedBundle(contextPath);
-        assert (bundleId.equals(deployedBundle));
+        assert bundleId.equals(deployedBundle);
         unsetCurrentlyDeployedBundle(contextPath);
         List<Long> collidingWabs = getCollidingWabs(contextPath);
 
@@ -199,7 +199,7 @@ final class ContextPathCollisionDetector implements BundleListener {
 
     /**
      * Cleanup the given bundle if not stopped.
-     * 
+     *
      * @param bundle the bundle
      */
     public synchronized void cleanUp(final Bundle bundle) {
@@ -209,14 +209,14 @@ final class ContextPathCollisionDetector implements BundleListener {
         String contextPath = getContextPath(bundle);
         final Long bundleId = bundle.getBundleId();
         final Long deployedBundle = getCurrentlyDeployedBundle(contextPath);
-        assert (bundleId.equals(deployedBundle));
+        assert bundleId.equals(deployedBundle);
         unsetCurrentlyDeployedBundle(contextPath);
         LOGGER.logp(Level.INFO, "CollisionDetector", "cleanUp", "Removed bundle {0} against context path {1} ", new Object[] { bundleId, contextPath });
     }
 
     /**
      * Get the bundle currently deployed for the given context path.
-     * 
+     *
      * @param contextPath the context path
      * @return the bundle id or {@code null} if not found
      */
@@ -227,19 +227,19 @@ final class ContextPathCollisionDetector implements BundleListener {
 
     /**
      * Add the given bundle id to the context map to bundle id map.
-     * 
+     *
      * @param contextPath the context path
      * @param bundleId the bundle id
      */
     private synchronized void setCurrentlyDeployedBundle(final String contextPath, final Long bundleId) {
 
-        assert (bundleId != null);
+        assert bundleId != null;
         contextPath2WabMap.put(contextPath, bundleId);
     }
 
     /**
      * Remove the context path from the context path to bundle id map.
-     * 
+     *
      * @param contextPath context path
      */
     private synchronized void unsetCurrentlyDeployedBundle(final String contextPath) {
@@ -257,7 +257,7 @@ final class ContextPathCollisionDetector implements BundleListener {
 
         List<Long> bundleIds = contextPath2CollidingWabsMap.get(contextPath);
         if (bundleIds == null) {
-            bundleIds = new ArrayList<Long>();
+            bundleIds = new ArrayList<>();
             contextPath2CollidingWabsMap.put(contextPath, bundleIds);
         }
         return bundleIds;
@@ -265,7 +265,7 @@ final class ContextPathCollisionDetector implements BundleListener {
 
     /**
      * Add the given bundle to the list of colliding bundles for the given context path.
-     * 
+     *
      * @param contextPath the context path
      * @param bundleId the bundle id
      * @return the updated list of colliding bundle for the context path
@@ -279,7 +279,7 @@ final class ContextPathCollisionDetector implements BundleListener {
 
     /**
      * Remove the colliding given bundle for the given context path.
-     * 
+     *
      * @param contextPath the context path
      * @param bundleId the id of the bundle to remove
      * @return {@code true} if the bundle was removed, {@code false} otherwise
@@ -291,12 +291,12 @@ final class ContextPathCollisionDetector implements BundleListener {
 
     /**
      * Get all the web application bundles for the given context path.
-     * 
+     *
      * @param contextPath the context path
      * @return the list of bundle ids
      */
     private synchronized List<Long> getAllWabs(final String contextPath) {
-        List<Long> result = new ArrayList<Long>(getCollidingWabs(contextPath));
+        List<Long> result = new ArrayList<>(getCollidingWabs(contextPath));
         final Long deployedBundle = getCurrentlyDeployedBundle(contextPath);
         if (deployedBundle != null) {
             // add it at the beginning
@@ -307,7 +307,7 @@ final class ContextPathCollisionDetector implements BundleListener {
 
     /**
      * Get the bundle with the given id.
-     * 
+     *
      * @param bundleId the bundle id of the bundle to get
      * @return Bundle
      */
@@ -317,7 +317,7 @@ final class ContextPathCollisionDetector implements BundleListener {
 
     /**
      * Get the OSGi container service from the tracker.
-     * 
+     *
      * @return OSGiContainer
      */
     private OSGiContainer getOSGiContainer() {
@@ -326,7 +326,7 @@ final class ContextPathCollisionDetector implements BundleListener {
 
     /**
      * Get the bundle from the current class-loder.
-     * 
+     *
      * @return Bundle
      */
     private Bundle getBundle() {

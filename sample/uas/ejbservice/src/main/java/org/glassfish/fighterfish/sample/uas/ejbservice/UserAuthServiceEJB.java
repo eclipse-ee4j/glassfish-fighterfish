@@ -9,15 +9,16 @@
  */
 package org.glassfish.fighterfish.sample.uas.ejbservice;
 
-import org.glassfish.fighterfish.sample.uas.api.UserAuthService;
-import org.glassfish.fighterfish.sample.uas.entities.LoginAttempt;
-import org.glassfish.fighterfish.sample.uas.entities.UserCredential;
+import java.util.List;
 
 import javax.ejb.Local;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import java.util.List;
+
+import org.glassfish.fighterfish.sample.uas.api.UserAuthService;
+import org.glassfish.fighterfish.sample.uas.entities.LoginAttempt;
+import org.glassfish.fighterfish.sample.uas.entities.UserCredential;
 
 /**
  * Session Bean implementation class UserAuthServiceEJB.
@@ -43,7 +44,7 @@ public final class UserAuthServiceEJB implements UserAuthService {
 
         log("Logging in (" + name + ", " + password + ")");
         UserCredential uc = em.find(UserCredential.class, name);
-        boolean result = (uc != null && password.equals(uc.getPassword()));
+        boolean result = uc != null && password.equals(uc.getPassword());
         if (uc != null) {
             // Create a LoginAttempt only for existing users.
             LoginAttempt attempt = new LoginAttempt();
@@ -97,7 +98,7 @@ public final class UserAuthServiceEJB implements UserAuthService {
 
     /**
      * Log a message to the standard output.
-     * 
+     *
      * @param msg message to log
      */
     private void log(final String msg) {

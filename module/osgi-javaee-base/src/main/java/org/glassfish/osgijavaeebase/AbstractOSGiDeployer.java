@@ -15,7 +15,10 @@
  */
 package org.glassfish.osgijavaeebase;
 
-import com.sun.enterprise.deploy.shared.ArchiveFactory;
+import java.util.Dictionary;
+import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.glassfish.api.ActionReport;
 import org.glassfish.internal.api.Globals;
@@ -27,10 +30,7 @@ import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.util.tracker.ServiceTracker;
 
-import java.util.Dictionary;
-import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import com.sun.enterprise.deploy.shared.ArchiveFactory;
 
 /**
  * Abstract implementation of {@link OSGiDeployer}.

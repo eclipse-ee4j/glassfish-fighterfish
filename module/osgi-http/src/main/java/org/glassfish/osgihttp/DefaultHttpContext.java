@@ -16,13 +16,14 @@
 
 package org.glassfish.osgihttp;
 
-import org.osgi.framework.Bundle;
-import org.osgi.service.http.HttpContext;
+import java.io.IOException;
+import java.net.URL;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.net.URL;
+
+import org.osgi.framework.Bundle;
+import org.osgi.service.http.HttpContext;
 
 /**
  * Default implementation of {@link HttpContext}. As per the spec (OSGi R4 Compendium, section #102.4): 1. the default
@@ -44,7 +45,7 @@ public final class DefaultHttpContext implements HttpContext {
 
     /**
      * Create a new instance.
-     * 
+     *
      * @param bnd the registering bundle
      */
     public DefaultHttpContext(final Bundle bnd) {

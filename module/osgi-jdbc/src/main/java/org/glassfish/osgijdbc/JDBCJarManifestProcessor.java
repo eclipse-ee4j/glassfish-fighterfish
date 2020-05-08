@@ -15,7 +15,14 @@
  */
 package org.glassfish.osgijdbc;
 
-import org.osgi.service.jdbc.DataSourceFactory;
+import static org.glassfish.osgijdbc.Constants.IMPL_VERSION;
+import static org.glassfish.osgijdbc.Constants.OSGI_RFC_122;
+import static org.osgi.framework.Constants.BUNDLE_CLASSPATH;
+import static org.osgi.framework.Constants.BUNDLE_MANIFESTVERSION;
+import static org.osgi.framework.Constants.BUNDLE_SYMBOLICNAME;
+import static org.osgi.framework.Constants.BUNDLE_VERSION;
+import static org.osgi.framework.Constants.DYNAMICIMPORT_PACKAGE;
+import static org.osgi.framework.Constants.EXPORT_PACKAGE;
 
 import java.io.File;
 import java.io.IOException;
@@ -36,14 +43,7 @@ import java.util.jar.Manifest;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static org.glassfish.osgijdbc.Constants.IMPL_VERSION;
-import static org.glassfish.osgijdbc.Constants.OSGI_RFC_122;
-import static org.osgi.framework.Constants.BUNDLE_CLASSPATH;
-import static org.osgi.framework.Constants.BUNDLE_MANIFESTVERSION;
-import static org.osgi.framework.Constants.BUNDLE_SYMBOLICNAME;
-import static org.osgi.framework.Constants.BUNDLE_VERSION;
-import static org.osgi.framework.Constants.DYNAMICIMPORT_PACKAGE;
-import static org.osgi.framework.Constants.EXPORT_PACKAGE;
+import org.osgi.service.jdbc.DataSourceFactory;
 
 /**
  * Manifest processor.
@@ -105,7 +105,7 @@ public final class JDBCJarManifestProcessor {
                 attrs.putValue(key, value);
             }
 
-            attrs.putValue((DataSourceFactory.OSGI_JDBC_DRIVER_CLASS.replace('.', '_')), (String) properties.get(Constants.DRIVER));
+            attrs.putValue(DataSourceFactory.OSGI_JDBC_DRIVER_CLASS.replace('.', '_'), (String) properties.get(Constants.DRIVER));
 
             attrs.putValue(OSGI_RFC_122, "TRUE");
 
@@ -138,7 +138,7 @@ public final class JDBCJarManifestProcessor {
 
     /**
      * Check if the given version is OSGi compatible.
-     * 
+     *
      * @param version the version to test
      * @return {@code true} if the version is compatible, {@code false} otherwise
      */
@@ -159,7 +159,7 @@ public final class JDBCJarManifestProcessor {
 
     /**
      * Create a bundle class-path string from the given list of JAR file names.
-     * 
+     *
      * @param embeddedJars the input list
      * @return StringBuilder
      */
@@ -175,14 +175,14 @@ public final class JDBCJarManifestProcessor {
 
     /**
      * Get the list of nested jar files inside the given file.
-     * 
+     *
      * @param file the outer JAR file
      * @return list of nested jar file names
      * @throws IOException if an error occurs
      */
     private static List<String> getEmbeddedJarsList(final File file) throws IOException {
 
-        List<String> jarsList = new ArrayList<String>();
+        List<String> jarsList = new ArrayList<>();
         JarFile f = new JarFile(file);
         Enumeration<JarEntry> entries = f.entries();
         while (entries.hasMoreElements()) {
@@ -196,7 +196,7 @@ public final class JDBCJarManifestProcessor {
 
     /**
      * Read the query parameters of a given URL.
-     * 
+     *
      * @param url the input URL
      * @return Properties
      */
@@ -212,7 +212,7 @@ public final class JDBCJarManifestProcessor {
                 String name = next, value = null;
                 if (eq != -1) {
                     name = next.substring(0, eq);
-                    if ((eq + 1) < next.length()) {
+                    if (eq + 1 < next.length()) {
                         value = next.substring(eq + 1);
                     }
                 }
@@ -225,7 +225,7 @@ public final class JDBCJarManifestProcessor {
 
     /**
      * Process option, deployer trumps developer.
-     * 
+     *
      * @param deployerOptions deployer options
      * @param developerOptions developer options
      * @param key option key
@@ -241,7 +241,7 @@ public final class JDBCJarManifestProcessor {
         } else if (developerOption != null) {
             finalOption = developerOption;
         }
-        if ((finalOption == null && developerOption != null) || finalOption != null && !finalOption.equals(developerOption)) {
+        if (finalOption == null && developerOption != null || finalOption != null && !finalOption.equals(developerOption)) {
             developerOptions.putValue(key, finalOption);
         }
     }

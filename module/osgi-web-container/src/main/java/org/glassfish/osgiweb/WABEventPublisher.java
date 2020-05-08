@@ -15,17 +15,6 @@
  */
 package org.glassfish.osgiweb;
 
-import org.glassfish.osgijavaeebase.AbstractOSGiDeployer;
-import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceReference;
-import org.osgi.service.event.Event;
-import org.osgi.service.event.EventAdmin;
-
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-
 import static org.glassfish.osgiweb.Constants.EVENT_PROPERTY_BUNDLE;
 import static org.glassfish.osgiweb.Constants.EVENT_PROPERTY_BUNDLE_ID;
 import static org.glassfish.osgiweb.Constants.EVENT_PROPERTY_BUNDLE_SYMBOLICNAME;
@@ -44,6 +33,17 @@ import static org.glassfish.osgiweb.Constants.EVENT_TOPIC_DEPLOYING;
 import static org.glassfish.osgiweb.Constants.EVENT_TOPIC_FAILED;
 import static org.glassfish.osgiweb.Constants.EVENT_TOPIC_UNDEPLOYED;
 import static org.glassfish.osgiweb.Constants.EVENT_TOPIC_UNDEPLOYING;
+
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.glassfish.osgijavaeebase.AbstractOSGiDeployer;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceReference;
+import org.osgi.service.event.Event;
+import org.osgi.service.event.EventAdmin;
 
 /**
  * This class is responsible for publishing events using EventAdmin service for a WAB deployment lifecycle. During
@@ -77,7 +77,7 @@ final class WABEventPublisher {
 
     /**
      * Raise an event for the following exception.
-     * 
+     *
      * @param state deployer state
      * @param appBundle application bundle
      * @param extenderBundle extender bundle
@@ -93,7 +93,7 @@ final class WABEventPublisher {
 
     /**
      * Create a event to publish.
-     * 
+     *
      * @param state deployment state
      * @param appBundle application bundle
      * @param extenderBundle extender
@@ -103,7 +103,7 @@ final class WABEventPublisher {
     private Event prepareEvent(final AbstractOSGiDeployer.State state, final Bundle appBundle, final Bundle extenderBundle, final Throwable ex) {
 
         String topic;
-        Map<String, Object> props = new HashMap<String, Object>();
+        Map<String, Object> props = new HashMap<>();
         props.put(EVENT_PROPERTY_BUNDLE_SYMBOLICNAME, appBundle.getSymbolicName());
         props.put(EVENT_PROPERTY_BUNDLE_ID, appBundle.getBundleId());
         props.put(EVENT_PROPERTY_BUNDLE_VERSION, appBundle.getVersion());
@@ -150,7 +150,7 @@ final class WABEventPublisher {
 
     /**
      * Submit the event.
-     * 
+     *
      * @param event event to submit
      * @param ctx the bundle context
      */

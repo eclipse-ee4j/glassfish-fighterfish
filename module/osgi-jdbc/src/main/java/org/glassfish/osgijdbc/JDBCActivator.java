@@ -15,13 +15,13 @@
  */
 package org.glassfish.osgijdbc;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.glassfish.osgijavaeebase.Extender;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
-
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Bundle activator for the OSGi JDBC module.
@@ -53,7 +53,7 @@ public final class JDBCActivator implements BundleActivator {
 
     /**
      * Log a {@code FINE} message.
-     * 
+     *
      * @param msg message to log
      */
     private void debug(final String msg) {

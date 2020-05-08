@@ -24,14 +24,14 @@ public interface InvocationContext {
 
     /**
      * The underlying GlassFish web module.
-     * 
+     *
      * @return WebModule
      */
     WebModule getWebModule();
 
     /**
      * Set the underlying GlassFish web module.
-     * 
+     *
      * @param webModule new web module
      */
     void setWebModule(WebModule webModule);

@@ -20,22 +20,22 @@ import java.util.Dictionary;
 import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.glassfish.embeddable.GlassFish;
 import org.glassfish.embeddable.GlassFishException;
 import org.glassfish.internal.api.ClassLoaderHierarchy;
 import org.glassfish.osgijavaeebase.Extender;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.BundleEvent;
+import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.jdbc.DataSourceFactory;
 import org.osgi.service.url.URLConstants;
 import org.osgi.service.url.URLStreamHandlerService;
 import org.osgi.util.tracker.BundleTracker;
 import org.osgi.util.tracker.BundleTrackerCustomizer;
-
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.BundleEvent;
-import org.osgi.framework.ServiceRegistration;
 
 /**
  * JDBC extender service.
@@ -60,7 +60,7 @@ public final class JDBCExtender implements Extender {
     /**
      * Data source factory implementations.
      */
-    private final Set<DataSourceFactoryImpl> dataSourceFactories = new HashSet<DataSourceFactoryImpl>();
+    private final Set<DataSourceFactoryImpl> dataSourceFactories = new HashSet<>();
 
     /**
      * Bundle tracker.
@@ -69,7 +69,7 @@ public final class JDBCExtender implements Extender {
 
     /**
      * Create a new instance.
-     * 
+     *
      * @param context the bundle context
      */
     public JDBCExtender(final BundleContext context) {
@@ -100,7 +100,7 @@ public final class JDBCExtender implements Extender {
 
     /**
      * Get the GlassFish service for the given class.
-     * 
+     *
      * @param <T> service type
      * @param type service class
      * @return T
@@ -141,18 +141,18 @@ public final class JDBCExtender implements Extender {
 
     /**
      * Test if the given bundle contains JDBC driver.
-     * 
+     *
      * @param bnd the bundle to test
      * @return {@code true} if the bundle contains some JDBC driver, {@code false} otherwise
      */
     private boolean isJdbcDriverBundle(final Bundle bnd) {
-        String osgiRFC = (String) bnd.getHeaders().get(Constants.OSGI_RFC_122);
+        String osgiRFC = bnd.getHeaders().get(Constants.OSGI_RFC_122);
         return osgiRFC != null && Boolean.valueOf(osgiRFC);
     }
 
     /**
      * Log a {@code FINE} message.
-     * 
+     *
      * @param msg message to log
      */
     private static void debug(final String msg) {

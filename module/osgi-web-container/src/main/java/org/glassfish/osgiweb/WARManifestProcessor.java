@@ -15,7 +15,13 @@
  */
 package org.glassfish.osgiweb;
 
-import org.glassfish.osgijavaeebase.JarHelper;
+import static org.glassfish.osgiweb.Constants.WEB_CONTEXT_PATH;
+import static org.osgi.framework.Constants.BUNDLE_CLASSPATH;
+import static org.osgi.framework.Constants.BUNDLE_MANIFESTVERSION;
+import static org.osgi.framework.Constants.BUNDLE_SYMBOLICNAME;
+import static org.osgi.framework.Constants.BUNDLE_VERSION;
+import static org.osgi.framework.Constants.DYNAMICIMPORT_PACKAGE;
+import static org.osgi.framework.Constants.IMPORT_PACKAGE;
 
 import java.io.IOException;
 import java.net.URI;
@@ -30,21 +36,14 @@ import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.jar.Attributes;
+import java.util.jar.Attributes.Name;
 import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
 import java.util.jar.Manifest;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import java.util.jar.Attributes.Name;
-
-import static org.glassfish.osgiweb.Constants.WEB_CONTEXT_PATH;
-import static org.osgi.framework.Constants.BUNDLE_CLASSPATH;
-import static org.osgi.framework.Constants.BUNDLE_MANIFESTVERSION;
-import static org.osgi.framework.Constants.BUNDLE_SYMBOLICNAME;
-import static org.osgi.framework.Constants.BUNDLE_VERSION;
-import static org.osgi.framework.Constants.DYNAMICIMPORT_PACKAGE;
-import static org.osgi.framework.Constants.IMPORT_PACKAGE;
+import org.glassfish.osgijavaeebase.JarHelper;
 
 /**
  * When a deployer installs a bundle with {@link Constants#WEB_BUNDLE_SCHEME}, our registered handler gets a chance to
@@ -109,7 +108,7 @@ public final class WARManifestProcessor {
      */
     public static Map<String, String> readQueryParams(final String query) {
 
-        Map<String, String> queryParams = new HashMap<String, String>();
+        Map<String, String> queryParams = new HashMap<>();
         if (query != null) {
             LOGGER.logp(Level.FINE, "WARManifestProcessor", "readQueryParams", "Input query params = {0}", new Object[] { query });
             // "&" separates query paremeters
@@ -120,7 +119,7 @@ public final class WARManifestProcessor {
                 String name = next, value = null;
                 if (eq != -1) {
                     name = next.substring(0, eq);
-                    if ((eq + 1) < next.length()) {
+                    if (eq + 1 < next.length()) {
                         value = next.substring(eq + 1);
                     }
                 }
@@ -315,12 +314,12 @@ public final class WARManifestProcessor {
         /**
          * Resolved libraries.
          */
-        private final List<String> libs = new ArrayList<String>();
+        private final List<String> libs = new ArrayList<>();
 
         /**
          * Resolved jar file names.
          */
-        private final List<String> jarNames = new ArrayList<String>();
+        private final List<String> jarNames = new ArrayList<>();
 
         /**
          * JAR file input stream.
@@ -329,7 +328,7 @@ public final class WARManifestProcessor {
 
         /**
          * Create a new instance.
-         * 
+         *
          * @param is JAR input stream
          */
         JarVisitorImpl(final JarInputStream is) {
@@ -367,7 +366,7 @@ public final class WARManifestProcessor {
 
         /**
          * Process class-path for the given entry.
-         * 
+         *
          * @param entryName the entry being processed
          * @param classPath the class-path
          */
@@ -395,7 +394,7 @@ public final class WARManifestProcessor {
 
         /**
          * Get the resolved libraries.
-         * 
+         *
          * @return list of library names
          */
         public List<String> getLibs() {
@@ -404,7 +403,7 @@ public final class WARManifestProcessor {
 
         /**
          * Get the JAR file names.
-         * 
+         *
          * @return list of JAR names
          */
         public List<String> getJarNames() {
@@ -469,7 +468,7 @@ public final class WARManifestProcessor {
 
     /**
      * Process a manifest query.
-     * 
+     *
      * @param queryParams query parameters
      * @param attrs attributes storing the query result
      * @param key manifest entry

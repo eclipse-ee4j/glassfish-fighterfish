@@ -23,21 +23,21 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
-import java.net.URLConnection;
 import java.net.URI;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.zip.ZipEntry;
-import java.nio.channels.ReadableByteChannel;
-import java.nio.channels.Channels;
-import java.nio.channels.WritableByteChannel;
+import java.net.URLConnection;
 import java.nio.ByteBuffer;
+import java.nio.channels.Channels;
+import java.nio.channels.ReadableByteChannel;
+import java.nio.channels.WritableByteChannel;
 import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.JarInputStream;
 import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.zip.ZipEntry;
 
 /**
  * A utility class to help reading/writing content of JarFile from/to stream.
@@ -62,7 +62,7 @@ public final class JarHelper {
 
         /**
          * Visit an entry.
-         * 
+         *
          * @param je jar entry
          */
         void visit(JarEntry je);
@@ -70,7 +70,7 @@ public final class JarHelper {
 
     /**
      * Traverse a given jar with the given visitor.
-     * 
+     *
      * @param jis jar input stream
      * @param visitor visitor instance
      * @throws IOException if an error occurs

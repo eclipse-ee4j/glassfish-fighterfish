@@ -9,14 +9,14 @@
  */
 package org.glassfish.fighterfish.sample.testing.surefire;
 
+import javax.inject.Inject;
+
 import org.glassfish.fighterfish.test.util.FighterFishJUnitRunner;
 import org.glassfish.fighterfish.test.util.TestContext;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.osgi.framework.BundleContext;
-
-import javax.inject.Inject;
 
 /**
  * This sample test demonstrates use of a custom JUnit test runner called {@link FighterFishJUnitRunner} to execute a

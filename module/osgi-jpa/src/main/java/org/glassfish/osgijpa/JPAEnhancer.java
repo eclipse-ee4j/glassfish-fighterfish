@@ -15,12 +15,12 @@
  */
 package org.glassfish.osgijpa;
 
-import org.osgi.framework.Bundle;
-import org.glassfish.osgijpa.dd.Persistence;
-
-import java.util.List;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
+
+import org.glassfish.osgijpa.dd.Persistence;
+import org.osgi.framework.Bundle;
 
 /**
  * An enhancer is used to statically enhance the classes of a bundle and produce a new JarInputStream which can then be

@@ -15,12 +15,6 @@
  */
 package org.glassfish.osgijdbc;
 
-import org.osgi.framework.BundleContext;
-import org.osgi.service.jdbc.DataSourceFactory;
-
-import javax.sql.ConnectionPoolDataSource;
-import javax.sql.DataSource;
-import javax.sql.XADataSource;
 import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
@@ -36,6 +30,13 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import javax.sql.ConnectionPoolDataSource;
+import javax.sql.DataSource;
+import javax.sql.XADataSource;
+
+import org.osgi.framework.BundleContext;
+import org.osgi.service.jdbc.DataSourceFactory;
 
 /**
  * Data source factory implementation.
@@ -65,7 +66,7 @@ public final class DataSourceFactoryImpl implements DataSourceFactory {
 
     /**
      * Create a new instance.
-     * 
+     *
      * @param context the driver bundle context
      */
     public DataSourceFactoryImpl(final BundleContext context) {
@@ -133,7 +134,7 @@ public final class DataSourceFactoryImpl implements DataSourceFactory {
 
     /**
      * Populate the given bean.
-     * 
+     *
      * @param properties config properties
      * @param clazz the bean class
      * @param object the bean instance
@@ -222,7 +223,7 @@ public final class DataSourceFactoryImpl implements DataSourceFactory {
 
     /**
      * Log a {@code FINE} message.
-     * 
+     *
      * @param msg message to log
      */
     private static void debug(final String msg) {

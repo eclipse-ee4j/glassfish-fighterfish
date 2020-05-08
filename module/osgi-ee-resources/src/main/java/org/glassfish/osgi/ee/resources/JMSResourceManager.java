@@ -15,18 +15,20 @@
  */
 package org.glassfish.osgi.ee.resources;
 
-import com.sun.enterprise.config.serverbeans.BindableResource;
-import com.sun.enterprise.config.serverbeans.ResourceRef;
-import org.glassfish.connectors.config.ConnectorConnectionPool;
-import org.glassfish.connectors.config.ConnectorResource;
-import org.osgi.framework.BundleContext;
+import java.util.Collection;
+import java.util.Dictionary;
+import java.util.Properties;
 
 import javax.jms.ConnectionFactory;
 import javax.jms.QueueConnectionFactory;
 import javax.jms.TopicConnectionFactory;
-import java.util.Collection;
-import java.util.Dictionary;
-import java.util.Properties;
+
+import org.glassfish.connectors.config.ConnectorConnectionPool;
+import org.glassfish.connectors.config.ConnectorResource;
+import org.osgi.framework.BundleContext;
+
+import com.sun.enterprise.config.serverbeans.BindableResource;
+import com.sun.enterprise.config.serverbeans.ResourceRef;
 
 /**
  * Resource-Manager to export jms-connection-factories (JMS-RA Connector-Resources) in GlassFish to OSGi's
@@ -36,7 +38,7 @@ public final class JMSResourceManager extends BaseResourceManager implements Res
 
     /**
      * Create a new instance.
-     * 
+     *
      * @param habitat component locator
      */
     public JMSResourceManager(final Habitat habitat) {

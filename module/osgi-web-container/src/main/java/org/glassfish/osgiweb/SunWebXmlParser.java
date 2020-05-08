@@ -15,13 +15,14 @@
  */
 package org.glassfish.osgiweb;
 
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamReader;
-import javax.xml.stream.XMLStreamException;
-import java.io.InputStream;
-
 import static javax.xml.stream.XMLStreamConstants.END_DOCUMENT;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
+
+import java.io.InputStream;
+
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
 
 /**
  * A mini parser to parse sun-web.xml and glassfish-web.xml for entries of interest to us. Currently, we only read
@@ -46,7 +47,7 @@ final class SunWebXmlParser {
 
     /**
      * The caller should close the input stream.
-     * 
+     *
      * @param in InputStream for sun-web.xml or glassfish-web.xml
      * @throws XMLStreamException if a parsing error occurs
      */
@@ -71,7 +72,7 @@ final class SunWebXmlParser {
 
     /**
      * Get the context root.
-     * 
+     *
      * @return context root
      */
     public String getContextRoot() {

@@ -15,12 +15,13 @@
  */
 package org.glassfish.osgihttp;
 
-import com.sun.enterprise.web.WebModule;
-
-import javax.servlet.ServletContext;
 import java.lang.ref.WeakReference;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import javax.servlet.ServletContext;
+
+import com.sun.enterprise.web.WebModule;
 
 /**
  * Utility that holds an instance of {@link InvocationContext}.
@@ -40,7 +41,7 @@ public final class InvocationContextMgr {
 
     /**
      * Get the invocation context.
-     * 
+     *
      * @return InvocationContext
      */
     public static InvocationContext getInvocationContext() {
@@ -60,12 +61,12 @@ public final class InvocationContextMgr {
         /**
          * Thread local to access the current servlet context.
          */
-        private final ThreadLocal<WeakReference<ServletContext>> currentSC = new InheritableThreadLocal<WeakReference<ServletContext>>();
+        private final ThreadLocal<WeakReference<ServletContext>> currentSC = new InheritableThreadLocal<>();
 
         /**
          * Thread local to access the current web module.
          */
-        private final ThreadLocal<WeakReference<WebModule>> currentWM = new InheritableThreadLocal<WeakReference<WebModule>>();
+        private final ThreadLocal<WeakReference<WebModule>> currentWM = new InheritableThreadLocal<>();
 
         @Override
         public WebModule getWebModule() {
@@ -84,7 +85,7 @@ public final class InvocationContextMgr {
         public void setWebModule(final WebModule webModule) {
             logger.logp(Level.FINE, "InvocationContextMgr", "setWebModule", "webModule = {0}", new Object[] { webModule });
             if (webModule != null) {
-                currentWM.set(new WeakReference<WebModule>(webModule));
+                currentWM.set(new WeakReference<>(webModule));
             } else {
                 currentWM.set(null);
             }

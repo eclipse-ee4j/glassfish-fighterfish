@@ -12,13 +12,12 @@ package org.glassfish.fighterfish.sample.uas.advservice;
 import javax.persistence.EntityManagerFactory;
 import javax.transaction.UserTransaction;
 
+import org.glassfish.fighterfish.sample.uas.api.UserAuthService;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
 import org.osgi.framework.Filter;
 import org.osgi.util.tracker.ServiceTracker;
-
-import org.glassfish.fighterfish.sample.uas.api.UserAuthService;
 
 /**
  * Bundle activator for the advanced user authentication service.
@@ -61,7 +60,7 @@ public final class AdvSvcImplActivator implements BundleActivator {
 
     /**
      * Get the user transaction.
-     * 
+     *
      * @return UserTransaction
      */
     public UserTransaction getUTX() {
@@ -70,7 +69,7 @@ public final class AdvSvcImplActivator implements BundleActivator {
 
     /**
      * Get the EntityManagerFactory.
-     * 
+     *
      * @return EntityManagerFactory
      */
     public EntityManagerFactory getEMF() {

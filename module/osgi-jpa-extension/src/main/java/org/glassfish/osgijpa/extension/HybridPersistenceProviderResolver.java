@@ -122,7 +122,7 @@ public final class HybridPersistenceProviderResolver implements javax.persistenc
      */
     private void populateCache(final ClassLoader cl, final List<PersistenceProvider> providers) {
 
-        List<String> providerNames = new ArrayList<String>(providers.size());
+        List<String> providerNames = new ArrayList<>(providers.size());
         providerNames.addAll(convert(providers));
         cl2ProviderNames.put(cl, providerNames);
     }
@@ -149,7 +149,7 @@ public final class HybridPersistenceProviderResolver implements javax.persistenc
      */
     private List<String> convert(final Iterable<PersistenceProvider> providers) {
 
-        List<String> result = new ArrayList<String>();
+        List<String> result = new ArrayList<>();
         for (PersistenceProvider p : providers) {
             result.add(p.getClass().getName());
         }
@@ -169,7 +169,7 @@ public final class HybridPersistenceProviderResolver implements javax.persistenc
      */
     private List<PersistenceProvider> convert(final Iterable<String> providerNames, final ClassLoader cl) {
 
-        List<PersistenceProvider> result = new ArrayList<PersistenceProvider>();
+        List<PersistenceProvider> result = new ArrayList<>();
         for (String name : providerNames) {
             try {
                 result.add((PersistenceProvider) cl.loadClass(name).newInstance());
@@ -189,7 +189,7 @@ public final class HybridPersistenceProviderResolver implements javax.persistenc
      */
     private List<PersistenceProvider> discoverPersistenceProviders(final ClassLoader cl) {
 
-        List<PersistenceProvider> result = new ArrayList<PersistenceProvider>();
+        List<PersistenceProvider> result = new ArrayList<>();
         if (cl != null) {
             Iterator<PersistenceProvider> services = java.util.ServiceLoader.load(PersistenceProvider.class, cl).iterator();
             while (services.hasNext()) {
@@ -220,7 +220,7 @@ public final class HybridPersistenceProviderResolver implements javax.persistenc
      * @return list of discovered providers
      */
     private List<PersistenceProvider> discoverOSGiProviders() {
-        List<PersistenceProvider> result = new ArrayList<PersistenceProvider>();
+        List<PersistenceProvider> result = new ArrayList<>();
         for (PersistenceProvider p : ServiceLoader.lookupProviderInstances(PersistenceProvider.class)) {
             result.add(p);
         }

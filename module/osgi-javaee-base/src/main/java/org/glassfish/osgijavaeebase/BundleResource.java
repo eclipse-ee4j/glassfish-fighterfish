@@ -39,7 +39,7 @@ public final class BundleResource {
 
     /**
      * Create a new instance.
-     * 
+     *
      * @param resourceUri resource URI
      * @param resourcePath resource path
      * @param subArchivePath sub archive path from the top
@@ -53,7 +53,7 @@ public final class BundleResource {
 
     /**
      * Get the resource URI.
-     * 
+     *
      * @return URI
      */
     public URI getUri() {
@@ -62,7 +62,7 @@ public final class BundleResource {
 
     /**
      * Get the resource path.
-     * 
+     *
      * @return resource path
      */
     public String getPath() {
@@ -71,7 +71,7 @@ public final class BundleResource {
 
     /**
      * Get the sub-archive path.
-     * 
+     *
      * @return path from the top level archive, "" if it is in the bundle directly.
      */
     public String getArchivePath() {

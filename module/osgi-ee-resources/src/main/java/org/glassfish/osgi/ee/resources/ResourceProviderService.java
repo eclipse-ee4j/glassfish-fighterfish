@@ -15,6 +15,25 @@
  */
 package org.glassfish.osgi.ee.resources;
 
+import java.beans.PropertyChangeEvent;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import org.glassfish.connectors.config.ConnectorConnectionPool;
+import org.glassfish.internal.api.ServerContext;
+import org.glassfish.jdbc.config.JdbcConnectionPool;
+import org.jvnet.hk2.config.Changed;
+import org.jvnet.hk2.config.ConfigBeanProxy;
+import org.jvnet.hk2.config.ConfigListener;
+import org.jvnet.hk2.config.ConfigSupport;
+import org.jvnet.hk2.config.NotProcessed;
+import org.jvnet.hk2.config.ObservableBean;
+import org.jvnet.hk2.config.UnprocessedChangeEvents;
+import org.osgi.framework.BundleContext;
+
 import com.sun.appserv.connectors.internal.api.ConnectorsUtil;
 import com.sun.enterprise.config.serverbeans.BindableResource;
 import com.sun.enterprise.config.serverbeans.Domain;
@@ -23,29 +42,6 @@ import com.sun.enterprise.config.serverbeans.ResourceRef;
 import com.sun.enterprise.config.serverbeans.Resources;
 import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.config.serverbeans.Servers;
-import org.glassfish.connectors.config.ConnectorConnectionPool;
-import org.glassfish.internal.api.ServerContext;
-import org.glassfish.jdbc.config.JdbcConnectionPool;
-import org.osgi.framework.BundleContext;
-
-import java.beans.PropertyChangeEvent;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import org.jvnet.hk2.config.Changed;
-import org.jvnet.hk2.config.ConfigBeanProxy;
-import org.jvnet.hk2.config.ConfigListener;
-import org.jvnet.hk2.config.ConfigSupport;
-import org.jvnet.hk2.config.NotProcessed;
-import org.jvnet.hk2.config.ObservableBean;
-import org.jvnet.hk2.config.UnprocessedChangeEvents;
-
-import static org.jvnet.hk2.config.Changed.TYPE.ADD;
-import static org.jvnet.hk2.config.Changed.TYPE.CHANGE;
-import static org.jvnet.hk2.config.Changed.TYPE.REMOVE;
 
 /**
  * A service to export resources in GlassFish to OSGi's service-registry.<br>
@@ -116,7 +112,7 @@ public final class ResourceProviderService implements ConfigListener {
 
     /**
      * Create a new instance.
-     * 
+     *
      * @param hab component locator
      * @param bndCtx bundle context
      */
@@ -127,7 +123,7 @@ public final class ResourceProviderService implements ConfigListener {
         servers = hab.getComponent(Servers.class);
         resources = hab.getComponent(Domain.class).getResources();
         resourceHelper = new ResourceHelper(hab);
-        resourceManagers = new ArrayList<ResourceManager>();
+        resourceManagers = new ArrayList<>();
         initializeResourceManagers();
         postConstruct();
     }
@@ -182,19 +178,19 @@ public final class ResourceProviderService implements ConfigListener {
         String instanceName = context.getInstanceName();
         for (Server server : serversList) {
             if (server.getName().equals(instanceName)) {
-                serverConfigBean = (ObservableBean) ConfigSupport.getImpl((ConfigBeanProxy) server);
+                serverConfigBean = (ObservableBean) ConfigSupport.getImpl(server);
                 serverConfigBean.addListener(this);
             }
         }
 
-        resourcesConfigBean = (ObservableBean) ConfigSupport.getImpl((ConfigBeanProxy) resources);
+        resourcesConfigBean = (ObservableBean) ConfigSupport.getImpl(resources);
         resourcesConfigBean.addListener(this);
 
     }
 
     /**
      * Notification that {@code @Configured} objects that were injected have changed.
-     * 
+     *
      * @return UnprocessedChangeEvents
      * @param events list of changes
      */
@@ -221,7 +217,7 @@ public final class ResourceProviderService implements ConfigListener {
 
         /**
          * Create a new instance.
-         * 
+         *
          * @param evts config change events
          * @param resProviderSvc resource provider service
          */
@@ -270,7 +266,7 @@ public final class ResourceProviderService implements ConfigListener {
 
         /**
          * Handle a remove event.
-         * 
+         *
          * @param <T> type of the removed instance
          * @param removedInstance removed instance
          * @return NotProcessed
@@ -295,7 +291,7 @@ public final class ResourceProviderService implements ConfigListener {
 
         /**
          * Handle a change event.
-         * 
+         *
          * @param <T> type of the changed object
          * @param changedInstance changed object
          * @return NotProcessed
@@ -395,7 +391,7 @@ public final class ResourceProviderService implements ConfigListener {
 
         /**
          * Unregister the given resource.
-         * 
+         *
          * @param bindableResource resource to unregister
          */
         private void unRegisterResource(final BindableResource bindableResource) {
@@ -409,7 +405,7 @@ public final class ResourceProviderService implements ConfigListener {
 
         /**
          * Register the given resource.
-         * 
+         *
          * @param bindableResource resource config bean
          * @param ref resource reference
          */
@@ -422,7 +418,7 @@ public final class ResourceProviderService implements ConfigListener {
 
         /**
          * Register the given resource.
-         * 
+         *
          * @param bindableResource resource config bean
          */
         private void registerResource(final BindableResource bindableResource) {
@@ -433,7 +429,7 @@ public final class ResourceProviderService implements ConfigListener {
 
         /**
          * Handle a add event.
-         * 
+         *
          * @param <T> type of the added object
          * @param addedInstance added object
          * @return NotProcessed
@@ -454,13 +450,13 @@ public final class ResourceProviderService implements ConfigListener {
 
     /**
      * Get the list of resource-managers that can handle the resource.
-     * 
+     *
      * @param resource resource
      * @return list of resource-managers
      */
     private Collection<ResourceManager> getResourceManagers(final BindableResource resource) {
 
-        Collection<ResourceManager> rms = new ArrayList<ResourceManager>();
+        Collection<ResourceManager> rms = new ArrayList<>();
         for (ResourceManager rm : resourceManagers) {
             if (rm.handlesResource(resource)) {
                 rms.add(rm);
@@ -471,7 +467,7 @@ public final class ResourceProviderService implements ConfigListener {
 
     /**
      * Test if the runtime support JMS.
-     * 
+     *
      * @return {@code true} if the runtime supports JMS, {@code false} otherwise
      */
     private boolean runtimeSupportsJMS() {
@@ -487,7 +483,7 @@ public final class ResourceProviderService implements ConfigListener {
 
     /**
      * Register the given JMS resources.
-     * 
+     *
      * @param resManagers manager of the resources to register
      * @param hab component locator
      */

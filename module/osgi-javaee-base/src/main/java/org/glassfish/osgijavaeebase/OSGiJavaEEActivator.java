@@ -15,16 +15,17 @@
  */
 package org.glassfish.osgijavaeebase;
 
+import static org.glassfish.osgijavaeebase.OSGiBundleArchive.EmbeddedJarURLStreamHandlerService.EMBEDDED_JAR_SCHEME;
+
 import java.util.Dictionary;
 import java.util.Properties;
+
+import org.glassfish.osgijavaeebase.OSGiBundleArchive.EmbeddedJarURLStreamHandlerService;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
-import org.osgi.service.url.URLStreamHandlerService;
 import org.osgi.service.url.URLConstants;
-
-import static org.glassfish.osgijavaeebase.OSGiBundleArchive.EmbeddedJarURLStreamHandlerService;
-import static org.glassfish.osgijavaeebase.OSGiBundleArchive.EmbeddedJarURLStreamHandlerService.EMBEDDED_JAR_SCHEME;
+import org.osgi.service.url.URLStreamHandlerService;
 
 /**
  * Bundle activator that registers {@link JavaEEExtender} as a service.
@@ -63,7 +64,7 @@ public final class OSGiJavaEEActivator implements BundleActivator {
 
     /**
      * Create an instance of {@link JavaEEExtender} and register it as an OSGi service.
-     * 
+     *
      * @param context the bundle context
      */
     private void addExtender(final BundleContext context) {
@@ -80,7 +81,7 @@ public final class OSGiJavaEEActivator implements BundleActivator {
 
     /**
      * Create a new instance of {@link EmbeddedJarURLStreamHandlerService} and register it as an OSGi service.
-     * 
+     *
      * @param context the bundle context
      */
     @SuppressWarnings("unchecked")

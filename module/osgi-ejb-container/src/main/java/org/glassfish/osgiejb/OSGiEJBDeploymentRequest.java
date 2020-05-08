@@ -16,23 +16,23 @@
 
 package org.glassfish.osgiejb;
 
-import org.glassfish.osgijavaeebase.OSGiDeploymentRequest;
-import org.glassfish.osgijavaeebase.OSGiDeploymentContext;
-import org.glassfish.api.ActionReport;
-import org.glassfish.api.deployment.archive.ReadableArchive;
-import org.glassfish.api.deployment.OpsParams;
-import org.glassfish.server.ServerEnvironmentImpl;
-import org.glassfish.internal.deployment.Deployment;
-import org.osgi.framework.Bundle;
-
-import java.util.logging.Logger;
-
-import com.sun.enterprise.deploy.shared.ArchiveFactory;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
+
+import org.glassfish.api.ActionReport;
+import org.glassfish.api.deployment.OpsParams;
+import org.glassfish.api.deployment.archive.ReadableArchive;
+import org.glassfish.internal.deployment.Deployment;
+import org.glassfish.osgijavaeebase.OSGiDeploymentContext;
+import org.glassfish.osgijavaeebase.OSGiDeploymentRequest;
+import org.glassfish.server.ServerEnvironmentImpl;
+import org.osgi.framework.Bundle;
 import org.osgi.framework.namespace.HostNamespace;
 import org.osgi.framework.wiring.BundleWire;
 import org.osgi.framework.wiring.BundleWiring;
+
+import com.sun.enterprise.deploy.shared.ArchiveFactory;
 
 /**
  * Custom deployment request for the OSGi EJB container.
@@ -41,7 +41,7 @@ public final class OSGiEJBDeploymentRequest extends OSGiDeploymentRequest {
 
     /**
      * Create a new instance.
-     * 
+     *
      * @param deployer GlassFish deployer
      * @param archiveFactory GlassFish archive factory
      * @param env GlassFish server environment
@@ -70,12 +70,12 @@ public final class OSGiEJBDeploymentRequest extends OSGiDeploymentRequest {
 
     /**
      * Get the bundle fragments of a given host bundle.
-     * 
+     *
      * @param host the host bundle
      * @return Bundle[]
      */
     private static Bundle[] getFragments(final Bundle host) {
-        List<Bundle> fragments = new ArrayList<Bundle>();
+        List<Bundle> fragments = new ArrayList<>();
         BundleWiring hostWiring = host.adapt(BundleWiring.class);
         for (BundleWire wire : hostWiring.getProvidedWires(HostNamespace.HOST_NAMESPACE)) {
             fragments.add(wire.getRequirerWiring().getBundle());

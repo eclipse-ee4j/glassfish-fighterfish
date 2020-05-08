@@ -28,7 +28,7 @@ public class DeploymentException extends Exception {
 
     /**
      * Create a new exception with a message and no cause.
-     * 
+     *
      * @param message exception message
      */
     public DeploymentException(final String message) {
@@ -37,7 +37,7 @@ public class DeploymentException extends Exception {
 
     /**
      * Create a new exception with a message and a cause.
-     * 
+     *
      * @param message exception message
      * @param cause exception cause
      */
@@ -47,7 +47,7 @@ public class DeploymentException extends Exception {
 
     /**
      * Create a new exception with no message and a cause.
-     * 
+     *
      * @param cause exception cause
      */
     public DeploymentException(final Throwable cause) {

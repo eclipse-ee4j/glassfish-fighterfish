@@ -15,13 +15,6 @@
  */
 package org.glassfish.osgijavaeebase;
 
-import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.BundleEvent;
-import org.osgi.framework.ServiceRegistration;
-import org.osgi.util.tracker.BundleTracker;
-import org.osgi.util.tracker.BundleTrackerCustomizer;
-
 import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
@@ -33,6 +26,13 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.BundleEvent;
+import org.osgi.framework.ServiceRegistration;
+import org.osgi.util.tracker.BundleTracker;
+import org.osgi.util.tracker.BundleTrackerCustomizer;
 
 /**
  * This extender is responsible for detecting and deploying any Java EE OSGi bundle. Implementation Note: All methods
@@ -85,7 +85,7 @@ public final class JavaEEExtender implements Extender {
 
     /**
      * Create a new instance.
-     * 
+     *
      * @param bundleContext bundle context
      */
     public JavaEEExtender(final BundleContext bundleContext) {
@@ -122,7 +122,7 @@ public final class JavaEEExtender implements Extender {
 
     /**
      * Initiate the deployment action of the given bundle against the OSGi container.
-     * 
+     *
      * @param bundle bundle to be deployed
      * @return OSGiApplicationInfo or {@code null} if the container is not started or if an error occurs during deployment
      */
@@ -141,7 +141,7 @@ public final class JavaEEExtender implements Extender {
 
     /**
      * Initiate the undeployment action of the given bundle against the OSGi container.
-     * 
+     *
      * @param bundle bundle to be deployed
      */
     private synchronized void undeploy(final Bundle bundle) {
@@ -160,7 +160,7 @@ public final class JavaEEExtender implements Extender {
 
     /**
      * Test if the OSGi container is started.
-     * 
+     *
      * @return {@code true} if started, {@code false} otherwise
      */
     private boolean isStarted() {
@@ -177,7 +177,7 @@ public final class JavaEEExtender implements Extender {
         /**
          * The deployment tasks executed asynchronously.
          */
-        private final Map<Long, Future<OSGiApplicationInfo>> deploymentTasks = new ConcurrentHashMap<Long, Future<OSGiApplicationInfo>>();
+        private final Map<Long, Future<OSGiApplicationInfo>> deploymentTasks = new ConcurrentHashMap<>();
 
         @Override
         public Object addingBundle(final Bundle bundle, final BundleEvent event) {
@@ -207,7 +207,7 @@ public final class JavaEEExtender implements Extender {
          * @return {@code true} if ready, {@code false} otherwise
          */
         private boolean isReady(final BundleEvent event, final int state) {
-            return state == Bundle.ACTIVE || (state == Bundle.STARTING && (event != null && event.getType() == BundleEvent.LAZY_ACTIVATION));
+            return state == Bundle.ACTIVE || state == Bundle.STARTING && event != null && event.getType() == BundleEvent.LAZY_ACTIVATION;
         }
 
         @Override
@@ -224,7 +224,7 @@ public final class JavaEEExtender implements Extender {
             if (deploymentTask == null) {
                 // We have never seen this bundle before. Ideally we should
                 // never get here.
-                assert (false);
+                assert false;
                 return;
             }
             try {
@@ -267,7 +267,7 @@ public final class JavaEEExtender implements Extender {
 
         /**
          * Get the configured deployment timeout.
-         * 
+         *
          * @return timeout
          */
         public long getDeploymentTimeout() {

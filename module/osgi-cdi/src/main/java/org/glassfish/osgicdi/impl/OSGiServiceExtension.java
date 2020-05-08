@@ -43,10 +43,9 @@ import javax.enterprise.inject.spi.ProcessBean;
 import javax.enterprise.inject.spi.ProcessInjectionTarget;
 import javax.enterprise.util.AnnotationLiteral;
 
-import org.osgi.framework.ServiceException;
-
 import org.glassfish.osgicdi.OSGiService;
 import org.glassfish.osgicdi.ServiceUnavailableException;
+import org.osgi.framework.ServiceException;
 
 /**
  * A portable extension that supports discovery and injection of OSGi services from an OSGi service registry into
@@ -59,7 +58,7 @@ public final class OSGiServiceExtension implements Extension {
     /**
      * A map of Framework Service Types to be injected and additional metadata about the OSGiService to be injected.
      */
-    private final HashMap<Type, Set<InjectionPoint>> servicesToBeInjected = new HashMap<Type, Set<InjectionPoint>>();
+    private final HashMap<Type, Set<InjectionPoint>> servicesToBeInjected = new HashMap<>();
 
     /**
      * Logger.
@@ -68,7 +67,7 @@ public final class OSGiServiceExtension implements Extension {
 
     /**
      * Observers for container life-cycle events.
-     * 
+     *
      * @param bdd before bean discovery event
      */
     void beforeBeanDiscovery(@Observes final BeforeBeanDiscovery bdd) {
@@ -80,11 +79,10 @@ public final class OSGiServiceExtension implements Extension {
      * Observer for <code>ProcessInjectionTarget</code> events. This event is fired for every Java EE component class
      * supporting injection that may be instantiated by the container at runtime. Injections points of every discovered
      * enabled Java EE component is checked to see if there is a request for injection of a framework service.
-     * 
+     *
      * @param pb after process injection target event
      */
     void afterProcessInjectionTarget(@Observes final ProcessInjectionTarget<?> pb) {
-
         debug("AfterProcessInjectionTarget" + pb.getAnnotatedType().getBaseType());
         Set<InjectionPoint> ips = pb.getInjectionTarget().getInjectionPoints();
         discoverServiceInjectionPoints(ips);
@@ -94,7 +92,7 @@ public final class OSGiServiceExtension implements Extension {
      * Observer for <code>ProcessBean</code> events. This event is fired fire an event for each enabled bean, interceptor or
      * decorator deployed in a bean archive, before registering the Bean object. Injections points of every discovered
      * enabled Java EE component is checked to see if there is a request for injection of a framework service.
-     * 
+     *
      * @param pb after process bean event
      */
     @SuppressWarnings("unchecked")
@@ -107,11 +105,10 @@ public final class OSGiServiceExtension implements Extension {
     /**
      * Discover injection points where the framework service is requested through the <code>OSGiService</code> qualifier and
      * a map is populated for all framework services that have been requested.
-     * 
+     *
      * @param ips set of injection points
      */
     private void discoverServiceInjectionPoints(final Set<InjectionPoint> ips) {
-
         for (Iterator<InjectionPoint> iterator = ips.iterator(); iterator.hasNext();) {
             InjectionPoint injectionPoint = iterator.next();
             Set<Annotation> qualifs = injectionPoint.getQualifiers();
@@ -122,14 +119,11 @@ public final class OSGiServiceExtension implements Extension {
                     String s = "---- Injection requested for " + "framework service type " + injectionPoint.getType() + " and annotated with dynamic="
                             + injectionPoint.getAnnotated().getAnnotation(OSGiService.class).dynamic() + ", serviceCriteria="
                             + injectionPoint.getAnnotated().getAnnotation(OSGiService.class).serviceCriteria();
-//                    LOGGER.logp(Level.INFO, "OSGiServiceExtension",
-//                            "discoverServiceInjectionPoints", s);
                     debug(s);
                     // Keep track of service-type and its injection point
                     // Add to list of framework services to be injected
                     addServiceInjectionInfo(injectionPoint);
                     debug("number of injection points for " + injectionPoint.getType() + "=" + servicesToBeInjected.size());
-
                 }
             }
         }
@@ -137,7 +131,7 @@ public final class OSGiServiceExtension implements Extension {
 
     /**
      * Add service injection information.
-     * 
+     *
      * @param injectionPoint injection point
      */
     private void addServiceInjectionInfo(final InjectionPoint injectionPoint) {
@@ -151,11 +145,12 @@ public final class OSGiServiceExtension implements Extension {
     /**
      * Observer for <code>AfterBeanDiscovery</code> events. This observer method is used to register <code>Bean</code>s for
      * the framework services that have been requested to be injected.
-     * 
+     *
      * @param abd after bean discovery event
      */
     void afterBeanDiscovery(@Observes final AfterBeanDiscovery abd) {
         debug("After Bean Discovery");
+        
         for (Iterator<Type> iterator = this.servicesToBeInjected.keySet().iterator(); iterator.hasNext();) {
 
             Type type = iterator.next();
@@ -176,14 +171,13 @@ public final class OSGiServiceExtension implements Extension {
     /**
      * Add a <code>Bean</code> for the framework service requested. Instantiate or discover the bean from the framework
      * service registry, and return a reference to the service if a dynamic reference is requested.
-     * 
+     *
      * @param abd after bean discovery event
      * @param type bean type
      * @param injectionPoints set of injection points
      */
     private void addBean(final AfterBeanDiscovery abd, final Type type, final Set<InjectionPoint> injectionPoints) {
-
-        List<OSGiService> registeredBeans = new ArrayList<OSGiService>();
+        List<OSGiService> registeredBeans = new ArrayList<>();
         for (Iterator<InjectionPoint> iterator = injectionPoints.iterator(); iterator.hasNext();) {
 
             final InjectionPoint svcInjectionPoint = iterator.next();
@@ -235,7 +229,7 @@ public final class OSGiServiceExtension implements Extension {
 
         /**
          * Create a new instance.
-         * 
+         *
          * @param injectionPoint injection point
          */
         OSGiServiceBean(final InjectionPoint injectionPoint) {
@@ -281,7 +275,7 @@ public final class OSGiServiceExtension implements Extension {
 
         /**
          * Get the string for the service metadata.
-         * 
+         *
          * @return service metadata
          */
         private String getServiceMetadata() {
@@ -290,7 +284,7 @@ public final class OSGiServiceExtension implements Extension {
 
         @Override
         public Set<Annotation> getQualifiers() {
-            Set<Annotation> s = new HashSet<Annotation>();
+            Set<Annotation> s = new HashSet<>();
             s.add(new AnnotationLiteral<Default>() {
             });
             s.add(new AnnotationLiteral<Any>() {
@@ -315,7 +309,7 @@ public final class OSGiServiceExtension implements Extension {
 
         @Override
         public Set<Type> getTypes() {
-            Set<Type> s = new HashSet<Type>();
+            Set<Type> s = new HashSet<>();
             s.add(type);
             s.add(Object.class);
             return s;
@@ -355,7 +349,7 @@ public final class OSGiServiceExtension implements Extension {
 
         /**
          * Create a new instance.
-         * 
+         *
          * @param os service instance
          */
         OSGiServiceQualifierType(final OSGiService os) {
@@ -382,7 +376,7 @@ public final class OSGiServiceExtension implements Extension {
 
     /**
      * Log a message at the {@Code FINE} level.
-     * 
+     *
      * @param msg message to log
      */
     private void debug(final String msg) {
@@ -391,7 +385,7 @@ public final class OSGiServiceExtension implements Extension {
 
     /**
      * Log a debug message for the given injection point.
-     * 
+     *
      * @param injectionPoint injection point
      */
     private void printDebugForInjectionPoint(final InjectionPoint injectionPoint) {

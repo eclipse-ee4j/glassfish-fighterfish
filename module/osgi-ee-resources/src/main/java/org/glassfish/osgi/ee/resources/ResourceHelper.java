@@ -15,12 +15,13 @@
  */
 package org.glassfish.osgi.ee.resources;
 
+import java.util.List;
+
+import org.glassfish.internal.api.ServerContext;
+
 import com.sun.enterprise.config.serverbeans.ResourceRef;
 import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.config.serverbeans.Servers;
-import org.glassfish.internal.api.ServerContext;
-
-import java.util.List;
 
 /**
  * Resource helper.
@@ -34,7 +35,7 @@ public final class ResourceHelper {
 
     /**
      * Create a new instance.
-     * 
+     *
      * @param hab component locator
      */
     ResourceHelper(final Habitat hab) {
@@ -67,7 +68,7 @@ public final class ResourceHelper {
 
     /**
      * Get the habitat.
-     * 
+     *
      * @return Habitat
      */
     private Habitat getHabitat() {

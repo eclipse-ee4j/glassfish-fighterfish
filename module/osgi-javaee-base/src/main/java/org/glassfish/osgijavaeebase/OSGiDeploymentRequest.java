@@ -15,8 +15,11 @@
  */
 package org.glassfish.osgijavaeebase;
 
-import com.sun.enterprise.deploy.shared.ArchiveFactory;
-import com.sun.enterprise.util.io.FileUtils;
+import java.io.File;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.api.deployment.DeployCommandParameters;
@@ -31,10 +34,8 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleReference;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import com.sun.enterprise.deploy.shared.ArchiveFactory;
+import com.sun.enterprise.util.io.FileUtils;
 
 /**
  * This is a stateful service. This is responsible for deployment of artifacts in JavaEE runtime.
@@ -93,7 +94,7 @@ public abstract class OSGiDeploymentRequest {
 
     /**
      * Create a new instance.
-     * 
+     *
      * @param gfDeployer the GlassFish deployer
      * @param gfArchiveFactory the GlassFish archive factory
      * @param serverEnv the GlassFish server environment
@@ -112,7 +113,7 @@ public abstract class OSGiDeploymentRequest {
 
     /**
      * Invoked before the deploy action.
-     * 
+     *
      * @throws DeploymentException if an error occurs
      */
     protected void preDeploy() throws DeploymentException {
@@ -189,7 +190,7 @@ public abstract class OSGiDeploymentRequest {
 
     /**
      * Get the deployment context for the given bundle.
-     * 
+     *
      * @param actionReported the GlassFish command reporter
      * @param logger the logger to use
      * @param appArchive the GlassFish application archive
@@ -204,7 +205,7 @@ public abstract class OSGiDeploymentRequest {
 
     /**
      * Do the deployment work.
-     * 
+     *
      * @return OSGiApplicationInfo
      */
     private OSGiApplicationInfo deploy() {
@@ -232,7 +233,7 @@ public abstract class OSGiDeploymentRequest {
             if (!dirDeployment && appInfo == null) {
                 try {
                     File dir = dc.getSourceDir();
-                    assert (dir.isDirectory());
+                    assert dir.isDirectory();
                     if (FileUtils.whack(dir)) {
                         LOGGER.logp(Level.INFO, "OSGiDeploymentRequest", "deploy", "Deleted {0}", new Object[] { dir });
                     } else {
@@ -248,7 +249,7 @@ public abstract class OSGiDeploymentRequest {
 
     /**
      * Expand the application archive on disk if needed.
-     * 
+     *
      * @throws IOException if an error occurs
      */
     private void expandIfNeeded() throws IOException {
@@ -324,7 +325,7 @@ public abstract class OSGiDeploymentRequest {
 
     /**
      * Make a {@link File} instance for the given application archive.
-     * 
+     *
      * @param a The archive
      * @return a File object that corresponds to this archive. return null if it can't determine the underlying file object.
      */
@@ -339,12 +340,12 @@ public abstract class OSGiDeploymentRequest {
 
     /**
      * Get the GlassFish deploy command parameters.
-     * 
+     *
      * @return DeployCommandParameters
      * @throws Exception if an error occurs
      */
     protected DeployCommandParameters getDeployParams() throws Exception {
-        assert (archive != null);
+        assert archive != null;
         DeployCommandParameters parameters = new DeployCommandParameters();
         parameters.name = archive.getName();
         parameters.enabled = Boolean.TRUE;
@@ -356,7 +357,7 @@ public abstract class OSGiDeploymentRequest {
 
     /**
      * Get the bundle for this deployment request.
-     * 
+     *
      * @return Bundle
      */
     public Bundle getBundle() {
@@ -365,7 +366,7 @@ public abstract class OSGiDeploymentRequest {
 
     /**
      * Get the archive for this deployment request.
-     * 
+     *
      * @return ReadableArchive
      */
     public ReadableArchive getArchive() {
@@ -374,7 +375,7 @@ public abstract class OSGiDeploymentRequest {
 
     /**
      * Get the application info for this deployment request.
-     * 
+     *
      * @return OSGiApplicationInfo
      */
     public OSGiApplicationInfo getResult() {
@@ -383,7 +384,7 @@ public abstract class OSGiDeploymentRequest {
 
     /**
      * Get the GlassFish server instance name.
-     * 
+     *
      * @return server instance name
      */
     private String getInstanceName() {
@@ -394,7 +395,7 @@ public abstract class OSGiDeploymentRequest {
 
     /**
      * Obtaining BundleContext which belongs to osgi-javaee-base.
-     * 
+     *
      * @param clazz some class belongs to osgi-javaee-base
      * @return BundleContext which belongs to osgi-javaee-base
      */

@@ -15,16 +15,6 @@
  */
 package org.glassfish.osgiweb;
 
-import com.sun.faces.spi.AnnotationProvider;
-
-import javax.faces.component.FacesComponent;
-import javax.faces.component.behavior.FacesBehavior;
-import javax.faces.convert.FacesConverter;
-import javax.faces.event.NamedEvent;
-import javax.faces.render.FacesBehaviorRenderer;
-import javax.faces.render.FacesRenderer;
-import javax.faces.validator.FacesValidator;
-import javax.servlet.ServletContext;
 import java.lang.annotation.Annotation;
 import java.net.URI;
 import java.util.Collection;
@@ -35,11 +25,23 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import javax.faces.component.FacesComponent;
+import javax.faces.component.behavior.FacesBehavior;
+import javax.faces.convert.FacesConverter;
+import javax.faces.event.NamedEvent;
+import javax.faces.render.FacesBehaviorRenderer;
+import javax.faces.render.FacesRenderer;
+import javax.faces.validator.FacesValidator;
+import javax.servlet.ServletContext;
+
 import org.glassfish.hk2.classmodel.reflect.AnnotatedElement;
 import org.glassfish.hk2.classmodel.reflect.AnnotationType;
 import org.glassfish.hk2.classmodel.reflect.Member;
 import org.glassfish.hk2.classmodel.reflect.Type;
 import org.glassfish.hk2.classmodel.reflect.Types;
+
+import com.sun.faces.spi.AnnotationProvider;
 
 /**
  * Custom annotation provider for Mojarra.
@@ -78,7 +80,7 @@ public final class OSGiFacesAnnotationScanner extends AnnotationProvider {
 
     /**
      * Scan annotations.
-     * 
+     *
      * @param uris a filter for the class-loader resource to be scanned
      * @param types the annotations as {@code Type}
      * @param cl class-loader
@@ -92,7 +94,7 @@ public final class OSGiFacesAnnotationScanner extends AnnotationProvider {
         // created.
         // hence this is a static method.
         // CHECKSTYLE:OFF
-        Map<Class<? extends Annotation>, Set<Class<? extends Object>>> result = new HashMap<Class<? extends Annotation>, Set<Class<? extends Object>>>();
+        Map<Class<? extends Annotation>, Set<Class<? extends Object>>> result = new HashMap<>();
         // CHECKSTYLE:ON
         Class<? extends Annotation>[] annotations = getAnnotationTypes();
         if (annotations == null) {
@@ -113,7 +115,7 @@ public final class OSGiFacesAnnotationScanner extends AnnotationProvider {
                     if (t.wasDefinedIn(uris)) {
                         Set<Class<? extends Object>> classes = result.get(annotationType);
                         if (classes == null) {
-                            classes = new HashSet<Class<? extends Object>>();
+                            classes = new HashSet<>();
                             result.put(annotationType, classes);
                         }
                         try {
@@ -135,12 +137,12 @@ public final class OSGiFacesAnnotationScanner extends AnnotationProvider {
 
     /**
      * Get the annotation {@code Type} for the annotations to scan.
-     * 
+     *
      * @return annotation types
      */
     @SuppressWarnings({ "unchecked", "deprecation", "checkstyle:magicnumber" })
     private static Class<Annotation>[] getAnnotationTypes() {
-        HashSet<Class<? extends Annotation>> annotationInstances = new HashSet<Class<? extends Annotation>>(8, 1.0f);
+        HashSet<Class<? extends Annotation>> annotationInstances = new HashSet<>(8, 1.0f);
         Collections.addAll(annotationInstances, FacesComponent.class, FacesConverter.class, FacesValidator.class, FacesRenderer.class,
                 javax.faces.bean.ManagedBean.class, NamedEvent.class, FacesBehavior.class, FacesBehaviorRenderer.class);
         return annotationInstances.toArray(new Class[0]);

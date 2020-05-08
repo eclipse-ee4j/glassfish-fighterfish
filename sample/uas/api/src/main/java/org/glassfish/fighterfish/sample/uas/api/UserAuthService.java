@@ -16,7 +16,7 @@ public interface UserAuthService {
 
     /**
      * Authenticate a user.
-     * 
+     *
      * @param name user name
      * @param password user password
      * @return {@code true} if authenticated, {@code false} otherwise
@@ -25,7 +25,7 @@ public interface UserAuthService {
 
     /**
      * Register a user.
-     * 
+     *
      * @param name user name
      * @param password user password
      * @return {@code true} if the user is registered, {@code false} otherwise
@@ -34,7 +34,7 @@ public interface UserAuthService {
 
     /**
      * Unregister a user.
-     * 
+     *
      * @param name user name
      * @return {@code true} if the user was unregistered, {@code false} otherwise
      */
@@ -42,7 +42,7 @@ public interface UserAuthService {
 
     /**
      * Get the report.
-     * 
+     *
      * @return report
      */
     String getReport();

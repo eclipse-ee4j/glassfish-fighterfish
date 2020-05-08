@@ -15,34 +15,35 @@
  */
 package org.glassfish.osgiejb;
 
-import com.sun.enterprise.deploy.shared.ArchiveFactory;
-import com.sun.enterprise.deployment.Application;
-
-import org.glassfish.api.ActionReport;
-import org.glassfish.internal.data.ApplicationInfo;
-import org.glassfish.internal.deployment.Deployment;
-import org.glassfish.server.ServerEnvironmentImpl;
-import org.glassfish.osgijavaeebase.AbstractOSGiDeployer;
-import org.glassfish.osgijavaeebase.OSGiApplicationInfo;
-import org.glassfish.osgijavaeebase.OSGiDeploymentRequest;
-import org.glassfish.osgijavaeebase.OSGiUndeploymentRequest;
-import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceReference;
-import org.osgi.framework.ServiceRegistration;
-import org.osgi.util.tracker.ServiceTracker;
-
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Dictionary;
 import java.util.Map;
 import java.util.Properties;
 import java.util.StringTokenizer;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+
+import org.glassfish.api.ActionReport;
+import org.glassfish.internal.data.ApplicationInfo;
+import org.glassfish.internal.deployment.Deployment;
+import org.glassfish.osgijavaeebase.AbstractOSGiDeployer;
+import org.glassfish.osgijavaeebase.OSGiApplicationInfo;
+import org.glassfish.osgijavaeebase.OSGiDeploymentRequest;
+import org.glassfish.osgijavaeebase.OSGiUndeploymentRequest;
+import org.glassfish.server.ServerEnvironmentImpl;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceReference;
+import org.osgi.framework.ServiceRegistration;
+import org.osgi.util.tracker.ServiceTracker;
+
+import com.sun.enterprise.deploy.shared.ArchiveFactory;
+import com.sun.enterprise.deployment.Application;
 
 /**
  * Custom deployer for the OSGi EJB container.
@@ -66,7 +67,7 @@ public final class OSGiEJBDeployer extends AbstractOSGiDeployer {
 
     /**
      * Create a new instance.
-     * 
+     *
      * @param ctx the bundle context
      */
     public OSGiEJBDeployer(final BundleContext ctx) {
@@ -137,7 +138,7 @@ public final class OSGiEJBDeployer extends AbstractOSGiDeployer {
          * Maps bundle id to service registrations.
          */
         // CHECKSTYLE:OFF
-        private final Map<Long, Collection<ServiceRegistration>> b2ss = new ConcurrentHashMap<Long, Collection<ServiceRegistration>>();
+        private final Map<Long, Collection<ServiceRegistration>> b2ss = new ConcurrentHashMap<>();
         // CHECKSTYLE:ON
 
         /**
@@ -158,7 +159,7 @@ public final class OSGiEJBDeployer extends AbstractOSGiDeployer {
         public Object addingService(final ServiceReference reference) {
 
             OSGiApplicationInfo osgiApplicationInfo = OSGiApplicationInfo.class.cast(context.getService(reference));
-            String exportEJB = (String) osgiApplicationInfo.getBundle().getHeaders().get(Constants.EXPORT_EJB);
+            String exportEJB = osgiApplicationInfo.getBundle().getHeaders().get(Constants.EXPORT_EJB);
             if (exportEJB != null) {
                 // remove spaces. I once spent 1 hour trying to debug why EJB
                 // was not getting registered
@@ -169,7 +170,7 @@ public final class OSGiEJBDeployer extends AbstractOSGiDeployer {
                 Application app = ai.getMetaData(Application.class);
                 Collection<DolAdapter.EjbDescriptor> ejbs = DolAdapter.convert(app.getEjbDescriptors());
                 LOGGER.log(Level.INFO, "addingService: Found {0} no. of EJBs", ejbs.size());
-                Collection<DolAdapter.EjbDescriptor> ejbsToBeExported = new ArrayList<DolAdapter.EjbDescriptor>();
+                Collection<DolAdapter.EjbDescriptor> ejbsToBeExported = new ArrayList<>();
                 if (Constants.EXPORT_EJB_ALL.equals(exportEJB)) {
                     ejbsToBeExported = ejbs;
                 } else if (Constants.EXPORT_EJB_NONE.equals(exportEJB)) {
@@ -200,7 +201,7 @@ public final class OSGiEJBDeployer extends AbstractOSGiDeployer {
 
         /**
          * Switch the thread context class-loader.
-         * 
+         *
          * @param osgiAppInfo application which just got deployed
          * @return the old thread context class-loader
          */
@@ -214,7 +215,7 @@ public final class OSGiEJBDeployer extends AbstractOSGiDeployer {
 
         /**
          * Register the given EJB as a service.
-         * 
+         *
          * @param ejb EJB instance to register
          * @param bundle the application bundle
          */

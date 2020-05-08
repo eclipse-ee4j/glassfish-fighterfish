@@ -15,13 +15,6 @@
  */
 package org.glassfish.osgi.ee.resources;
 
-import com.sun.enterprise.config.serverbeans.BindableResource;
-import com.sun.enterprise.config.serverbeans.Domain;
-import com.sun.enterprise.config.serverbeans.ResourceRef;
-import com.sun.enterprise.config.serverbeans.Resources;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceRegistration;
-
 import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.Dictionary;
@@ -29,6 +22,14 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceRegistration;
+
+import com.sun.enterprise.config.serverbeans.BindableResource;
+import com.sun.enterprise.config.serverbeans.Domain;
+import com.sun.enterprise.config.serverbeans.ResourceRef;
+import com.sun.enterprise.config.serverbeans.Resources;
 
 /**
  * Base class for resource-managers that export resources in GlassFish to OSGi service-registry.
@@ -43,7 +44,7 @@ public class BaseResourceManager {
     /**
      * Service registrations.
      */
-    private final List<ServiceRegistration> services = new ArrayList<ServiceRegistration>();
+    private final List<ServiceRegistration> services = new ArrayList<>();
 
     /**
      * Resource helper.
@@ -57,7 +58,7 @@ public class BaseResourceManager {
 
     /**
      * Create a new instance.
-     * 
+     *
      * @param hab habitat
      */
     public BaseResourceManager(final Habitat hab) {
@@ -67,7 +68,7 @@ public class BaseResourceManager {
 
     /**
      * Unregister the given service.
-     * 
+     *
      * @param sReg registration of the service to unregister
      * @param context bundle context
      */
@@ -82,7 +83,7 @@ public class BaseResourceManager {
 
     /**
      * Unregister the service for the given resource.
-     * 
+     *
      * @param resource resource to unregister
      * @param resRef resource reference
      * @param bundleContext bundle context
@@ -105,7 +106,7 @@ public class BaseResourceManager {
 
     /**
      * Unregister all the resources.
-     * 
+     *
      * @param context bundle context
      */
     public void unRegisterResources(final BundleContext context) {
@@ -119,7 +120,7 @@ public class BaseResourceManager {
 
     /**
      * Get the habitat.
-     * 
+     *
      * @return Habitat
      */
     protected Habitat getHabitat() {
@@ -128,7 +129,7 @@ public class BaseResourceManager {
 
     /**
      * Get the resources.
-     * 
+     *
      * @return Resources
      */
     protected Resources getResources() {
@@ -137,7 +138,7 @@ public class BaseResourceManager {
 
     /**
      * Get the resources helper.
-     * 
+     *
      * @return ResourceHelper
      */
     protected ResourceHelper getResourceHelper() {
@@ -146,7 +147,7 @@ public class BaseResourceManager {
 
     /**
      * Get the class-loader.
-     * 
+     *
      * @return ClassLoader
      */
     protected ClassLoader getClassLoader() {
@@ -155,7 +156,7 @@ public class BaseResourceManager {
 
     /**
      * Register the given resource as an OSGi service.
-     * 
+     *
      * @param context bundle context
      * @param bindableResource JNDI name of the resource
      * @param name name of the resource
@@ -187,7 +188,7 @@ public class BaseResourceManager {
 
     /**
      * Log a message at {@code FINEST} level.
-     * 
+     *
      * @param msg message to log
      */
     protected void debug(final String msg) {

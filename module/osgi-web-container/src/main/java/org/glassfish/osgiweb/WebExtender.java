@@ -16,15 +16,16 @@
 
 package org.glassfish.osgiweb;
 
-import com.sun.enterprise.web.WebModuleDecorator;
 import java.util.Dictionary;
+import java.util.Properties;
+
 import org.glassfish.osgijavaeebase.Extender;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.url.URLConstants;
 import org.osgi.service.url.URLStreamHandlerService;
 
-import java.util.Properties;
+import com.sun.enterprise.web.WebModuleDecorator;
 
 /**
  * An extender that listens to web application bundle's lifecycle events and does the necessary deployment/undeployment.
@@ -58,7 +59,7 @@ public final class WebExtender implements Extender {
 
     /**
      * Create a new instance.
-     * 
+     *
      * @param bndCtx the bundle context
      */
     public WebExtender(final BundleContext bndCtx) {

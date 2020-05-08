@@ -15,11 +15,11 @@
  */
 package org.glassfish.osgiweb;
 
-import org.apache.naming.resources.WebDirContext;
-
 import java.io.File;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import org.apache.naming.resources.WebDirContext;
 
 /**
  * As per WAB spec, resources must not be allowed from OSGI-INF or OSGI-OPT dirs. So, we install a special dir context

@@ -37,7 +37,7 @@ public final class EntitiesActivator implements BundleActivator {
 
     /**
      * Create the entity manager factory.
-     * 
+     *
      * @param persistenceUnitName persistence unit name
      * @return EntityManagerFactory
      */
@@ -68,7 +68,7 @@ public final class EntitiesActivator implements BundleActivator {
 
     /**
      * Log a message to the standard output.
-     * 
+     *
      * @param msg message to log
      */
     private void log(final String msg) {

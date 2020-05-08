@@ -28,21 +28,21 @@ public final class WebappMain implements ServletContextListener {
 
     /**
      * OSGi framework JDNI name.
-     * 
+     *
      * @see OSGiFrameworkProvisioner#osgiFrameWorkJndiName
      */
     private String osgiFrameWorkJndiName = OSGiFrameworkProvisioner.FW_JNDI_NAME_DEFAULT;
 
     /**
      * OSGi framework config file path.
-     * 
+     *
      * @see OSGiFrameworkProvisioner#osgiFrameworkConfigFilePath
      */
     private String osgiFrameworkConfigFilePath = OSGiFrameworkProvisioner.FW_CONFIG_FILE_DEFAULT;
 
     /**
      * Set the OSGi framework name.
-     * 
+     *
      * @param jndiName JNDI name
      */
     @Resource
@@ -52,7 +52,7 @@ public final class WebappMain implements ServletContextListener {
 
     /**
      * Set the OSGi framework config file path.
-     * 
+     *
      * @param configFilePath config file path
      */
     @Resource

@@ -68,7 +68,7 @@ public class LoginAttempt implements Serializable {
 
     /**
      * Get serial number.
-     * 
+     *
      * @return serial numner
      */
     public long getSerialNumber() {
@@ -77,7 +77,7 @@ public class LoginAttempt implements Serializable {
 
     /**
      * Test if the login attempt is successful.
-     * 
+     *
      * @return {@code true} if successful, {@code false} otherwise
      */
     public boolean isSuccessful() {
@@ -86,7 +86,7 @@ public class LoginAttempt implements Serializable {
 
     /**
      * Set the login result.
-     * 
+     *
      * @param isSuccessful login result
      */
     public void setSuccessful(final boolean isSuccessful) {
@@ -95,7 +95,7 @@ public class LoginAttempt implements Serializable {
 
     /**
      * Get the user credentials.
-     * 
+     *
      * @return UserCredential
      */
     public UserCredential getUserCredential() {
@@ -104,7 +104,7 @@ public class LoginAttempt implements Serializable {
 
     /**
      * Set the user credentials.
-     * 
+     *
      * @param creds new user credentials
      */
     public void setUserCredential(final UserCredential creds) {
@@ -113,7 +113,7 @@ public class LoginAttempt implements Serializable {
 
     /**
      * Get the timestamp.
-     * 
+     *
      * @return Date
      */
     public Date getTimeStamp() {
@@ -122,7 +122,7 @@ public class LoginAttempt implements Serializable {
 
     /**
      * Set the new timestamp.
-     * 
+     *
      * @param tstamp new timestamp
      */
     public void setTimeStamp(final Date tstamp) {

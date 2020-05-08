@@ -16,10 +16,10 @@
 
 package org.glassfish.osgijpa;
 
+import org.glassfish.osgijavaeebase.Extender;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
-import org.glassfish.osgijavaeebase.Extender;
 
 /**
  * Bundle activator for the OSGi JPA module.

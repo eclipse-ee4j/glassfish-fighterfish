@@ -36,7 +36,7 @@ public final class TempBundleClassLoader extends ClassLoader {
 
     /**
      * Create a new instance.
-     * 
+     *
      * @param cl the delegate class-loader
      */
     public TempBundleClassLoader(final BundleClassLoader cl) {
@@ -47,7 +47,7 @@ public final class TempBundleClassLoader extends ClassLoader {
 
     /**
      * This method uses the delegate to use class bytes and then defines the class using this class loader.
-     * 
+     *
      * @return Class
      * @throws java.lang.ClassNotFoundException if an error occurs
      */

@@ -39,7 +39,7 @@ public class UserCredential implements Serializable {
      * Login attempts.
      */
     @OneToMany(mappedBy = "userCredential", cascade = CascadeType.REMOVE)
-    private List<LoginAttempt> loginAttempts = new ArrayList<LoginAttempt>();
+    private List<LoginAttempt> loginAttempts = new ArrayList<>();
 
     /**
      * Serialization UID.
@@ -55,7 +55,7 @@ public class UserCredential implements Serializable {
 
     /**
      * Get the user name.
-     * 
+     *
      * @return user name
      */
     public String getName() {
@@ -64,7 +64,7 @@ public class UserCredential implements Serializable {
 
     /**
      * Set the user name.
-     * 
+     *
      * @param username new name
      */
     public void setName(final String username) {
@@ -73,7 +73,7 @@ public class UserCredential implements Serializable {
 
     /**
      * Get the user password.
-     * 
+     *
      * @return password
      */
     public String getPassword() {
@@ -82,7 +82,7 @@ public class UserCredential implements Serializable {
 
     /**
      * Set the user password.
-     * 
+     *
      * @param passwd new password
      */
     public void setPassword(final String passwd) {
@@ -91,7 +91,7 @@ public class UserCredential implements Serializable {
 
     /**
      * Set the login attempts.
-     * 
+     *
      * @param attemps new login attempts
      */
     public void setLoginAttempts(final List<LoginAttempt> attemps) {
@@ -100,7 +100,7 @@ public class UserCredential implements Serializable {
 
     /**
      * Get the login attempts.
-     * 
+     *
      * @return list of login attempts
      */
     public List<LoginAttempt> getLoginAttempts() {

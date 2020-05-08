@@ -24,7 +24,7 @@ public interface URIable {
 
     /**
      * Get an entry by name.
-     * 
+     *
      * @param name the entry name relative to the root of the archive
      * @return the URI corresponding to the entry, null if no such entry found
      */

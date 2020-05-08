@@ -34,12 +34,12 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.glassfish.osgijavaeebase.Extender;
-import org.osgi.framework.wiring.FrameworkWiring;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleEvent;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.SynchronousBundleListener;
+import org.osgi.framework.wiring.FrameworkWiring;
 
 /**
  * An extender that listens for Persistence bundle's life cycle events and takes appropriate actions.
@@ -199,7 +199,7 @@ public final class JPAExtender implements Extender, SynchronousBundleListener {
 
     /**
      * Enhance the JPA entities.
-     * 
+     *
      * @param bi processor
      * @param refreshPackage flag to indicate if the enhancement should be done deferred to the next framework restart
      */
@@ -222,7 +222,7 @@ public final class JPAExtender implements Extender, SynchronousBundleListener {
 
     /**
      * Update the given bundle.
-     * 
+     *
      * @param bundle bundle to update
      * @param enhancedStream input stream
      * @throws BundleException if an error occurs while updating the bundle
@@ -241,7 +241,7 @@ public final class JPAExtender implements Extender, SynchronousBundleListener {
 
     /**
      * Execute the given {@code Runnable} synchronous or asynchronously depending on the configured policy.
-     * 
+     *
      * @param runnable runnable to execute
      * @param policy policy
      */
@@ -261,7 +261,7 @@ public final class JPAExtender implements Extender, SynchronousBundleListener {
 
     /**
      * Resolve the given bundle.
-     * 
+     *
      * @param bundle bundle to resolve
      * @return {@code true} if the bundle is resolved, {@code false} otherwise
      */
@@ -338,7 +338,7 @@ public final class JPAExtender implements Extender, SynchronousBundleListener {
 
     /**
      * Create a space separated string of the bundle ids for the bundles to be enhanced.
-     * 
+     *
      * @return StringBuilder
      */
     private StringBuilder printBundleIds() {

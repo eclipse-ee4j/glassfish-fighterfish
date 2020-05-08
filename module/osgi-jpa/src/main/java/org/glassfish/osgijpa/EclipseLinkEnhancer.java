@@ -16,28 +16,28 @@
 
 package org.glassfish.osgijpa;
 
-import org.osgi.framework.Bundle;
-import org.osgi.framework.Constants;
-import org.eclipse.persistence.tools.weaving.jpa.StaticWeaveProcessor;
-import org.glassfish.osgijavaeebase.OSGiBundleArchive;
-import org.glassfish.osgijavaeebase.BundleClassLoader;
-import org.glassfish.osgijavaeebase.JarHelper;
-import org.glassfish.osgijavaeebase.OSGiArchiveHandler;
-import org.glassfish.api.deployment.archive.WritableArchive;
-import org.glassfish.internal.api.Globals;
-import org.glassfish.osgijpa.dd.Persistence;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
+import java.util.List;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.List;
+
+import org.eclipse.persistence.tools.weaving.jpa.StaticWeaveProcessor;
+import org.glassfish.api.deployment.archive.WritableArchive;
+import org.glassfish.internal.api.Globals;
+import org.glassfish.osgijavaeebase.BundleClassLoader;
+import org.glassfish.osgijavaeebase.JarHelper;
+import org.glassfish.osgijavaeebase.OSGiArchiveHandler;
+import org.glassfish.osgijavaeebase.OSGiBundleArchive;
+import org.glassfish.osgijpa.dd.Persistence;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.Constants;
 
 import com.sun.enterprise.deploy.shared.ArchiveFactory;
 import com.sun.enterprise.util.io.FileUtils;
@@ -125,7 +125,7 @@ final class EclipseLinkEnhancer implements JPAEnhancer {
 
     /**
      * Do the actual enhancement work.
-     * 
+     *
      * @param source the file to enhance
      * @param target the target file to create
      * @param cl the class-loader to use
@@ -143,7 +143,7 @@ final class EclipseLinkEnhancer implements JPAEnhancer {
 
     /**
      * Update the given manifest file.
-     * 
+     *
      * @param mf manifest file
      * @throws IOException if an error occurs
      */
@@ -212,7 +212,7 @@ final class EclipseLinkEnhancer implements JPAEnhancer {
 
     /**
      * Explode the given bundle to a directory.
-     * 
+     *
      * @param bnd bundle
      * @return File
      * @throws IOException if an error occurs

@@ -15,7 +15,7 @@
  */
 package org.glassfish.osgijdbc;
 
-import com.sun.enterprise.util.SystemPropertyConstants;
+import static org.glassfish.osgijdbc.Constants.DRIVER;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -41,7 +41,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 
-import static org.glassfish.osgijdbc.Constants.DRIVER;
+import com.sun.enterprise.util.SystemPropertyConstants;
 
 /**
  * Utility to load JDBC drivers.
@@ -97,7 +97,7 @@ public final class JDBCDriverLoader {
     /**
      * Db vendor mappings.
      */
-    public static final Map<String, Map<String, String>> DB_VENDOR_MAPPINGS = new HashMap<String, Map<String, String>>();
+    public static final Map<String, Map<String, String>> DB_VENDOR_MAPPINGS = new HashMap<>();
 
     /**
      * Load all mappings.
@@ -113,7 +113,7 @@ public final class JDBCDriverLoader {
 
     /**
      * Create a new instance.
-     * 
+     *
      * @param cloader class-loader to use
      */
     public JDBCDriverLoader(final ClassLoader cloader) {
@@ -125,16 +125,16 @@ public final class JDBCDriverLoader {
      */
     @SuppressWarnings("unchecked")
     private static void loadMappings() {
-        DB_VENDOR_MAPPINGS.put(Constants.DS, ((Map) loadProperties(DS_PROPERTIES)));
-        DB_VENDOR_MAPPINGS.put(Constants.CPDS, ((Map) loadProperties(CPDS_PROPERTIES)));
-        DB_VENDOR_MAPPINGS.put(Constants.XADS, ((Map) loadProperties(XADS_PROPERTIES)));
-        DB_VENDOR_MAPPINGS.put(Constants.DRIVER, ((Map) loadProperties(DRIVER_PROPERTIES)));
-        DB_VENDOR_MAPPINGS.put(Constants.DBVENDOR, ((Map) loadProperties(VENDOR_PROPERTIES)));
+        DB_VENDOR_MAPPINGS.put(Constants.DS, (Map) loadProperties(DS_PROPERTIES));
+        DB_VENDOR_MAPPINGS.put(Constants.CPDS, (Map) loadProperties(CPDS_PROPERTIES));
+        DB_VENDOR_MAPPINGS.put(Constants.XADS, (Map) loadProperties(XADS_PROPERTIES));
+        DB_VENDOR_MAPPINGS.put(Constants.DRIVER, (Map) loadProperties(DRIVER_PROPERTIES));
+        DB_VENDOR_MAPPINGS.put(Constants.DBVENDOR, (Map) loadProperties(VENDOR_PROPERTIES));
     }
 
     /**
      * Load config properties for a config source.
-     * 
+     *
      * @param type the config source
      * @return Properties
      */
@@ -173,7 +173,7 @@ public final class JDBCDriverLoader {
 
     /**
      * Get the db vendor mapping for the given class name and type.
-     * 
+     *
      * @param className requested class name
      * @param type requested type
      * @return vendor mapping
@@ -195,7 +195,7 @@ public final class JDBCDriverLoader {
 
     /**
      * Get the implementation class from the given mapping.
-     * 
+     *
      * @param dbVendor the request mapping
      * @param resType the request type
      * @return the implementation class name
@@ -211,7 +211,7 @@ public final class JDBCDriverLoader {
 
     /**
      * Load driver info from file.
-     * 
+     *
      * @param file input file
      * @return Properties
      */
@@ -356,7 +356,7 @@ public final class JDBCDriverLoader {
 
     /**
      * Detect implementation classes.
-     * 
+     *
      * @param properties result properties
      * @param dbVendor the requested vendor
      */
@@ -375,7 +375,7 @@ public final class JDBCDriverLoader {
 
     /**
      * Get the implementation classes iteratively.
-     * 
+     *
      * @param file the input file
      * @param resType the requested type
      * @param dbVendor the requested vendor
@@ -384,7 +384,7 @@ public final class JDBCDriverLoader {
      */
     private Set<String> getImplClassesByIteration(final File file, final String resType, final String dbVendor, final ClassLoader cloader) {
 
-        SortedSet<String> implClassNames = new TreeSet<String>();
+        SortedSet<String> implClassNames = new TreeSet<>();
         String implClass;
         JarFile jarFile = null;
         try {
@@ -453,7 +453,7 @@ public final class JDBCDriverLoader {
 
     /**
      * Test if the given class is not abstract.
-     * 
+     *
      * @param cls the class to check
      * @return {@code true} if the class is not abstract, {@code false} otherwise
      */
@@ -518,7 +518,7 @@ public final class JDBCDriverLoader {
         } catch (Throwable t) {
             cls = null;
         }
-        return (isResType(cls, resType));
+        return isResType(cls, resType);
     }
 
     /**
@@ -555,7 +555,7 @@ public final class JDBCDriverLoader {
 
     /**
      * Get the class name from a JAR entry name.
-     * 
+     *
      * @param entryName the JAR entry name
      * @return class name
      */
@@ -567,7 +567,7 @@ public final class JDBCDriverLoader {
 
     /**
      * Test if a class name is vendor specific.
-     * 
+     *
      * @param file JAR file
      * @param dbVendor request vendor
      * @param className class name to test

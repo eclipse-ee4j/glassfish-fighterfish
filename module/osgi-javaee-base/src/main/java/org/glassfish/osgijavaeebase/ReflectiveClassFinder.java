@@ -15,13 +15,13 @@
  */
 package org.glassfish.osgijavaeebase;
 
-import org.glassfish.internal.api.DelegatingClassLoader;
-
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.Enumeration;
+
+import org.glassfish.internal.api.DelegatingClassLoader;
 
 /**
  * An implementation of {@link org.glassfish.internal.api.DelegatingClassLoader.ClassFinder} that uses reflection to
@@ -59,7 +59,7 @@ final class ReflectiveClassFinder implements DelegatingClassLoader.ClassFinder {
 
     /**
      * Create a new instance.
-     * 
+     *
      * @param cl delegate class-loader
      */
     ReflectiveClassFinder(final ClassLoader cl) {

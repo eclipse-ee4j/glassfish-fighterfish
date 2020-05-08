@@ -9,9 +9,8 @@
  */
 package org.glassfish.fighterfish.sample.uas.simplewab;
 
-import org.glassfish.fighterfish.sample.uas.api.UserAuthService;
-import org.glassfish.osgicdi.OSGiService;
-import org.osgi.framework.ServiceException;
+import java.io.IOException;
+import java.io.PrintWriter;
 
 import javax.inject.Inject;
 import javax.servlet.ServletException;
@@ -19,8 +18,10 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.io.PrintWriter;
+
+import org.glassfish.fighterfish.sample.uas.api.UserAuthService;
+import org.glassfish.osgicdi.OSGiService;
+import org.osgi.framework.ServiceException;
 
 /**
  * Servlet implementation class RegistrationServlet.

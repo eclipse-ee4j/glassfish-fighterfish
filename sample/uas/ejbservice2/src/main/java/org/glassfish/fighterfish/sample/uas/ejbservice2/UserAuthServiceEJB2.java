@@ -49,7 +49,7 @@ public final class UserAuthServiceEJB2 implements UserAuthService {
         EntityManager entityManager = emf.createEntityManager();
         try {
             UserCredential userCredential = entityManager.find(UserCredential.class, name);
-            boolean result = (userCredential != null && password.equals(userCredential.getPassword()));
+            boolean result = userCredential != null && password.equals(userCredential.getPassword());
             if (userCredential != null) {
 
                 // create LoginAttempt only for existing users.
@@ -130,7 +130,7 @@ public final class UserAuthServiceEJB2 implements UserAuthService {
 
     /**
      * Log a message to the standard output.
-     * 
+     *
      * @param msg message to log
      */
     private void log(final String msg) {

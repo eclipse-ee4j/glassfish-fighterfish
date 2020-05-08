@@ -24,7 +24,7 @@ public interface OSGiDeployer {
 
     /**
      * Deploy the given bundle.
-     * 
+     *
      * @param bdn the bundle to deploy
      * @return OSGiApplicationInfo
      * @throws DeploymentException if an error occurs
@@ -33,7 +33,7 @@ public interface OSGiDeployer {
 
     /**
      * Undeploy the given bundle.
-     * 
+     *
      * @param osgiAppInfo the deployed application info
      * @throws DeploymentException if an error occurs
      */
@@ -41,7 +41,7 @@ public interface OSGiDeployer {
 
     /**
      * Test if this deployer handles the given bundle.
-     * 
+     *
      * @param bundle the bundle to test
      * @return {@code true} if this deployer handles the given bundle, {@code false} otherwise
      */

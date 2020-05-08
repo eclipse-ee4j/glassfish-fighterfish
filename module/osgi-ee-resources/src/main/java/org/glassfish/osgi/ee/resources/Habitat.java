@@ -31,7 +31,7 @@ public final class Habitat {
 
     /**
      * Create a new instance.
-     * 
+     *
      * @param gf GlassFish service
      */
     Habitat(final GlassFish gf) {
@@ -40,7 +40,7 @@ public final class Habitat {
 
     /**
      * Lookup a component by type.
-     * 
+     *
      * @param <T> component type
      * @param type component class
      * @return T

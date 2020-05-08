@@ -15,11 +15,6 @@
  */
 package org.glassfish.osgiweb;
 
-import org.glassfish.api.deployment.archive.Archive;
-import org.glassfish.osgijavaeebase.OSGiBundleArchive;
-import org.glassfish.osgijavaeebase.OSGiJavaEEArchive;
-import org.osgi.framework.Bundle;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -28,6 +23,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+
+import org.glassfish.api.deployment.archive.Archive;
+import org.glassfish.osgijavaeebase.OSGiBundleArchive;
+import org.glassfish.osgijavaeebase.OSGiJavaEEArchive;
+import org.osgi.framework.Bundle;
 
 /**
  * Servlet spec, the spec which defines the term Web Application, defines the overall structure of a Web Application as
@@ -59,7 +59,7 @@ public final class WAB extends OSGiJavaEEArchive {
 
     /**
      * Create a new instance.
-     * 
+     *
      * @param host the host bundle.
      * @param fragments the associated bundle fragments
      */
@@ -100,8 +100,6 @@ public final class WAB extends OSGiJavaEEArchive {
 
         final EffectiveBCP bcp = getEffectiveBCP();
         bcp.accept(new BCPEntry.BCPEntryVisitor() {
-            private int i = 0;
-
             @Override
             public void visitDir(final DirBCPEntry bcpEntry) {
                 try {

@@ -15,24 +15,24 @@
  */
 package org.glassfish.osgijpa;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Serializable;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import org.glassfish.osgijavaeebase.BundleResource;
+import org.glassfish.osgijavaeebase.OSGiBundleArchive;
+import org.glassfish.osgijpa.dd.Persistence;
+import org.glassfish.osgijpa.dd.PersistenceXMLReaderWriter;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
-import org.glassfish.osgijpa.dd.PersistenceXMLReaderWriter;
-import org.glassfish.osgijpa.dd.Persistence;
-import org.glassfish.osgijavaeebase.BundleResource;
-import org.glassfish.osgijavaeebase.OSGiBundleArchive;
 import org.osgi.framework.BundleReference;
-
-import java.io.Serializable;
-import java.net.URL;
-import java.net.MalformedURLException;
-import java.util.logging.Logger;
-import java.util.logging.Level;
-import java.io.InputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Bundle processor.
@@ -76,7 +76,7 @@ final class JPABundleProcessor implements Serializable {
 
     /**
      * Create a new instance.
-     * 
+     *
      * @param bnd bundle
      */
     JPABundleProcessor(final Bundle bnd) {
@@ -85,7 +85,7 @@ final class JPABundleProcessor implements Serializable {
 
     /**
      * Test if the bundle contains persistence XML files.
-     * 
+     *
      * @return {@code true} if the bundle contains persistence XML files, {@code false} otherwise
      */
     boolean isJPABundle() {
@@ -99,8 +99,8 @@ final class JPABundleProcessor implements Serializable {
      * Discover persistence XML files.
      */
     void discoverPxmls() {
-        assert (persistenceXMLs == null);
-        persistenceXMLs = new ArrayList<Persistence>();
+        assert persistenceXMLs == null;
+        persistenceXMLs = new ArrayList<>();
         if (isFragment()) {
             return;
         }
@@ -136,7 +136,7 @@ final class JPABundleProcessor implements Serializable {
 
     /**
      * Validate the given persistence XML files.
-     * 
+     *
      * @param persistenceList persistence XML files to validate
      * @return {@code true} if all files are valid, {@code false} otherwise
      */
@@ -160,7 +160,7 @@ final class JPABundleProcessor implements Serializable {
 
     /**
      * Enhance the JPA entities in the bundle.
-     * 
+     *
      * @return input stream
      * @throws BundleException if an error occurs while resolving the bundle
      * @throws IOException if an IO error occur while doing the enhancement
@@ -173,7 +173,7 @@ final class JPABundleProcessor implements Serializable {
 
     /**
      * Test if the bundle is enhanced.
-     * 
+     *
      * @return {@code true} if enhanced, {@code false} otherwise
      */
     public boolean isEnhanced() {
@@ -182,7 +182,7 @@ final class JPABundleProcessor implements Serializable {
 
     /**
      * Test if the bundle is a fragment.
-     * 
+     *
      * @return {@code true} if the bundle is a fragment, {@code false} otherwise
      */
     private boolean isFragment() {
@@ -191,7 +191,7 @@ final class JPABundleProcessor implements Serializable {
 
     /**
      * Get the bundle.
-     * 
+     *
      * @return Bundle
      */
     public Bundle getBundle() {
@@ -204,7 +204,7 @@ final class JPABundleProcessor implements Serializable {
 
     /**
      * Get the bundle context.
-     * 
+     *
      * @return BundleContext
      */
     private BundleContext getBundleContext() {
@@ -213,7 +213,7 @@ final class JPABundleProcessor implements Serializable {
 
     /**
      * Get the bundle id.
-     * 
+     *
      * @return bundle id
      */
     long getBundleId() {

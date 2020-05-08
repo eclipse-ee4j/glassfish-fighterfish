@@ -15,31 +15,33 @@
  */
 package org.glassfish.osgiweb;
 
-import com.sun.faces.spi.ConfigurationResourceProvider;
-import org.glassfish.api.deployment.DeploymentContext;
-import org.glassfish.hk2.classmodel.reflect.Types;
-import org.glassfish.web.loader.WebappClassLoader;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.Bundle;
-import org.glassfish.osgijavaeebase.OSGiBundleArchive;
-import org.glassfish.osgijavaeebase.BundleResource;
-import com.sun.enterprise.web.WebModule;
-import com.sun.enterprise.web.WebModuleDecorator;
+import static com.sun.enterprise.web.Constants.DEFAULT_WEB_MODULE_PREFIX;
 
 import java.lang.annotation.Annotation;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import javax.servlet.ServletContext;
 
-import static com.sun.enterprise.web.Constants.DEFAULT_WEB_MODULE_PREFIX;
+import org.glassfish.api.deployment.DeploymentContext;
+import org.glassfish.hk2.classmodel.reflect.Types;
+import org.glassfish.osgijavaeebase.BundleResource;
+import org.glassfish.osgijavaeebase.OSGiBundleArchive;
+import org.glassfish.web.loader.WebappClassLoader;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
+
+import com.sun.enterprise.web.WebModule;
+import com.sun.enterprise.web.WebModuleDecorator;
+import com.sun.faces.spi.ConfigurationResourceProvider;
 
 /**
  * This is where we customize the StandardContext (or WebModule as you call it) object created for a WAB.
@@ -129,7 +131,7 @@ public final class OSGiWebModuleDecorator implements WebModuleDecorator {
 
     /**
      * Test if mojarra is present. E.g. web profile VS full profile
-     * 
+     *
      * @return {@code true} if mojarra is present, {@code false} otherwise
      */
     private boolean isMojarraPresent() {
@@ -144,15 +146,15 @@ public final class OSGiWebModuleDecorator implements WebModuleDecorator {
 
     /**
      * Populate the faces information in the given servlet context.
-     * 
+     *
      * @param module the GlassFish web application module
      * @param bctx the bundle context
      * @param sc the servlet context
      */
     private void populateFacesInformation(final WebModule module, final BundleContext bctx, final ServletContext sc) {
 
-        Collection<URI> facesConfigs = new ArrayList<URI>();
-        Collection<URI> faceletConfigs = new ArrayList<URI>();
+        Collection<URI> facesConfigs = new ArrayList<>();
+        Collection<URI> faceletConfigs = new ArrayList<>();
         discoverJSFConfigs(bctx.getBundle(), facesConfigs, faceletConfigs);
         sc.setAttribute(Constants.FACES_CONFIG_ATTR, facesConfigs);
         sc.setAttribute(Constants.FACELET_CONFIG_ATTR, faceletConfigs);
@@ -162,7 +164,7 @@ public final class OSGiWebModuleDecorator implements WebModuleDecorator {
 
     /**
      * Test if the module is active.
-     * 
+     *
      * @return {@code true} if active, {@code false} otherwise
      */
     private synchronized boolean isActive() {
@@ -198,7 +200,7 @@ public final class OSGiWebModuleDecorator implements WebModuleDecorator {
      * Since mojarra can discover faces-config.xmls, in order to avoid duplicate resource situation as reported in
      * https://glassfish.dev.java.net/issues/show_bug.cgi?id=12914, we only find faces config resources that ends with
      * .faces-config.xml.
-     * 
+     *
      * @param bnd application bundle
      * @param facesConfigs faces config
      * @param faceletConfigs facelet config
@@ -223,7 +225,7 @@ public final class OSGiWebModuleDecorator implements WebModuleDecorator {
 
     /**
      * Scan the JSF annotations for a given module.
-     * 
+     *
      * @param wm the GlassFish web module
      * @return map of scanned annotations
      */
@@ -244,13 +246,13 @@ public final class OSGiWebModuleDecorator implements WebModuleDecorator {
 
     /**
      * Get the resource URIs for a given web module.
-     * 
+     *
      * @param wm the GlassFish web module
      * @return collection of URI
      */
     private Collection<URI> getURIs(final WebModule wm) {
         WebappClassLoader cl = getClassLoader(wm);
-        Collection<URI> uris = new ArrayList<URI>();
+        Collection<URI> uris = new ArrayList<>();
         for (URL url : cl.getURLs()) {
             try {
                 uris.add(url.toURI());
@@ -263,7 +265,7 @@ public final class OSGiWebModuleDecorator implements WebModuleDecorator {
 
     /**
      * Get the application class-loader.
-     * 
+     *
      * @param wm the GlassFish web module
      * @return WebappClassLoader
      */

@@ -15,6 +15,12 @@
  */
 package org.glassfish.osgijavaeebase;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.glassfish.api.event.EventListener;
 import org.glassfish.api.event.EventTypes;
 import org.glassfish.api.event.Events;
@@ -23,12 +29,6 @@ import org.glassfish.embeddable.GlassFishException;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.util.tracker.ServiceTracker;
-
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * It is responsible for starting any registered {@link Extender} service after GlassFish server is started and stopping
@@ -68,7 +68,7 @@ class ExtenderManager {
 
     /**
      * Create a new instance.
-     * 
+     *
      * @param ctx the bundle context
      */
     ExtenderManager(final BundleContext ctx) {
@@ -77,7 +77,7 @@ class ExtenderManager {
 
     /**
      * Start the extender manager.
-     * 
+     *
      * @throws Exception if an error occurs
      */
     public final synchronized void start() throws Exception {
@@ -88,7 +88,7 @@ class ExtenderManager {
 
     /**
      * Stop the extender manager.
-     * 
+     *
      * @throws Exception if an error occurs
      */
     public final synchronized void stop() throws Exception {
@@ -155,7 +155,7 @@ class ExtenderManager {
 
         /**
          * Create a new instance.
-         * 
+         *
          * @param ctx the bundle context
          */
         @SuppressWarnings("unchecked")
@@ -191,7 +191,7 @@ class ExtenderManager {
 
         /**
          * Create a new instance.
-         * 
+         *
          * @param ctx the bundle context
          */
         @SuppressWarnings("unchecked")

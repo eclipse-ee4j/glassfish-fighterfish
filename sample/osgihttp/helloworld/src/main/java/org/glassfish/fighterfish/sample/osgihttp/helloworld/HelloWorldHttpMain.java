@@ -42,7 +42,7 @@ public class HelloWorldHttpMain {
 
     /**
      * Activate the application.
-     * 
+     *
      * @param ctx component context
      * @throws ServletException if an error occurs while registering the servlet
      * @throws NamespaceException if an error occurs
@@ -79,7 +79,7 @@ public class HelloWorldHttpMain {
         HttpServlet servlet3 = new HelloWorldServlet3();
         http.registerServlet("/hello3", servlet3, null, httpCtx2);
         System.out.println(servlet3.getServletContext());
-        assert (servlet3.getServletContext() != servlet1.getServletContext());
+        assert servlet3.getServletContext() != servlet1.getServletContext();
         if (eventAdmin != null) {
             // raise an event so that our test framework can catch it to
             // proceed to test
@@ -92,7 +92,7 @@ public class HelloWorldHttpMain {
 
     /**
      * Deactivate the given component.
-     * 
+     *
      * @param ctx component context
      */
     protected final void deactivate(final ComponentContext ctx) {
@@ -111,7 +111,7 @@ public class HelloWorldHttpMain {
 
     /**
      * Set the OSGi HTTP service.
-     * 
+     *
      * @param hs service instance
      */
     protected final void setHttp(final HttpService hs) {
@@ -120,7 +120,7 @@ public class HelloWorldHttpMain {
 
     /**
      * Unset the OSGi HTTP service.
-     * 
+     *
      * @param hs service instance
      */
     protected final void unsetHttp(final HttpService hs) {
@@ -129,7 +129,7 @@ public class HelloWorldHttpMain {
 
     /**
      * Set the event admin.
-     * 
+     *
      * @param ea event admin instance
      */
     protected final void setEventAdmin(final EventAdmin ea) {
@@ -138,7 +138,7 @@ public class HelloWorldHttpMain {
 
     /**
      * Unset the event admin.
-     * 
+     *
      * @param ea event admin instance.
      */
     protected final void unsetEventAdmin(final EventAdmin ea) {

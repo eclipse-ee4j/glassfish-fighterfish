@@ -15,18 +15,19 @@
  */
 package org.glassfish.osgihttp;
 
+import java.util.Dictionary;
+import java.util.HashSet;
+import java.util.Set;
+
+import javax.servlet.Servlet;
+import javax.servlet.ServletException;
+
 import org.osgi.framework.Bundle;
 import org.osgi.framework.ServiceFactory;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.http.HttpContext;
 import org.osgi.service.http.HttpService;
 import org.osgi.service.http.NamespaceException;
-
-import javax.servlet.Servlet;
-import javax.servlet.ServletException;
-import java.util.Dictionary;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * This is an implementation of {@link HttpService} per bundle. This is what a bundle gets when they look up the service
@@ -49,16 +50,15 @@ public final class HttpServiceWrapper implements HttpService {
     /**
      * Aliases registered by the current bundle holding this service reference.
      */
-    private final Set<String> aliases = new HashSet<String>();
+    private final Set<String> aliases = new HashSet<>();
 
     /**
      * Create a new instance.
-     * 
+     *
      * @param gfHttpService the delegate HTTP service
      * @param bnd the registering bundle
      */
-    public HttpServiceWrapper(final GlassFishHttpService gfHttpService, final Bundle bnd) {
-
+    public HttpServiceWrapper(GlassFishHttpService gfHttpService, Bundle bnd) {
         this.delegate = gfHttpService;
         this.registeringBundle = bnd;
     }
@@ -69,44 +69,43 @@ public final class HttpServiceWrapper implements HttpService {
     }
 
     @Override
-    public void registerServlet(final String alias, final Servlet servlet, final Dictionary initParams, final HttpContext httpContext)
-            throws ServletException, NamespaceException {
-
+    public void registerServlet(String alias, Servlet servlet, Dictionary initParams, HttpContext httpContext) throws ServletException, NamespaceException {
         HttpContext ctx;
         if (httpContext != null) {
             ctx = httpContext;
         } else {
             ctx = createDefaultHttpContext();
         }
+        
         delegate.registerServlet(alias, servlet, initParams, ctx);
         aliases.add(alias);
     }
 
     @Override
-    public void registerResources(final String alias, final String name, final HttpContext httpContext) throws NamespaceException {
-
+    public void registerResources(String alias, String name, HttpContext httpContext) throws NamespaceException {
         HttpContext ctx;
         if (httpContext != null) {
             ctx = httpContext;
         } else {
             ctx = createDefaultHttpContext();
         }
+        
         delegate.registerResources(alias, name, ctx);
         aliases.add(alias);
     }
 
     @Override
-    public synchronized void unregister(final String alias) {
+    public synchronized void unregister(String alias) {
         unregister(alias, true);
     }
 
     /**
      * Unregister a given alias.
-     * 
+     *
      * @param alias the alias to unregister
      * @param callDestroy flag to indicate if servlet.destroy should be called
      */
-    private void unregister(final String alias, final boolean callDestroy) {
+    private void unregister(String alias, boolean callDestroy) {
         delegate.unregister(alias, callDestroy);
         aliases.remove(alias);
     }
@@ -139,22 +138,20 @@ public final class HttpServiceWrapper implements HttpService {
 
         /**
          * Create a new instance.
-         * 
+         *
          * @param gfHttpService the delegate HTTP service
          */
-        public HttpServiceFactory(final GlassFishHttpService gfHttpService) {
+        public HttpServiceFactory(GlassFishHttpService gfHttpService) {
             this.delegate = gfHttpService;
         }
 
         @Override
-        public Object getService(final Bundle bnd, final ServiceRegistration registration) {
-
+        public Object getService(Bundle bnd, ServiceRegistration registration) {
             return new HttpServiceWrapper(delegate, bnd);
         }
 
         @Override
-        public void ungetService(final Bundle bundle, final ServiceRegistration registration, final Object service) {
-
+        public void ungetService(Bundle bundle, ServiceRegistration registration, Object service) {
             HttpServiceWrapper.class.cast(service).unregisterAll();
         }
     }

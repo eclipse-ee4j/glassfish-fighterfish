@@ -15,18 +15,19 @@
  */
 package org.glassfish.osgi.ee.resources;
 
-import com.sun.enterprise.config.serverbeans.BindableResource;
-import com.sun.enterprise.config.serverbeans.Domain;
-import com.sun.enterprise.config.serverbeans.ResourceRef;
-import com.sun.enterprise.config.serverbeans.Resources;
+import java.util.Collection;
+import java.util.Dictionary;
+import java.util.Properties;
+
 import org.glassfish.jdbc.config.JdbcConnectionPool;
 import org.glassfish.jdbc.config.JdbcResource;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.jdbc.DataSourceFactory;
 
-import java.util.Collection;
-import java.util.Dictionary;
-import java.util.Properties;
+import com.sun.enterprise.config.serverbeans.BindableResource;
+import com.sun.enterprise.config.serverbeans.Domain;
+import com.sun.enterprise.config.serverbeans.ResourceRef;
+import com.sun.enterprise.config.serverbeans.Resources;
 
 /**
  * Resource-Manager to export JDBC resources in GlassFish to OSGi's service-registry.
@@ -35,7 +36,7 @@ public final class JDBCResourceManager extends BaseResourceManager implements Re
 
     /**
      * Create a new instance.
-     * 
+     *
      * @param habitat component locator
      */
     public JDBCResourceManager(final Habitat habitat) {
@@ -50,7 +51,7 @@ public final class JDBCResourceManager extends BaseResourceManager implements Re
     /**
      * Iterates through all of the configured JDBC resources and expose them as OSGi service by contract
      * {@code javax.sql.DataSource}.
-     * 
+     *
      * @param context bundle context
      */
     private void registerJdbcResources(final BundleContext context) {

@@ -16,25 +16,25 @@
 
 package org.glassfish.osgiejb;
 
-import org.glassfish.osgijavaeebase.OSGiArchiveHandler;
-import org.glassfish.osgijavaeebase.OSGiDeploymentContext;
-import org.glassfish.osgijavaeebase.BundleClassLoader;
-import org.glassfish.internal.api.Globals;
-import org.glassfish.internal.api.ClassLoaderHierarchy;
-import org.glassfish.api.ActionReport;
-import org.glassfish.api.admin.ServerEnvironment;
-import org.glassfish.api.deployment.archive.ReadableArchive;
-import org.glassfish.api.deployment.OpsParams;
-import org.glassfish.api.deployment.InstrumentableClassLoader;
-import org.osgi.framework.Bundle;
-
-import java.net.URL;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.logging.Logger;
 import java.io.IOException;
 import java.lang.instrument.ClassFileTransformer;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.logging.Logger;
+
+import org.glassfish.api.ActionReport;
+import org.glassfish.api.admin.ServerEnvironment;
+import org.glassfish.api.deployment.InstrumentableClassLoader;
+import org.glassfish.api.deployment.OpsParams;
+import org.glassfish.api.deployment.archive.ReadableArchive;
+import org.glassfish.internal.api.ClassLoaderHierarchy;
+import org.glassfish.internal.api.Globals;
+import org.glassfish.osgijavaeebase.BundleClassLoader;
+import org.glassfish.osgijavaeebase.OSGiArchiveHandler;
+import org.glassfish.osgijavaeebase.OSGiDeploymentContext;
+import org.osgi.framework.Bundle;
 
 import com.sun.enterprise.module.common_impl.CompositeEnumeration;
 
@@ -45,7 +45,7 @@ public final class OSGiEJBDeploymentContext extends OSGiDeploymentContext {
 
     /**
      * Create a new instance.
-     * 
+     *
      * @param actionReport GlassFish command reporter
      * @param logger logger
      * @param source application archive
@@ -99,7 +99,7 @@ public final class OSGiEJBDeploymentContext extends OSGiDeploymentContext {
 
         /**
          * Create a new instance.
-         * 
+         *
          * @param cl1 the first delegate class-loader
          * @param cl2 the second delegate class-loader
          */
@@ -137,7 +137,7 @@ public final class OSGiEJBDeploymentContext extends OSGiDeploymentContext {
         @Override
         public Enumeration<URL> getResources(final String name) throws IOException {
 
-            List<Enumeration<URL>> enumerators = new ArrayList<Enumeration<URL>>();
+            List<Enumeration<URL>> enumerators = new ArrayList<>();
             enumerators.add(delegate1.getResources(name));
             enumerators.add(delegate2.getResources(name));
             return new CompositeEnumeration(enumerators);

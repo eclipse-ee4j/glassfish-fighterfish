@@ -15,10 +15,11 @@
  */
 package org.glassfish.osgi.ee.resources;
 
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
+
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 
 /**
  * ResourceProxy that can delegate to actual objects upon usage. Does not cache the actual object as the actual object
@@ -38,7 +39,7 @@ public final class ResourceProxy implements InvocationHandler, Invalidate {
 
     /**
      * Create a new instance.
-     * 
+     *
      * @param jName JNDI name
      */
     public ResourceProxy(final String jName) {
@@ -60,7 +61,7 @@ public final class ResourceProxy implements InvocationHandler, Invalidate {
     /**
      * It is possible that reconfiguration of resource will happen.<br>
      * Always do lookup.
-     * 
+     *
      * @return Object
      */
     private Object getActualObject() {

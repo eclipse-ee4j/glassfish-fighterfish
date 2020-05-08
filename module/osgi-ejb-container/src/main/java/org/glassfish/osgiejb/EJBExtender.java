@@ -35,7 +35,7 @@ public final class EJBExtender implements Extender {
 
     /**
      * Create a new instance.
-     * 
+     *
      * @param bndCtx the bundle context
      */
     public EJBExtender(final BundleContext bndCtx) {

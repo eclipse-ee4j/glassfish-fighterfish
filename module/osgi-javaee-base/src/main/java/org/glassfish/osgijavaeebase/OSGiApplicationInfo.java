@@ -51,7 +51,7 @@ public final class OSGiApplicationInfo {
 
     /**
      * Create a new instance.
-     * 
+     *
      * @param gfAppInfo the GlassFish application info
      * @param directoryDeployment flag for directory deployment
      * @param bnd the application bundle
@@ -67,7 +67,7 @@ public final class OSGiApplicationInfo {
 
     /**
      * Get the underlying GlassFish application info.
-     * 
+     *
      * @return ApplicationInfo
      */
     public ApplicationInfo getAppInfo() {
@@ -76,7 +76,7 @@ public final class OSGiApplicationInfo {
 
     /**
      * Set the underlying GlassFish application info.
-     * 
+     *
      * @param gfAppInfo the application to set
      */
     public void setAppInfo(final ApplicationInfo gfAppInfo) {
@@ -85,7 +85,7 @@ public final class OSGiApplicationInfo {
 
     /**
      * Indicate if the application is deployed from a directory.
-     * 
+     *
      * @return {@code true} if deployed from a directory, {@code false} otherwise
      */
     public boolean isDirectoryDeployment() {
@@ -94,7 +94,7 @@ public final class OSGiApplicationInfo {
 
     /**
      * Set the directory deployment flag.
-     * 
+     *
      * @param dirDeplFlag the new value for the directory deployment flag
      */
     public void setDirectoryDeployment(final boolean dirDeplFlag) {
@@ -103,7 +103,7 @@ public final class OSGiApplicationInfo {
 
     /**
      * Get the application bundle.
-     * 
+     *
      * @return Bundle
      */
     public Bundle getBundle() {
@@ -112,7 +112,7 @@ public final class OSGiApplicationInfo {
 
     /**
      * Set the application bundle.
-     * 
+     *
      * @param bnd the new application bundle
      */
     public void setBundle(final Bundle bnd) {
@@ -121,7 +121,7 @@ public final class OSGiApplicationInfo {
 
     /**
      * Get the deployer OSGi service reference.
-     * 
+     *
      * @return ServiceReference
      */
     public ServiceReference getDeployer() {
@@ -130,7 +130,7 @@ public final class OSGiApplicationInfo {
 
     /**
      * Set the deployer OSGi service reference.
-     * 
+     *
      * @param ref the new reference
      */
     public void setDeployer(final ServiceReference ref) {
@@ -139,7 +139,7 @@ public final class OSGiApplicationInfo {
 
     /**
      * Get the application class-loader.
-     * 
+     *
      * @return ClassLoader
      */
     public ClassLoader getClassLoader() {

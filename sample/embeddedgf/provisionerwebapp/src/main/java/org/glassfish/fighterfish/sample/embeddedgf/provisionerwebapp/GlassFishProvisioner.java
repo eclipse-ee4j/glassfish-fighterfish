@@ -9,13 +9,12 @@
  */
 package org.glassfish.fighterfish.sample.embeddedgf.provisionerwebapp;
 
-import org.glassfish.embeddable.GlassFish;
-import org.glassfish.embeddable.GlassFishException;
-import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.BundleException;
-import org.osgi.framework.launch.Framework;
-import org.osgi.util.tracker.ServiceTracker;
+import java.io.File;
+import java.net.URL;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import javax.annotation.Resource;
 import javax.naming.InitialContext;
@@ -24,12 +23,14 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;
-import java.io.File;
-import java.net.URL;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+
+import org.glassfish.embeddable.GlassFish;
+import org.glassfish.embeddable.GlassFishException;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.BundleException;
+import org.osgi.framework.launch.Framework;
+import org.osgi.util.tracker.ServiceTracker;
 
 /**
  * Main entry point.
@@ -94,7 +95,7 @@ public final class GlassFishProvisioner implements ServletContextListener {
 
     /**
      * Set the GlassFish JNDI name.
-     * 
+     *
      * @param jndiName JNDI name
      */
     @Resource
@@ -104,7 +105,7 @@ public final class GlassFishProvisioner implements ServletContextListener {
 
     /**
      * Set the OSGi framework JNDI name.
-     * 
+     *
      * @param jndiName JNDI name
      */
     @Resource
@@ -114,7 +115,7 @@ public final class GlassFishProvisioner implements ServletContextListener {
 
     /**
      * Set the GlassFish install home.
-     * 
+     *
      * @param home new install home
      */
     @Resource
@@ -149,7 +150,7 @@ public final class GlassFishProvisioner implements ServletContextListener {
 
     /**
      * Wait for the OSGi framework to come up.
-     * 
+     *
      * @throws ExecutionException if an error occurs
      * @throws InterruptedException if an error occurs
      */
@@ -161,7 +162,7 @@ public final class GlassFishProvisioner implements ServletContextListener {
 
     /**
      * Wait for GlassFish to be up.
-     * 
+     *
      * @throws InterruptedException if an error occurs
      * @throws ExecutionException if an error occurs
      */
@@ -181,7 +182,7 @@ public final class GlassFishProvisioner implements ServletContextListener {
 
     /**
      * Provision GlassFish.
-     * 
+     *
      * @throws Exception if an error occurs
      */
     private void provisionGlassFish() throws Exception {
@@ -259,7 +260,7 @@ public final class GlassFishProvisioner implements ServletContextListener {
 
         /**
          * Create a new instance.
-         * 
+         *
          * @param glassFish glassFish service
          */
         WaitForGlassFishToStart(final GlassFish glassFish) {
@@ -293,7 +294,7 @@ public final class GlassFishProvisioner implements ServletContextListener {
 
     /**
      * Log a message using the servlet context.
-     * 
+     *
      * @param msg message to log
      */
     private void log(final String msg) {
@@ -302,7 +303,7 @@ public final class GlassFishProvisioner implements ServletContextListener {
 
     /**
      * Log a message using the servlet context.
-     * 
+     *
      * @param msg message to log
      * @param ex exception
      */

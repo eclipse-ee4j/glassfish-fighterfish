@@ -15,18 +15,20 @@
  */
 package org.glassfish.osgi.ee.resources;
 
+import java.util.Collection;
+import java.util.Dictionary;
+import java.util.Properties;
+
+import javax.jms.Queue;
+import javax.jms.Topic;
+
+import org.glassfish.connectors.config.AdminObjectResource;
+import org.osgi.framework.BundleContext;
+
 import com.sun.enterprise.config.serverbeans.BindableResource;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.ResourceRef;
 import com.sun.enterprise.config.serverbeans.Resources;
-import org.glassfish.connectors.config.AdminObjectResource;
-import org.osgi.framework.BundleContext;
-
-import javax.jms.Queue;
-import javax.jms.Topic;
-import java.util.Collection;
-import java.util.Dictionary;
-import java.util.Properties;
 
 /**
  * Resource-Manager to export jms-destinations (JMS-RA admin-object-resources) in GlassFish to OSGi's service-registry.
@@ -35,7 +37,7 @@ public final class JMSDestinationResourceManager extends BaseResourceManager imp
 
     /**
      * Create a new instance.
-     * 
+     *
      * @param habitat component locator
      */
     public JMSDestinationResourceManager(final Habitat habitat) {

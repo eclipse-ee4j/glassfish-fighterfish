@@ -17,7 +17,7 @@ package org.glassfish.osgijavaeebase;
 
 /**
  * Interface to extend deployment lifecycle of bundles.
- * 
+ *
  * @see ExtenderManager
  */
 public interface Extender {

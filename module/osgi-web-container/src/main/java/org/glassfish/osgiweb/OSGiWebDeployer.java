@@ -15,19 +15,19 @@
  */
 package org.glassfish.osgiweb;
 
-import com.sun.enterprise.deploy.shared.ArchiveFactory;
+import java.util.Dictionary;
+
 import org.glassfish.api.ActionReport;
 import org.glassfish.internal.deployment.Deployment;
+import org.glassfish.osgijavaeebase.AbstractOSGiDeployer;
+import org.glassfish.osgijavaeebase.OSGiApplicationInfo;
+import org.glassfish.osgijavaeebase.OSGiDeploymentRequest;
+import org.glassfish.osgijavaeebase.OSGiUndeploymentRequest;
 import org.glassfish.server.ServerEnvironmentImpl;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 
-import java.util.Dictionary;
-import org.glassfish.osgijavaeebase.AbstractOSGiDeployer;
-import org.glassfish.osgijavaeebase.AbstractOSGiDeployer.State;
-import org.glassfish.osgijavaeebase.OSGiApplicationInfo;
-import org.glassfish.osgijavaeebase.OSGiDeploymentRequest;
-import org.glassfish.osgijavaeebase.OSGiUndeploymentRequest;
+import com.sun.enterprise.deploy.shared.ArchiveFactory;
 
 /**
  * Deployer implementation for OSGi web applications.
@@ -36,7 +36,7 @@ public final class OSGiWebDeployer extends AbstractOSGiDeployer {
 
     /**
      * Create a new instance.
-     * 
+     *
      * @param context the bundle context
      */
     public OSGiWebDeployer(final BundleContext context) {

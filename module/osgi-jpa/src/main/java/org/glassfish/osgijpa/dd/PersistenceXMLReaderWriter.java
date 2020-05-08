@@ -15,18 +15,19 @@
  */
 package org.glassfish.osgijpa.dd;
 
-import org.glassfish.internal.api.Globals;
-import org.glassfish.internal.api.ClassLoaderHierarchy;
-
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
-import java.io.InputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Writer;
 import java.net.URL;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
+
+import org.glassfish.internal.api.ClassLoaderHierarchy;
+import org.glassfish.internal.api.Globals;
 
 /**
  * Utility to read persistence XML with JAX-B.
@@ -35,7 +36,7 @@ public final class PersistenceXMLReaderWriter {
 
     /**
      * Unmarshall from URL.
-     * 
+     *
      * @param pxmlURL url
      * @return Persistence
      * @throws IOException if an error occurs
@@ -51,7 +52,7 @@ public final class PersistenceXMLReaderWriter {
 
     /**
      * Unmarshall from input stream
-     * 
+     *
      * @param is input stream
      * @return Persistence
      * @throws IOException if an error occurs
@@ -70,7 +71,7 @@ public final class PersistenceXMLReaderWriter {
 
     /**
      * Marshall.
-     * 
+     *
      * @param persistence instance to write out
      * @param os output stream
      * @throws IOException if an error occurs
@@ -89,7 +90,7 @@ public final class PersistenceXMLReaderWriter {
 
     /**
      * Marshall.
-     * 
+     *
      * @param persistence instance to write out
      * @param writer writer to use
      * @throws IOException if an error occurs
@@ -108,7 +109,7 @@ public final class PersistenceXMLReaderWriter {
 
     /**
      * Get marshaller for a given class.
-     * 
+     *
      * @param clazz the class
      * @return Marshaller
      * @throws JAXBException if an error occurs
@@ -123,7 +124,7 @@ public final class PersistenceXMLReaderWriter {
 
     /**
      * Get unmarshaller
-     * 
+     *
      * @return Unmarshaller
      * @throws JAXBException if an error occurs
      */
@@ -134,7 +135,7 @@ public final class PersistenceXMLReaderWriter {
 
     /**
      * Get the JAXB context.
-     * 
+     *
      * @return JAXBContext
      * @throws JAXBException if an error occurs
      */

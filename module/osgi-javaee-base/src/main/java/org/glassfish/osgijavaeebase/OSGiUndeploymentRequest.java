@@ -15,7 +15,13 @@
  */
 package org.glassfish.osgijavaeebase;
 
-import com.sun.enterprise.util.io.FileUtils;
+import java.io.File;
+import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.deployment.DeployCommandParameters;
 import org.glassfish.api.deployment.UndeployCommandParameters;
@@ -25,12 +31,7 @@ import org.glassfish.internal.deployment.Deployment;
 import org.glassfish.server.ServerEnvironmentImpl;
 import org.osgi.framework.Bundle;
 
-import java.io.File;
-import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import com.sun.enterprise.util.io.FileUtils;
 
 /**
  * This is a stateful service. It is responsible for undeployment of the artifact from JavaEE runtime.
@@ -64,7 +65,7 @@ public abstract class OSGiUndeploymentRequest {
 
     /**
      * Create a new instance.
-     * 
+     *
      * @param gfDeployer the GlassFish deployer
      * @param gfEnv the GlassFish server environment
      * @param gfReporter the GlassFish command reporter
@@ -137,7 +138,7 @@ public abstract class OSGiUndeploymentRequest {
 
     /**
      * Close the given class-loaders.
-     * 
+     *
      * @param os list of class-loaders to close
      */
     private void closeClassLoaders(final List<? extends Object> os) {
@@ -170,7 +171,7 @@ public abstract class OSGiUndeploymentRequest {
 
     /**
      * Get the deployment context.
-     * 
+     *
      * @param gfReporter the GlassFish command reporter
      * @param logger the logger to use
      * @param source the application archive
@@ -185,18 +186,18 @@ public abstract class OSGiUndeploymentRequest {
 
     /**
      * Cleanup the given directory.
-     * 
+     *
      * @param dir directory to be cleaned-up
      */
     private void cleanup(final File dir) {
-        assert (dir.isDirectory() && dir.exists());
+        assert dir.isDirectory() && dir.exists();
         FileUtils.whack(dir);
         LOGGER.logp(Level.INFO, "OSGiUndeploymentRequest", "cleanup", "Deleted {0}", new Object[] { dir });
     }
 
     /**
      * Get the GlassFish undeploy command parameters.
-     * 
+     *
      * @param appInfo the application to undeploy
      * @return UndeployCommandParameters
      */
@@ -210,7 +211,7 @@ public abstract class OSGiUndeploymentRequest {
 
     /**
      * Get the application info.
-     * 
+     *
      * @return OSGiApplicationInfo
      */
     protected OSGiApplicationInfo getOsgiAppInfo() {

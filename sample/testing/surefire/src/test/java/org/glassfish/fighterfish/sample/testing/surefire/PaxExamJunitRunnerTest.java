@@ -16,28 +16,29 @@
  */
 package org.glassfish.fighterfish.sample.testing.surefire;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
+
+import java.io.IOException;
+
+import javax.inject.Inject;
+
 import org.glassfish.embeddable.GlassFishException;
 import org.glassfish.fighterfish.test.util.StringPatternMatcher;
 import org.glassfish.fighterfish.test.util.TestContext;
 import org.glassfish.fighterfish.test.util.TestsConfiguration;
+import org.glassfish.fighterfish.test.util.Version;
 import org.glassfish.fighterfish.test.util.WebAppBundle;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.ops4j.pax.exam.junit.PaxExam;
-import org.ops4j.pax.exam.spi.reactors.PerClass;
-import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
-import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.Configuration;
+import org.ops4j.pax.exam.Option;
+import org.ops4j.pax.exam.junit.PaxExam;
+import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
+import org.ops4j.pax.exam.spi.reactors.PerClass;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
-
-import javax.inject.Inject;
-import java.io.IOException;
-
-import org.glassfish.fighterfish.test.util.Version;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
 
 /**
  * This test sample demonstrates use of pax-exam provided {@link JUnit4TestRunner} JUnit test runner. This test class

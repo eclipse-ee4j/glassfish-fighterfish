@@ -15,51 +15,51 @@
  */
 package org.glassfish.osgiweb;
 
-import org.glassfish.internal.data.ApplicationInfo;
-import org.glassfish.internal.data.EngineRef;
-import org.glassfish.internal.data.ModuleInfo;
-import org.glassfish.osgijavaeebase.DeploymentException;
-import org.glassfish.osgijavaeebase.OSGiApplicationInfo;
-import org.glassfish.osgijavaeebase.OSGiDeploymentRequest;
-import org.glassfish.osgijavaeebase.OSGiDeploymentContext;
-import org.glassfish.api.ActionReport;
-import org.glassfish.api.deployment.archive.ReadableArchive;
-import org.glassfish.api.deployment.OpsParams;
-import org.glassfish.api.deployment.DeployCommandParameters;
-import org.glassfish.server.ServerEnvironmentImpl;
-import org.glassfish.internal.deployment.Deployment;
-import org.glassfish.internal.api.Globals;
-import org.osgi.framework.namespace.HostNamespace;
-import org.osgi.framework.wiring.BundleWire;
-import org.osgi.framework.wiring.BundleWiring;
-import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceRegistration;
-
-import com.sun.enterprise.deploy.shared.ArchiveFactory;
-import com.sun.enterprise.web.WebApplication;
-
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Dictionary;
-import java.util.List;
-import java.util.Properties;
-import java.util.Set;
-import java.util.StringTokenizer;
-
-import javax.servlet.ServletContext;
-
-import static org.osgi.framework.Constants.BUNDLE_VERSION;
 import static org.glassfish.osgiweb.Constants.BUNDLE_CONTEXT_ATTR;
 import static org.glassfish.osgiweb.Constants.OSGI_WEB_CONTEXTPATH;
 import static org.glassfish.osgiweb.Constants.OSGI_WEB_SYMBOLIC_NAME;
 import static org.glassfish.osgiweb.Constants.OSGI_WEB_VERSION;
 import static org.glassfish.osgiweb.Constants.VIRTUAL_SERVERS;
 import static org.glassfish.osgiweb.Constants.WEB_CONTEXT_PATH;
+import static org.osgi.framework.Constants.BUNDLE_VERSION;
+
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Dictionary;
+import java.util.List;
+import java.util.Properties;
+import java.util.Set;
+import java.util.StringTokenizer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import javax.servlet.ServletContext;
+
+import org.glassfish.api.ActionReport;
+import org.glassfish.api.deployment.DeployCommandParameters;
+import org.glassfish.api.deployment.OpsParams;
+import org.glassfish.api.deployment.archive.ReadableArchive;
+import org.glassfish.internal.api.Globals;
+import org.glassfish.internal.data.ApplicationInfo;
+import org.glassfish.internal.data.EngineRef;
+import org.glassfish.internal.data.ModuleInfo;
+import org.glassfish.internal.deployment.Deployment;
+import org.glassfish.osgijavaeebase.DeploymentException;
+import org.glassfish.osgijavaeebase.OSGiApplicationInfo;
+import org.glassfish.osgijavaeebase.OSGiDeploymentContext;
+import org.glassfish.osgijavaeebase.OSGiDeploymentRequest;
+import org.glassfish.server.ServerEnvironmentImpl;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceRegistration;
+import org.osgi.framework.namespace.HostNamespace;
+import org.osgi.framework.wiring.BundleWire;
+import org.osgi.framework.wiring.BundleWiring;
+
+import com.sun.enterprise.deploy.shared.ArchiveFactory;
+import com.sun.enterprise.web.WebApplication;
 
 /**
  * This is the class responsible for deploying a WAB in the Java EE container.
@@ -74,11 +74,11 @@ public final class OSGiWebDeploymentRequest extends OSGiDeploymentRequest {
     /**
      * Set the current bundle context in a thread local for use during web module decoration.
      */
-    private static final ThreadLocal<BundleContext> CURRENT_BUNDLE_CTX = new ThreadLocal<BundleContext>();
+    private static final ThreadLocal<BundleContext> CURRENT_BUNDLE_CTX = new ThreadLocal<>();
 
     /**
      * Create a new instance.
-     * 
+     *
      * @param deployer GlassFish deployer
      * @param archiveFactory GlassFish archive factory
      * @param env GlassFish server environment
@@ -107,12 +107,12 @@ public final class OSGiWebDeploymentRequest extends OSGiDeploymentRequest {
 
     /**
      * Get the bundle fragments for the given host bundle.
-     * 
+     *
      * @param host the host bundle
      * @return array of Bundle
      */
     private static Bundle[] getFragments(final Bundle host) {
-        List<Bundle> fragments = new ArrayList<Bundle>();
+        List<Bundle> fragments = new ArrayList<>();
         BundleWiring hostWiring = host.adapt(BundleWiring.class);
         for (BundleWire wire : hostWiring.getProvidedWires(HostNamespace.HOST_NAMESPACE)) {
             fragments.add(wire.getRequirerWiring().getBundle());
@@ -144,7 +144,7 @@ public final class OSGiWebDeploymentRequest extends OSGiDeploymentRequest {
 
     /**
      * Get the GlassFish virtual server name.
-     * 
+     *
      * @return server name
      */
     private String getVirtualServers() {
@@ -166,7 +166,7 @@ public final class OSGiWebDeploymentRequest extends OSGiDeploymentRequest {
 
     /**
      * Get the default virtual server name.
-     * 
+     *
      * @return the default virtual server
      */
     @SuppressWarnings("unchecked")
@@ -213,7 +213,7 @@ public final class OSGiWebDeploymentRequest extends OSGiDeploymentRequest {
 
     /**
      * Detect bundle collision.
-     * 
+     *
      * @throws ContextPathCollisionException if a collision is detected
      */
     private void detectCollisions() throws ContextPathCollisionException {
@@ -231,7 +231,7 @@ public final class OSGiWebDeploymentRequest extends OSGiDeploymentRequest {
             return;
         }
         ServletContext sc = getServletContext(osgiAppInfo.getAppInfo());
-        assert (sc.getAttribute(BUNDLE_CONTEXT_ATTR) == osgiAppInfo.getBundle().getBundleContext());
+        assert sc.getAttribute(BUNDLE_CONTEXT_ATTR) == osgiAppInfo.getBundle().getBundleContext();
 
         try {
             ServiceRegistration scReg = registerService(osgiAppInfo.getBundle(), sc);
@@ -245,7 +245,7 @@ public final class OSGiWebDeploymentRequest extends OSGiDeploymentRequest {
 
     /**
      * Get the servlet context for a deployed application.
-     * 
+     *
      * @param appInfo deployed application
      * @return ServletContext
      */
@@ -253,11 +253,11 @@ public final class OSGiWebDeploymentRequest extends OSGiDeploymentRequest {
         if (appInfo.getModuleInfos().size() == 1) {
             ModuleInfo m = appInfo.getModuleInfos().iterator().next();
             EngineRef e = m.getEngineRefForContainer(com.sun.enterprise.web.WebContainer.class);
-            assert (e != null);
+            assert e != null;
             WebApplication a = (WebApplication) e.getApplicationContainer();
             Set<com.sun.enterprise.web.WebModule> wms = a.getWebModules();
             // we only deploy to default virtual server
-            assert (wms.size() == 1);
+            assert wms.size() == 1;
             if (wms.size() == 1) {
                 return wms.iterator().next().getServletContext();
             }
@@ -267,7 +267,7 @@ public final class OSGiWebDeploymentRequest extends OSGiDeploymentRequest {
 
     /**
      * Register the servlet context as a service.
-     * 
+     *
      * @param bnd the application bundle
      * @param sc the servlet context
      * @return ServiceRegistration
@@ -279,7 +279,7 @@ public final class OSGiWebDeploymentRequest extends OSGiDeploymentRequest {
         props.put(OSGI_WEB_SYMBOLIC_NAME, bnd.getSymbolicName());
         String cpath = Util.getContextPath(bnd);
         props.put(OSGI_WEB_CONTEXTPATH, cpath);
-        String version = (String) bnd.getHeaders().get(BUNDLE_VERSION);
+        String version = bnd.getHeaders().get(BUNDLE_VERSION);
         if (version != null) {
             props.put(OSGI_WEB_VERSION, version);
         }
@@ -299,7 +299,7 @@ public final class OSGiWebDeploymentRequest extends OSGiDeploymentRequest {
 
     /**
      * Get the current bundle context (thread local).
-     * 
+     *
      * @return BundleContext
      */
     static BundleContext getCurrentBundleContext() {

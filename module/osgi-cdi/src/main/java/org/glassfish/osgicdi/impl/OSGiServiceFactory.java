@@ -56,7 +56,7 @@ final class OSGiServiceFactory {
 
     /**
      * Get a reference to the service of the provided {@code Type}.
-     * 
+     *
      * @param svcInjectionPoint injection point
      * @return Object
      * @throws ServiceUnavailableException if an error occurs
@@ -71,7 +71,7 @@ final class OSGiServiceFactory {
 
     /**
      * Test if the service is available for the injection point.
-     * 
+     *
      * @param svcInjectionPoint injection point
      * @return {@code true} if available, never {@code false}
      * @throws ServiceUnavailableException if the service is not available
@@ -88,7 +88,7 @@ final class OSGiServiceFactory {
 
     /**
      * Create a proxy for the service.
-     * 
+     *
      * @param svcInjectionPoint injection point
      * @return proxy object
      * @throws ServiceUnavailableException if the service is not available
@@ -110,7 +110,7 @@ final class OSGiServiceFactory {
 
     /**
      * Lookup the service with OSGi.
-     * 
+     *
      * @param svcInjectionPoint injection point
      * @return Object
      * @throws ServiceUnavailableException if the service is not available
@@ -128,7 +128,7 @@ final class OSGiServiceFactory {
         BundleContext bc = getBundleContext(svcInjectionPoint);
 
         // Create the service tracker for this type.
-        debug("creating service tracker for " + ((Class) (serviceType)).getName() + " using bundle-context:" + bc);
+        debug("creating service tracker for " + ((Class) serviceType).getName() + " using bundle-context:" + bc);
         ServiceTracker st = null;
         try {
             Class svcTypeClazz = (Class) serviceType;
@@ -149,7 +149,7 @@ final class OSGiServiceFactory {
             }
             debug("service obtained from tracker" + service);
             if (service == null) {
-                throw new ServiceUnavailableException("Service " + (((Class) serviceType).getName()) + " Unavailable", ServiceException.SUBCLASSED, null);
+                throw new ServiceUnavailableException("Service " + ((Class) serviceType).getName() + " Unavailable", ServiceException.SUBCLASSED, null);
             }
             return service;
         } catch (InvalidSyntaxException ise) {
@@ -157,7 +157,7 @@ final class OSGiServiceFactory {
             throw new ServiceUnavailableException("Invalid Filter specification", ServiceException.FACTORY_EXCEPTION, ise);
         } catch (InterruptedException e) {
             e.printStackTrace();
-            throw new ServiceUnavailableException("" + "Service " + (((Class) serviceType).getName()) + " Unavailable", ServiceException.SUBCLASSED, e);
+            throw new ServiceUnavailableException("" + "Service " + ((Class) serviceType).getName() + " Unavailable", ServiceException.SUBCLASSED, e);
         } finally {
             if (st != null) {
                 st.close();
@@ -167,7 +167,7 @@ final class OSGiServiceFactory {
 
     /**
      * Get the service filter defined for the injection point.
-     * 
+     *
      * @param serviceType service type to be injected
      * @param os service instance
      * @return filter
@@ -182,7 +182,7 @@ final class OSGiServiceFactory {
 
     /**
      * Unget the service.
-     * 
+     *
      * @param serviceInstance service to unget
      * @param svcInjectionPoint injection point
      */
@@ -193,7 +193,7 @@ final class OSGiServiceFactory {
 
     /**
      * Log a message at the {@code FINE} level.
-     * 
+     *
      * @param msg message to log
      */
     private static void debug(final String msg) {
@@ -202,7 +202,7 @@ final class OSGiServiceFactory {
 
     /**
      * Get the bundle context with the injection point class-loader.
-     * 
+     *
      * @param svcInjectionPoint injection point
      * @return BundleContext
      */
@@ -232,25 +232,19 @@ final class OSGiServiceFactory {
         // only if it goes away should we look up a service.
 
         /**
-         * OSGi service instance.
-         */
-        private final OSGiService os;
-
-        /**
          * Injection point.
          */
         private final InjectionPoint svcInjectionPoint;
 
         /**
          * Create a new instance.
-         * 
+         *
          * @param osgiService service instance
          * @param injectionPoint injection point
          */
         DynamicInvocationHandler(final OSGiService osgiService, final InjectionPoint injectionPoint) {
 
             debug("In DynamicInvocationHandler");
-            this.os = osgiService;
             this.svcInjectionPoint = injectionPoint;
         }
 
@@ -304,7 +298,7 @@ final class OSGiServiceFactory {
 
         /**
          * Create a new instance.
-         * 
+         *
          * @param osgiService OSGi service
          * @param injectionPoint injection point
          */
@@ -321,7 +315,7 @@ final class OSGiServiceFactory {
 
         /**
          * Get the service reference for the given injection point.
-         * 
+         *
          * @param injectionPoint injection point
          */
         @SuppressWarnings("unchecked")
@@ -331,7 +325,7 @@ final class OSGiServiceFactory {
             debug("lookup service" + serviceType);
 
             // Create the service tracker for this type.
-            debug("creating service tracker for " + ((Class) (serviceType)).getName() + " using bundle-context:" + this.bundleContext);
+            debug("creating service tracker for " + ((Class) serviceType).getName() + " using bundle-context:" + this.bundleContext);
             ServiceTracker st = null;
             try {
                 Class svcTypeClazz = (Class) serviceType;
@@ -420,7 +414,7 @@ final class OSGiServiceFactory {
          */
         private void throwServiceUnavailable() {
             Type serviceType = svcInjectionPoint.getType();
-            throw new ServiceUnavailableException("Service " + (((Class) serviceType).getName()) + " Unavailable", ServiceException.SUBCLASSED, null);
+            throw new ServiceUnavailableException("Service " + ((Class) serviceType).getName() + " Unavailable", ServiceException.SUBCLASSED, null);
         }
     }
 }

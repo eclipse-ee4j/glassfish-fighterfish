@@ -32,13 +32,12 @@ public final class ServiceUnavailableException extends ServiceException {
 
     /**
      * Create a new instance.
-     * 
+     *
      * @param msg exception message
      * @param type exception type
      * @param cause exception cause
      */
     public ServiceUnavailableException(final String msg, final int type, final Throwable cause) {
-
         super(msg, type, cause);
     }
 

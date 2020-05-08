@@ -67,7 +67,7 @@ public final class JTASampleActivator implements BundleActivator {
 
     /**
      * Maps status integer as returned by getStatus() method to a String.
-     * 
+     *
      * @param status status int
      * @return status string
      */
@@ -101,7 +101,7 @@ public final class JTASampleActivator implements BundleActivator {
 
     /**
      * Log a message to the standard output.
-     * 
+     *
      * @param msg message to log
      */
     private void debug(final String msg) {

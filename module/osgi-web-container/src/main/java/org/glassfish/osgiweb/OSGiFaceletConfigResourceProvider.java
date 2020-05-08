@@ -15,14 +15,16 @@
  */
 package org.glassfish.osgiweb;
 
-import com.sun.faces.spi.ConfigurationResourceProvider;
-import com.sun.faces.spi.FaceletConfigResourceProvider;
-import javax.servlet.ServletContext;
 import java.net.URI;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import javax.servlet.ServletContext;
+
+import com.sun.faces.spi.ConfigurationResourceProvider;
+import com.sun.faces.spi.FaceletConfigResourceProvider;
 
 /**
  * Built-in provider can't discover resources named as xxx.taglib.xml. This config resource provider knows how to

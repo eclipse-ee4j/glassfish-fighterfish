@@ -15,13 +15,13 @@
  */
 package org.glassfish.osgi.ee.resources;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.glassfish.osgijavaeebase.Extender;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
-
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Bundle activator for the OSGi EE module.
@@ -53,7 +53,7 @@ public final class ResourcesActivator implements BundleActivator {
 
     /**
      * Log a message at the {@code FINEST} level.
-     * 
+     *
      * @param msg message to log
      */
     private void debug(final String msg) {

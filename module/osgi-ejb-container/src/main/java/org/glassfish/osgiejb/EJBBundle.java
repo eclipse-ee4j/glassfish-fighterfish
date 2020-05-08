@@ -15,12 +15,6 @@
  */
 package org.glassfish.osgiejb;
 
-import org.glassfish.api.deployment.archive.Archive;
-import org.glassfish.osgijavaeebase.OSGiBundleArchive;
-import org.glassfish.osgijavaeebase.OSGiJavaEEArchive;
-import org.glassfish.osgijavaeebase.URIable;
-import org.osgi.framework.Bundle;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -29,6 +23,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.glassfish.api.deployment.archive.Archive;
+import org.glassfish.osgijavaeebase.OSGiBundleArchive;
+import org.glassfish.osgijavaeebase.OSGiJavaEEArchive;
+import org.glassfish.osgijavaeebase.URIable;
+import org.osgi.framework.Bundle;
+
 /**
  * Represents an EJB bundle.
  */
@@ -36,7 +36,7 @@ public final class EJBBundle extends OSGiJavaEEArchive {
 
     /**
      * Create a new instance.
-     * 
+     *
      * @param fragments bundle fragments
      * @param host host bundle
      */

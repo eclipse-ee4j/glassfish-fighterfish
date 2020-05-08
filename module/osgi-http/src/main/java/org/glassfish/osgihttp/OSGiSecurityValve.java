@@ -16,18 +16,19 @@
 
 package org.glassfish.osgihttp;
 
+import java.io.IOException;
+import java.security.Principal;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.catalina.HttpRequest;
 import org.apache.catalina.Request;
 import org.apache.catalina.Response;
 import org.apache.catalina.valves.ValveBase;
 import org.glassfish.security.common.PrincipalImpl;
 import org.osgi.service.http.HttpContext;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.security.Principal;
 
 /**
  * This valve is used to implement security in OSGi/HTTP service.
@@ -41,7 +42,7 @@ public final class OSGiSecurityValve extends ValveBase {
 
     /**
      * Create a new instance.
-     * 
+     *
      * @param ctx the OSGi HTTP context
      */
     public OSGiSecurityValve(final HttpContext ctx) {
@@ -50,7 +51,6 @@ public final class OSGiSecurityValve extends ValveBase {
 
     @Override
     public int invoke(final Request request, final Response response) throws IOException, ServletException {
-
         if (httpContext.handleSecurity(HttpServletRequest.class.cast(request), HttpServletResponse.class.cast(response))) {
 
             // Issue #13283: If user has set username and auth type, we need to
@@ -61,16 +61,14 @@ public final class OSGiSecurityValve extends ValveBase {
             mapAuthType((HttpRequest) request);
 
             return INVOKE_NEXT;
-        } else {
-//            HttpServletResponse.class.cast(response).sendError(
-//                    HttpServletResponse.SC_FORBIDDEN);
-            return END_PIPELINE;
-        }
+        } 
+        
+        return END_PIPELINE;
     }
 
     /**
      * Map authentication type for a given request.
-     * 
+     *
      * @param httpRequest the request to map
      */
     private void mapAuthType(final HttpRequest httpRequest) {
@@ -82,7 +80,7 @@ public final class OSGiSecurityValve extends ValveBase {
 
     /**
      * Map a user for a given request.
-     * 
+     *
      * @param httpRequest the request to map
      */
     private void mapUser(final HttpRequest httpRequest) {

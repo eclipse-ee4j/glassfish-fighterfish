@@ -15,9 +15,9 @@
  */
 package org.glassfish.osgiweb;
 
-import org.glassfish.osgijavaeebase.DeploymentException;
-
 import java.util.Arrays;
+
+import org.glassfish.osgijavaeebase.DeploymentException;
 
 /**
  * This exception is thrown when multiple WABs have same Web-ContextPath.
@@ -36,7 +36,7 @@ class ContextPathCollisionException extends DeploymentException {
 
     /**
      * Create a new instance.
-     * 
+     *
      * @param ctxPath context path for which collision is detected
      * @param wabIds bundle id of the WABs that have same context path. The last entry denotes the current bundle being
      * deployed
@@ -53,7 +53,7 @@ class ContextPathCollisionException extends DeploymentException {
 
     /**
      * Get the context path.
-     * 
+     *
      * @return context path
      */
     public String getContextPath() {
@@ -62,7 +62,7 @@ class ContextPathCollisionException extends DeploymentException {
 
     /**
      * Get the colliding web application bundle id.
-     * 
+     *
      * @return Long[]
      */
     public Long[] getCollidingWabIds() {
