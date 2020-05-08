@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Distribution License v. 1.0, which is available at
@@ -27,9 +27,7 @@ import javax.persistence.TemporalType;
  */
 @SuppressWarnings("checkstyle:DesignForExtension")
 @Entity
-@NamedQueries(
-        @NamedQuery(name = "LoginAttempt.findAll",
-                query = "select o from LoginAttempt o"))
+@NamedQueries(@NamedQuery(name = "LoginAttempt.findAll", query = "select o from LoginAttempt o"))
 public class LoginAttempt implements Serializable {
 
     /**
@@ -70,6 +68,7 @@ public class LoginAttempt implements Serializable {
 
     /**
      * Get serial number.
+     * 
      * @return serial numner
      */
     public long getSerialNumber() {
@@ -78,6 +77,7 @@ public class LoginAttempt implements Serializable {
 
     /**
      * Test if the login attempt is successful.
+     * 
      * @return {@code true} if successful, {@code false} otherwise
      */
     public boolean isSuccessful() {
@@ -86,6 +86,7 @@ public class LoginAttempt implements Serializable {
 
     /**
      * Set the login result.
+     * 
      * @param isSuccessful login result
      */
     public void setSuccessful(final boolean isSuccessful) {
@@ -94,6 +95,7 @@ public class LoginAttempt implements Serializable {
 
     /**
      * Get the user credentials.
+     * 
      * @return UserCredential
      */
     public UserCredential getUserCredential() {
@@ -102,6 +104,7 @@ public class LoginAttempt implements Serializable {
 
     /**
      * Set the user credentials.
+     * 
      * @param creds new user credentials
      */
     public void setUserCredential(final UserCredential creds) {
@@ -110,6 +113,7 @@ public class LoginAttempt implements Serializable {
 
     /**
      * Get the timestamp.
+     * 
      * @return Date
      */
     public Date getTimeStamp() {
@@ -118,6 +122,7 @@ public class LoginAttempt implements Serializable {
 
     /**
      * Set the new timestamp.
+     * 
      * @param tstamp new timestamp
      */
     public void setTimeStamp(final Date tstamp) {
@@ -126,10 +131,6 @@ public class LoginAttempt implements Serializable {
 
     @Override
     public String toString() {
-        return "LoginAttempt: ("
-                + "serialNumber = " + serialNumber
-                + "user = " + getUserCredential().getName()
-                + "isSucecssful = " + isSuccessful()
-                + ")";
+        return "LoginAttempt: (" + "serialNumber = " + serialNumber + "user = " + getUserCredential().getName() + "isSucecssful = " + isSuccessful() + ")";
     }
 }

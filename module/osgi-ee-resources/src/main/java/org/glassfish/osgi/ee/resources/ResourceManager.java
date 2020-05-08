@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -20,8 +20,7 @@ import com.sun.enterprise.config.serverbeans.ResourceRef;
 import org.osgi.framework.BundleContext;
 
 /**
- * Resource-Manager to export resources defined in GlassFish to OSGi's
- * service-registry.
+ * Resource-Manager to export resources defined in GlassFish to OSGi's service-registry.
  */
 public interface ResourceManager {
 
@@ -39,8 +38,7 @@ public interface ResourceManager {
      * @param resRef resource-ref of the resource
      * @param bundleContext bundle-context
      */
-    void registerResource(BindableResource resource,
-            ResourceRef resRef, BundleContext bundleContext);
+    void registerResource(BindableResource resource, ResourceRef resRef, BundleContext bundleContext);
 
     /**
      * Un-register the resource that is deleted or disabled.
@@ -49,8 +47,7 @@ public interface ResourceManager {
      * @param resRef resource-ref of the resource
      * @param bundleContext bundle-context
      */
-    void unRegisterResource(BindableResource resource,
-            ResourceRef resRef, BundleContext bundleContext);
+    void unRegisterResource(BindableResource resource, ResourceRef resRef, BundleContext bundleContext);
 
     /**
      * un-register all appropriate resources.
@@ -63,8 +60,7 @@ public interface ResourceManager {
      * Test if the manager can handle the given resource.
      *
      * @param resource resource to be handled
-     * @return {@code true} if this manager handles the given resource,
-     * {@code false} otherwise
+     * @return {@code true} if this manager handles the given resource, {@code false} otherwise
      */
     boolean handlesResource(BindableResource resource);
 }

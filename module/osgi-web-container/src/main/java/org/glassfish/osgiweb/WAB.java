@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -30,29 +30,25 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Servlet spec, the spec which defines the term Web Application, defines the
- * overall structure of a Web Application as a hierarchical arrangement of files
- * (and directories), but does not mandate them to be available in a
- * hierarchical file system per se. See section #10.4 of Servlet 3.0 spec, which
- * mentions the following: This specification defines a hierarchical structure
- * used for deployment and packaging purposes that can exist in an open file
- * system, in an archive file, or in some other form. It is recommended, but not
- * required, that servlet containers support this structure as a runtime
- * representation.
+ * Servlet spec, the spec which defines the term Web Application, defines the overall structure of a Web Application as
+ * a hierarchical arrangement of files (and directories), but does not mandate them to be available in a hierarchical
+ * file system per se. See section #10.4 of Servlet 3.0 spec, which mentions the following: This specification defines a
+ * hierarchical structure used for deployment and packaging purposes that can exist in an open file system, in an
+ * archive file, or in some other form. It is recommended, but not required, that servlet containers support this
+ * structure as a runtime representation.
  * <p/>
- * A WAB provides such a view of web application which is actually composed of a
- * host OSGi bundle and zero or more attached fragment bundles.
+ * A WAB provides such a view of web application which is actually composed of a host OSGi bundle and zero or more
+ * attached fragment bundles.
  *
- * Implementation Notes: We don't create virtual jar from directory type
- * Bundle-ClassPath entry, because rfc #66 says that such entries should be
- * treated like WEB-INF/classes/, which means, they must not be searched for
+ * Implementation Notes: We don't create virtual jar from directory type Bundle-ClassPath entry, because rfc #66 says
+ * that such entries should be treated like WEB-INF/classes/, which means, they must not be searched for
  * web-fragments.xml.
  */
 public final class WAB extends OSGiJavaEEArchive {
 
     /**
-     * All Bundle-ClassPath entries of type jars are represented as
-     * WEB-INF/lib/{N}.jar, where N is a number starting with 0.
+     * All Bundle-ClassPath entries of type jars are represented as WEB-INF/lib/{N}.jar, where N is a number starting with
+     * 0.
      */
     private static final String LIB_DIR = "WEB-INF/lib/";
 
@@ -63,6 +59,7 @@ public final class WAB extends OSGiJavaEEArchive {
 
     /**
      * Create a new instance.
+     * 
      * @param host the host bundle.
      * @param fragments the associated bundle fragments
      */
@@ -113,11 +110,8 @@ public final class WAB extends OSGiJavaEEArchive {
                     if (bcpEntry.getName().equals(CLASSES_DIR)) {
                         return;
                     }
-                    final Archive subArchive =
-                            getArchive(bcpEntry.getBundle())
-                            .getSubArchive(bcpEntry.getName());
-                    for (final String subEntry
-                            : Collections.list(subArchive.entries())) {
+                    final Archive subArchive = getArchive(bcpEntry.getBundle()).getSubArchive(bcpEntry.getName());
+                    for (final String subEntry : Collections.list(subArchive.entries())) {
 
                         ArchiveEntry archiveEntry = new ArchiveEntry() {
                             @Override
@@ -127,14 +121,11 @@ public final class WAB extends OSGiJavaEEArchive {
 
                             @Override
                             public URI getURI() throws URISyntaxException {
-                                return bcpEntry.getBundle()
-                                        .getEntry(bcpEntry.getName()
-                                                + subEntry).toURI();
+                                return bcpEntry.getBundle().getEntry(bcpEntry.getName() + subEntry).toURI();
                             }
 
                             @Override
-                            public InputStream getInputStream()
-                                    throws IOException {
+                            public InputStream getInputStream() throws IOException {
                                 try {
                                     return getURI().toURL().openStream();
                                 } catch (URISyntaxException e) {
@@ -155,10 +146,8 @@ public final class WAB extends OSGiJavaEEArchive {
             public void visitJar(final JarBCPEntry bcpEntry) {
                 // do special processing if the jar does not belong to
                 // WEB-INF/lib/
-                if (bcpEntry.getName().startsWith(LIB_DIR)
-                        && bcpEntry.getName().endsWith(JAR_EXT)) {
-                    String jarName = bcpEntry.getName().substring(
-                            LIB_DIR.length());
+                if (bcpEntry.getName().startsWith(LIB_DIR) && bcpEntry.getName().endsWith(JAR_EXT)) {
+                    String jarName = bcpEntry.getName().substring(LIB_DIR.length());
                     if (!jarName.contains("/")) {
                         // This jar is already first level jar in WEB-INF/lib
                         return;
@@ -167,8 +156,7 @@ public final class WAB extends OSGiJavaEEArchive {
 
                 // do special processing for Bundle-ClassPath DOT
                 if (bcpEntry.getName().equals(DOT)) {
-                    final String newJarName = LIB_DIR + "Bundle"
-                            + bcpEntry.getBundle().getBundleId() + JAR_EXT;
+                    final String newJarName = LIB_DIR + "Bundle" + bcpEntry.getBundle().getBundleId() + JAR_EXT;
                     getEntries().put(newJarName, new ArchiveEntry() {
                         @Override
                         public String getName() {
@@ -181,17 +169,13 @@ public final class WAB extends OSGiJavaEEArchive {
                         }
 
                         @Override
-                        public InputStream getInputStream()
-                                throws IOException {
+                        public InputStream getInputStream() throws IOException {
 
-                            return getArchive(bcpEntry.getBundle())
-                                    .getInputStream();
+                            return getArchive(bcpEntry.getBundle()).getInputStream();
                         }
                     });
                 } else {
-                    final String newJarName = LIB_DIR + "Bundle"
-                            + bcpEntry.getBundle().getBundleId() + "-"
-                            + bcpEntry.getName().replace('/', '-') + JAR_EXT;
+                    final String newJarName = LIB_DIR + "Bundle" + bcpEntry.getBundle().getBundleId() + "-" + bcpEntry.getName().replace('/', '-') + JAR_EXT;
                     getEntries().put(newJarName, new ArchiveEntry() {
                         @Override
                         public String getName() {
@@ -201,13 +185,11 @@ public final class WAB extends OSGiJavaEEArchive {
                         @Override
                         public URI getURI() throws URISyntaxException {
 
-                            return bcpEntry.getBundle()
-                                    .getEntry(bcpEntry.getName()).toURI();
+                            return bcpEntry.getBundle().getEntry(bcpEntry.getName()).toURI();
                         }
 
                         @Override
-                        public InputStream getInputStream()
-                                throws IOException {
+                        public InputStream getInputStream() throws IOException {
 
                             try {
                                 return getURI().toURL().openStream();

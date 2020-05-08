@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -33,16 +33,14 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * This is a stateful service. It is responsible for undeployment of the
- * artifact from JavaEE runtime.
+ * This is a stateful service. It is responsible for undeployment of the artifact from JavaEE runtime.
  */
 public abstract class OSGiUndeploymentRequest {
 
     /**
      * Logger.
      */
-    private static final Logger LOGGER = Logger.getLogger(
-            OSGiUndeploymentRequest.class.getPackage().getName());
+    private static final Logger LOGGER = Logger.getLogger(OSGiUndeploymentRequest.class.getPackage().getName());
 
     /**
      * GlassFish deployer.
@@ -66,13 +64,13 @@ public abstract class OSGiUndeploymentRequest {
 
     /**
      * Create a new instance.
+     * 
      * @param gfDeployer the GlassFish deployer
      * @param gfEnv the GlassFish server environment
      * @param gfReporter the GlassFish command reporter
      * @param appInfo the OSGi application info
      */
-    public OSGiUndeploymentRequest(final Deployment gfDeployer,
-            final ServerEnvironmentImpl gfEnv, final ActionReport gfReporter,
+    public OSGiUndeploymentRequest(final Deployment gfDeployer, final ServerEnvironmentImpl gfEnv, final ActionReport gfReporter,
             final OSGiApplicationInfo appInfo) {
 
         this.deployer = gfDeployer;
@@ -102,13 +100,7 @@ public abstract class OSGiUndeploymentRequest {
         // context as that leads to creation of class loaders again.
         OSGiDeploymentContext dc;
         try {
-            dc = getDeploymentContextImpl(
-                    reporter,
-                    LOGGER,
-                    osgiAppInfo.getAppInfo().getSource(),
-                    getUndeployParams(osgiAppInfo),
-                    env,
-                    osgiAppInfo.getBundle());
+            dc = getDeploymentContextImpl(reporter, LOGGER, osgiAppInfo.getAppInfo().getSource(), getUndeployParams(osgiAppInfo), env, osgiAppInfo.getBundle());
         } catch (Exception e) {
             // TODO(Sahoo): Proper Exception Handling
             throw new RuntimeException(e);
@@ -133,8 +125,7 @@ public abstract class OSGiUndeploymentRequest {
         // It uses fields directly.
         // We actually override the getClassLoader method and want that to be
         // used.
-        closeClassLoaders(Arrays.asList(osgiAppInfo.getClassLoader(),
-                dc.getShareableTempClassLoader(), dc.getFinalClassLoader()));
+        closeClassLoaders(Arrays.asList(osgiAppInfo.getClassLoader(), dc.getShareableTempClassLoader(), dc.getFinalClassLoader()));
 
         if (!osgiAppInfo.isDirectoryDeployment()) {
             // We can always assume dc.getSourceDir will return a valid file
@@ -146,28 +137,23 @@ public abstract class OSGiUndeploymentRequest {
 
     /**
      * Close the given class-loaders.
+     * 
      * @param os list of class-loaders to close
      */
     private void closeClassLoaders(final List<? extends Object> os) {
         for (Object o : os) {
             if (preDestroy(o)) {
-                LOGGER.logp(Level.INFO, "OSGiUndeploymentRequest",
-                        "closeClassLoaders",
-                        "ClassLoader [ {0} ] has been closed.",
-                        new Object[]{o});
+                LOGGER.logp(Level.INFO, "OSGiUndeploymentRequest", "closeClassLoaders", "ClassLoader [ {0} ] has been closed.", new Object[] { o });
             }
         }
     }
 
     /**
-     * Calls preDestroy method. Since PreDestroy has changed incompatibly
-     * between HK2 1.x and 2.x, We can't rely on class name. So, we use this
-     * ugly work around to be compatible with both GF 3.x (which uses older
-     * package name for PreDestroy and 4.0 (which uses new package name for
-     * PreDestroy).
+     * Calls preDestroy method. Since PreDestroy has changed incompatibly between HK2 1.x and 2.x, We can't rely on class
+     * name. So, we use this ugly work around to be compatible with both GF 3.x (which uses older package name for
+     * PreDestroy and 4.0 (which uses new package name for PreDestroy).
      *
-     * @param o Object whose preDestroy method needs to be called if such a
-     * method exists
+     * @param o Object whose preDestroy method needs to be called if such a method exists
      * @return true if such a method was successfully called, false otherwise
      */
     private boolean preDestroy(final Object o) {
@@ -184,6 +170,7 @@ public abstract class OSGiUndeploymentRequest {
 
     /**
      * Get the deployment context.
+     * 
      * @param gfReporter the GlassFish command reporter
      * @param logger the logger to use
      * @param source the application archive
@@ -193,33 +180,29 @@ public abstract class OSGiUndeploymentRequest {
      * @return OSGiDeploymentContext
      * @throws Exception if an error occurs
      */
-    protected abstract OSGiDeploymentContext getDeploymentContextImpl(
-            ActionReport gfReporter, Logger logger, ReadableArchive source,
-            UndeployCommandParameters undeployParams,
-            ServerEnvironmentImpl gfEnv, Bundle bnd)
-            throws Exception;
+    protected abstract OSGiDeploymentContext getDeploymentContextImpl(ActionReport gfReporter, Logger logger, ReadableArchive source,
+            UndeployCommandParameters undeployParams, ServerEnvironmentImpl gfEnv, Bundle bnd) throws Exception;
 
     /**
      * Cleanup the given directory.
+     * 
      * @param dir directory to be cleaned-up
      */
     private void cleanup(final File dir) {
         assert (dir.isDirectory() && dir.exists());
         FileUtils.whack(dir);
-        LOGGER.logp(Level.INFO, "OSGiUndeploymentRequest", "cleanup",
-                "Deleted {0}", new Object[]{dir});
+        LOGGER.logp(Level.INFO, "OSGiUndeploymentRequest", "cleanup", "Deleted {0}", new Object[] { dir });
     }
 
     /**
      * Get the GlassFish undeploy command parameters.
+     * 
      * @param appInfo the application to undeploy
      * @return UndeployCommandParameters
      */
-    protected UndeployCommandParameters getUndeployParams(
-            final OSGiApplicationInfo appInfo) {
+    protected UndeployCommandParameters getUndeployParams(final OSGiApplicationInfo appInfo) {
 
-        UndeployCommandParameters parameters
-                = new UndeployCommandParameters();
+        UndeployCommandParameters parameters = new UndeployCommandParameters();
         parameters.name = appInfo.getAppInfo().getName();
         parameters.origin = DeployCommandParameters.Origin.undeploy;
         return parameters;
@@ -227,6 +210,7 @@ public abstract class OSGiUndeploymentRequest {
 
     /**
      * Get the application info.
+     * 
      * @return OSGiApplicationInfo
      */
     protected OSGiApplicationInfo getOsgiAppInfo() {

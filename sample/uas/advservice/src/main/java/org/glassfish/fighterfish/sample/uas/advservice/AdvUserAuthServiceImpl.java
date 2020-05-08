@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Distribution License v. 1.0, which is available at
@@ -43,6 +43,7 @@ public final class AdvUserAuthServiceImpl implements UserAuthService {
 
     /**
      * Create a new instance.
+     * 
      * @param bndActivator bundle activator
      */
     public AdvUserAuthServiceImpl(final AdvSvcImplActivator bndActivator) {
@@ -75,9 +76,7 @@ public final class AdvUserAuthServiceImpl implements UserAuthService {
     }
 
     @Override
-    public boolean register(
-            @NotNull @Size(min = MIN_NAME_LENGHT) final String name,
-            @NotNull @Size(min = MIN_PASWORD_LENGTH) final String password) {
+    public boolean register(@NotNull @Size(min = MIN_NAME_LENGHT) final String name, @NotNull @Size(min = MIN_PASWORD_LENGTH) final String password) {
 
         boolean startedTX = startTX();
         try {
@@ -154,13 +153,13 @@ public final class AdvUserAuthServiceImpl implements UserAuthService {
 
     /**
      * Actual implementation of the login method.
+     * 
      * @param name user name
      * @param password user passowrd
      * @param em entity manager
      * @return {@code true} if authenticated, {@code false} otherwise
      */
-    private boolean login2(final String name, final String password,
-            final EntityManager em) {
+    private boolean login2(final String name, final String password, final EntityManager em) {
 
         UserCredential uc = em.find(UserCredential.class, name);
         boolean result = (uc != null && password.equals(uc.getPassword()));
@@ -180,13 +179,13 @@ public final class AdvUserAuthServiceImpl implements UserAuthService {
 
     /**
      * Actual implementation of the register method.
+     * 
      * @param name user name
      * @param password user password
      * @param em entity manager
      * @return {@code true} if registered, {@code false} otherwise
      */
-    private boolean register2(final String name, final String password,
-            final EntityManager em) {
+    private boolean register2(final String name, final String password, final EntityManager em) {
 
         UserCredential uc = em.find(UserCredential.class, name);
         if (uc != null) {
@@ -202,6 +201,7 @@ public final class AdvUserAuthServiceImpl implements UserAuthService {
 
     /**
      * Actual implementation of the unregister method.
+     * 
      * @param name user name
      * @param em entity manager
      * @return {@code true} if unregistered, {@code false} otherwise
@@ -219,14 +219,13 @@ public final class AdvUserAuthServiceImpl implements UserAuthService {
 
     /**
      * Actual implementation of the report method.
+     * 
      * @param em entity manager
      * @return report string
      */
     @SuppressWarnings("unchecked")
     private String getReport2(final EntityManager em) {
-        List<LoginAttempt> attempts = em
-                .createNamedQuery("LoginAttempt.findAll")
-                .getResultList();
+        List<LoginAttempt> attempts = em.createNamedQuery("LoginAttempt.findAll").getResultList();
         log("Number of entries found: " + attempts.size());
         StringBuilder report = new StringBuilder("Login Attempt Report:\n");
         for (LoginAttempt attempt : attempts) {
@@ -237,6 +236,7 @@ public final class AdvUserAuthServiceImpl implements UserAuthService {
 
     /**
      * Log a message to the standard output.
+     * 
      * @param msg message to log
      */
     private void log(final String msg) {
@@ -252,7 +252,7 @@ public final class AdvUserAuthServiceImpl implements UserAuthService {
     private boolean startTX() {
         UserTransaction utx = getUTX();
         try {
-            if (utx.getStatus() == 6) {  // NO_TRANSACTION
+            if (utx.getStatus() == 6) { // NO_TRANSACTION
                 utx.begin();
                 return true;
             }
@@ -265,8 +265,7 @@ public final class AdvUserAuthServiceImpl implements UserAuthService {
     }
 
     /**
-     * Commit or rollback a transaction depending on rollback flag set in the
-     * tx.
+     * Commit or rollback a transaction depending on rollback flag set in the tx.
      */
     private void endTX() {
         try {
@@ -299,6 +298,7 @@ public final class AdvUserAuthServiceImpl implements UserAuthService {
 
     /**
      * Get the user transaction.
+     * 
      * @return UserTransaction
      */
     private UserTransaction getUTX() {
@@ -307,6 +307,7 @@ public final class AdvUserAuthServiceImpl implements UserAuthService {
 
     /**
      * Get the entity manager.
+     * 
      * @return EntityManager
      */
     private EntityManager getEM() {

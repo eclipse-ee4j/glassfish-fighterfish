@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -36,24 +36,24 @@ class ContextPathCollisionException extends DeploymentException {
 
     /**
      * Create a new instance.
+     * 
      * @param ctxPath context path for which collision is detected
-     * @param wabIds bundle id of the WABs that have same context path.
-     * The last entry denotes the current bundle being deployed
+     * @param wabIds bundle id of the WABs that have same context path. The last entry denotes the current bundle being
+     * deployed
      */
     ContextPathCollisionException(final String ctxPath, final Long[] wabIds) {
 
         if (wabIds.length < 2) {
-            throw new IllegalArgumentException(
-                    "At least two WAB ids are needed");
+            throw new IllegalArgumentException("At least two WAB ids are needed");
         }
         this.contextPath = ctxPath;
-        this.collidingWabIds = Arrays.copyOf(wabIds,
-                wabIds.length);
+        this.collidingWabIds = Arrays.copyOf(wabIds, wabIds.length);
         Arrays.sort(this.collidingWabIds);
     }
 
     /**
      * Get the context path.
+     * 
      * @return context path
      */
     public String getContextPath() {
@@ -62,6 +62,7 @@ class ContextPathCollisionException extends DeploymentException {
 
     /**
      * Get the colliding web application bundle id.
+     * 
      * @return Long[]
      */
     public Long[] getCollidingWabIds() {
@@ -71,8 +72,7 @@ class ContextPathCollisionException extends DeploymentException {
 
     @Override
     public String getMessage() {
-        StringBuilder sb = new StringBuilder("context path [" + contextPath
-                + "] is same for following bundles: [");
+        StringBuilder sb = new StringBuilder("context path [" + contextPath + "] is same for following bundles: [");
         for (int i = 0; i < collidingWabIds.length; i++) {
             sb.append(collidingWabIds[i]);
             if (i != collidingWabIds.length - 1) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Distribution License v. 1.0, which is available at
@@ -17,12 +17,11 @@ import org.osgi.service.http.NamespaceException;
 import org.osgi.util.tracker.ServiceTracker;
 
 /**
- * This activator demonstrates how to use HttpService using a ServiceTracker. It
- * demonstrates registerReosurce method of HttpService.
+ * This activator demonstrates how to use HttpService using a ServiceTracker. It demonstrates registerReosurce method of
+ * HttpService.
  *
- * The secondary reason for having this activator is that it causes HttpService
- * class to be loaded which in turn activates osgi-http bundle of GlassFish,
- * which uses lazy activation policy.
+ * The secondary reason for having this activator is that it causes HttpService class to be loaded which in turn
+ * activates osgi-http bundle of GlassFish, which uses lazy activation policy.
  */
 public final class HelloWorldHttpActivator implements BundleActivator {
 
@@ -34,17 +33,14 @@ public final class HelloWorldHttpActivator implements BundleActivator {
     @Override
     @SuppressWarnings("unchecked")
     public void start(final BundleContext context) throws Exception {
-        tracker = new ServiceTracker(context, HttpService.class.getName(),
-                null) {
+        tracker = new ServiceTracker(context, HttpService.class.getName(), null) {
 
             @Override
             public Object addingService(final ServiceReference reference) {
-                HttpService http = HttpService.class.cast(
-                        context.getService(reference));
+                HttpService http = HttpService.class.cast(context.getService(reference));
                 try {
                     // maps hello.html to helloworld.html
-                    http.registerResources("/hello.html", "helloworld.html",
-                            null);
+                    http.registerResources("/hello.html", "helloworld.html", null);
                 } catch (NamespaceException e) {
                     e.printStackTrace();
                 }
@@ -52,11 +48,9 @@ public final class HelloWorldHttpActivator implements BundleActivator {
             }
 
             @Override
-            public void removedService(final ServiceReference reference,
-                    final Object service) {
+            public void removedService(final ServiceReference reference, final Object service) {
 
-                HttpService http = HttpService.class.cast(
-                        context.getService(reference));
+                HttpService http = HttpService.class.cast(context.getService(reference));
                 try {
                     http.unregister("/hello.html");
                 } catch (Exception e) {

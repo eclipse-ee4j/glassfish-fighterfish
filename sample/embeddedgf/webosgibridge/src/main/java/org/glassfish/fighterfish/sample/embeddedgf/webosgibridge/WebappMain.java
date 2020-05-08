@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Distribution License v. 1.0, which is available at
@@ -28,20 +28,21 @@ public final class WebappMain implements ServletContextListener {
 
     /**
      * OSGi framework JDNI name.
+     * 
      * @see OSGiFrameworkProvisioner#osgiFrameWorkJndiName
      */
-    private String osgiFrameWorkJndiName = OSGiFrameworkProvisioner
-            .FW_JNDI_NAME_DEFAULT;
+    private String osgiFrameWorkJndiName = OSGiFrameworkProvisioner.FW_JNDI_NAME_DEFAULT;
 
     /**
      * OSGi framework config file path.
+     * 
      * @see OSGiFrameworkProvisioner#osgiFrameworkConfigFilePath
      */
-    private String osgiFrameworkConfigFilePath = OSGiFrameworkProvisioner
-            .FW_CONFIG_FILE_DEFAULT;
+    private String osgiFrameworkConfigFilePath = OSGiFrameworkProvisioner.FW_CONFIG_FILE_DEFAULT;
 
     /**
      * Set the OSGi framework name.
+     * 
      * @param jndiName JNDI name
      */
     @Resource
@@ -51,6 +52,7 @@ public final class WebappMain implements ServletContextListener {
 
     /**
      * Set the OSGi framework config file path.
+     * 
      * @param configFilePath config file path
      */
     @Resource
@@ -60,19 +62,14 @@ public final class WebappMain implements ServletContextListener {
     }
 
     @Override
-    public void contextInitialized(
-            final ServletContextEvent servletContextEvent) {
+    public void contextInitialized(final ServletContextEvent servletContextEvent) {
 
-        frameworkProvisioner = new OSGiFrameworkProvisioner(
-                servletContextEvent.getServletContext(),
-                osgiFrameworkConfigFilePath,
-                osgiFrameWorkJndiName);
+        frameworkProvisioner = new OSGiFrameworkProvisioner(servletContextEvent.getServletContext(), osgiFrameworkConfigFilePath, osgiFrameWorkJndiName);
         frameworkProvisioner.start();
     }
 
     @Override
-    public void contextDestroyed(
-            final ServletContextEvent servletContextEvent) {
+    public void contextDestroyed(final ServletContextEvent servletContextEvent) {
 
         frameworkProvisioner.stop();
         frameworkProvisioner = null;

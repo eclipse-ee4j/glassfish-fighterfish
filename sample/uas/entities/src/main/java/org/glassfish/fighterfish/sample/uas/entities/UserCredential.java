@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Distribution License v. 1.0, which is available at
@@ -55,6 +55,7 @@ public class UserCredential implements Serializable {
 
     /**
      * Get the user name.
+     * 
      * @return user name
      */
     public String getName() {
@@ -63,6 +64,7 @@ public class UserCredential implements Serializable {
 
     /**
      * Set the user name.
+     * 
      * @param username new name
      */
     public void setName(final String username) {
@@ -71,6 +73,7 @@ public class UserCredential implements Serializable {
 
     /**
      * Get the user password.
+     * 
      * @return password
      */
     public String getPassword() {
@@ -79,6 +82,7 @@ public class UserCredential implements Serializable {
 
     /**
      * Set the user password.
+     * 
      * @param passwd new password
      */
     public void setPassword(final String passwd) {
@@ -87,6 +91,7 @@ public class UserCredential implements Serializable {
 
     /**
      * Set the login attempts.
+     * 
      * @param attemps new login attempts
      */
     public void setLoginAttempts(final List<LoginAttempt> attemps) {
@@ -95,6 +100,7 @@ public class UserCredential implements Serializable {
 
     /**
      * Get the login attempts.
+     * 
      * @return list of login attempts
      */
     public List<LoginAttempt> getLoginAttempts() {

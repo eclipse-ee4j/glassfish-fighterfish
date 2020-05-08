@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -53,8 +53,7 @@ public final class JarHelper {
     /**
      * Logger.
      */
-    private static final Logger LOGGER = Logger.getLogger(
-            JarHelper.class.getPackage().getName());
+    private static final Logger LOGGER = Logger.getLogger(JarHelper.class.getPackage().getName());
 
     /**
      * Simple visitor interface.
@@ -63,6 +62,7 @@ public final class JarHelper {
 
         /**
          * Visit an entry.
+         * 
          * @param je jar entry
          */
         void visit(JarEntry je);
@@ -70,33 +70,29 @@ public final class JarHelper {
 
     /**
      * Traverse a given jar with the given visitor.
+     * 
      * @param jis jar input stream
      * @param visitor visitor instance
      * @throws IOException if an error occurs
      */
-    public static void accept(final JarInputStream jis,
-            final Visitor visitor)
-            throws IOException {
+    public static void accept(final JarInputStream jis, final Visitor visitor) throws IOException {
 
         JarEntry je;
         while ((je = jis.getNextJarEntry()) != null) {
-            LOGGER.logp(Level.FINE, "JarHelper", "accept", "je = ${0}",
-                    new Object[]{je});
+            LOGGER.logp(Level.FINE, "JarHelper", "accept", "je = ${0}", new Object[] { je });
             visitor.visit(je);
         }
     }
 
     /**
-     * A utility method which reads contents from a URLConnection and writes it
-     * out a Jar output stream. It reads everything except manifest from the
-     * input. Closing of output stream is caller's responsibility.
+     * A utility method which reads contents from a URLConnection and writes it out a Jar output stream. It reads everything
+     * except manifest from the input. Closing of output stream is caller's responsibility.
      *
      * @param con URLConnection to be used as input
      * @param os Output stream to write to
      * @param m Manifest to be written out - cannot be null
      */
-    public static void write(final URLConnection con, final OutputStream os,
-            final Manifest m) {
+    public static void write(final URLConnection con, final OutputStream os, final Manifest m) {
 
         try {
             InputStream in = con.getInputStream();
@@ -131,18 +127,15 @@ public final class JarHelper {
     }
 
     /**
-     * A utility method to help write content of a Jar input stream to a Jar
-     * output stream. It reads everything except manifest from the supplied
-     * InputStream. Closing of streams is caller's responsibility.
+     * A utility method to help write content of a Jar input stream to a Jar output stream. It reads everything except
+     * manifest from the supplied InputStream. Closing of streams is caller's responsibility.
      *
      * @param jis input stream to read from
      * @param jos output stream to write to
      * @throws IOException if an error occurs
      */
     @SuppressWarnings("checkstyle:magicnumber")
-    public static void write(final JarInputStream jis,
-            final JarOutputStream jos)
-            throws IOException {
+    public static void write(final JarInputStream jis, final JarOutputStream jos) throws IOException {
 
         // Copy each entry from input to output
         // The manifest.mf is automatically excluded,
@@ -150,8 +143,7 @@ public final class JarHelper {
         ByteBuffer byteBuffer = ByteBuffer.allocate(10240);
         ZipEntry ze;
         while ((ze = jis.getNextEntry()) != null) {
-            LOGGER.logp(Level.FINE, "JarHelper", "write", "ze = {0}",
-                    new Object[]{ze});
+            LOGGER.logp(Level.FINE, "JarHelper", "write", "ze = {0}", new Object[] { ze });
             jos.putNextEntry(ze);
             copy(jis, jos, byteBuffer);
             jos.closeEntry();
@@ -159,18 +151,16 @@ public final class JarHelper {
     }
 
     /**
-     * A utility method to make a JarInputStream out of the contents of a
-     * directory. It uses a Pipe and a separate thread to write the contents to
-     * avoid deadlock. It accepts a Runnable to take action once the spawned
-     * thread has finished writing. It can be used to delete the directory.
+     * A utility method to make a JarInputStream out of the contents of a directory. It uses a Pipe and a separate thread to
+     * write the contents to avoid deadlock. It accepts a Runnable to take action once the spawned thread has finished
+     * writing. It can be used to delete the directory.
      *
      * @param dir Directory which contains the exploded bits
      * @param action A runnable to be called after output has been written
      * @return a InputStream
      * @throws IOException if an error occurs
      */
-    public static InputStream makeJar(final File dir, final Runnable action)
-            throws IOException {
+    public static InputStream makeJar(final File dir, final Runnable action) throws IOException {
 
         final PipedOutputStream pos = new PipedOutputStream();
         final PipedInputStream pis = new PipedInputStream(pos);
@@ -189,9 +179,7 @@ public final class JarHelper {
                         }
                     } else {
                         m = new Manifest();
-                        m.getMainAttributes().putValue(
-                                Attributes.Name.MANIFEST_VERSION.toString(),
-                                "1.0");
+                        m.getMainAttributes().putValue(Attributes.Name.MANIFEST_VERSION.toString(), "1.0");
                     }
                     final JarOutputStream jos = new JarOutputStream(pos, m);
                     final ByteBuffer buf = ByteBuffer.allocate(10240);
@@ -201,8 +189,7 @@ public final class JarHelper {
                         public boolean accept(final File f) {
                             try {
                                 URI entryURI = f.toURI();
-                                String entryPath = baseURI
-                                        .relativize(entryURI).getPath();
+                                String entryPath = baseURI.relativize(entryURI).getPath();
                                 if (entryPath.equals(JarFile.MANIFEST_NAME)) {
                                     return false;
                                 }
@@ -223,8 +210,7 @@ public final class JarHelper {
                                 }
                                 jos.closeEntry();
                             } catch (IOException e) {
-                                LOGGER.logp(Level.WARNING, "JarHelper",
-                                        "makeJar", "Exception occurred", e);
+                                LOGGER.logp(Level.WARNING, "JarHelper", "makeJar", "Exception occurred", e);
                                 // TODO(Sahoo): Proper Exception Handling
                                 throw new RuntimeException(e);
                             }
@@ -246,9 +232,8 @@ public final class JarHelper {
     }
 
     /**
-     * Copies input to output. To avoid unnecessary allocation of byte buffers,
-     * this method takes a byte buffer as argument. It clears the byte buffer at
-     * the end of the operation.
+     * Copies input to output. To avoid unnecessary allocation of byte buffers, this method takes a byte buffer as argument.
+     * It clears the byte buffer at the end of the operation.
      *
      * @param in input stream
      * @param out output stream
@@ -256,9 +241,7 @@ public final class JarHelper {
      * @throws IOException if an error occurs
      */
     @SuppressWarnings("checkstyle:emptyblock")
-    public static void copy(final InputStream in, final OutputStream out,
-            final ByteBuffer byteBuffer)
-            throws IOException {
+    public static void copy(final InputStream in, final OutputStream out, final ByteBuffer byteBuffer) throws IOException {
 
         try {
             ReadableByteChannel inChannel = Channels.newChannel(in);
@@ -274,8 +257,7 @@ public final class JarHelper {
                     while ((written += outChannel.write(byteBuffer)) < read) {
                         // write all bytes
                     }
-                    LOGGER.logp(Level.FINE, "JarHelper", "write",
-                            "Copied {0} bytes", new Object[]{read});
+                    LOGGER.logp(Level.FINE, "JarHelper", "write", "Copied {0} bytes", new Object[] { read });
                     byteBuffer.clear();
                 }
             } while (read != -1);

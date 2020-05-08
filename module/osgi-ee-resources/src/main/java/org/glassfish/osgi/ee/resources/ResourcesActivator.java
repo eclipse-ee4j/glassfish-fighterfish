@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -31,8 +31,7 @@ public final class ResourcesActivator implements BundleActivator {
     /**
      * Logger.
      */
-    private static final Logger LOGGER = Logger.getLogger(
-            ResourcesActivator.class.getPackage().getName());
+    private static final Logger LOGGER = Logger.getLogger(ResourcesActivator.class.getPackage().getName());
 
     /**
      * Service registration for the extender service.
@@ -42,8 +41,7 @@ public final class ResourcesActivator implements BundleActivator {
     @Override
     public void start(final BundleContext bundleContext) throws Exception {
         ResourcesExtender extender = new ResourcesExtender(bundleContext);
-        extenderReg = bundleContext.registerService(Extender.class.getName(),
-                extender, null);
+        extenderReg = bundleContext.registerService(Extender.class.getName(), extender, null);
         debug("Bundle activated");
     }
 
@@ -55,6 +53,7 @@ public final class ResourcesActivator implements BundleActivator {
 
     /**
      * Log a message at the {@code FINEST} level.
+     * 
      * @param msg message to log
      */
     private void debug(final String msg) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -35,22 +35,18 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * This extender is responsible for detecting and deploying any Java EE OSGi
- * bundle. Implementation Note: All methods are synchronized, because we don't
- * allow the extender to stop while it is deploying or undeploying something.
- * Similarly, while it is being stopped, we don't want it to deploy or undeploy
- * something. After receiving the event, it spawns a separate thread to carry
- * out the task so that we don't spend long time in the synchronous event
- * listener. More over, that can lead to deadlocks as observed in
- * https://glassfish.dev.java.net/issues/show_bug.cgi?id=14313.
+ * This extender is responsible for detecting and deploying any Java EE OSGi bundle. Implementation Note: All methods
+ * are synchronized, because we don't allow the extender to stop while it is deploying or undeploying something.
+ * Similarly, while it is being stopped, we don't want it to deploy or undeploy something. After receiving the event, it
+ * spawns a separate thread to carry out the task so that we don't spend long time in the synchronous event listener.
+ * More over, that can lead to deadlocks as observed in https://glassfish.dev.java.net/issues/show_bug.cgi?id=14313.
  */
 public final class JavaEEExtender implements Extender {
 
     /**
      * Property name for deployment timeout configuration.
      */
-    private static final String DEPLOYMENT_TIMEOUT
-            = "org.glassfish.osgijavaeebase.deployment.timeout";
+    private static final String DEPLOYMENT_TIMEOUT = "org.glassfish.osgijavaeebase.deployment.timeout";
 
     /**
      * Default deployment timeout value.
@@ -60,8 +56,7 @@ public final class JavaEEExtender implements Extender {
     /**
      * Logger.
      */
-    private static final Logger LOGGER = Logger.getLogger(
-            JavaEEExtender.class.getPackage().getName());
+    private static final Logger LOGGER = Logger.getLogger(JavaEEExtender.class.getPackage().getName());
 
     /**
      * Bundle context.
@@ -90,6 +85,7 @@ public final class JavaEEExtender implements Extender {
 
     /**
      * Create a new instance.
+     * 
      * @param bundleContext bundle context
      */
     public JavaEEExtender(final BundleContext bundleContext) {
@@ -103,8 +99,7 @@ public final class JavaEEExtender implements Extender {
         c = new OSGiContainer(context);
         c.init();
         reg = context.registerService(OSGiContainer.class.getName(), c, null);
-        tracker = new BundleTracker(context, Bundle.ACTIVE | Bundle.STARTING,
-                new HybridBundleTrackerCustomizer());
+        tracker = new BundleTracker(context, Bundle.ACTIVE | Bundle.STARTING, new HybridBundleTrackerCustomizer());
         tracker.open();
     }
 
@@ -126,11 +121,10 @@ public final class JavaEEExtender implements Extender {
     }
 
     /**
-     * Initiate the deployment action of the given bundle against the OSGi
-     * container.
+     * Initiate the deployment action of the given bundle against the OSGi container.
+     * 
      * @param bundle bundle to be deployed
-     * @return OSGiApplicationInfo or {@code null} if the container is not
-     * started or if an error occurs during deployment
+     * @return OSGiApplicationInfo or {@code null} if the container is not started or if an error occurs during deployment
      */
     private synchronized OSGiApplicationInfo deploy(final Bundle bundle) {
         if (!isStarted()) {
@@ -139,18 +133,15 @@ public final class JavaEEExtender implements Extender {
         try {
             return c.deploy(bundle);
         } catch (Throwable e) {
-            LOGGER.logp(Level.SEVERE, "JavaEEExtender", "deploy",
-                    "Exception deploying bundle {0}",
-                    new Object[]{bundle.getLocation()});
-            LOGGER.logp(Level.SEVERE, "JavaEEExtender", "deploy",
-                    "Exception Stack Trace", e);
+            LOGGER.logp(Level.SEVERE, "JavaEEExtender", "deploy", "Exception deploying bundle {0}", new Object[] { bundle.getLocation() });
+            LOGGER.logp(Level.SEVERE, "JavaEEExtender", "deploy", "Exception Stack Trace", e);
         }
         return null;
     }
 
     /**
-     * Initiate the undeployment action of the given bundle against the OSGi
-     * container.
+     * Initiate the undeployment action of the given bundle against the OSGi container.
+     * 
      * @param bundle bundle to be deployed
      */
     private synchronized void undeploy(final Bundle bundle) {
@@ -162,16 +153,14 @@ public final class JavaEEExtender implements Extender {
                 c.undeploy(bundle);
             }
         } catch (Exception e) {
-            LOGGER.logp(Level.SEVERE, "JavaEEExtender", "undeploy",
-                    "Exception undeploying bundle {0}",
-                    new Object[]{bundle.getLocation()});
-            LOGGER.logp(Level.SEVERE, "JavaEEExtender", "undeploy",
-                    "Exception Stack Trace", e);
+            LOGGER.logp(Level.SEVERE, "JavaEEExtender", "undeploy", "Exception undeploying bundle {0}", new Object[] { bundle.getLocation() });
+            LOGGER.logp(Level.SEVERE, "JavaEEExtender", "undeploy", "Exception Stack Trace", e);
         }
     }
 
     /**
      * Test if the OSGi container is started.
+     * 
      * @return {@code true} if started, {@code false} otherwise
      */
     private boolean isStarted() {
@@ -183,26 +172,22 @@ public final class JavaEEExtender implements Extender {
     /**
      * A bundle tracker customizer to deploy asynchronously.
      */
-    private class HybridBundleTrackerCustomizer
-            implements BundleTrackerCustomizer {
+    private class HybridBundleTrackerCustomizer implements BundleTrackerCustomizer {
 
         /**
          * The deployment tasks executed asynchronously.
          */
-        private final Map<Long, Future<OSGiApplicationInfo>> deploymentTasks
-                = new ConcurrentHashMap<Long, Future<OSGiApplicationInfo>>();
+        private final Map<Long, Future<OSGiApplicationInfo>> deploymentTasks = new ConcurrentHashMap<Long, Future<OSGiApplicationInfo>>();
 
         @Override
-        public Object addingBundle(final Bundle bundle,
-                final BundleEvent event) {
+        public Object addingBundle(final Bundle bundle, final BundleEvent event) {
 
             if (!isStarted()) {
                 return null;
             }
             final int state = bundle.getState();
             if (isReady(event, state)) {
-                Future<OSGiApplicationInfo> future = executorService
-                        .submit(new Callable<OSGiApplicationInfo>() {
+                Future<OSGiApplicationInfo> future = executorService.submit(new Callable<OSGiApplicationInfo>() {
                     @Override
                     public OSGiApplicationInfo call() throws Exception {
                         return deploy(bundle);
@@ -215,34 +200,27 @@ public final class JavaEEExtender implements Extender {
         }
 
         /**
-         * Bundle is ready when its state is ACTIVE or, when a lazy activation
-         * policy is used, STARTING.
+         * Bundle is ready when its state is ACTIVE or, when a lazy activation policy is used, STARTING.
          *
          * @param event the bundle event
          * @param state the bundle state
          * @return {@code true} if ready, {@code false} otherwise
          */
         private boolean isReady(final BundleEvent event, final int state) {
-            return state == Bundle.ACTIVE
-                    || (state == Bundle.STARTING
-                    && (event != null
-                    && event.getType() == BundleEvent.LAZY_ACTIVATION));
+            return state == Bundle.ACTIVE || (state == Bundle.STARTING && (event != null && event.getType() == BundleEvent.LAZY_ACTIVATION));
         }
 
         @Override
-        public void modifiedBundle(final Bundle bundle, final BundleEvent event,
-                final Object object) {
+        public void modifiedBundle(final Bundle bundle, final BundleEvent event, final Object object) {
         }
 
         @Override
-        public void removedBundle(final Bundle bundle, final BundleEvent event,
-                final Object object) {
+        public void removedBundle(final Bundle bundle, final BundleEvent event, final Object object) {
 
             if (!isStarted()) {
                 return;
             }
-            Future<OSGiApplicationInfo> deploymentTask = deploymentTasks
-                    .remove(bundle.getBundleId());
+            Future<OSGiApplicationInfo> deploymentTask = deploymentTasks.remove(bundle.getBundleId());
             if (deploymentTask == null) {
                 // We have never seen this bundle before. Ideally we should
                 // never get here.
@@ -252,14 +230,10 @@ public final class JavaEEExtender implements Extender {
             try {
                 OSGiApplicationInfo deployedApp = null;
                 try {
-                    deployedApp = deploymentTask.get(getDeploymentTimeout(),
-                            TimeUnit.MILLISECONDS);
+                    deployedApp = deploymentTask.get(getDeploymentTimeout(), TimeUnit.MILLISECONDS);
                 } catch (TimeoutException e) {
-                    LOGGER.logp(Level.FINE,
-                            "JavaEEExtender$HybridBundleTrackerCustomizer",
-                            "removedBundle",
-                            "Undeployer times out waiting for deployment to"
-                                    + " finish for bundle " + bundle, e);
+                    LOGGER.logp(Level.FINE, "JavaEEExtender$HybridBundleTrackerCustomizer", "removedBundle",
+                            "Undeployer times out waiting for deployment to" + " finish for bundle " + bundle, e);
                     boolean isCancelled = deploymentTask.cancel(true);
                     if (!isCancelled) {
                         // cancellation of timer won't be successful if the
@@ -267,10 +241,8 @@ public final class JavaEEExtender implements Extender {
                         // cancel
                         deployedApp = deploymentTask.get();
                     } else {
-                        LOGGER.logp(Level.INFO,
-                                "JavaEEExtender$HybridBundleTrackerCustomizer",
-                                "removedBundle", "isCancelled = {0}",
-                                new Object[]{isCancelled});
+                        LOGGER.logp(Level.INFO, "JavaEEExtender$HybridBundleTrackerCustomizer", "removedBundle", "isCancelled = {0}",
+                                new Object[] { isCancelled });
                     }
                 }
                 // It is not sufficient to check the future only, as the
@@ -289,14 +261,13 @@ public final class JavaEEExtender implements Extender {
                 // TODO(Sahoo): Proper Exception Handling
                 throw new RuntimeException(e);
             } catch (ExecutionException e) {
-                LOGGER.logp(Level.FINE,
-                        "JavaEEExtender$HybridBundleTrackerCustomizer",
-                        "removedBundle", "e = {0}", new Object[]{e});
+                LOGGER.logp(Level.FINE, "JavaEEExtender$HybridBundleTrackerCustomizer", "removedBundle", "e = {0}", new Object[] { e });
             }
         }
 
         /**
          * Get the configured deployment timeout.
+         * 
          * @return timeout
          */
         public long getDeploymentTimeout() {

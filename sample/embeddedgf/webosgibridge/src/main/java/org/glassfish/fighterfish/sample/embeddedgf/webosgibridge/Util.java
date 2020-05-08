@@ -44,32 +44,23 @@ public final class Util {
 
     /**
      * <p>
-     * This method performs property variable substitution on the specified
-     * value. If the specified value contains the syntax
-     * <tt>${&lt;prop-name&gt;}</tt>, where <tt>&lt;prop-name&gt;</tt>
-     * refers to either a configuration property or a system property, then the
-     * corresponding property value is substituted for the variable placeholder.
-     * Multiple variable placeholders may exist in the specified value as well
-     * as nested variable placeholders, which are substituted from inner most to
-     * outer most. Configuration properties override system properties.
+     * This method performs property variable substitution on the specified value. If the specified value contains the
+     * syntax <tt>${&lt;prop-name&gt;}</tt>, where <tt>&lt;prop-name&gt;</tt> refers to either a configuration property or a
+     * system property, then the corresponding property value is substituted for the variable placeholder. Multiple variable
+     * placeholders may exist in the specified value as well as nested variable placeholders, which are substituted from
+     * inner most to outer most. Configuration properties override system properties.
      * </p>
      *
      * @param val The string on which to perform property substitution.
-     * @param currentKey The key of the property being evaluated used to detect
-     * cycles.
+     * @param currentKey The key of the property being evaluated used to detect cycles.
      * @param cycleMap Map of variable references used to detect nested cycles.
      * @param configProps Set of configuration properties.
-     * @return The value of the specified string after system property
-     * substitution.
-     * @throws IllegalArgumentException If there was a syntax error in the
-     * property placeholder syntax or a recursive variable reference.
+     * @return The value of the specified string after system property substitution.
+     * @throws IllegalArgumentException If there was a syntax error in the property placeholder syntax or a recursive
+     * variable reference.
      */
-    @SuppressWarnings({
-        "checkstyle:FinalParameters",
-        "checkstyle:AvoidInlineConditionals"
-    })
-    private static String substVars(String val, final String currentKey,
-            Map<String, String> cycleMap, final Properties configProps)
+    @SuppressWarnings({ "checkstyle:FinalParameters", "checkstyle:AvoidInlineConditionals" })
+    private static String substVars(String val, final String currentKey, Map<String, String> cycleMap, final Properties configProps)
             throws IllegalArgumentException {
         /*
          * THIS METHOD HAS BEEN COPIED FROM FELIX
@@ -108,8 +99,7 @@ public final class Util {
                 return val;
             }
             while (stopDelim >= 0) {
-                int idx = val.indexOf(DELIM_START, startDelim
-                        + DELIM_START.length());
+                int idx = val.indexOf(DELIM_START, startDelim + DELIM_START.length());
                 if ((idx < 0) || (idx > stopDelim)) {
                     break;
                 } else if (idx < stopDelim) {
@@ -122,20 +112,16 @@ public final class Util {
         // we must perform a variable substitution on it.
         // Using the start and stop delimiter indices, extract
         // the first, deepest nested variable placeholder.
-        String variable
-                = val.substring(startDelim + DELIM_START.length(), stopDelim);
+        String variable = val.substring(startDelim + DELIM_START.length(), stopDelim);
 
         // Verify that this is not a recursive variable reference.
         if (cycleMap.get(variable) != null) {
-            throw new IllegalArgumentException(
-                    "recursive variable reference: " + variable);
+            throw new IllegalArgumentException("recursive variable reference: " + variable);
         }
 
         // Get the value of the deepest nested variable placeholder.
         // Try to configuration properties first.
-        String substValue = (configProps != null)
-                ? configProps.getProperty(variable, null)
-                : null;
+        String substValue = (configProps != null) ? configProps.getProperty(variable, null) : null;
         if (substValue == null) {
             // Ignore unknown property values.
             substValue = System.getProperty(variable, "");
@@ -149,9 +135,7 @@ public final class Util {
         // Append the leading characters, the substituted value of
         // the variable, and the trailing characters to get the new
         // value.
-        val = val.substring(0, startDelim)
-                + substValue
-                + val.substring(stopDelim + DELIM_STOP.length(), val.length());
+        val = val.substring(0, startDelim) + substValue + val.substring(stopDelim + DELIM_STOP.length(), val.length());
 
         // Now perform substitution again, since there could still
         // be substitutions to make.
@@ -163,14 +147,14 @@ public final class Util {
 
     /**
      * Resolve the given properties.
+     * 
      * @param props properties to resolve
      */
     public static void substVars(final Properties props) {
         // Perform variable substitution for system properties.
         for (Enumeration e = props.propertyNames(); e.hasMoreElements();) {
             String name = (String) e.nextElement();
-            props.setProperty(name,
-                    substVars(props.getProperty(name), name, null, props));
+            props.setProperty(name, substVars(props.getProperty(name), name, null, props));
         }
     }
 

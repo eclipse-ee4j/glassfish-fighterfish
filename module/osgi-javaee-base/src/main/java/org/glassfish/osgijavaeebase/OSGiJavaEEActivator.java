@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -62,14 +62,13 @@ public final class OSGiJavaEEActivator implements BundleActivator {
     }
 
     /**
-     * Create an instance of {@link JavaEEExtender} and register it as an OSGi
-     * service.
+     * Create an instance of {@link JavaEEExtender} and register it as an OSGi service.
+     * 
      * @param context the bundle context
      */
     private void addExtender(final BundleContext context) {
         JavaEEExtender extender = new JavaEEExtender(context);
-        javaeeExtenderServiceRegistration = context
-                .registerService(Extender.class.getName(), extender, null);
+        javaeeExtenderServiceRegistration = context.registerService(Extender.class.getName(), extender, null);
     }
 
     /**
@@ -80,17 +79,15 @@ public final class OSGiJavaEEActivator implements BundleActivator {
     }
 
     /**
-     * Create a new instance of {@link EmbeddedJarURLStreamHandlerService} and
-     * register it as an OSGi service.
+     * Create a new instance of {@link EmbeddedJarURLStreamHandlerService} and register it as an OSGi service.
+     * 
      * @param context the bundle context
      */
     @SuppressWarnings("unchecked")
     private void addURLHandler(final BundleContext context) {
         Dictionary p = new Properties();
         p.put(URLConstants.URL_HANDLER_PROTOCOL, EMBEDDED_JAR_SCHEME);
-        urlHandlerServiceRegistration = context
-                .registerService(URLStreamHandlerService.class.getName(),
-                        new EmbeddedJarURLStreamHandlerService(), p);
+        urlHandlerServiceRegistration = context.registerService(URLStreamHandlerService.class.getName(), new EmbeddedJarURLStreamHandlerService(), p);
     }
 
     /**

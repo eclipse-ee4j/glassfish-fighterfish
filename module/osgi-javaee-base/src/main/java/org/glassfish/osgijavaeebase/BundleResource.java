@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -28,25 +28,23 @@ public final class BundleResource {
     private final URI uri;
 
     /**
-     * Path of the resource.
-     * This is with respect to bundle class path namespace.
+     * Path of the resource. This is with respect to bundle class path namespace.
      */
     private final String path;
 
     /**
-     * Path of the sub archive from the top of the bundle containing this
-     * resource. "" if it is in the bundle directly.
+     * Path of the sub archive from the top of the bundle containing this resource. "" if it is in the bundle directly.
      */
     private final String archivePath;
 
     /**
      * Create a new instance.
+     * 
      * @param resourceUri resource URI
      * @param resourcePath resource path
      * @param subArchivePath sub archive path from the top
      */
-    BundleResource(final URI resourceUri, final String resourcePath,
-            final String subArchivePath) {
+    BundleResource(final URI resourceUri, final String resourcePath, final String subArchivePath) {
 
         this.uri = resourceUri;
         this.path = resourcePath;
@@ -55,6 +53,7 @@ public final class BundleResource {
 
     /**
      * Get the resource URI.
+     * 
      * @return URI
      */
     public URI getUri() {
@@ -63,6 +62,7 @@ public final class BundleResource {
 
     /**
      * Get the resource path.
+     * 
      * @return resource path
      */
     public String getPath() {
@@ -71,8 +71,8 @@ public final class BundleResource {
 
     /**
      * Get the sub-archive path.
-     * @return path from the top level archive, "" if it is in the bundle
-     * directly.
+     * 
+     * @return path from the top level archive, "" if it is in the bundle directly.
      */
     public String getArchivePath() {
         return archivePath;

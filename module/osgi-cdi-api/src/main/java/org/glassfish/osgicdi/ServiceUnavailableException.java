@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -18,12 +18,10 @@ package org.glassfish.osgicdi;
 import org.osgi.framework.ServiceException;
 
 /**
- * This exception is thrown to indicate that the service is unavailable. If an
- * <code>OSGiService</code> service reference is marked as dynamic, an attempt
- * is made to get a reference to the service in the OSGi Service Registry when
- * the service is used, and then the method is invoked on the newly obtained
- * service. If the service cannot be discovered or a reference obtained, the
- * <code>ServiceUnavailableException</code> is thrown.
+ * This exception is thrown to indicate that the service is unavailable. If an <code>OSGiService</code> service
+ * reference is marked as dynamic, an attempt is made to get a reference to the service in the OSGi Service Registry
+ * when the service is used, and then the method is invoked on the newly obtained service. If the service cannot be
+ * discovered or a reference obtained, the <code>ServiceUnavailableException</code> is thrown.
  */
 public final class ServiceUnavailableException extends ServiceException {
 
@@ -34,12 +32,12 @@ public final class ServiceUnavailableException extends ServiceException {
 
     /**
      * Create a new instance.
+     * 
      * @param msg exception message
      * @param type exception type
      * @param cause exception cause
      */
-    public ServiceUnavailableException(final String msg, final int type,
-            final Throwable cause) {
+    public ServiceUnavailableException(final String msg, final int type, final Throwable cause) {
 
         super(msg, type, cause);
     }

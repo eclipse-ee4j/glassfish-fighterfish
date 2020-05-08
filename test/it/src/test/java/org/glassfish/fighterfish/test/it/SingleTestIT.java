@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -15,6 +15,12 @@
  */
 package org.glassfish.fighterfish.test.it;
 
+import static org.junit.Assert.assertNotNull;
+
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.glassfish.embeddable.GlassFish;
 import org.glassfish.embeddable.GlassFishException;
 import org.glassfish.fighterfish.test.util.AbstractTestObject;
@@ -22,25 +28,17 @@ import org.glassfish.fighterfish.test.util.TestContext;
 import org.junit.Test;
 import org.osgi.framework.BundleException;
 
-import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import static org.junit.Assert.assertNotNull;
-
 /**
- * This class demonstrates how simple it is to write a test scenario using
- * pax-exam and the simple abstractions provided by our test.util bundle.
+ * This class demonstrates how simple it is to write a test scenario using pax-exam and the simple abstractions provided
+ * by our test.util bundle.
  */
 public class SingleTestIT extends AbstractTestObject {
 
-    private static final Logger LOGGER = Logger.getLogger(
-            SingleTestIT.class.getPackage().getName());
+    private static final Logger LOGGER = Logger.getLogger(SingleTestIT.class.getPackage().getName());
 
     /**
-     * Most simple test case. This test method waits a pre-configured amount of
-     * time for GlassFish to be started. If GlassFish does not start within that
-     * time, it fails.
+     * Most simple test case. This test method waits a pre-configured amount of time for GlassFish to be started. If
+     * GlassFish does not start within that time, it fails.
      *
      * @throws GlassFishException
      * @throws InterruptedException
@@ -48,16 +46,15 @@ public class SingleTestIT extends AbstractTestObject {
      * @throws IOException
      */
     @Test
-    public void test() throws GlassFishException, InterruptedException,
-            BundleException, IOException {
-
+    public void test() throws GlassFishException, InterruptedException, BundleException, IOException {
         LOGGER.logp(Level.INFO, "SingleTest", "test", "ENTRY");
-        TestContext tc = TestContext.create(getClass());
+        
+        TestContext testContext = TestContext.create(getClass());
         try {
-            GlassFish gf = tc.getGlassFish();
-            assertNotNull(gf);
+            GlassFish glassFish = testContext.getGlassFish();
+            assertNotNull(glassFish);
         } finally {
-            tc.destroy();
+            testContext.destroy();
         }
     }
 }

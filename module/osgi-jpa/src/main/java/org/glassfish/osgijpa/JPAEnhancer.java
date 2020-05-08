@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -23,24 +23,21 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /**
- * An enhancer is used to statically enhance the classes of a bundle and produce
- * a new JarInputStream which can then be used to update the supplied bundle.
+ * An enhancer is used to statically enhance the classes of a bundle and produce a new JarInputStream which can then be
+ * used to update the supplied bundle.
  */
 interface JPAEnhancer {
 
     /**
-     * Enhance the given bundles. An enhancer may have to explode the bundle in
-     * a directory so that it can scan the contents of the bundle using File or
-     * Jar APIs. If so, it is the responsibility of the enhancer to delete such
-     * temporary locations.
+     * Enhance the given bundles. An enhancer may have to explode the bundle in a directory so that it can scan the contents
+     * of the bundle using File or Jar APIs. If so, it is the responsibility of the enhancer to delete such temporary
+     * locations.
      *
      * @param bnd Bundle to be enhanced
-     * @param persistenceXMLs objects corresponding to persistence.xmls present
-     * in the bundle
-     * @return a JarInputStream which contains the enhanced classes along with
-     * changed manifest, or {@code null} if no enhancement is needed
+     * @param persistenceXMLs objects corresponding to persistence.xmls present in the bundle
+     * @return a JarInputStream which contains the enhanced classes along with changed manifest, or {@code null} if no
+     * enhancement is needed
      * @throws IOException if an error occurs
      */
-    InputStream enhance(Bundle bnd, List<Persistence> persistenceXMLs)
-            throws IOException;
+    InputStream enhance(Bundle bnd, List<Persistence> persistenceXMLs) throws IOException;
 }

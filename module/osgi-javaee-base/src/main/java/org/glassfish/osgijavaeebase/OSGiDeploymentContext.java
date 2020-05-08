@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -50,6 +50,7 @@ public abstract class OSGiDeploymentContext extends DeploymentContextImpl {
 
     /**
      * Create a new instance.
+     * 
      * @param actionReport GlassFish command reporter
      * @param logger logger
      * @param source application archive
@@ -58,10 +59,8 @@ public abstract class OSGiDeploymentContext extends DeploymentContextImpl {
      * @param bnd application bundle
      * @throws Exception if an error occurs
      */
-    public OSGiDeploymentContext(final ActionReport actionReport,
-            final Logger logger, final ReadableArchive source,
-            final OpsParams params, final ServerEnvironment env,
-            final Bundle bnd) throws Exception {
+    public OSGiDeploymentContext(final ActionReport actionReport, final Logger logger, final ReadableArchive source, final OpsParams params,
+            final ServerEnvironment env, final Bundle bnd) throws Exception {
 
         super(actionReport, logger, source, params, env);
         this.bundle = bnd;
@@ -74,21 +73,18 @@ public abstract class OSGiDeploymentContext extends DeploymentContextImpl {
 
     /**
      * Setup the class-loader.
+     * 
      * @throws Exception if an error occurs
      */
     protected abstract void setupClassLoader() throws Exception;
 
     @Override
-    public void createDeploymentClassLoader(final ClassLoaderHierarchy clh,
-            final ArchiveHandler handler)
-            throws URISyntaxException, MalformedURLException {
+    public void createDeploymentClassLoader(final ClassLoaderHierarchy clh, final ArchiveHandler handler) throws URISyntaxException, MalformedURLException {
         // do nothing as we override getClassLoader methods.
     }
 
     @Override
-    public void createApplicationClassLoader(final ClassLoaderHierarchy clh,
-            final ArchiveHandler handler)
-            throws URISyntaxException, MalformedURLException {
+    public void createApplicationClassLoader(final ClassLoaderHierarchy clh, final ArchiveHandler handler) throws URISyntaxException, MalformedURLException {
         // do nothing as we override getClassLoader methods.
     }
 
@@ -108,6 +104,7 @@ public abstract class OSGiDeploymentContext extends DeploymentContextImpl {
 
     /**
      * Set the final class-loader.
+     * 
      * @param cl class-loader
      */
     public final void setFinalClassLoader(final ClassLoader cl) {
@@ -116,6 +113,7 @@ public abstract class OSGiDeploymentContext extends DeploymentContextImpl {
 
     /**
      * Get the temporary class-loader.
+     * 
      * @return class-loader
      */
     public final ClassLoader getShareableTempClassLoader() {
@@ -124,6 +122,7 @@ public abstract class OSGiDeploymentContext extends DeploymentContextImpl {
 
     /**
      * Set the temporary class-loader.
+     * 
      * @param cl class-loader
      */
     public final void setShareableTempClassLoader(final ClassLoader cl) {
@@ -131,15 +130,14 @@ public abstract class OSGiDeploymentContext extends DeploymentContextImpl {
     }
 
     @Override
-    public final synchronized ClassLoader getClassLoader(
-            final boolean sharable) {
+    public final synchronized ClassLoader getClassLoader(final boolean sharable) {
 
-        throw new RuntimeException("Assertion Failure: "
-                + "This method should not be called");
+        throw new RuntimeException("Assertion Failure: " + "This method should not be called");
     }
 
     /**
      * Get the application bundle.
+     * 
      * @return Bundle
      */
     public Bundle getBundle() {

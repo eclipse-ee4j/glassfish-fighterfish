@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -23,11 +23,9 @@ import java.net.URL;
 import java.util.Enumeration;
 
 /**
- * This class loader only provides a new class loading namespace It is useful
- * during annotation scanning classes get loaded in that separate namespace.
- * This class loader delegates all stream handling (i.e. reading actual
- * class/resource data) operations to a delegate Bundle. It only defines the
- * Class using the byte codes.
+ * This class loader only provides a new class loading namespace It is useful during annotation scanning classes get
+ * loaded in that separate namespace. This class loader delegates all stream handling (i.e. reading actual
+ * class/resource data) operations to a delegate Bundle. It only defines the Class using the byte codes.
  */
 public final class TempBundleClassLoader extends ClassLoader {
 
@@ -38,6 +36,7 @@ public final class TempBundleClassLoader extends ClassLoader {
 
     /**
      * Create a new instance.
+     * 
      * @param cl the delegate class-loader
      */
     public TempBundleClassLoader(final BundleClassLoader cl) {
@@ -47,14 +46,13 @@ public final class TempBundleClassLoader extends ClassLoader {
     }
 
     /**
-     * This method uses the delegate to use class bytes and then defines the
-     * class using this class loader.
+     * This method uses the delegate to use class bytes and then defines the class using this class loader.
+     * 
      * @return Class
      * @throws java.lang.ClassNotFoundException if an error occurs
      */
     @Override
-    protected Class findClass(final String name)
-            throws ClassNotFoundException {
+    protected Class findClass(final String name) throws ClassNotFoundException {
 
         String entryName = name.replace('.', '/') + ".class";
         URL url = delegate.getResource(entryName);
@@ -87,15 +85,14 @@ public final class TempBundleClassLoader extends ClassLoader {
                     // could define the same package after getPackage
                     // returns null but before we call definePackage,
                     // since the parent classloader instances
-                    // are not locked.  So, just catch the exception
+                    // are not locked. So, just catch the exception
                     // that is thrown in that case and ignore it.
                     //
                     // It's unclear where we would get the info to
                     // set all spec and impl data for the package,
-                    // so just use null.  This is consistent will the
+                    // so just use null. This is consistent will the
                     // JDK code that does the same.
-                    definePackage(packageName, null, null, null,
-                            null, null, null, null);
+                    definePackage(packageName, null, null, null, null, null, null, null);
                 } catch (IllegalArgumentException iae) {
                     // duplicate attempt to define same package.
                     // safe to ignore.
@@ -108,9 +105,7 @@ public final class TempBundleClassLoader extends ClassLoader {
             clazz = defineClass(name, bytes, 0, bytes.length, null);
             return clazz;
         } catch (UnsupportedClassVersionError ucve) {
-            throw new UnsupportedClassVersionError(name
-                    + " can't be defined as we are running in Java version"
-                    + System.getProperty("java.version"));
+            throw new UnsupportedClassVersionError(name + " can't be defined as we are running in Java version" + System.getProperty("java.version"));
         }
     }
 
@@ -120,8 +115,7 @@ public final class TempBundleClassLoader extends ClassLoader {
     }
 
     @Override
-    public Enumeration<URL> findResources(final String name)
-            throws IOException {
+    public Enumeration<URL> findResources(final String name) throws IOException {
 
         return delegate.getResources(name);
     }
@@ -134,8 +128,7 @@ public final class TempBundleClassLoader extends ClassLoader {
      * @throws IOException if an i/o error
      */
     @SuppressWarnings("checkstyle:magicnumber")
-    private byte[] getClassData(final InputStream istream)
-            throws IOException {
+    private byte[] getClassData(final InputStream istream) throws IOException {
 
         BufferedInputStream bstream = new BufferedInputStream(istream);
         byte[] buf = new byte[4096];

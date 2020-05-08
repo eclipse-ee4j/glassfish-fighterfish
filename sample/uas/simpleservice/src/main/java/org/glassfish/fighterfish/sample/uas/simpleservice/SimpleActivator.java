@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Distribution License v. 1.0, which is available at
@@ -20,8 +20,7 @@ public final class SimpleActivator implements BundleActivator {
 
     @Override
     public void start(final BundleContext context) throws Exception {
-        context.registerService(UserAuthService.class.getName(),
-                new UserAuthServiceImpl(), null);
+        context.registerService(UserAuthService.class.getName(), new UserAuthServiceImpl(), null);
         log("Registered service");
     }
 
@@ -33,6 +32,7 @@ public final class SimpleActivator implements BundleActivator {
 
     /**
      * Log a message.
+     * 
      * @param msg message to log
      */
     static void log(final String msg) {

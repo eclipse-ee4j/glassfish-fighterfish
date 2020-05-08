@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -29,14 +29,13 @@ import java.util.Dictionary;
 import java.util.Properties;
 
 /**
- * Resource-Manager to export jms-destinations (JMS-RA admin-object-resources)
- * in GlassFish to OSGi's service-registry.
+ * Resource-Manager to export jms-destinations (JMS-RA admin-object-resources) in GlassFish to OSGi's service-registry.
  */
-public final class JMSDestinationResourceManager extends BaseResourceManager
-        implements ResourceManager {
+public final class JMSDestinationResourceManager extends BaseResourceManager implements ResourceManager {
 
     /**
      * Create a new instance.
+     * 
      * @param habitat component locator
      */
     public JMSDestinationResourceManager(final Habitat habitat) {
@@ -54,14 +53,11 @@ public final class JMSDestinationResourceManager extends BaseResourceManager
      * @param context bundle-context
      */
     public void registerJmsResources(final BundleContext context) {
-        Resources resources = getHabitat().getComponent(Domain.class)
-                .getResources();
-        Collection<AdminObjectResource> administeredObjectResources =
-                resources.getResources(AdminObjectResource.class);
+        Resources resources = getHabitat().getComponent(Domain.class).getResources();
+        Collection<AdminObjectResource> administeredObjectResources = resources.getResources(AdminObjectResource.class);
         for (AdminObjectResource resource : administeredObjectResources) {
             if (isJmsResource(resource)) {
-                ResourceRef resRef = getResourceHelper()
-                        .getResourceRef(resource.getJndiName());
+                ResourceRef resRef = getResourceHelper().getResourceRef(resource.getJndiName());
                 registerResource(resource, resRef, context);
             }
         }
@@ -69,37 +65,28 @@ public final class JMSDestinationResourceManager extends BaseResourceManager
 
     @Override
     @SuppressWarnings("unchecked")
-    public void registerResource(final BindableResource resource,
-            final ResourceRef resRef, final BundleContext bundleContext) {
+    public void registerResource(final BindableResource resource, final ResourceRef resRef, final BundleContext bundleContext) {
 
-        AdminObjectResource adminObjectResource =
-                (AdminObjectResource) resource;
+        AdminObjectResource adminObjectResource = (AdminObjectResource) resource;
         if (adminObjectResource.getEnabled().equalsIgnoreCase("true")) {
-            if (resRef != null && resRef.getEnabled()
-                    .equalsIgnoreCase("true")) {
+            if (resRef != null && resRef.getEnabled().equalsIgnoreCase("true")) {
                 String defnName = adminObjectResource.getResType();
                 Class claz = null;
                 Class[] intf = null;
 
                 if (defnName.equals(Constants.QUEUE)) {
                     claz = Queue.class;
-                    intf = new Class[]{Queue.class, Invalidate.class};
+                    intf = new Class[] { Queue.class, Invalidate.class };
                 } else if (defnName.equals(Constants.TOPIC)) {
                     claz = Topic.class;
-                    intf = new Class[]{Topic.class, Invalidate.class};
+                    intf = new Class[] { Topic.class, Invalidate.class };
                 } else {
-                    throw new RuntimeException(
-                            "Invalid Destination [ " + defnName + " ]"
-                            + " for jms-resource [ "
-                            + resource.getJndiName() + " ]");
+                    throw new RuntimeException("Invalid Destination [ " + defnName + " ]" + " for jms-resource [ " + resource.getJndiName() + " ]");
                 }
                 Dictionary properties = new Properties();
-                properties.put(Constants.JNDI_NAME, adminObjectResource
-                        .getJndiName());
-                Object proxy = getProxy(adminObjectResource.getJndiName(), intf,
-                        getClassLoader());
-                registerResourceAsService(bundleContext, adminObjectResource,
-                        claz.getName(), properties, proxy);
+                properties.put(Constants.JNDI_NAME, adminObjectResource.getJndiName());
+                Object proxy = getProxy(adminObjectResource.getJndiName(), intf, getClassLoader());
+                registerResourceAsService(bundleContext, adminObjectResource, claz.getName(), properties, proxy);
             }
         }
 

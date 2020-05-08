@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -50,14 +50,12 @@ final class EclipseLinkEnhancer implements JPAEnhancer {
     /**
      * Logger.
      */
-    private static final Logger LOGGER =
-            Logger.getLogger(EclipseLinkEnhancer.class.getPackage().getName());
+    private static final Logger LOGGER = Logger.getLogger(EclipseLinkEnhancer.class.getPackage().getName());
 
     /**
      * GlassFish archive factory.
      */
-    private final ArchiveFactory archiveFactory = Globals.get(
-            ArchiveFactory.class);
+    private final ArchiveFactory archiveFactory = Globals.get(ArchiveFactory.class);
 
     /**
      * Eclipse package.
@@ -65,8 +63,7 @@ final class EclipseLinkEnhancer implements JPAEnhancer {
     private static final String EL_PKG = "org.eclipse.persistence.*";
 
     @Override
-    public InputStream enhance(final Bundle bnd,
-            final List<Persistence> persistenceXMLs) throws IOException {
+    public InputStream enhance(final Bundle bnd, final List<Persistence> persistenceXMLs) throws IOException {
 
         // We need to explode the bundle if it is not a directory based
         // deployment.
@@ -109,25 +106,18 @@ final class EclipseLinkEnhancer implements JPAEnhancer {
                 @Override
                 public void run() {
                     if (FileUtils.whack(enhancedDir)) {
-                        LOGGER.logp(Level.INFO, "EclipseLinkEnhancer",
-                                "enhance", "Deleted {0} ",
-                                new Object[]{enhancedDir});
+                        LOGGER.logp(Level.INFO, "EclipseLinkEnhancer", "enhance", "Deleted {0} ", new Object[] { enhancedDir });
                     } else {
-                        LOGGER.logp(Level.INFO, "EclipseLinkEnhancer",
-                                "enhance", "Unable to delete {0} ",
-                                new Object[]{enhancedDir});
+                        LOGGER.logp(Level.INFO, "EclipseLinkEnhancer", "enhance", "Unable to delete {0} ", new Object[] { enhancedDir });
                     }
                 }
             });
         } finally {
             if (!dirDeployment) {
                 if (FileUtils.whack(explodedDir)) {
-                    LOGGER.logp(Level.INFO, "EclipseLinkEnhancer",
-                            "enhance", "Deleted {0} ",
-                            new Object[]{explodedDir});
+                    LOGGER.logp(Level.INFO, "EclipseLinkEnhancer", "enhance", "Deleted {0} ", new Object[] { explodedDir });
                 } else {
-                    LOGGER.logp(Level.WARNING, "EclipseLinkEnhancer",
-                            "enhance", "Unable to delete " + explodedDir);
+                    LOGGER.logp(Level.WARNING, "EclipseLinkEnhancer", "enhance", "Unable to delete " + explodedDir);
                 }
             }
         }
@@ -135,6 +125,7 @@ final class EclipseLinkEnhancer implements JPAEnhancer {
 
     /**
      * Do the actual enhancement work.
+     * 
      * @param source the file to enhance
      * @param target the target file to create
      * @param cl the class-loader to use
@@ -142,13 +133,9 @@ final class EclipseLinkEnhancer implements JPAEnhancer {
      * @throws IOException if an IO error occurs
      * @throws URISyntaxException if an error occurs
      */
-    private void enhance(final File source, final File target,
-            final ClassLoader cl, final Persistence persistenceXML)
-            throws IOException, URISyntaxException {
+    private void enhance(final File source, final File target, final ClassLoader cl, final Persistence persistenceXML) throws IOException, URISyntaxException {
 
-        LOGGER.logp(Level.INFO, "EclipseLinkEnhancer", "enhance",
-                "Source = {0}, Target = {1}",
-                new Object[]{source, target});
+        LOGGER.logp(Level.INFO, "EclipseLinkEnhancer", "enhance", "Source = {0}, Target = {1}", new Object[] { source, target });
         StaticWeaveProcessor proc = new StaticWeaveProcessor(source, target);
         proc.setClassLoader(cl);
         proc.performWeaving();
@@ -156,6 +143,7 @@ final class EclipseLinkEnhancer implements JPAEnhancer {
 
     /**
      * Update the given manifest file.
+     * 
      * @param mf manifest file
      * @throws IOException if an error occurs
      */
@@ -167,8 +155,7 @@ final class EclipseLinkEnhancer implements JPAEnhancer {
         } finally {
             is.close();
         }
-        String value = m.getMainAttributes()
-                .getValue(Constants.DYNAMICIMPORT_PACKAGE);
+        String value = m.getMainAttributes().getValue(Constants.DYNAMICIMPORT_PACKAGE);
         if (value != null) {
             // TODO(Sahoo): Don't add if org.eclipselink.* is already specified
             value = value.concat(", " + EL_PKG);
@@ -178,8 +165,7 @@ final class EclipseLinkEnhancer implements JPAEnhancer {
         m.getMainAttributes().putValue(Constants.DYNAMICIMPORT_PACKAGE, value);
 
         // Mark the bundle as weaved to avoid infinite updates
-        m.getMainAttributes().putValue(JPABundleProcessor.STATICALLY_WEAVED,
-                "true");
+        m.getMainAttributes().putValue(JPABundleProcessor.STATICALLY_WEAVED, "true");
         FileOutputStream os = new FileOutputStream(mf);
         try {
             m.write(os);
@@ -189,8 +175,7 @@ final class EclipseLinkEnhancer implements JPAEnhancer {
     }
 
     /**
-     * Creates a temporary directory with the given prefix.
-     * It marks the directory for deletion upon shutdown of the JVM.
+     * Creates a temporary directory with the given prefix. It marks the directory for deletion upon shutdown of the JVM.
      *
      * @param prefix prefix for the temporary directory
      * @return File representing the directory just created
@@ -211,8 +196,7 @@ final class EclipseLinkEnhancer implements JPAEnhancer {
     }
 
     /**
-     * Return a File object that corresponds to this bundle.
-     * return null if it can't determine the underlying file object.
+     * Return a File object that corresponds to this bundle. return null if it can't determine the underlying file object.
      *
      * @param bnd the bundle
      * @return File
@@ -228,18 +212,16 @@ final class EclipseLinkEnhancer implements JPAEnhancer {
 
     /**
      * Explode the given bundle to a directory.
+     * 
      * @param bnd bundle
      * @return File
      * @throws IOException if an error occurs
      */
     private File explode(final Bundle bnd) throws IOException {
         File explodedDir = makeTmpDir("osgiapp");
-        WritableArchive targetArchive = archiveFactory
-                .createArchive(explodedDir);
-        new OSGiArchiveHandler().expand(new OSGiBundleArchive(bnd),
-                targetArchive, null);
-        LOGGER.logp(Level.INFO, "EclipseLinkEnhancer", "explode",
-                "Exploded bundle {0} at {1} ", new Object[]{bnd, explodedDir});
+        WritableArchive targetArchive = archiveFactory.createArchive(explodedDir);
+        new OSGiArchiveHandler().expand(new OSGiBundleArchive(bnd), targetArchive, null);
+        LOGGER.logp(Level.INFO, "EclipseLinkEnhancer", "explode", "Exploded bundle {0} at {1} ", new Object[] { bnd, explodedDir });
         return explodedDir;
     }
 }

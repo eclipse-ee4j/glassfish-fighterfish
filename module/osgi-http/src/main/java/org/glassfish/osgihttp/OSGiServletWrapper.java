@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -26,18 +26,14 @@ import javax.servlet.ServletException;
 import java.util.Set;
 
 /**
- * Unlike Java EE Web Application model, there is no notion of "context path" in
- * OSGi HTTP service spec. Here the servlets can specify which context they
- * belong to by passing a {@link org.osgi.service.http.HttpContext} object.
- * Those HttpContext objects don't have any "path" attribute. As a result, all
- * the OSGi/HTTP servlets belonging to the same servlet context may not have any
- * of the path common to them. Internally, we register all the OSGi servlets
- * (actually we register {@link OSGiServletWrapper} with the same
- * {@link org.apache.catalina.Context} object. So we need a way to demultiplex
- * the OSGi servlet context.
+ * Unlike Java EE Web Application model, there is no notion of "context path" in OSGi HTTP service spec. Here the
+ * servlets can specify which context they belong to by passing a {@link org.osgi.service.http.HttpContext} object.
+ * Those HttpContext objects don't have any "path" attribute. As a result, all the OSGi/HTTP servlets belonging to the
+ * same servlet context may not have any of the path common to them. Internally, we register all the OSGi servlets
+ * (actually we register {@link OSGiServletWrapper} with the same {@link org.apache.catalina.Context} object. So we need
+ * a way to demultiplex the OSGi servlet context.
  */
-public final class OSGiServletWrapper extends StandardWrapper
-        implements Wrapper {
+public final class OSGiServletWrapper extends StandardWrapper implements Wrapper {
 
     // TODO(Sahoo): Logging
     /**
@@ -57,14 +53,14 @@ public final class OSGiServletWrapper extends StandardWrapper
 
     /**
      * Create a new instance.
+     * 
      * @param name the servlet name
      * @param sInstance the servlet to wrap
      * @param sConfig the servlet config
      * @param urlMapping the URL mapping
      * @param gfWebModule the GlassFish webModule
      */
-    public OSGiServletWrapper(final String name, final Servlet sInstance,
-            final OSGiServletConfig sConfig, final String urlMapping,
+    public OSGiServletWrapper(final String name, final Servlet sInstance, final OSGiServletConfig sConfig, final String urlMapping,
             final WebModule gfWebModule) {
 
         this.servlet = sInstance;
@@ -87,6 +83,7 @@ public final class OSGiServletWrapper extends StandardWrapper
 
     /**
      * Initialize the servlet.
+     * 
      * @throws ServletException if an error occurs
      */
     void initializeServlet() throws ServletException {
@@ -145,6 +142,7 @@ public final class OSGiServletWrapper extends StandardWrapper
 
     /**
      * Get the GlassFish web module.
+     * 
      * @return WebModule
      */
     public WebModule getWebModule() {

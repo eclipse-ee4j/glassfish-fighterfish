@@ -40,21 +40,16 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 /**
- * This test sample demonstrates use of pax-exam provided
- * {@link JUnit4TestRunner} JUnit test runner. This test class name is suffixed
- * with Test to automatically include it in the test list by maven surefire
- * plugin.
+ * This test sample demonstrates use of pax-exam provided {@link JUnit4TestRunner} JUnit test runner. This test class
+ * name is suffixed with Test to automatically include it in the test list by maven surefire plugin.
  *
- * This custom runner from PAX-EXAM has the ability to provision an OSGi runtime
- * either in the current JVM or in a remote JVM with a list of bundles
- * configured by the test. The custom runner calls a method in the test class
- * annotated with {@link Configuration} and uses its return value to configure
- * the environment. In our test case, {@link #getPaxExamConfiguration()} is that
- * method.
+ * This custom runner from PAX-EXAM has the ability to provision an OSGi runtime either in the current JVM or in a
+ * remote JVM with a list of bundles configured by the test. The custom runner calls a method in the test class
+ * annotated with {@link Configuration} and uses its return value to configure the environment. In our test case,
+ * {@link #getPaxExamConfiguration()} is that method.
  *
- * This test case also demonstrates use {@link TestContext} to deploy various
- * artifacts like OSGi bundles, Java EE applications, JDBC/JMS resources. See
- * {@link #test}.
+ * This test case also demonstrates use {@link TestContext} to deploy various artifacts like OSGi bundles, Java EE
+ * applications, JDBC/JMS resources. See {@link #test}.
  *
  * @see TestContext
  * @see TestsConfiguration
@@ -64,8 +59,7 @@ import static org.junit.Assert.assertThat;
 public class PaxExamJunitRunnerTest {
 
     /**
-     * This is how one can inject BundleContext. In fact, one can even inject
-     * provisioned services.
+     * This is how one can inject BundleContext. In fact, one can even inject provisioned services.
      */
     @Inject
     private BundleContext ctx;
@@ -73,16 +67,13 @@ public class PaxExamJunitRunnerTest {
     /**
      * PaxExamJunit driver treats methods in Junit Test class annotated with
      *
-     * @Configuration specially. For each such method, it creates a separate
-     * test container configuring it with the options as returned by the method.
+     * @Configuration specially. For each such method, it creates a separate test container configuring it with the options
+     * as returned by the method.
      *
-     * This method implementation calls a utility called
-     * {@link TestsConfiguration} provided by FighterFish project to find out
-     * what configuration is needed to provision a GlassFish runtime. Although
-     * it is really straight forward to configure Pax-Exam to provision a
-     * GlassFish runtime, we sugest use of the utility which allows you to just
-     * configure the test environment by setting various system properties in
-     * pom.xml.
+     * This method implementation calls a utility called {@link TestsConfiguration} provided by FighterFish project to find
+     * out what configuration is needed to provision a GlassFish runtime. Although it is really straight forward to
+     * configure Pax-Exam to provision a GlassFish runtime, we sugest use of the utility which allows you to just configure
+     * the test environment by setting various system properties in pom.xml.
      *
      * @return Options used to configure a test container
      * @throws IOException
@@ -96,14 +87,11 @@ public class PaxExamJunitRunnerTest {
     }
 
     /**
-     * A simple test case that deploys a couple of bundles one of which is an
-     * API bundle which is consumed by the second one which is a WAB. It then
-     * requests a resource from the WAB and compares the output with an expected
-     * output.
+     * A simple test case that deploys a couple of bundles one of which is an API bundle which is consumed by the second one
+     * which is a WAB. It then requests a resource from the WAB and compares the output with an expected output.
      *
-     * The test uses mvn url scheme to reference the source location of bundles
-     * to be deployed. You must have the maven artifacts available in your local
-     * or remote maven repo.
+     * The test uses mvn url scheme to reference the source location of bundles to be deployed. You must have the maven
+     * artifacts available in your local or remote maven repo.
      *
      * The test will automatically provision a GlassFish runtime for you.
      *
@@ -113,25 +101,19 @@ public class PaxExamJunitRunnerTest {
      * @throws IOException
      */
     @Test
-    public void test() throws GlassFishException, InterruptedException,
-            BundleException, IOException {
+    public void test() throws GlassFishException, InterruptedException, BundleException, IOException {
 
         assertNotNull("bundle context is null", ctx);
         TestContext tc = TestContext.create(getClass());
         try {
-            // Let's install a couple of bundles one of which is an API bundle 
-            // which is consumed by the second one which is a WAB. 
-            Bundle uas_api_b = tc.installBundle(
-                    sampleAppLocation("uas-api"));
-            Bundle uas_simplewab_b = tc.installBundle(
-                    sampleAppLocation("uas-simplewab", "war"));
-            WebAppBundle uas_simple_webapp = tc.deployWebAppBundle(
-                    uas_simplewab_b);
-            String response = uas_simple_webapp
-                    .getHttpGetResponse("/LoginServlet?name=foo&password=bar");
+            // Let's install a couple of bundles one of which is an API bundle
+            // which is consumed by the second one which is a WAB.
+            Bundle uas_api_b = tc.installBundle(sampleAppLocation("uas-api"));
+            Bundle uas_simplewab_b = tc.installBundle(sampleAppLocation("uas-simplewab", "war"));
+            WebAppBundle uas_simple_webapp = tc.deployWebAppBundle(uas_simplewab_b);
+            String response = uas_simple_webapp.getHttpGetResponse("/LoginServlet?name=foo&password=bar");
             System.out.println(response);
-            assertThat(response, new StringPatternMatcher(
-                    "Service is not yet available"));
+            assertThat(response, new StringPatternMatcher("Service is not yet available"));
         } finally {
             tc.destroy();
         }
@@ -142,8 +124,7 @@ public class PaxExamJunitRunnerTest {
     }
 
     private static String sampleAppLocation(String name, String packaging) {
-        String location = "mvn:org.glassfish.fighterfish/fighterfish-sample-"
-                + name + "/" + Version.getVersion();
+        String location = "mvn:org.glassfish.fighterfish/fighterfish-sample-" + name + "/" + Version.getVersion();
         if (packaging != null) {
             location += "/" + packaging;
         }

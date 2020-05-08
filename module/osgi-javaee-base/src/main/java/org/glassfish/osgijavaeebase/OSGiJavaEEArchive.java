@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -36,12 +36,10 @@ import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 
 /**
- * This is a very important class in our implementation of hybrid applications.
- * This class maps a bundle and its attached fragments to Java EE archive
- * format.
+ * This is a very important class in our implementation of hybrid applications. This class maps a bundle and its
+ * attached fragments to Java EE archive format.
  */
-public abstract class OSGiJavaEEArchive extends AbstractReadableArchive
-        implements ReadableArchive {
+public abstract class OSGiJavaEEArchive extends AbstractReadableArchive implements ReadableArchive {
 
     // TODO(Sahoo): Lazy population of entries
 
@@ -68,8 +66,7 @@ public abstract class OSGiJavaEEArchive extends AbstractReadableArchive
     /**
      * The archive entries.
      */
-    private Map<String, ArchiveEntry> entries =
-            new HashMap<String, ArchiveEntry>();
+    private Map<String, ArchiveEntry> entries = new HashMap<String, ArchiveEntry>();
 
     /**
      * The bundle archives.
@@ -78,6 +75,7 @@ public abstract class OSGiJavaEEArchive extends AbstractReadableArchive
 
     /**
      * Create a new instance.
+     * 
      * @param frags bundle fragments
      * @param hostBdn host bundle
      */
@@ -88,15 +86,13 @@ public abstract class OSGiJavaEEArchive extends AbstractReadableArchive
         } else {
             this.fragments = new Bundle[0];
         }
-        archives = new HashMap<Bundle, OSGiBundleArchive>(
-                this.fragments.length + 1);
+        archives = new HashMap<Bundle, OSGiBundleArchive>(this.fragments.length + 1);
         this.host = hostBdn;
         init();
         // ensure that we replace the MANIFEST.MF by host's manifest. If host
         // does not have a manifest, then this archive will also not have a
         // manifest.
-        final URI hostManifestURI = getArchive(hostBdn)
-                .getEntryURI(JarFile.MANIFEST_NAME);
+        final URI hostManifestURI = getArchive(hostBdn).getEntryURI(JarFile.MANIFEST_NAME);
         if (hostManifestURI == null) {
             getEntries().remove(JarFile.MANIFEST_NAME);
         } else {
@@ -122,6 +118,7 @@ public abstract class OSGiJavaEEArchive extends AbstractReadableArchive
 
     /**
      * Get the host bundle.
+     * 
      * @return Bundle
      */
     protected Bundle getHost() {
@@ -130,6 +127,7 @@ public abstract class OSGiJavaEEArchive extends AbstractReadableArchive
 
     /**
      * Get the bundle fragments.
+     * 
      * @return Bundle[]
      */
     protected Bundle[] getFragments() {
@@ -138,11 +136,11 @@ public abstract class OSGiJavaEEArchive extends AbstractReadableArchive
 
     /**
      * Get the archive for a given bundle.
+     * 
      * @param bnd the bundle for which to get the archive
      * @return OSGiBundleArchive
      */
-    protected final synchronized OSGiBundleArchive getArchive(
-            final Bundle bnd) {
+    protected final synchronized OSGiBundleArchive getArchive(final Bundle bnd) {
 
         OSGiBundleArchive archive = archives.get(bnd);
         if (archive == null) {
@@ -154,6 +152,7 @@ public abstract class OSGiJavaEEArchive extends AbstractReadableArchive
 
     /**
      * Get the archive entries.
+     * 
      * @return map of entries
      */
     protected final Map<String, ArchiveEntry> getEntries() {
@@ -167,6 +166,7 @@ public abstract class OSGiJavaEEArchive extends AbstractReadableArchive
 
     /**
      * Get the effective bundle class-path.
+     * 
      * @return EffectiveBCP
      */
     protected final EffectiveBCP getEffectiveBCP() {
@@ -204,10 +204,9 @@ public abstract class OSGiJavaEEArchive extends AbstractReadableArchive
     }
 
     @Override
-    public final ReadableArchive getSubArchive(final String name)
-            throws IOException {
+    public final ReadableArchive getSubArchive(final String name) throws IOException {
 
-        //TODO(Sahoo): Not Yet Implemented
+        // TODO(Sahoo): Not Yet Implemented
         return null;
     }
 
@@ -243,8 +242,7 @@ public abstract class OSGiJavaEEArchive extends AbstractReadableArchive
 
     @Override
     public final Enumeration<String> entries() {
-        final Enumeration<String> all = Collections
-                .enumeration(entries.keySet());
+        final Enumeration<String> all = Collections.enumeration(entries.keySet());
 
         // return only file entries as per the conract of this method
         return new Enumeration<String>() {
@@ -371,12 +369,14 @@ public abstract class OSGiJavaEEArchive extends AbstractReadableArchive
 
         /**
          * Get the entry name.
+         * 
          * @return entry name
          */
         String getName();
 
         /**
          * Get the entry URI.
+         * 
          * @return URI
          * @throws URISyntaxException if an error occurs
          */
@@ -384,6 +384,7 @@ public abstract class OSGiJavaEEArchive extends AbstractReadableArchive
 
         /**
          * Get the entry input stream.
+         * 
          * @return InputStream
          * @throws IOException if an error occurs
          */
@@ -397,19 +398,22 @@ public abstract class OSGiJavaEEArchive extends AbstractReadableArchive
 
         /**
          * Get the entry name.
+         * 
          * @return path relative to its bundle.
          */
         String getName();
 
         /**
          * Get the bundle.
-         * @return the bundle this entry belongs to. Please note, a host bundle
-         * can insert a class-path entry into a fragment bundle.
+         * 
+         * @return the bundle this entry belongs to. Please note, a host bundle can insert a class-path entry into a fragment
+         * bundle.
          */
         Bundle getBundle();
 
         /**
          * Visit the entry.
+         * 
          * @param visitor visitor to use
          */
         void accept(OSGiJavaEEArchive.BCPEntry.BCPEntryVisitor visitor);
@@ -421,12 +425,14 @@ public abstract class OSGiJavaEEArchive extends AbstractReadableArchive
 
             /**
              * Visit a directory entry.
+             * 
              * @param bcpEntry entry to visit
              */
             void visitDir(OSGiJavaEEArchive.DirBCPEntry bcpEntry);
 
             /**
              * Visit a file entry.
+             * 
              * @param bcpEntry entry to visit
              */
             void visitJar(OSGiJavaEEArchive.JarBCPEntry bcpEntry);
@@ -450,6 +456,7 @@ public abstract class OSGiJavaEEArchive extends AbstractReadableArchive
 
         /**
          * Create a new instance.
+         * 
          * @param entryName the entry name
          * @param bnd the bundle
          */
@@ -491,6 +498,7 @@ public abstract class OSGiJavaEEArchive extends AbstractReadableArchive
 
         /**
          * Create a new instance.
+         * 
          * @param entryName the entry name
          * @param bnd the bundle
          */
@@ -527,6 +535,7 @@ public abstract class OSGiJavaEEArchive extends AbstractReadableArchive
 
         /**
          * Get the entries.
+         * 
          * @return list of BCPEntry
          */
         public List<BCPEntry> getBCPEntries() {
@@ -535,6 +544,7 @@ public abstract class OSGiJavaEEArchive extends AbstractReadableArchive
 
         /**
          * Visit the entries.
+         * 
          * @param visitor visitor to use
          */
         public void accept(final BCPEntry.BCPEntryVisitor visitor) {
@@ -545,6 +555,7 @@ public abstract class OSGiJavaEEArchive extends AbstractReadableArchive
 
         /**
          * Add an entry.
+         * 
          * @param bcpEntry entry to add
          */
         public void add(final BCPEntry bcpEntry) {
@@ -564,6 +575,7 @@ public abstract class OSGiJavaEEArchive extends AbstractReadableArchive
 
         /**
          * Get the resulting effective bundle class-path.
+         * 
          * @return EffectiveBCP
          */
         public EffectiveBCP build() {
@@ -601,6 +613,7 @@ public abstract class OSGiJavaEEArchive extends AbstractReadableArchive
 
         /**
          * Create the effective bundle class-path for the given fragment.
+         * 
          * @param bnd fragment bundle
          */
         void createForFragment(final Bundle bnd) {
@@ -627,37 +640,36 @@ public abstract class OSGiJavaEEArchive extends AbstractReadableArchive
 
         /**
          * Create a new bundle class-path file entry.
+         * 
          * @param entryPath the path of the entry
          * @param bnd the bundle
          * @return JarBCPEntry
          */
-        private JarBCPEntry createJarBCPEntry(final String entryPath,
-                final Bundle bnd) {
+        private JarBCPEntry createJarBCPEntry(final String entryPath, final Bundle bnd) {
 
             return new JarBCPEntry(entryPath, bnd);
         }
 
         /**
          * Create a new bundle class-path directory entry.
+         * 
          * @param entryPath the path of the entry
          * @param bnd the bundle
          * @return DirBCPEntry
          */
-        private DirBCPEntry createDirBCPEntry(final String entryPath,
-                final Bundle bnd) {
+        private DirBCPEntry createDirBCPEntry(final String entryPath, final Bundle bnd) {
 
             return new DirBCPEntry(entryPath, bnd);
         }
 
         /**
-         * Parses Bundle-ClassPath of a bundle and returns it as a sequence of
-         * String tokens.
+         * Parses Bundle-ClassPath of a bundle and returns it as a sequence of String tokens.
+         * 
          * @param bnd the bundle
          * @return parsed tokens
          */
         private String[] tokenizeBCP(final Bundle bnd) {
-            String bcp = (String) bnd.getHeaders()
-                    .get(org.osgi.framework.Constants.BUNDLE_CLASSPATH);
+            String bcp = (String) bnd.getHeaders().get(org.osgi.framework.Constants.BUNDLE_CLASSPATH);
             if (bcp == null || bcp.isEmpty()) {
                 bcp = DOT;
             }

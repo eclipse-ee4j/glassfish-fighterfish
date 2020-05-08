@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -25,14 +25,11 @@ import java.io.IOException;
 import java.net.URL;
 
 /**
- * Default implementation of {@link HttpContext}.
- * As per the spec (OSGi R4 Compendium, section #102.4):
- * 1. the default implementation of getResource() must map the resource request
- * to the Bundle.getResource(String).
- * 2. the getMime(String) implementation of the default HttpContext object
- * should return a reasonable mapping.
- * 3. Its handleSecurity(HttpServlet Request,HttpServletResponse)
- * may implement an authentication mecha-nism that is implementation-dependent.
+ * Default implementation of {@link HttpContext}. As per the spec (OSGi R4 Compendium, section #102.4): 1. the default
+ * implementation of getResource() must map the resource request to the Bundle.getResource(String). 2. the
+ * getMime(String) implementation of the default HttpContext object should return a reasonable mapping. 3. Its
+ * handleSecurity(HttpServlet Request,HttpServletResponse) may implement an authentication mecha-nism that is
+ * implementation-dependent.
  * <p/>
  * {@code org.osgi.service.http.HttpService#createDefaultHttpContext()}
  */
@@ -47,6 +44,7 @@ public final class DefaultHttpContext implements HttpContext {
 
     /**
      * Create a new instance.
+     * 
      * @param bnd the registering bundle
      */
     public DefaultHttpContext(final Bundle bnd) {
@@ -54,9 +52,7 @@ public final class DefaultHttpContext implements HttpContext {
     }
 
     @Override
-    public boolean handleSecurity(final HttpServletRequest httpServletRequest,
-            final HttpServletResponse httpServletResponse)
-            throws IOException {
+    public boolean handleSecurity(final HttpServletRequest httpServletRequest, final HttpServletResponse httpServletResponse) throws IOException {
 
         // TODO(Sahoo):
         return true;
@@ -69,12 +65,9 @@ public final class DefaultHttpContext implements HttpContext {
     @Override
     public URL getResource(final String s) {
         /*
-         * As per the spec (OSGi R4 Compendium, section #102.4):
-         * the default implementation must map the resource request to the
-         * bundle's resource, using Bundle.getResource(String).
-         * The internal name must specify the full path to the directory
-         * containing the resource files in the bundle. No automatic prefixing
-         * of the package name is done.
+         * As per the spec (OSGi R4 Compendium, section #102.4): the default implementation must map the resource request to the
+         * bundle's resource, using Bundle.getResource(String). The internal name must specify the full path to the directory
+         * containing the resource files in the bundle. No automatic prefixing of the package name is done.
          */
         // TODO(Sahoo): doPrivileged()
         return registeringBundle.getResource(s);

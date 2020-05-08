@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -24,16 +24,13 @@ import java.net.URL;
 import java.util.Enumeration;
 
 /**
- * An implementation of
- * {@link org.glassfish.internal.api.DelegatingClassLoader.ClassFinder} that
- * uses reflection to call the methods of the delegate. It is currently NOT used
- * because it requires special permission granted to this code-base to access
- * protected members like findClass.
+ * An implementation of {@link org.glassfish.internal.api.DelegatingClassLoader.ClassFinder} that uses reflection to
+ * call the methods of the delegate. It is currently NOT used because it requires special permission granted to this
+ * code-base to access protected members like findClass.
  *
  * This is pretty much an ugly hack.
  */
-final class ReflectiveClassFinder
-        implements DelegatingClassLoader.ClassFinder {
+final class ReflectiveClassFinder implements DelegatingClassLoader.ClassFinder {
 
     /**
      * The delegate class-loader.
@@ -48,7 +45,7 @@ final class ReflectiveClassFinder
     /**
      * The "findLoadedClass" method of the delegate class-loader.
      */
-    private final Method  findLoadedClass;
+    private final Method findLoadedClass;
 
     /**
      * The "findResource" method of the delegate class-loader.
@@ -62,6 +59,7 @@ final class ReflectiveClassFinder
 
     /**
      * Create a new instance.
+     * 
      * @param cl delegate class-loader
      */
     ReflectiveClassFinder(final ClassLoader cl) {
@@ -69,12 +67,9 @@ final class ReflectiveClassFinder
         Class<ClassLoader> clazz = ClassLoader.class;
         try {
             findClass = clazz.getDeclaredMethod("findClass", String.class);
-            findLoadedClass = clazz.getDeclaredMethod("findLoadedClass",
-                    String.class);
-            findResource = clazz.getDeclaredMethod("findResource",
-                    String.class);
-            findResources = clazz.getDeclaredMethod("findResources",
-                    String.class);
+            findLoadedClass = clazz.getDeclaredMethod("findLoadedClass", String.class);
+            findResource = clazz.getDeclaredMethod("findResource", String.class);
+            findResources = clazz.getDeclaredMethod("findResources", String.class);
         } catch (NoSuchMethodException e) {
             throw new RuntimeException(e);
         }
@@ -86,8 +81,7 @@ final class ReflectiveClassFinder
     }
 
     @Override
-    public Class<?> findClass(final String name)
-            throws ClassNotFoundException {
+    public Class<?> findClass(final String name) throws ClassNotFoundException {
 
         try {
             Object result = findClass.invoke(delegate, name);
@@ -142,8 +136,7 @@ final class ReflectiveClassFinder
 
     @Override
     @SuppressWarnings("unchecked")
-    public Enumeration<URL> findResources(final String name)
-            throws IOException {
+    public Enumeration<URL> findResources(final String name) throws IOException {
 
         try {
             Object result = findResources.invoke(delegate, name);

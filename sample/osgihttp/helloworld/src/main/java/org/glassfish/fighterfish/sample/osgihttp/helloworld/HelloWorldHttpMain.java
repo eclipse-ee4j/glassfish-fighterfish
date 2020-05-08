@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Distribution License v. 1.0, which is available at
@@ -23,9 +23,8 @@ import org.osgi.service.http.HttpService;
 import org.osgi.service.http.NamespaceException;
 
 /**
- * This class is an SCR component. It registers servlets and resources in
- * activate() method and unregisters them in deactivate() method. It consumes a
- * service of type HttpService. The service reference is bound and unbound in
+ * This class is an SCR component. It registers servlets and resources in activate() method and unregisters them in
+ * deactivate() method. It consumes a service of type HttpService. The service reference is bound and unbound in
  * setHttp() and unsetHttp() method respectively as specified in scr.xml file.
  */
 public class HelloWorldHttpMain {
@@ -43,12 +42,12 @@ public class HelloWorldHttpMain {
 
     /**
      * Activate the application.
+     * 
      * @param ctx component context
      * @throws ServletException if an error occurs while registering the servlet
      * @throws NamespaceException if an error occurs
      */
-    protected final void activate(final ComponentContext ctx)
-            throws ServletException, NamespaceException {
+    protected final void activate(final ComponentContext ctx) throws ServletException, NamespaceException {
 
         // One HttpContext maps to one ServletContext.
         // To demonstrate this functionality, we shall do the following:
@@ -71,8 +70,7 @@ public class HelloWorldHttpMain {
         HttpServlet servlet2 = new HelloWorldServlet2();
         http.registerServlet("/hello2", servlet2, null, httpCtx);
         System.out.println(servlet2.getServletContext());
-        servlet1.getServletContext().setAttribute(
-                HelloWorldServlet1.ATTRIBUTE_NAME, new Integer(0));
+        servlet1.getServletContext().setAttribute(HelloWorldServlet1.ATTRIBUTE_NAME, new Integer(0));
 
         // Let's create another HttpContext and make sure that each context
         // has its own
@@ -86,8 +84,7 @@ public class HelloWorldHttpMain {
             // raise an event so that our test framework can catch it to
             // proceed to test
             Map props = new HashMap();
-            Event event = new Event(getClass().getPackage().getName()
-                    .replace(".", "/"), props);
+            Event event = new Event(getClass().getPackage().getName().replace(".", "/"), props);
             eventAdmin.postEvent(event);
             System.out.println("raised event " + event);
         }
@@ -95,6 +92,7 @@ public class HelloWorldHttpMain {
 
     /**
      * Deactivate the given component.
+     * 
      * @param ctx component context
      */
     protected final void deactivate(final ComponentContext ctx) {
@@ -113,6 +111,7 @@ public class HelloWorldHttpMain {
 
     /**
      * Set the OSGi HTTP service.
+     * 
      * @param hs service instance
      */
     protected final void setHttp(final HttpService hs) {
@@ -121,6 +120,7 @@ public class HelloWorldHttpMain {
 
     /**
      * Unset the OSGi HTTP service.
+     * 
      * @param hs service instance
      */
     protected final void unsetHttp(final HttpService hs) {
@@ -129,6 +129,7 @@ public class HelloWorldHttpMain {
 
     /**
      * Set the event admin.
+     * 
      * @param ea event admin instance
      */
     protected final void setEventAdmin(final EventAdmin ea) {
@@ -137,6 +138,7 @@ public class HelloWorldHttpMain {
 
     /**
      * Unset the event admin.
+     * 
      * @param ea event admin instance.
      */
     protected final void unsetEventAdmin(final EventAdmin ea) {

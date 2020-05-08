@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -21,9 +21,8 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 
 /**
- * ResourceProxy that can delegate to actual objects upon usage.
- * Does not cache the actual object as the actual object can be
- * re-configured.
+ * ResourceProxy that can delegate to actual objects upon usage. Does not cache the actual object as the actual object
+ * can be re-configured.
  */
 public final class ResourceProxy implements InvocationHandler, Invalidate {
 
@@ -39,6 +38,7 @@ public final class ResourceProxy implements InvocationHandler, Invalidate {
 
     /**
      * Create a new instance.
+     * 
      * @param jName JNDI name
      */
     public ResourceProxy(final String jName) {
@@ -46,8 +46,7 @@ public final class ResourceProxy implements InvocationHandler, Invalidate {
     }
 
     @Override
-    public Object invoke(final Object proxy, final Method method,
-            final Object[] args) throws Throwable {
+    public Object invoke(final Object proxy, final Method method, final Object[] args) throws Throwable {
 
         Object result = null;
         if (method.getName().equals("invalidate")) {
@@ -61,6 +60,7 @@ public final class ResourceProxy implements InvocationHandler, Invalidate {
     /**
      * It is possible that reconfiguration of resource will happen.<br>
      * Always do lookup.
+     * 
      * @return Object
      */
     private Object getActualObject() {
@@ -71,8 +71,7 @@ public final class ResourceProxy implements InvocationHandler, Invalidate {
                 throw new RuntimeException(e.getMessage(), e);
             }
         } else {
-            throw new RuntimeException(
-                    "Resource [" + jndiName + "] is invalidated");
+            throw new RuntimeException("Resource [" + jndiName + "] is invalidated");
         }
     }
 

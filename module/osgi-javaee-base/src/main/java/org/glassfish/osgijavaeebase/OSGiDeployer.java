@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -24,6 +24,7 @@ public interface OSGiDeployer {
 
     /**
      * Deploy the given bundle.
+     * 
      * @param bdn the bundle to deploy
      * @return OSGiApplicationInfo
      * @throws DeploymentException if an error occurs
@@ -32,6 +33,7 @@ public interface OSGiDeployer {
 
     /**
      * Undeploy the given bundle.
+     * 
      * @param osgiAppInfo the deployed application info
      * @throws DeploymentException if an error occurs
      */
@@ -39,9 +41,9 @@ public interface OSGiDeployer {
 
     /**
      * Test if this deployer handles the given bundle.
+     * 
      * @param bundle the bundle to test
-     * @return {@code true} if this deployer handles the given bundle,
-     * {@code false} otherwise
+     * @return {@code true} if this deployer handles the given bundle, {@code false} otherwise
      */
     boolean handles(Bundle bundle);
 }

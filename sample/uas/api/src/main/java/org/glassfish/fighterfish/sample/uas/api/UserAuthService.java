@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Distribution License v. 1.0, which is available at
@@ -16,6 +16,7 @@ public interface UserAuthService {
 
     /**
      * Authenticate a user.
+     * 
      * @param name user name
      * @param password user password
      * @return {@code true} if authenticated, {@code false} otherwise
@@ -24,6 +25,7 @@ public interface UserAuthService {
 
     /**
      * Register a user.
+     * 
      * @param name user name
      * @param password user password
      * @return {@code true} if the user is registered, {@code false} otherwise
@@ -32,14 +34,15 @@ public interface UserAuthService {
 
     /**
      * Unregister a user.
+     * 
      * @param name user name
-     * @return {@code true} if the user was unregistered, {@code false}
-     * otherwise
+     * @return {@code true} if the user was unregistered, {@code false} otherwise
      */
     boolean unregister(String name);
 
     /**
      * Get the report.
+     * 
      * @return report
      */
     String getReport();

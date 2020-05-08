@@ -21,7 +21,6 @@
 // Generated on: 2009.12.21 at 12:29:44 PM IST 
 //
 
-
 package org.glassfish.osgijpa.dd;
 
 import java.io.Serializable;
@@ -32,11 +31,12 @@ import javax.xml.bind.annotation.*;
 import javax.xml.bind.annotation.adapters.CollapsedStringAdapter;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-
 /**
- * <p>Java class for anonymous complex type.
+ * <p>
+ * Java class for anonymous complex type.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>
+ * The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
  * &lt;complexType>
@@ -95,11 +95,9 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = {
-    "persistenceUnit"
-})
+@XmlType(name = "", propOrder = { "persistenceUnit" })
 @XmlRootElement(name = "persistence")
-public class Persistence implements Serializable{
+public class Persistence implements Serializable {
 
     @XmlElement(name = "persistence-unit", required = true)
     protected List<Persistence.PersistenceUnit> persistenceUnit;
@@ -114,12 +112,10 @@ public class Persistence implements Serializable{
     private URL url;
 
     /**
-     * A PURoot specifies the relative path from the root of the bundle to
-     * to the root of this persistence unit. e.g.
-     * WEB-INF/classes -- if persistence.xml is in WEB-INF/classes/META-INF,
-     * WEB-INF/lib/foo.jar -- if persistence.xml is in WEB-INF/lib/foo.jar/META-INF,
-     * "" -- if persistence.xml is in META-INF directory of the bundle,
-     * util/bar.jar -- if persistence.xml is in bundle.jar/util/bar.jar
+     * A PURoot specifies the relative path from the root of the bundle to to the root of this persistence unit. e.g.
+     * WEB-INF/classes -- if persistence.xml is in WEB-INF/classes/META-INF, WEB-INF/lib/foo.jar -- if persistence.xml is in
+     * WEB-INF/lib/foo.jar/META-INF, "" -- if persistence.xml is in META-INF directory of the bundle, util/bar.jar -- if
+     * persistence.xml is in bundle.jar/util/bar.jar
      */
     @XmlTransient
     private String PURoot;
@@ -145,21 +141,20 @@ public class Persistence implements Serializable{
      * Gets the value of the persistenceUnit property.
      * 
      * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the persistenceUnit property.
+     * This accessor method returns a reference to the live list, not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object. This is why there is not a <CODE>set</CODE> method for the
+     * persistenceUnit property.
      * 
      * <p>
      * For example, to add a new item, do as follows:
+     * 
      * <pre>
-     *    getPersistenceUnit().add(newItem);
+     * getPersistenceUnit().add(newItem);
      * </pre>
      * 
      * 
      * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link Persistence.PersistenceUnit }
+     * Objects of the following type(s) are allowed in the list {@link Persistence.PersistenceUnit }
      * 
      * 
      */
@@ -173,10 +168,8 @@ public class Persistence implements Serializable{
     /**
      * Gets the value of the version property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * @return possible object is {@link String }
+     * 
      */
     public String getVersion() {
         if (version == null) {
@@ -189,26 +182,25 @@ public class Persistence implements Serializable{
     /**
      * Sets the value of the version property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     * @param value allowed object is {@link String }
+     * 
      */
     public void setVersion(String value) {
         this.version = value;
     }
 
-
     /**
      * 
      * 
-     *                 Configuration of a persistence unit.
+     * Configuration of a persistence unit.
      * 
-     *               
      * 
-     * <p>Java class for anonymous complex type.
      * 
-     * <p>The following schema fragment specifies the expected content contained within this class.
+     * <p>
+     * Java class for anonymous complex type.
+     * 
+     * <p>
+     * The following schema fragment specifies the expected content contained within this class.
      * 
      * <pre>
      * &lt;complexType>
@@ -256,19 +248,8 @@ public class Persistence implements Serializable{
      * 
      */
     @XmlAccessorType(XmlAccessType.FIELD)
-    @XmlType(name = "", propOrder = {
-        "description",
-        "provider",
-        "jtaDataSource",
-        "nonJtaDataSource",
-        "mappingFile",
-        "jarFile",
-        "clazz",
-        "excludeUnlistedClasses",
-        "sharedCacheMode",
-        "validationMode",
-        "properties"
-    })
+    @XmlType(name = "", propOrder = { "description", "provider", "jtaDataSource", "nonJtaDataSource", "mappingFile", "jarFile", "clazz",
+            "excludeUnlistedClasses", "sharedCacheMode", "validationMode", "properties" })
     public static class PersistenceUnit implements java.io.Serializable {
 
         protected String description;
@@ -299,10 +280,8 @@ public class Persistence implements Serializable{
         /**
          * Gets the value of the description property.
          * 
-         * @return
-         *     possible object is
-         *     {@link String }
-         *     
+         * @return possible object is {@link String }
+         * 
          */
         public String getDescription() {
             return description;
@@ -311,10 +290,8 @@ public class Persistence implements Serializable{
         /**
          * Sets the value of the description property.
          * 
-         * @param value
-         *     allowed object is
-         *     {@link String }
-         *     
+         * @param value allowed object is {@link String }
+         * 
          */
         public void setDescription(String value) {
             this.description = value;
@@ -323,10 +300,8 @@ public class Persistence implements Serializable{
         /**
          * Gets the value of the provider property.
          * 
-         * @return
-         *     possible object is
-         *     {@link String }
-         *     
+         * @return possible object is {@link String }
+         * 
          */
         public String getProvider() {
             return provider;
@@ -335,10 +310,8 @@ public class Persistence implements Serializable{
         /**
          * Sets the value of the provider property.
          * 
-         * @param value
-         *     allowed object is
-         *     {@link String }
-         *     
+         * @param value allowed object is {@link String }
+         * 
          */
         public void setProvider(String value) {
             this.provider = value;
@@ -347,10 +320,8 @@ public class Persistence implements Serializable{
         /**
          * Gets the value of the jtaDataSource property.
          * 
-         * @return
-         *     possible object is
-         *     {@link String }
-         *     
+         * @return possible object is {@link String }
+         * 
          */
         public String getJtaDataSource() {
             return jtaDataSource;
@@ -359,10 +330,8 @@ public class Persistence implements Serializable{
         /**
          * Sets the value of the jtaDataSource property.
          * 
-         * @param value
-         *     allowed object is
-         *     {@link String }
-         *     
+         * @param value allowed object is {@link String }
+         * 
          */
         public void setJtaDataSource(String value) {
             this.jtaDataSource = value;
@@ -371,10 +340,8 @@ public class Persistence implements Serializable{
         /**
          * Gets the value of the nonJtaDataSource property.
          * 
-         * @return
-         *     possible object is
-         *     {@link String }
-         *     
+         * @return possible object is {@link String }
+         * 
          */
         public String getNonJtaDataSource() {
             return nonJtaDataSource;
@@ -383,10 +350,8 @@ public class Persistence implements Serializable{
         /**
          * Sets the value of the nonJtaDataSource property.
          * 
-         * @param value
-         *     allowed object is
-         *     {@link String }
-         *     
+         * @param value allowed object is {@link String }
+         * 
          */
         public void setNonJtaDataSource(String value) {
             this.nonJtaDataSource = value;
@@ -396,21 +361,20 @@ public class Persistence implements Serializable{
          * Gets the value of the mappingFile property.
          * 
          * <p>
-         * This accessor method returns a reference to the live list,
-         * not a snapshot. Therefore any modification you make to the
-         * returned list will be present inside the JAXB object.
-         * This is why there is not a <CODE>set</CODE> method for the mappingFile property.
+         * This accessor method returns a reference to the live list, not a snapshot. Therefore any modification you make to the
+         * returned list will be present inside the JAXB object. This is why there is not a <CODE>set</CODE> method for the
+         * mappingFile property.
          * 
          * <p>
          * For example, to add a new item, do as follows:
+         * 
          * <pre>
-         *    getMappingFile().add(newItem);
+         * getMappingFile().add(newItem);
          * </pre>
          * 
          * 
          * <p>
-         * Objects of the following type(s) are allowed in the list
-         * {@link String }
+         * Objects of the following type(s) are allowed in the list {@link String }
          * 
          * 
          */
@@ -425,21 +389,20 @@ public class Persistence implements Serializable{
          * Gets the value of the jarFile property.
          * 
          * <p>
-         * This accessor method returns a reference to the live list,
-         * not a snapshot. Therefore any modification you make to the
-         * returned list will be present inside the JAXB object.
-         * This is why there is not a <CODE>set</CODE> method for the jarFile property.
+         * This accessor method returns a reference to the live list, not a snapshot. Therefore any modification you make to the
+         * returned list will be present inside the JAXB object. This is why there is not a <CODE>set</CODE> method for the
+         * jarFile property.
          * 
          * <p>
          * For example, to add a new item, do as follows:
+         * 
          * <pre>
-         *    getJarFile().add(newItem);
+         * getJarFile().add(newItem);
          * </pre>
          * 
          * 
          * <p>
-         * Objects of the following type(s) are allowed in the list
-         * {@link String }
+         * Objects of the following type(s) are allowed in the list {@link String }
          * 
          * 
          */
@@ -454,21 +417,20 @@ public class Persistence implements Serializable{
          * Gets the value of the clazz property.
          * 
          * <p>
-         * This accessor method returns a reference to the live list,
-         * not a snapshot. Therefore any modification you make to the
-         * returned list will be present inside the JAXB object.
-         * This is why there is not a <CODE>set</CODE> method for the clazz property.
+         * This accessor method returns a reference to the live list, not a snapshot. Therefore any modification you make to the
+         * returned list will be present inside the JAXB object. This is why there is not a <CODE>set</CODE> method for the
+         * clazz property.
          * 
          * <p>
          * For example, to add a new item, do as follows:
+         * 
          * <pre>
-         *    getClazz().add(newItem);
+         * getClazz().add(newItem);
          * </pre>
          * 
          * 
          * <p>
-         * Objects of the following type(s) are allowed in the list
-         * {@link String }
+         * Objects of the following type(s) are allowed in the list {@link String }
          * 
          * 
          */
@@ -482,10 +444,8 @@ public class Persistence implements Serializable{
         /**
          * Gets the value of the excludeUnlistedClasses property.
          * 
-         * @return
-         *     possible object is
-         *     {@link Boolean }
-         *     
+         * @return possible object is {@link Boolean }
+         * 
          */
         public Boolean isExcludeUnlistedClasses() {
             return excludeUnlistedClasses;
@@ -494,10 +454,8 @@ public class Persistence implements Serializable{
         /**
          * Sets the value of the excludeUnlistedClasses property.
          * 
-         * @param value
-         *     allowed object is
-         *     {@link Boolean }
-         *     
+         * @param value allowed object is {@link Boolean }
+         * 
          */
         public void setExcludeUnlistedClasses(Boolean value) {
             this.excludeUnlistedClasses = value;
@@ -506,10 +464,8 @@ public class Persistence implements Serializable{
         /**
          * Gets the value of the sharedCacheMode property.
          * 
-         * @return
-         *     possible object is
-         *     {@link PersistenceUnitCachingType }
-         *     
+         * @return possible object is {@link PersistenceUnitCachingType }
+         * 
          */
         public PersistenceUnitCachingType getSharedCacheMode() {
             return sharedCacheMode;
@@ -518,10 +474,8 @@ public class Persistence implements Serializable{
         /**
          * Sets the value of the sharedCacheMode property.
          * 
-         * @param value
-         *     allowed object is
-         *     {@link PersistenceUnitCachingType }
-         *     
+         * @param value allowed object is {@link PersistenceUnitCachingType }
+         * 
          */
         public void setSharedCacheMode(PersistenceUnitCachingType value) {
             this.sharedCacheMode = value;
@@ -530,10 +484,8 @@ public class Persistence implements Serializable{
         /**
          * Gets the value of the validationMode property.
          * 
-         * @return
-         *     possible object is
-         *     {@link PersistenceUnitValidationModeType }
-         *     
+         * @return possible object is {@link PersistenceUnitValidationModeType }
+         * 
          */
         public PersistenceUnitValidationModeType getValidationMode() {
             return validationMode;
@@ -542,10 +494,8 @@ public class Persistence implements Serializable{
         /**
          * Sets the value of the validationMode property.
          * 
-         * @param value
-         *     allowed object is
-         *     {@link PersistenceUnitValidationModeType }
-         *     
+         * @param value allowed object is {@link PersistenceUnitValidationModeType }
+         * 
          */
         public void setValidationMode(PersistenceUnitValidationModeType value) {
             this.validationMode = value;
@@ -554,10 +504,8 @@ public class Persistence implements Serializable{
         /**
          * Gets the value of the properties property.
          * 
-         * @return
-         *     possible object is
-         *     {@link Persistence.PersistenceUnit.Properties }
-         *     
+         * @return possible object is {@link Persistence.PersistenceUnit.Properties }
+         * 
          */
         public Persistence.PersistenceUnit.Properties getProperties() {
             return properties;
@@ -566,10 +514,8 @@ public class Persistence implements Serializable{
         /**
          * Sets the value of the properties property.
          * 
-         * @param value
-         *     allowed object is
-         *     {@link Persistence.PersistenceUnit.Properties }
-         *     
+         * @param value allowed object is {@link Persistence.PersistenceUnit.Properties }
+         * 
          */
         public void setProperties(Persistence.PersistenceUnit.Properties value) {
             this.properties = value;
@@ -578,10 +524,8 @@ public class Persistence implements Serializable{
         /**
          * Gets the value of the name property.
          * 
-         * @return
-         *     possible object is
-         *     {@link String }
-         *     
+         * @return possible object is {@link String }
+         * 
          */
         public String getName() {
             return name;
@@ -590,10 +534,8 @@ public class Persistence implements Serializable{
         /**
          * Sets the value of the name property.
          * 
-         * @param value
-         *     allowed object is
-         *     {@link String }
-         *     
+         * @param value allowed object is {@link String }
+         * 
          */
         public void setName(String value) {
             this.name = value;
@@ -602,10 +544,8 @@ public class Persistence implements Serializable{
         /**
          * Gets the value of the transactionType property.
          * 
-         * @return
-         *     possible object is
-         *     {@link PersistenceUnitTransactionType }
-         *     
+         * @return possible object is {@link PersistenceUnitTransactionType }
+         * 
          */
         public PersistenceUnitTransactionType getTransactionType() {
             return transactionType;
@@ -614,20 +554,19 @@ public class Persistence implements Serializable{
         /**
          * Sets the value of the transactionType property.
          * 
-         * @param value
-         *     allowed object is
-         *     {@link PersistenceUnitTransactionType }
-         *     
+         * @param value allowed object is {@link PersistenceUnitTransactionType }
+         * 
          */
         public void setTransactionType(PersistenceUnitTransactionType value) {
             this.transactionType = value;
         }
 
-
         /**
-         * <p>Java class for anonymous complex type.
+         * <p>
+         * Java class for anonymous complex type.
          * 
-         * <p>The following schema fragment specifies the expected content contained within this class.
+         * <p>
+         * The following schema fragment specifies the expected content contained within this class.
          * 
          * <pre>
          * &lt;complexType>
@@ -653,9 +592,7 @@ public class Persistence implements Serializable{
          * 
          */
         @XmlAccessorType(XmlAccessType.FIELD)
-        @XmlType(name = "", propOrder = {
-            "property"
-        })
+        @XmlType(name = "", propOrder = { "property" })
         public static class Properties implements java.io.Serializable {
 
             protected List<Persistence.PersistenceUnit.Properties.Property> property;
@@ -665,21 +602,20 @@ public class Persistence implements Serializable{
              * Gets the value of the property property.
              * 
              * <p>
-             * This accessor method returns a reference to the live list,
-             * not a snapshot. Therefore any modification you make to the
-             * returned list will be present inside the JAXB object.
-             * This is why there is not a <CODE>set</CODE> method for the property property.
+             * This accessor method returns a reference to the live list, not a snapshot. Therefore any modification you make to the
+             * returned list will be present inside the JAXB object. This is why there is not a <CODE>set</CODE> method for the
+             * property property.
              * 
              * <p>
              * For example, to add a new item, do as follows:
+             * 
              * <pre>
-             *    getProperty().add(newItem);
+             * getProperty().add(newItem);
              * </pre>
              * 
              * 
              * <p>
-             * Objects of the following type(s) are allowed in the list
-             * {@link Persistence.PersistenceUnit.Properties.Property }
+             * Objects of the following type(s) are allowed in the list {@link Persistence.PersistenceUnit.Properties.Property }
              * 
              * 
              */
@@ -690,11 +626,12 @@ public class Persistence implements Serializable{
                 return this.property;
             }
 
-
             /**
-             * <p>Java class for anonymous complex type.
+             * <p>
+             * Java class for anonymous complex type.
              * 
-             * <p>The following schema fragment specifies the expected content contained within this class.
+             * <p>
+             * The following schema fragment specifies the expected content contained within this class.
              * 
              * <pre>
              * &lt;complexType>
@@ -711,7 +648,7 @@ public class Persistence implements Serializable{
              */
             @XmlAccessorType(XmlAccessType.FIELD)
             @XmlType(name = "")
-            public static class Property implements Serializable{
+            public static class Property implements Serializable {
 
                 @XmlAttribute(name = "name", required = true)
                 protected String name;
@@ -722,10 +659,8 @@ public class Persistence implements Serializable{
                 /**
                  * Gets the value of the name property.
                  * 
-                 * @return
-                 *     possible object is
-                 *     {@link String }
-                 *     
+                 * @return possible object is {@link String }
+                 * 
                  */
                 public String getName() {
                     return name;
@@ -734,10 +669,8 @@ public class Persistence implements Serializable{
                 /**
                  * Sets the value of the name property.
                  * 
-                 * @param value
-                 *     allowed object is
-                 *     {@link String }
-                 *     
+                 * @param value allowed object is {@link String }
+                 * 
                  */
                 public void setName(String value) {
                     this.name = value;
@@ -746,10 +679,8 @@ public class Persistence implements Serializable{
                 /**
                  * Gets the value of the value property.
                  * 
-                 * @return
-                 *     possible object is
-                 *     {@link String }
-                 *     
+                 * @return possible object is {@link String }
+                 * 
                  */
                 public String getValue() {
                     return value;
@@ -758,10 +689,8 @@ public class Persistence implements Serializable{
                 /**
                  * Sets the value of the value property.
                  * 
-                 * @param value
-                 *     allowed object is
-                 *     {@link String }
-                 *     
+                 * @param value allowed object is {@link String }
+                 * 
                  */
                 public void setValue(String value) {
                     this.value = value;

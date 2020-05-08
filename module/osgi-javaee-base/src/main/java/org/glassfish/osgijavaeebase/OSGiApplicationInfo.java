@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -51,14 +51,13 @@ public final class OSGiApplicationInfo {
 
     /**
      * Create a new instance.
+     * 
      * @param gfAppInfo the GlassFish application info
      * @param directoryDeployment flag for directory deployment
      * @param bnd the application bundle
      * @param cl the application class-loader
      */
-    public OSGiApplicationInfo(final ApplicationInfo gfAppInfo,
-            final boolean directoryDeployment, final Bundle bnd,
-            final ClassLoader cl) {
+    public OSGiApplicationInfo(final ApplicationInfo gfAppInfo, final boolean directoryDeployment, final Bundle bnd, final ClassLoader cl) {
 
         this.appInfo = gfAppInfo;
         isDirectoryDeployment = directoryDeployment;
@@ -68,6 +67,7 @@ public final class OSGiApplicationInfo {
 
     /**
      * Get the underlying GlassFish application info.
+     * 
      * @return ApplicationInfo
      */
     public ApplicationInfo getAppInfo() {
@@ -76,6 +76,7 @@ public final class OSGiApplicationInfo {
 
     /**
      * Set the underlying GlassFish application info.
+     * 
      * @param gfAppInfo the application to set
      */
     public void setAppInfo(final ApplicationInfo gfAppInfo) {
@@ -84,8 +85,8 @@ public final class OSGiApplicationInfo {
 
     /**
      * Indicate if the application is deployed from a directory.
-     * @return {@code true} if deployed from a directory, {@code false}
-     * otherwise
+     * 
+     * @return {@code true} if deployed from a directory, {@code false} otherwise
      */
     public boolean isDirectoryDeployment() {
         return isDirectoryDeployment;
@@ -93,6 +94,7 @@ public final class OSGiApplicationInfo {
 
     /**
      * Set the directory deployment flag.
+     * 
      * @param dirDeplFlag the new value for the directory deployment flag
      */
     public void setDirectoryDeployment(final boolean dirDeplFlag) {
@@ -101,6 +103,7 @@ public final class OSGiApplicationInfo {
 
     /**
      * Get the application bundle.
+     * 
      * @return Bundle
      */
     public Bundle getBundle() {
@@ -109,6 +112,7 @@ public final class OSGiApplicationInfo {
 
     /**
      * Set the application bundle.
+     * 
      * @param bnd the new application bundle
      */
     public void setBundle(final Bundle bnd) {
@@ -117,6 +121,7 @@ public final class OSGiApplicationInfo {
 
     /**
      * Get the deployer OSGi service reference.
+     * 
      * @return ServiceReference
      */
     public ServiceReference getDeployer() {
@@ -125,6 +130,7 @@ public final class OSGiApplicationInfo {
 
     /**
      * Set the deployer OSGi service reference.
+     * 
      * @param ref the new reference
      */
     public void setDeployer(final ServiceReference ref) {
@@ -133,6 +139,7 @@ public final class OSGiApplicationInfo {
 
     /**
      * Get the application class-loader.
+     * 
      * @return ClassLoader
      */
     public ClassLoader getClassLoader() {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -41,29 +41,24 @@ public final class OSGiEJBDeploymentRequest extends OSGiDeploymentRequest {
 
     /**
      * Create a new instance.
+     * 
      * @param deployer GlassFish deployer
      * @param archiveFactory GlassFish archive factory
      * @param env GlassFish server environment
      * @param reporter GlassFish command reporter
      * @param bnd application bundle
      */
-    public OSGiEJBDeploymentRequest(final Deployment deployer,
-            final ArchiveFactory archiveFactory,
-            final ServerEnvironmentImpl env,
+    public OSGiEJBDeploymentRequest(final Deployment deployer, final ArchiveFactory archiveFactory, final ServerEnvironmentImpl env,
             final ActionReport reporter, final Bundle bnd) {
 
         super(deployer, archiveFactory, env, reporter, bnd);
     }
 
     @Override
-    protected OSGiDeploymentContext getDeploymentContextImpl(
-            final ActionReport reporter, final Logger logger,
-            final ReadableArchive archive, final OpsParams opsParams,
-            final ServerEnvironmentImpl env, final Bundle bnd)
-            throws Exception {
+    protected OSGiDeploymentContext getDeploymentContextImpl(final ActionReport reporter, final Logger logger, final ReadableArchive archive,
+            final OpsParams opsParams, final ServerEnvironmentImpl env, final Bundle bnd) throws Exception {
 
-        return new OSGiEJBDeploymentContext(reporter, logger, archive,
-                opsParams, env, bnd);
+        return new OSGiEJBDeploymentContext(reporter, logger, archive, opsParams, env, bnd);
     }
 
     @Override
@@ -75,14 +70,14 @@ public final class OSGiEJBDeploymentRequest extends OSGiDeploymentRequest {
 
     /**
      * Get the bundle fragments of a given host bundle.
+     * 
      * @param host the host bundle
      * @return Bundle[]
      */
     private static Bundle[] getFragments(final Bundle host) {
         List<Bundle> fragments = new ArrayList<Bundle>();
         BundleWiring hostWiring = host.adapt(BundleWiring.class);
-        for (BundleWire wire : hostWiring.getProvidedWires(
-                HostNamespace.HOST_NAMESPACE)) {
+        for (BundleWire wire : hostWiring.getProvidedWires(HostNamespace.HOST_NAMESPACE)) {
             fragments.add(wire.getRequirerWiring().getBundle());
         }
         return fragments.toArray(new Bundle[fragments.size()]);

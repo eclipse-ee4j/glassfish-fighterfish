@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Distribution License v. 1.0, which is available at
@@ -10,7 +10,7 @@
 package org.glassfish.fighterfish.sample.uas.entities;
 
 import java.util.Dictionary;
-import java.util.Properties;
+import java.util.Hashtable;
 
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
@@ -24,30 +24,29 @@ import org.osgi.framework.BundleContext;
 public final class EntitiesActivator implements BundleActivator {
 
     @Override
-    @SuppressWarnings("unchecked")
     public void start(final BundleContext context) throws Exception {
-        final String puName = "sample.uas.entities";
-        EntityManagerFactory emf = createEMF(puName);
-        Dictionary props = new Properties();
-        props.put("persistence-unit", puName);
-        context.registerService(EntityManagerFactory.class.getName(), emf,
-                props);
-        log("registered " + emf);
+        String persistenceUnitName = "sample.uas.entities";
+        EntityManagerFactory entityManagerFactory = createEMF(persistenceUnitName);
+        Dictionary<String, String> properties = new Hashtable<>();
+        properties.put("persistence-unit", persistenceUnitName);
+
+        context.registerService(EntityManagerFactory.class.getName(), entityManagerFactory, properties);
+
+        log("registered " + entityManagerFactory);
     }
 
     /**
      * Create the entity manager factory.
-     * @param puName persistence unit name
+     * 
+     * @param persistenceUnitName persistence unit name
      * @return EntityManagerFactory
      */
-    private EntityManagerFactory createEMF(final String puName) {
-        ClassLoader old = Thread.currentThread().getContextClassLoader();
+    private EntityManagerFactory createEMF(String persistenceUnitName) {
+        ClassLoader oldClassLoader = Thread.currentThread().getContextClassLoader();
         try {
-            Thread.currentThread().setContextClassLoader(
-                    getClass().getClassLoader());
+            Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
 
-            EntityManagerFactory emf = Persistence
-                    .createEntityManagerFactory(puName);
+            EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory(persistenceUnitName);
 
             // createEMF does not cause java2db to happen - at least that's
             // the behavior in EclipseLink.
@@ -56,10 +55,10 @@ public final class EntitiesActivator implements BundleActivator {
             // uses our EMF and that could
             // be part of a transaction and we can get into deadlocks based on
             // RDBMS trype.
-            emf.createEntityManager().close();
-            return emf;
+            entityManagerFactory.createEntityManager().close();
+            return entityManagerFactory;
         } finally {
-            Thread.currentThread().setContextClassLoader(old);
+            Thread.currentThread().setContextClassLoader(oldClassLoader);
         }
     }
 
@@ -69,6 +68,7 @@ public final class EntitiesActivator implements BundleActivator {
 
     /**
      * Log a message to the standard output.
+     * 
      * @param msg message to log
      */
     private void log(final String msg) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -31,10 +31,10 @@ public final class Util {
     }
 
     /**
-     * This method attached slash when context path header does not start with
-     * /. This is done keeping the following observations in mind: a) GlassFish
-     * web container automatically attaches a '/'. b) The r42 CT installs some
-     * WABs which contains such context path. Unless we attach a '/', they fail.
+     * This method attached slash when context path header does not start with /. This is done keeping the following
+     * observations in mind: a) GlassFish web container automatically attaches a '/'. b) The r42 CT installs some WABs which
+     * contains such context path. Unless we attach a '/', they fail.
+     * 
      * @param bundle the budnle to process
      * @return context path
      */

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -29,14 +29,13 @@ import java.util.Dictionary;
 import java.util.Properties;
 
 /**
- * Resource-Manager to export JDBC resources in GlassFish to OSGi's
- * service-registry.
+ * Resource-Manager to export JDBC resources in GlassFish to OSGi's service-registry.
  */
-public final class JDBCResourceManager extends BaseResourceManager
-        implements ResourceManager {
+public final class JDBCResourceManager extends BaseResourceManager implements ResourceManager {
 
     /**
      * Create a new instance.
+     * 
      * @param habitat component locator
      */
     public JDBCResourceManager(final Habitat habitat) {
@@ -49,47 +48,40 @@ public final class JDBCResourceManager extends BaseResourceManager
     }
 
     /**
-     * Iterates through all of the configured JDBC resources and expose
-     * them as OSGi service by contract {@code javax.sql.DataSource}.
+     * Iterates through all of the configured JDBC resources and expose them as OSGi service by contract
+     * {@code javax.sql.DataSource}.
+     * 
      * @param context bundle context
      */
     private void registerJdbcResources(final BundleContext context) {
-        Resources resources = getHabitat().getComponent(Domain.class)
-                .getResources();
-        Collection<JdbcResource> jdbcResources = resources
-                .getResources(JdbcResource.class);
+        Resources resources = getHabitat().getComponent(Domain.class).getResources();
+        Collection<JdbcResource> jdbcResources = resources.getResources(JdbcResource.class);
         for (JdbcResource resource : jdbcResources) {
-            ResourceRef resRef = getResourceHelper()
-                    .getResourceRef(resource.getJndiName());
+            ResourceRef resRef = getResourceHelper().getResourceRef(resource.getJndiName());
             registerJdbcResource(resource, resRef, context);
         }
     }
 
     @Override
-    public void registerResource(final BindableResource resource,
-            final ResourceRef resRef, final BundleContext bundleContext) {
+    public void registerResource(final BindableResource resource, final ResourceRef resRef, final BundleContext bundleContext) {
 
         registerJdbcResource((JdbcResource) resource, resRef, bundleContext);
     }
 
     /**
-     * Retrieves driver-class-name information so as to register the service
-     * with parameter {@code osgi.jdbc.driver.class}.
+     * Retrieves driver-class-name information so as to register the service with parameter {@code osgi.jdbc.driver.class}.
      *
      * @param resource JDBC resource
      * @param resRef resource reference
      * @param bundleContext bundle context
      */
     @SuppressWarnings("unchecked")
-    private void registerJdbcResource(final JdbcResource resource,
-            final ResourceRef resRef, final BundleContext bundleContext) {
+    private void registerJdbcResource(final JdbcResource resource, final ResourceRef resRef, final BundleContext bundleContext) {
 
         if (resource.getEnabled().equalsIgnoreCase("true")) {
-            if (resRef != null
-                    && resRef.getEnabled().equalsIgnoreCase("true")) {
+            if (resRef != null && resRef.getEnabled().equalsIgnoreCase("true")) {
                 String poolName = resource.getPoolName();
-                JdbcConnectionPool pool = (JdbcConnectionPool) getResources()
-                        .getResourceByName(JdbcConnectionPool.class, poolName);
+                JdbcConnectionPool pool = (JdbcConnectionPool) getResources().getResourceByName(JdbcConnectionPool.class, poolName);
                 String className = pool.getDatasourceClassname();
                 // no need to use res-type to get driver/datasource-classname
                 // as either datasource-classname or driver-classname
@@ -97,17 +89,13 @@ public final class JDBCResourceManager extends BaseResourceManager
                 if (className == null) {
                     className = pool.getDriverClassname();
                 }
-                Class[] intf = new Class[]{javax.sql.DataSource.class,
-                    Invalidate.class};
-                Object proxy = getProxy(resource.getJndiName(), intf,
-                        getClassLoader());
+                Class[] intf = new Class[] { javax.sql.DataSource.class, Invalidate.class };
+                Object proxy = getProxy(resource.getJndiName(), intf, getClassLoader());
                 Dictionary properties = new Properties();
-                properties.put(DataSourceFactory.OSGI_JDBC_DRIVER_CLASS,
-                        className);
+                properties.put(DataSourceFactory.OSGI_JDBC_DRIVER_CLASS, className);
                 properties.put(Constants.JNDI_NAME, resource.getJndiName());
 
-                registerResourceAsService(bundleContext, resource,
-                        Constants.DS, properties, proxy);
+                registerResourceAsService(bundleContext, resource, Constants.DS, properties, proxy);
             }
         }
     }

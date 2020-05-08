@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -27,8 +27,7 @@ import org.osgi.service.url.URLStreamHandlerService;
 import java.util.Properties;
 
 /**
- * An extender that listens to web application bundle's lifecycle
- * events and does the necessary deployment/undeployment.
+ * An extender that listens to web application bundle's lifecycle events and does the necessary deployment/undeployment.
  */
 public final class WebExtender implements Extender {
 
@@ -59,6 +58,7 @@ public final class WebExtender implements Extender {
 
     /**
      * Create a new instance.
+     * 
      * @param bndCtx the bundle context
      */
     public WebExtender(final BundleContext bndCtx) {
@@ -107,12 +107,8 @@ public final class WebExtender implements Extender {
     @SuppressWarnings("unchecked")
     private void addURLHandler() {
         Dictionary props = new Properties();
-        props.put(URLConstants.URL_HANDLER_PROTOCOL,
-                new String[]{Constants.WEB_BUNDLE_SCHEME});
-        urlHandlerService = context.registerService(
-                URLStreamHandlerService.class.getName(),
-                new WebBundleURLStreamHandlerService(),
-                props);
+        props.put(URLConstants.URL_HANDLER_PROTOCOL, new String[] { Constants.WEB_BUNDLE_SCHEME });
+        urlHandlerService = context.registerService(URLStreamHandlerService.class.getName(), new WebBundleURLStreamHandlerService(), props);
     }
 
     /**
@@ -132,8 +128,7 @@ public final class WebExtender implements Extender {
         // By registering this is OSGi service registry, it will automatically
         // make it into HK2 service registry
         // by OSGi->HK2 service mapper.
-        wmdReg = this.context.registerService(
-                WebModuleDecorator.class.getName(), wmd, null);
+        wmdReg = this.context.registerService(WebModuleDecorator.class.getName(), wmd, null);
     }
 
     /**

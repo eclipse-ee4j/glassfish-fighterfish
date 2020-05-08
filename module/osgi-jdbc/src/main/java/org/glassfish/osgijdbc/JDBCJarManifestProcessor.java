@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -53,8 +53,7 @@ public final class JDBCJarManifestProcessor {
     /**
      * Logger.
      */
-    private static final Logger LOGGER = Logger.getLogger(
-            JDBCJarManifestProcessor.class.getPackage().getName());
+    private static final Logger LOGGER = Logger.getLogger(JDBCJarManifestProcessor.class.getPackage().getName());
 
     /**
      * Constant for the default bundle manifest version.
@@ -80,8 +79,7 @@ public final class JDBCJarManifestProcessor {
      * @return a new Manifest
      * @throws java.io.IOException if an error occurs
      */
-    public static Manifest processManifest(final URL url,
-            final ClassLoader cl) throws IOException {
+    public static Manifest processManifest(final URL url, final ClassLoader cl) throws IOException {
 
         final JarInputStream jis = new JarInputStream(url.openStream());
 
@@ -107,29 +105,23 @@ public final class JDBCJarManifestProcessor {
                 attrs.putValue(key, value);
             }
 
-            attrs.putValue((DataSourceFactory.OSGI_JDBC_DRIVER_CLASS
-                    .replace('.', '_')),
-                    (String) properties.get(Constants.DRIVER));
+            attrs.putValue((DataSourceFactory.OSGI_JDBC_DRIVER_CLASS.replace('.', '_')), (String) properties.get(Constants.DRIVER));
 
             attrs.putValue(OSGI_RFC_122, "TRUE");
 
-            process(queryParams, attrs, BUNDLE_MANIFESTVERSION,
-                    DEFAULT_MAN_VERSION);
+            process(queryParams, attrs, BUNDLE_MANIFESTVERSION, DEFAULT_MAN_VERSION);
 
             String defaultSymName = properties.getProperty(Constants.DRIVER);
-            process(queryParams, attrs, BUNDLE_SYMBOLICNAME,
-                    defaultSymName);
+            process(queryParams, attrs, BUNDLE_SYMBOLICNAME, defaultSymName);
 
-            String version = oldManifest.getMainAttributes()
-                    .getValue(IMPL_VERSION);
+            String version = oldManifest.getMainAttributes().getValue(IMPL_VERSION);
             if (isOSGiCompatibleVersion(version)) {
                 process(queryParams, attrs, BUNDLE_VERSION, version);
             }
 
-            process(queryParams, attrs, BUNDLE_CLASSPATH,
-                    bundleClassPath.toString());
+            process(queryParams, attrs, BUNDLE_CLASSPATH, bundleClassPath.toString());
 
-            //process(queryParams, attrs, IMPORT_PACKAGE,
+            // process(queryParams, attrs, IMPORT_PACKAGE,
             // DEFAULT_IMPORT_PACKAGE);
             process(queryParams, attrs, EXPORT_PACKAGE, "*");
 
@@ -146,9 +138,9 @@ public final class JDBCJarManifestProcessor {
 
     /**
      * Check if the given version is OSGi compatible.
+     * 
      * @param version the version to test
-     * @return {@code true} if the version is compatible, {@code false}
-     * otherwise
+     * @return {@code true} if the version is compatible, {@code false} otherwise
      */
     private static boolean isOSGiCompatibleVersion(final String version) {
         boolean isCompatible = false;
@@ -159,9 +151,7 @@ public final class JDBCJarManifestProcessor {
             }
         } catch (NumberFormatException nfe) {
             if (LOGGER.isLoggable(Level.FINEST)) {
-                LOGGER.log(Level.FINEST,
-                        "Not a OSGi compatible bundle-version [{0}] : {1}",
-                        new Object[]{version, nfe});
+                LOGGER.log(Level.FINEST, "Not a OSGi compatible bundle-version [{0}] : {1}", new Object[] { version, nfe });
             }
         }
         return isCompatible;
@@ -169,11 +159,11 @@ public final class JDBCJarManifestProcessor {
 
     /**
      * Create a bundle class-path string from the given list of JAR file names.
+     * 
      * @param embeddedJars the input list
      * @return StringBuilder
      */
-    private static StringBuilder deriveBundleClassPath(
-            final List<String> embeddedJars) {
+    private static StringBuilder deriveBundleClassPath(final List<String> embeddedJars) {
 
         StringBuilder bundleClasspath = new StringBuilder(".");
         for (int i = 0; i < embeddedJars.size(); i++) {
@@ -185,20 +175,19 @@ public final class JDBCJarManifestProcessor {
 
     /**
      * Get the list of nested jar files inside the given file.
+     * 
      * @param file the outer JAR file
      * @return list of nested jar file names
      * @throws IOException if an error occurs
      */
-    private static List<String> getEmbeddedJarsList(final File file)
-            throws IOException {
+    private static List<String> getEmbeddedJarsList(final File file) throws IOException {
 
         List<String> jarsList = new ArrayList<String>();
         JarFile f = new JarFile(file);
         Enumeration<JarEntry> entries = f.entries();
         while (entries.hasMoreElements()) {
             JarEntry entry = entries.nextElement();
-            if (!entry.isDirectory() && entry.getName()
-                    .toLowerCase(LOCALE).endsWith(".jar")) {
+            if (!entry.isDirectory() && entry.getName().toLowerCase(LOCALE).endsWith(".jar")) {
                 jarsList.add(entry.getName());
             }
         }
@@ -207,6 +196,7 @@ public final class JDBCJarManifestProcessor {
 
     /**
      * Read the query parameters of a given URL.
+     * 
      * @param url the input URL
      * @return Properties
      */
@@ -228,23 +218,20 @@ public final class JDBCJarManifestProcessor {
                 }
                 queryParams.put(name, value);
             }
-            LOGGER.logp(Level.INFO, "JDBCJarManifestProcessor",
-                    "readQueryParams", "queryParams = {0}",
-                    new Object[]{queryParams});
+            LOGGER.logp(Level.INFO, "JDBCJarManifestProcessor", "readQueryParams", "queryParams = {0}", new Object[] { queryParams });
         }
         return queryParams;
     }
 
     /**
      * Process option, deployer trumps developer.
+     * 
      * @param deployerOptions deployer options
      * @param developerOptions developer options
      * @param key option key
      * @param defaultOption default value
      */
-    private static void process(final Properties deployerOptions,
-            final Attributes developerOptions, final String key,
-            final String defaultOption) {
+    private static void process(final Properties deployerOptions, final Attributes developerOptions, final String key, final String defaultOption) {
 
         String deployerOption = deployerOptions.getProperty(key);
         String developerOption = developerOptions.getValue(key);
@@ -254,9 +241,7 @@ public final class JDBCJarManifestProcessor {
         } else if (developerOption != null) {
             finalOption = developerOption;
         }
-        if ((finalOption == null && developerOption != null)
-                || finalOption != null && !finalOption
-                .equals(developerOption)) {
+        if ((finalOption == null && developerOption != null) || finalOption != null && !finalOption.equals(developerOption)) {
             developerOptions.putValue(key, finalOption);
         }
     }

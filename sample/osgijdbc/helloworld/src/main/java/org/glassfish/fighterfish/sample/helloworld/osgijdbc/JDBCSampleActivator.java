@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Distribution License v. 1.0, which is available at
@@ -43,9 +43,7 @@ public final class JDBCSampleActivator implements BundleActivator {
 
         // Create an LDAP filter which matches both the interface type
         // as well as jndi-name property.
-        Filter filter = context.createFilter("(&" + "(" + Constants.OBJECTCLASS
-                + "=" + DataSource.class.getName() + ")" + "(jndi-name="
-                + DSNAME + ")" + ")");
+        Filter filter = context.createFilter("(&" + "(" + Constants.OBJECTCLASS + "=" + DataSource.class.getName() + ")" + "(jndi-name=" + DSNAME + ")" + ")");
         st = new ServiceTracker(context, filter, null) {
 
             @Override
@@ -61,8 +59,7 @@ public final class JDBCSampleActivator implements BundleActivator {
             }
 
             @Override
-            public void removedService(final ServiceReference reference,
-                    final Object service) {
+            public void removedService(final ServiceReference reference, final Object service) {
 
                 super.removedService(reference, service);
             }
@@ -78,6 +75,7 @@ public final class JDBCSampleActivator implements BundleActivator {
 
     /**
      * Log a message to the standard output.
+     * 
      * @param msg message to log
      */
     private void debug(final String msg) {

@@ -15,7 +15,6 @@
  */
 
 /**
- * Simple WAB exposes a user authentication service as a web application using
- * servlets.
+ * Simple WAB exposes a user authentication service as a web application using servlets.
  */
 package org.glassfish.fighterfish.sample.uas.simplewab;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -20,13 +20,14 @@ import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 
 /**
- * This implementation is specialized for OSGi-ed WAR files. It can be extended
- * for different type of OSGi archives. It is not exported as a Service.
+ * This implementation is specialized for OSGi-ed WAR files. It can be extended for different type of OSGi archives. It
+ * is not exported as a Service.
  */
 public class OSGiArchiveHandler extends AbstractArchiveHandler {
 
     /**
      * This implementation returns {@code OSGiBundle}.
+     * 
      * @return {@code OSGiBundle}
      */
     @Override
@@ -36,6 +37,7 @@ public class OSGiArchiveHandler extends AbstractArchiveHandler {
 
     /**
      * This implementation always returns false.
+     * 
      * @return {@code false}
      */
     @Override
@@ -46,26 +48,25 @@ public class OSGiArchiveHandler extends AbstractArchiveHandler {
     }
 
     /**
-     * This implementation always throws a {@code RuntimeException}, this
-     * method should not be called.
+     * This implementation always throws a {@code RuntimeException}, this method should not be called.
+     * 
      * @param parent parent class-loader
      * @param context deployment context
      * @throws RuntimeException always
      * @return ClassLoader
      */
     @Override
-    public ClassLoader getClassLoader(final ClassLoader parent,
-            final DeploymentContext context) {
+    public ClassLoader getClassLoader(final ClassLoader parent, final DeploymentContext context) {
 
-        throw new RuntimeException(
-                "Assertion Failure: This method should not be called");
+        throw new RuntimeException("Assertion Failure: This method should not be called");
     }
 
     /**
      * This implementation derives the application name from the archive name.
+     * 
      * @param archive application archive
      * @return String
-    */
+     */
     @Override
     public String getDefaultApplicationName(final ReadableArchive archive) {
         String appName = archive.getName();
@@ -78,13 +79,13 @@ public class OSGiArchiveHandler extends AbstractArchiveHandler {
 
     /**
      * This implementation derives the application anme from the archive name.
+     * 
      * @param archive application archive
      * @param context deployment context
      * @return String
      */
     @Override
-    public String getDefaultApplicationName(final ReadableArchive archive,
-            final DeploymentContext context) {
+    public String getDefaultApplicationName(final ReadableArchive archive, final DeploymentContext context) {
 
         return getDefaultApplicationName(archive);
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -34,33 +34,27 @@ public final class OSGiWebUndeploymentRequest extends OSGiUndeploymentRequest {
 
     /**
      * Create a new instance.
+     * 
      * @param deployer GlassFish deployer
      * @param env GlassFish server environment
      * @param reporter GlassFish command reporter
      * @param osgiAppInfo application to undeploy
      */
-    public OSGiWebUndeploymentRequest(final Deployment deployer,
-            final ServerEnvironmentImpl env, final ActionReport reporter,
+    public OSGiWebUndeploymentRequest(final Deployment deployer, final ServerEnvironmentImpl env, final ActionReport reporter,
             final OSGiApplicationInfo osgiAppInfo) {
 
         super(deployer, env, reporter, osgiAppInfo);
     }
 
     @Override
-    protected OSGiDeploymentContext getDeploymentContextImpl(
-            final ActionReport reporter, final Logger logger,
-            final ReadableArchive source,
-            final UndeployCommandParameters undeployParams,
-            final ServerEnvironmentImpl env, final Bundle bundle)
-            throws Exception {
+    protected OSGiDeploymentContext getDeploymentContextImpl(final ActionReport reporter, final Logger logger, final ReadableArchive source,
+            final UndeployCommandParameters undeployParams, final ServerEnvironmentImpl env, final Bundle bundle) throws Exception {
 
-        return new OSGiWebDeploymentContext(reporter, logger, source,
-                undeployParams, env, bundle);
+        return new OSGiWebDeploymentContext(reporter, logger, source, undeployParams, env, bundle);
     }
 
     @Override
     protected void postUndeploy() {
-        ContextPathCollisionDetector.get()
-                .postUndeploy(getOsgiAppInfo().getBundle());
+        ContextPathCollisionDetector.get().postUndeploy(getOsgiAppInfo().getBundle());
     }
 }

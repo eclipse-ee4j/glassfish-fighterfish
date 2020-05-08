@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Distribution License v. 1.0, which is available at
@@ -43,14 +43,10 @@ public final class AdvSvcImplActivator implements BundleActivator {
 
     @Override
     public void start(final BundleContext context) throws Exception {
-        txTracker = new ServiceTracker(context,
-                UserTransaction.class.getName(), null);
+        txTracker = new ServiceTracker(context, UserTransaction.class.getName(), null);
         txTracker.open();
-        Filter filter = context.createFilter("(&"
-                + "(" + Constants.OBJECTCLASS + "="
-                + EntityManagerFactory.class.getName() + ")"
-                + "(persistence-unit=" + PUNAME + ")"
-                + ")");
+        Filter filter = context.createFilter(
+                "(&" + "(" + Constants.OBJECTCLASS + "=" + EntityManagerFactory.class.getName() + ")" + "(persistence-unit=" + PUNAME + ")" + ")");
         emfTracker = new ServiceTracker(context, filter, null);
         emfTracker.open();
         AdvUserAuthServiceImpl uas = new AdvUserAuthServiceImpl(this);
@@ -65,6 +61,7 @@ public final class AdvSvcImplActivator implements BundleActivator {
 
     /**
      * Get the user transaction.
+     * 
      * @return UserTransaction
      */
     public UserTransaction getUTX() {
@@ -73,6 +70,7 @@ public final class AdvSvcImplActivator implements BundleActivator {
 
     /**
      * Get the EntityManagerFactory.
+     * 
      * @return EntityManagerFactory
      */
     public EntityManagerFactory getEMF() {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Distribution License v. 1.0, which is available at
@@ -34,23 +34,18 @@ final class UserAuthServiceImpl implements UserAuthService {
     /**
      * Report string.
      */
-    private final StringBuilder report = new StringBuilder(
-            "Login Attempt Report:\n");
+    private final StringBuilder report = new StringBuilder("Login Attempt Report:\n");
 
     @Override
     public boolean login(final String name, final String password) {
-        boolean result = (name != null && name.trim().length() > 0
-                && password != null && password.trim().length() > 0
-                && password.equals(users.get(name)));
+        boolean result = (name != null && name.trim().length() > 0 && password != null && password.trim().length() > 0 && password.equals(users.get(name)));
         addReport(name, password, result);
         return result;
     }
 
     @Override
     public boolean register(final String name, final String password) {
-        boolean result = (name != null && name.trim().length() > 0
-                && password != null && password.trim().length() > 0
-                && !users.containsKey(name));
+        boolean result = (name != null && name.trim().length() > 0 && password != null && password.trim().length() > 0 && !users.containsKey(name));
         if (result) {
             users.put(name, password);
         }
@@ -70,15 +65,14 @@ final class UserAuthServiceImpl implements UserAuthService {
 
     /**
      * Add a login report to the report string.
+     * 
      * @param name user name
      * @param password user password
      * @param result authentication result
      */
-    private void addReport(final String name, final String password,
-            final boolean result) {
+    private void addReport(final String name, final String password, final boolean result) {
 
-        String msg = new Date() + "LoginAttempt: (" + name + ", "
-                + password + "): " + result;
+        String msg = new Date() + "LoginAttempt: (" + name + ", " + password + "): " + result;
         SimpleActivator.log(msg);
         report.append(msg).append("\n");
     }

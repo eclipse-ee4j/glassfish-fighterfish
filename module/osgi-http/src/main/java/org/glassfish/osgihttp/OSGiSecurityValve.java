@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -41,6 +41,7 @@ public final class OSGiSecurityValve extends ValveBase {
 
     /**
      * Create a new instance.
+     * 
      * @param ctx the OSGi HTTP context
      */
     public OSGiSecurityValve(final HttpContext ctx) {
@@ -48,11 +49,9 @@ public final class OSGiSecurityValve extends ValveBase {
     }
 
     @Override
-    public int invoke(final Request request, final Response response)
-            throws IOException, ServletException {
+    public int invoke(final Request request, final Response response) throws IOException, ServletException {
 
-        if (httpContext.handleSecurity(HttpServletRequest.class.cast(request),
-                HttpServletResponse.class.cast(response))) {
+        if (httpContext.handleSecurity(HttpServletRequest.class.cast(request), HttpServletResponse.class.cast(response))) {
 
             // Issue #13283: If user has set username and auth type, we need to
             // map it to appropriate catalina apis
@@ -71,11 +70,11 @@ public final class OSGiSecurityValve extends ValveBase {
 
     /**
      * Map authentication type for a given request.
+     * 
      * @param httpRequest the request to map
      */
     private void mapAuthType(final HttpRequest httpRequest) {
-        String authType = (String) httpRequest.getRequest()
-                .getAttribute(HttpContext.AUTHENTICATION_TYPE);
+        String authType = (String) httpRequest.getRequest().getAttribute(HttpContext.AUTHENTICATION_TYPE);
         if (authType != null) {
             httpRequest.setAuthType(authType);
         }
@@ -83,11 +82,11 @@ public final class OSGiSecurityValve extends ValveBase {
 
     /**
      * Map a user for a given request.
+     * 
      * @param httpRequest the request to map
      */
     private void mapUser(final HttpRequest httpRequest) {
-        String userName = (String) httpRequest.getRequest()
-                .getAttribute(HttpContext.REMOTE_USER);
+        String userName = (String) httpRequest.getRequest().getAttribute(HttpContext.REMOTE_USER);
         if (userName != null) {
             Principal principal = new PrincipalImpl(userName);
             httpRequest.setUserPrincipal(principal);

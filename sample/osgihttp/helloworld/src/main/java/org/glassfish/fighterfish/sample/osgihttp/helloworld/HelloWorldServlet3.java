@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Distribution License v. 1.0, which is available at
@@ -42,9 +42,7 @@ public final class HelloWorldServlet3 extends HttpServlet {
     }
 
     @Override
-    protected void service(final HttpServletRequest req,
-            final HttpServletResponse resp)
-            throws ServletException, IOException {
+    protected void service(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException, IOException {
 
         resp.setContentType("text/html");
         PrintWriter writer = resp.getWriter();

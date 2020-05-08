@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -23,9 +23,8 @@ import java.util.Collection;
 import java.util.Set;
 
 /**
- * We need this class to encapsulate our dependency on EJB DOL. They have
- * changed binary incompatibly between GlassFish 3.1.x and 4.x, so we write this
- * class to use those objects using reflection.
+ * We need this class to encapsulate our dependency on EJB DOL. They have changed binary incompatibly between GlassFish
+ * 3.1.x and 4.x, so we write this class to use those objects using reflection.
  */
 final class DolAdapter {
 
@@ -37,29 +36,25 @@ final class DolAdapter {
 
     /**
      * Convert GlassFish EjbDescriptor to fighterfish EJB descriptor.
+     * 
      * @param ejbDescriptors instances to convert
      * @return converted instances
      */
-    //CHECKSTYLE:OFF
-    static Collection<EjbDescriptor> convert(
-            final Collection<com.sun.enterprise.deployment.EjbDescriptor> ejbDescriptors) {
-    //CHECKSTYLE:ON
+    // CHECKSTYLE:OFF
+    static Collection<EjbDescriptor> convert(final Collection<com.sun.enterprise.deployment.EjbDescriptor> ejbDescriptors) {
+        // CHECKSTYLE:ON
 
-        Collection<EjbDescriptor> result =
-                new ArrayList<EjbDescriptor>(ejbDescriptors.size());
-        for (com.sun.enterprise.deployment.EjbDescriptor ejbDescriptor
-                : ejbDescriptors) {
+        Collection<EjbDescriptor> result = new ArrayList<EjbDescriptor>(ejbDescriptors.size());
+        for (com.sun.enterprise.deployment.EjbDescriptor ejbDescriptor : ejbDescriptors) {
             Class[] interfaces;
-            //CHECKSTYLE:OFF
+            // CHECKSTYLE:OFF
             if (ejbDescriptor instanceof com.sun.enterprise.deployment.EjbSessionDescriptor) {
-            //CHECKSTYLE:ON
-                interfaces = new Class[]{EjbSessionDescriptor.class};
+                // CHECKSTYLE:ON
+                interfaces = new Class[] { EjbSessionDescriptor.class };
             } else {
-                interfaces = new Class[]{EjbDescriptor.class};
+                interfaces = new Class[] { EjbDescriptor.class };
             }
-            final EjbDescriptor proxy = (EjbDescriptor) Proxy.newProxyInstance(
-                    EjbDescriptor.class.getClassLoader(),
-                    interfaces,
+            final EjbDescriptor proxy = (EjbDescriptor) Proxy.newProxyInstance(EjbDescriptor.class.getClassLoader(), interfaces,
                     new EJbDolInvocationHandler(ejbDescriptor));
             result.add(proxy);
         }
@@ -73,12 +68,14 @@ final class DolAdapter {
 
         /**
          * Get the name.
+         * 
          * @return name
          */
         String getName();
 
         /**
          * Get the type.
+         * 
          * @return type
          */
         String getType();
@@ -91,18 +88,21 @@ final class DolAdapter {
 
         /**
          * Get the session type.
+         * 
          * @return session type
          */
         String getSessionType();
 
         /**
          * Get the local business class names.
+         * 
          * @return set of class names
          */
         Set<String> getLocalBusinessClassNames();
 
         /**
          * Get the portable JNDI name.
+         * 
          * @param lbi business class name
          * @return portable JNDI name
          */
@@ -112,8 +112,7 @@ final class DolAdapter {
     /**
      * Custom invocation handler to proxy GlassFish ejb descriptor.
      */
-    private static final class EJbDolInvocationHandler
-            implements InvocationHandler {
+    private static final class EJbDolInvocationHandler implements InvocationHandler {
 
         /**
          * Delegate instance.
@@ -122,24 +121,23 @@ final class DolAdapter {
 
         /**
          * Create a new instance.
+         * 
          * @param desc delegate instance
          */
-        EJbDolInvocationHandler(
-                final com.sun.enterprise.deployment.EjbDescriptor desc) {
+        EJbDolInvocationHandler(final com.sun.enterprise.deployment.EjbDescriptor desc) {
             this.delegate = desc;
         }
 
         @Override
-        public Object invoke(final Object proxy, final Method method,
-                final Object[] args) throws Throwable {
+        public Object invoke(final Object proxy, final Method method, final Object[] args) throws Throwable {
 
-            Method m = delegate.getClass().getMethod(method.getName(),
-                    method.getParameterTypes());
+            Method m = delegate.getClass().getMethod(method.getName(), method.getParameterTypes());
             return m.invoke(delegate, args);
         }
 
         /**
          * Get the delegate descriptor.
+         * 
          * @return delegate descriptor
          */
         public com.sun.enterprise.deployment.EjbDescriptor getDelegate() {

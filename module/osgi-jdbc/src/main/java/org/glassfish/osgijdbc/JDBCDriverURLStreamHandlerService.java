@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -36,14 +36,12 @@ import java.util.logging.Logger;
 /**
  * URL handler service for JDBC driver.
  */
-public final class JDBCDriverURLStreamHandlerService extends
-        AbstractURLStreamHandlerService {
+public final class JDBCDriverURLStreamHandlerService extends AbstractURLStreamHandlerService {
 
     /**
      * Logger.
      */
-    private static final Logger LOGGER = Logger.getLogger(
-            JDBCDriverURLStreamHandlerService.class.getPackage().getName());
+    private static final Logger LOGGER = Logger.getLogger(JDBCDriverURLStreamHandlerService.class.getPackage().getName());
 
     /**
      * API class-loader.
@@ -52,6 +50,7 @@ public final class JDBCDriverURLStreamHandlerService extends
 
     /**
      * Create a new instance.
+     * 
      * @param cl class-loader
      */
     public JDBCDriverURLStreamHandlerService(final ClassLoader cl) {
@@ -63,22 +62,19 @@ public final class JDBCDriverURLStreamHandlerService extends
         assert (Constants.JDBC_DRIVER_SCHEME.equals(u.getProtocol()));
         try {
             debug("jdbc driver openConnection()");
-            //final URL[] urls = getURLs(u);
-            //final URL uberJarURL = getUberJarURL(urls);
-            //final URLConnection con = uberJarURL.openConnection();
-            //return new URLConnection(uberJarURL) {
-
+            // final URL[] urls = getURLs(u);
+            // final URL uberJarURL = getUberJarURL(urls);
+            // final URLConnection con = uberJarURL.openConnection();
+            // return new URLConnection(uberJarURL) {
 
             URI embeddedURI = new URI(u.toURI().getSchemeSpecificPart());
             final URL embeddedURL = embeddedURI.toURL();
             final URLConnection con = embeddedURL.openConnection();
-            final URLClassLoader cl = AccessController.doPrivileged(
-                    new PrivilegedAction<URLClassLoader>() {
+            final URLClassLoader cl = AccessController.doPrivileged(new PrivilegedAction<URLClassLoader>() {
 
                 @Override
                 public URLClassLoader run() {
-                    return new URLClassLoader(new URL[]{embeddedURL},
-                            apiClassLoader);
+                    return new URLClassLoader(new URL[] { embeddedURL }, apiClassLoader);
                 }
             });
             return new URLConnection(embeddedURL) {
@@ -116,9 +112,8 @@ public final class JDBCDriverURLStreamHandlerService extends
 
     @Override
     @SuppressWarnings("checkstyle:ParameterNumber")
-    protected void setURL(final URL u, final String protocol, final String host,
-            final int port, final String auth, final String user,
-            final String path, final String query, final String ref) {
+    protected void setURL(final URL u, final String protocol, final String host, final int port, final String auth, final String user, final String path,
+            final String query, final String ref) {
 
         super.setURL(u, protocol, host, port, auth, user, path, query, ref);
         debug("jdbc driver setURL()");
@@ -126,6 +121,7 @@ public final class JDBCDriverURLStreamHandlerService extends
 
     /**
      * Log a {@code FINE} message.
+     * 
      * @param msg message to log
      */
     private void debug(final String msg) {

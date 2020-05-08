@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -35,27 +35,22 @@ public final class OSGiEJBUndeploymentRequest extends OSGiUndeploymentRequest {
 
     /**
      * Create a new instance.
+     * 
      * @param deployer GlassFish deployer
      * @param env GlassFish server environment
      * @param reporter GlassFish command reporter
      * @param osgiAppInfo deployed application
      */
-    public OSGiEJBUndeploymentRequest(final Deployment deployer,
-            final ServerEnvironmentImpl env, final ActionReport reporter,
+    public OSGiEJBUndeploymentRequest(final Deployment deployer, final ServerEnvironmentImpl env, final ActionReport reporter,
             final OSGiApplicationInfo osgiAppInfo) {
 
         super(deployer, env, reporter, osgiAppInfo);
     }
 
     @Override
-    protected OSGiDeploymentContext getDeploymentContextImpl(
-            final ActionReport reporter, final Logger logger,
-            final ReadableArchive source,
-            final UndeployCommandParameters undeployParams,
-            final ServerEnvironmentImpl env, final Bundle bundle)
-            throws Exception {
+    protected OSGiDeploymentContext getDeploymentContextImpl(final ActionReport reporter, final Logger logger, final ReadableArchive source,
+            final UndeployCommandParameters undeployParams, final ServerEnvironmentImpl env, final Bundle bundle) throws Exception {
 
-        return new OSGiEJBDeploymentContext(reporter, logger, source,
-                undeployParams, env, bundle);
+        return new OSGiEJBDeploymentContext(reporter, logger, source, undeployParams, env, bundle);
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -66,8 +66,7 @@ public abstract class AbstractOSGiDeployer implements OSGiDeployer {
     /**
      * Logger.
      */
-    private static final Logger LOGGER = Logger.getLogger(
-            AbstractOSGiDeployer.class.getPackage().getName());
+    private static final Logger LOGGER = Logger.getLogger(AbstractOSGiDeployer.class.getPackage().getName());
 
     /**
      * The bundle context.
@@ -92,14 +91,12 @@ public abstract class AbstractOSGiDeployer implements OSGiDeployer {
     /**
      * The GlassFish archive factory.
      */
-    private final ArchiveFactory archiveFactory = Globals.get(
-            ArchiveFactory.class);
+    private final ArchiveFactory archiveFactory = Globals.get(ArchiveFactory.class);
 
     /**
      * The GlassFish server environment.
      */
-    private final ServerEnvironmentImpl env = Globals.get(
-            ServerEnvironmentImpl.class);
+    private final ServerEnvironmentImpl env = Globals.get(ServerEnvironmentImpl.class);
 
     /**
      * Create a new instance.
@@ -107,8 +104,7 @@ public abstract class AbstractOSGiDeployer implements OSGiDeployer {
      * @param ctx the bundle context
      * @param svcRank the deployer service rank
      */
-    protected AbstractOSGiDeployer(final BundleContext ctx,
-            final int svcRank) {
+    protected AbstractOSGiDeployer(final BundleContext ctx, final int svcRank) {
 
         this.bundleContext = ctx;
         this.rank = svcRank;
@@ -130,14 +126,12 @@ public abstract class AbstractOSGiDeployer implements OSGiDeployer {
     public final void register() {
         Dictionary properties = new Properties();
         properties.put(org.osgi.framework.Constants.SERVICE_RANKING, rank);
-        serviceReg = bundleContext.registerService(
-                OSGiDeployer.class.getName(), this, properties);
+        serviceReg = bundleContext.registerService(OSGiDeployer.class.getName(), this, properties);
     }
 
     /**
-     * Unregisters itself from OSGi service registry Before it unregisters
-     * itself, it first undeploys all applications that were deployed using
-     * itself.
+     * Unregisters itself from OSGi service registry Before it unregisters itself, it first undeploys all applications that
+     * were deployed using itself.
      */
     public final void unregister() {
         // Why do we undeployAll while unregistering ourselves, but not
@@ -151,43 +145,33 @@ public abstract class AbstractOSGiDeployer implements OSGiDeployer {
     }
 
     @Override
-    public final OSGiApplicationInfo deploy(final Bundle bnd)
-            throws DeploymentException {
+    public final OSGiApplicationInfo deploy(final Bundle bnd) throws DeploymentException {
 
         raiseEvent(State.DEPLOYING, bnd, null);
         ActionReport report = getReport();
-        OSGiDeploymentRequest request = createOSGiDeploymentRequest(deployer,
-                archiveFactory, env, report, bnd);
+        OSGiDeploymentRequest request = createOSGiDeploymentRequest(deployer, archiveFactory, env, report, bnd);
         OSGiApplicationInfo osgiAppInfo = request.execute();
         if (osgiAppInfo == null) {
             final Throwable throwable = report.getFailureCause();
             raiseEvent(State.FAILED, bnd, throwable);
-            throw new DeploymentException("Deployment of " + bnd
-                    + " failed because of following reason: "
-                    + report.getMessage(),
-                    throwable);
+            throw new DeploymentException("Deployment of " + bnd + " failed because of following reason: " + report.getMessage(), throwable);
         }
         raiseEvent(State.DEPLOYED, bnd, null);
         return osgiAppInfo;
     }
 
     @Override
-    public final void undeploy(final OSGiApplicationInfo osgiAppInfo)
-            throws DeploymentException {
+    public final void undeploy(final OSGiApplicationInfo osgiAppInfo) throws DeploymentException {
 
         final Bundle b = osgiAppInfo.getBundle();
         raiseEvent(State.UNDEPLOYING, b, null);
         ActionReport report = getReport();
-        OSGiUndeploymentRequest request = createOSGiUndeploymentRequest(
-                deployer, env, report, osgiAppInfo);
+        OSGiUndeploymentRequest request = createOSGiUndeploymentRequest(deployer, env, report, osgiAppInfo);
         request.execute();
         // raise event even if something went wrong
         raiseEvent(State.UNDEPLOYED, b, null);
         if (report.getActionExitCode() == ActionReport.ExitCode.FAILURE) {
-            throw new DeploymentException("Undeployment of " + b
-                    + " failed because of following reason: "
-                    + report.getMessage(),
-                    report.getFailureCause());
+            throw new DeploymentException("Undeployment of " + b + " failed because of following reason: " + report.getMessage(), report.getFailureCause());
         }
     }
 
@@ -213,8 +197,7 @@ public abstract class AbstractOSGiDeployer implements OSGiDeployer {
      */
     @SuppressWarnings("unchecked")
     public final void undeployAll() {
-        ServiceTracker st = new ServiceTracker(bundleContext,
-                OSGiContainer.class.getName(), null);
+        ServiceTracker st = new ServiceTracker(bundleContext, OSGiContainer.class.getName(), null);
         st.open();
         try {
             OSGiContainer c = (OSGiContainer) st.getService();
@@ -227,9 +210,7 @@ public abstract class AbstractOSGiDeployer implements OSGiDeployer {
                     try {
                         c.undeploy(app.getBundle());
                     } catch (Exception e) {
-                        LOGGER.logp(Level.WARNING, "WebExtender",
-                                "undeployAll", "Failed to undeploy bundle "
-                                + app.getBundle(), e);
+                        LOGGER.logp(Level.WARNING, "WebExtender", "undeployAll", "Failed to undeploy bundle " + app.getBundle(), e);
                     }
                 }
             }
@@ -248,10 +229,8 @@ public abstract class AbstractOSGiDeployer implements OSGiDeployer {
      * @param bnd the application bundle
      * @return OSGiDeploymentRequest
      */
-    protected abstract OSGiDeploymentRequest createOSGiDeploymentRequest(
-            Deployment gfDeployer, ArchiveFactory gfArchiveFactory,
-            ServerEnvironmentImpl gfServerEnv, ActionReport gfCmdReporter,
-            Bundle bnd);
+    protected abstract OSGiDeploymentRequest createOSGiDeploymentRequest(Deployment gfDeployer, ArchiveFactory gfArchiveFactory,
+            ServerEnvironmentImpl gfServerEnv, ActionReport gfCmdReporter, Bundle bnd);
 
     /**
      * Create an OSGi undeployment request.
@@ -262,8 +241,7 @@ public abstract class AbstractOSGiDeployer implements OSGiDeployer {
      * @param osgiAppInfo the deployed application info
      * @return OSGiUndeploymentRequest
      */
-    protected abstract OSGiUndeploymentRequest createOSGiUndeploymentRequest(
-            Deployment gfDeployer, ServerEnvironmentImpl gfServerEnv,
+    protected abstract OSGiUndeploymentRequest createOSGiUndeploymentRequest(Deployment gfDeployer, ServerEnvironmentImpl gfServerEnv,
             ActionReport gfCmdReporter, OSGiApplicationInfo osgiAppInfo);
 
     /**
@@ -273,7 +251,6 @@ public abstract class AbstractOSGiDeployer implements OSGiDeployer {
      * @param bnd the bundle
      * @param throwable the exception at the source of the event
      */
-    protected void raiseEvent(final State state, final Bundle bnd,
-            final Throwable throwable) {
+    protected void raiseEvent(final State state, final Bundle bnd, final Throwable throwable) {
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Distribution License v. 1.0, which is available at
@@ -47,8 +47,7 @@ public final class OSGiFrameworkProvisioner {
     /**
      * Logger.
      */
-    private static final Logger LOGGER = Logger.getLogger(
-            OSGiFrameworkProvisioner.class.getPackage().getName());
+    private static final Logger LOGGER = Logger.getLogger(OSGiFrameworkProvisioner.class.getPackage().getName());
 
     /**
      * The OSGi framework.
@@ -61,21 +60,18 @@ public final class OSGiFrameworkProvisioner {
     private final ServletContext servletContext;
 
     /**
-     * JNDI name used to (re)bind the OSGi framework instance Default value is
-     * {@value #FW_JNDI_NAME_DEFAULT}. It can be overridden using an environment
-     * value injection or deployment plan.
+     * JNDI name used to (re)bind the OSGi framework instance Default value is {@value #FW_JNDI_NAME_DEFAULT}. It can be
+     * overridden using an environment value injection or deployment plan.
      *
      * @see WebappMain#setOsgiFrameworkConfigFilePath(String)
      */
     private String osgiFrameWorkJndiName = FW_JNDI_NAME_DEFAULT;
 
     /**
-     * Name of the properties file used for OSGi framework configuration. The
-     * default value is {@value #FW_CONFIG_FILE_DEFAULT} relative the current
-     * working directory. It can be overridden using an environment value
-     * injection or deployment plan. If the configured file is not found, then
-     * the properties file that's embedded inside this war at
-     * {@value #EMBEDDED_FW_PROP_FILE} is used.
+     * Name of the properties file used for OSGi framework configuration. The default value is
+     * {@value #FW_CONFIG_FILE_DEFAULT} relative the current working directory. It can be overridden using an environment
+     * value injection or deployment plan. If the configured file is not found, then the properties file that's embedded
+     * inside this war at {@value #EMBEDDED_FW_PROP_FILE} is used.
      *
      * @see WebappMain#setOsgiFrameworkConfigFilePath(String)
      */
@@ -84,8 +80,7 @@ public final class OSGiFrameworkProvisioner {
     /**
      * Default JNDI name used to (re)bind OSGi framework.
      */
-    static final String FW_JNDI_NAME_DEFAULT =
-            "java:global/glassfish-osgi-framework";
+    static final String FW_JNDI_NAME_DEFAULT = "java:global/glassfish-osgi-framework";
 
     /**
      * default location of external OSGi configuration file.
@@ -95,8 +90,7 @@ public final class OSGiFrameworkProvisioner {
     /**
      * Location of embedded OSGi configuration file.
      */
-    private static final String EMBEDDED_FW_PROP_FILE =
-            "/WEB-INF/osgi.properties";
+    private static final String EMBEDDED_FW_PROP_FILE = "/WEB-INF/osgi.properties";
 
     /**
      * Location inside the WAR file where framework jar is located.
@@ -110,12 +104,12 @@ public final class OSGiFrameworkProvisioner {
 
     /**
      * Create a new instance.
+     * 
      * @param sc servlet context
      * @param configFilePath framework config file path
      * @param jndiName framework JNDI name
      */
-    public OSGiFrameworkProvisioner(final ServletContext sc,
-            final String configFilePath, final String jndiName) {
+    public OSGiFrameworkProvisioner(final ServletContext sc, final String configFilePath, final String jndiName) {
 
         this.servletContext = sc;
         log("OSGiFramework:init(" + configFilePath + ", " + jndiName + ")");
@@ -172,25 +166,21 @@ public final class OSGiFrameworkProvisioner {
     private void createFramework() {
         final ClassLoader cl = createFrameworkLoader();
         FrameworkFactory ff = null;
-        Iterator<FrameworkFactory> frameworkFactoryIterator = ServiceLoader
-                .load(FrameworkFactory.class, cl).iterator();
+        Iterator<FrameworkFactory> frameworkFactoryIterator = ServiceLoader.load(FrameworkFactory.class, cl).iterator();
         while (frameworkFactoryIterator.hasNext()) {
             try {
                 ff = frameworkFactoryIterator.next();
                 break;
             } catch (ServiceConfigurationError sce) {
-                log("This is expected when there are multiple framework"
-                        + " factories in classpath.", sce);
+                log("This is expected when there are multiple framework" + " factories in classpath.", sce);
             }
         }
         if (ff == null) {
-            throw new RuntimeException("Unable to find suitable OSGi "
-                    + "framework, so aborting...");
+            throw new RuntimeException("Unable to find suitable OSGi " + "framework, so aborting...");
         }
         log("OSGiFramework.start " + ff);
         framework = ff.newFramework(getConfig());
-        log("OSGiFramework.start " + framework + " is loaded by "
-                + framework.getClass().getClassLoader());
+        log("OSGiFramework.start " + framework + " is loaded by " + framework.getClass().getClassLoader());
         // Since WLS 12.1.2 bundles OSGi framework, this assertion is no
         // longer valid
 //        assert(cl == framework.getClass().getClassLoader());
@@ -202,8 +192,7 @@ public final class OSGiFrameworkProvisioner {
     private void bindFrameworkInJndi() {
         try {
             getInitialContext().rebind(osgiFrameWorkJndiName, framework);
-            log("The OSGi framework is available under JNDI name: "
-                    + osgiFrameWorkJndiName);
+            log("The OSGi framework is available under JNDI name: " + osgiFrameWorkJndiName);
         } catch (NamingException e) {
             log("Failed to bind OSGi framework to JNDI", e);
         }
@@ -222,6 +211,7 @@ public final class OSGiFrameworkProvisioner {
 
     /**
      * Create the JNDI initial context.
+     * 
      * @return Context
      * @throws NamingException if an error occurs
      */
@@ -234,6 +224,7 @@ public final class OSGiFrameworkProvisioner {
 
     /**
      * Create the framework loader.
+     * 
      * @return a class loader capable of finding OSGi frameworks.
      */
     private ClassLoader createFrameworkLoader() {
@@ -245,21 +236,19 @@ public final class OSGiFrameworkProvisioner {
                 try {
                     urls.add(servletContext.getResource(s));
                 } catch (MalformedURLException e) {
-                    log("OSGiFramework.createFrameworkLoader got exception"
-                            + " while trying to get URL for resource " + s, e);
+                    log("OSGiFramework.createFrameworkLoader got exception" + " while trying to get URL for resource " + s, e);
                 }
             }
         }
         log("OSGiFramework.createFrameworkLoader " + urls);
-        ClassLoader cl = new URLClassLoader(urls.toArray(new URL[urls.size()]),
-                Thread.currentThread().getContextClassLoader());
-        log("Classloader to find & load framework is: " + cl
-                + " whose parent is: " + cl.getParent());
+        ClassLoader cl = new URLClassLoader(urls.toArray(new URL[urls.size()]), Thread.currentThread().getContextClassLoader());
+        log("Classloader to find & load framework is: " + cl + " whose parent is: " + cl.getParent());
         return cl;
     }
 
     /**
      * Install all bundles.
+     * 
      * @throws Exception if an error occurs
      */
     private void installBundles() throws Exception {
@@ -282,11 +271,11 @@ public final class OSGiFrameworkProvisioner {
 
     /**
      * Find all bundles.
+     * 
      * @return list of bundle URL
      * @throws Exception if an error occurs
      */
-    private List<URL> findBundles()
-            throws Exception {
+    private List<URL> findBundles() throws Exception {
         ArrayList<URL> list = new ArrayList<URL>();
         for (Object o : this.servletContext.getResourcePaths(BUNDLES_DIR)) {
             String name = (String) o;
@@ -302,6 +291,7 @@ public final class OSGiFrameworkProvisioner {
 
     /**
      * Set the JNDI name of the OSGi framework.
+     * 
      * @param jndiName JNDI name
      */
     private void setOsgiFrameworkJndiName(final String jndiName) {
@@ -312,6 +302,7 @@ public final class OSGiFrameworkProvisioner {
 
     /**
      * Set the config file path of the OSGi framework.
+     * 
      * @param configFilePath config file path
      */
     private void setOsgiFrameworkConfigPath(final String configFilePath) {
@@ -320,14 +311,14 @@ public final class OSGiFrameworkProvisioner {
             if (file.exists()) {
                 String zeConfigFilePath = file.getAbsolutePath();
                 this.osgiFrameworkConfigFilePath = zeConfigFilePath;
-                log("Will use " + zeConfigFilePath
-                        + " for reading OSGi configuration.");
+                log("Will use " + zeConfigFilePath + " for reading OSGi configuration.");
             }
         }
     }
 
     /**
      * Read the OSGi framework configuration from the framework config file.
+     * 
      * @return map of config values
      */
     private Map<String, String> getConfig() {
@@ -337,8 +328,7 @@ public final class OSGiFrameworkProvisioner {
             final File file = new File(osgiFrameworkConfigFilePath);
             try {
                 in = new FileInputStream(file);
-                log("Reading osgi configuration from : "
-                        + file.getAbsolutePath());
+                log("Reading osgi configuration from : " + file.getAbsolutePath());
             } catch (FileNotFoundException e) {
                 log(e.getMessage());
             }
@@ -346,8 +336,7 @@ public final class OSGiFrameworkProvisioner {
         if (in == null) {
             // external file is not found, let's default to embedded resource
             in = servletContext.getResourceAsStream(EMBEDDED_FW_PROP_FILE);
-            log("Reading osgi configuration from embedded resource: "
-                    + EMBEDDED_FW_PROP_FILE);
+            log("Reading osgi configuration from embedded resource: " + EMBEDDED_FW_PROP_FILE);
         }
         try {
             props.load(in);
@@ -371,33 +360,34 @@ public final class OSGiFrameworkProvisioner {
 
     /**
      * Create a pretty description of the given map.
+     * 
      * @param map the input map
      * @return pretty string
      */
     private String prettyString(final HashMap<String, String> map) {
         StringBuilder sb = new StringBuilder();
         for (Map.Entry<String, String> entry : map.entrySet()) {
-            sb.append("\n[") .append(entry).append("]\n");
+            sb.append("\n[").append(entry).append("]\n");
         }
         return sb.toString();
     }
 
     /**
      * Log a message at the {code INFO} level.
+     * 
      * @param msg message to log
      */
     private static void log(final String msg) {
-        LOGGER.logp(Level.INFO, "OSGiFramework", "log",
-                "OSGiFrameworkProvisioner: " + msg);
+        LOGGER.logp(Level.INFO, "OSGiFramework", "log", "OSGiFrameworkProvisioner: " + msg);
     }
 
     /**
      * Log a message at the {code INFO} level.
+     * 
      * @param msg message to log
      * @param ex exception
      */
     private static void log(final String msg, final Throwable ex) {
-        LOGGER.logp(Level.WARNING, "OSGiFramework", "log",
-                "OSGiFrameworkProvisioner: " + msg, ex);
+        LOGGER.logp(Level.WARNING, "OSGiFramework", "log", "OSGiFrameworkProvisioner: " + msg, ex);
     }
 }

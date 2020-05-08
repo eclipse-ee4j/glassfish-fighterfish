@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Distribution License v. 1.0, which is available at
@@ -26,21 +26,14 @@ public final class JTASampleActivator implements BundleActivator {
     @SuppressWarnings("unchecked")
     public void start(final BundleContext context) throws Exception {
         debug("Started");
-        ServiceReference txRef = context
-                .getServiceReference(UserTransaction.class.getName());
+        ServiceReference txRef = context.getServiceReference(UserTransaction.class.getName());
         UserTransaction utx = (UserTransaction) context.getService(txRef);
-        ServiceReference tsrRef = context
-                .getServiceReference(TransactionSynchronizationRegistry.class
-                        .getName());
-        TransactionSynchronizationRegistry tsr =
-                (TransactionSynchronizationRegistry) context
-                .getService(tsrRef);
+        ServiceReference tsrRef = context.getServiceReference(TransactionSynchronizationRegistry.class.getName());
+        TransactionSynchronizationRegistry tsr = (TransactionSynchronizationRegistry) context.getService(tsrRef);
         try {
-            debug("Status: before utx.begin: "
-                    + statusToString(utx.getStatus()));
+            debug("Status: before utx.begin: " + statusToString(utx.getStatus()));
             utx.begin();
-            debug("Status: after utx.begin: "
-                    + statusToString(utx.getStatus()));
+            debug("Status: after utx.begin: " + statusToString(utx.getStatus()));
 
             // Get hold of JTA DataSource and do some operations using
             // connection obtained from there
@@ -74,39 +67,41 @@ public final class JTASampleActivator implements BundleActivator {
 
     /**
      * Maps status integer as returned by getStatus() method to a String.
+     * 
      * @param status status int
      * @return status string
      */
     @SuppressWarnings("checkstyle:MagicNumber")
     private static String statusToString(final int status) {
         switch (status) {
-            case 0:
-                return "ACTIVE";
-            case 1:
-                return "MARKED_ROLLBACK";
-            case 2:
-                return "PREPARED";
-            case 3:
-                return "COMMITTED";
-            case 4:
-                return "ROLLEDBACK";
-            case 5:
-                return "UNKNOWN";
-            case 6:
-                return "NO_TRANSACTION";
-            case 7:
-                return "PREPARING";
-            case 8:
-                return "COMMITTING";
-            case 9:
-                return "ROLLING_BACK";
-            default:
-                return "NOT_YET_MAPPED";
+        case 0:
+            return "ACTIVE";
+        case 1:
+            return "MARKED_ROLLBACK";
+        case 2:
+            return "PREPARED";
+        case 3:
+            return "COMMITTED";
+        case 4:
+            return "ROLLEDBACK";
+        case 5:
+            return "UNKNOWN";
+        case 6:
+            return "NO_TRANSACTION";
+        case 7:
+            return "PREPARING";
+        case 8:
+            return "COMMITTING";
+        case 9:
+            return "ROLLING_BACK";
+        default:
+            return "NOT_YET_MAPPED";
         }
     }
 
     /**
      * Log a message to the standard output.
+     * 
      * @param msg message to log
      */
     private void debug(final String msg) {

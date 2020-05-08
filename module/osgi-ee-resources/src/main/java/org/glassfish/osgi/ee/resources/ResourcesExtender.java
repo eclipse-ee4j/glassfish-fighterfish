@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -31,8 +31,7 @@ public final class ResourcesExtender implements Extender {
     /**
      * Logger.
      */
-    private static final Logger LOGGER = Logger.getLogger(
-            ResourcesExtender.class.getPackage().getName());
+    private static final Logger LOGGER = Logger.getLogger(ResourcesExtender.class.getPackage().getName());
 
     /**
      * Bundle context.
@@ -51,6 +50,7 @@ public final class ResourcesExtender implements Extender {
 
     /**
      * Create a new instance.
+     * 
      * @param context bundle context
      */
     public ResourcesExtender(final BundleContext context) {
@@ -60,9 +60,7 @@ public final class ResourcesExtender implements Extender {
     @Override
     public void start() {
         debug("begin start()");
-        GlassFish gf = (GlassFish) bundleContext
-                .getService(bundleContext.getServiceReference(
-                        GlassFish.class.getName()));
+        GlassFish gf = (GlassFish) bundleContext.getService(bundleContext.getServiceReference(GlassFish.class.getName()));
         habitat = new Habitat(gf);
         rps = new ResourceProviderService(habitat, bundleContext);
         rps.registerResources();
@@ -77,6 +75,7 @@ public final class ResourcesExtender implements Extender {
 
     /**
      * Log a message at the {@code FINEST} level.
+     * 
      * @param msg message to log
      */
     private void debug(final String msg) {

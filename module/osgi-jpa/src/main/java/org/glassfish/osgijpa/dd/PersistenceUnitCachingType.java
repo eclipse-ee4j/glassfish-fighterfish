@@ -26,12 +26,14 @@ package org.glassfish.osgijpa.dd;
 import javax.xml.bind.annotation.XmlEnum;
 import javax.xml.bind.annotation.XmlType;
 
-
 /**
- * <p>Java class for persistence-unit-caching-type.
- * 
- * <p>The following schema fragment specifies the expected content contained within this class.
  * <p>
+ * Java class for persistence-unit-caching-type.
+ * 
+ * <p>
+ * The following schema fragment specifies the expected content contained within this class.
+ * <p>
+ * 
  * <pre>
  * &lt;simpleType name="persistence-unit-caching-type">
  *   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}token">
@@ -49,11 +51,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlEnum
 public enum PersistenceUnitCachingType {
 
-    ALL,
-    NONE,
-    ENABLE_SELECTIVE,
-    DISABLE_SELECTIVE,
-    UNSPECIFIED;
+    ALL, NONE, ENABLE_SELECTIVE, DISABLE_SELECTIVE, UNSPECIFIED;
 
     public String value() {
         return name();

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -35,6 +35,7 @@ public final class PersistenceXMLReaderWriter {
 
     /**
      * Unmarshall from URL.
+     * 
      * @param pxmlURL url
      * @return Persistence
      * @throws IOException if an error occurs
@@ -50,6 +51,7 @@ public final class PersistenceXMLReaderWriter {
 
     /**
      * Unmarshall from input stream
+     * 
      * @param is input stream
      * @return Persistence
      * @throws IOException if an error occurs
@@ -68,16 +70,15 @@ public final class PersistenceXMLReaderWriter {
 
     /**
      * Marshall.
+     * 
      * @param persistence instance to write out
      * @param os output stream
      * @throws IOException if an error occurs
      */
-    public void write(final Persistence persistence, final OutputStream os)
-            throws IOException {
+    public void write(final Persistence persistence, final OutputStream os) throws IOException {
 
         try {
-            getMarshaller(persistence.getClass()).marshal(persistence,
-                    os);
+            getMarshaller(persistence.getClass()).marshal(persistence, os);
         } catch (JAXBException je) {
             je.printStackTrace();
             IOException ioe = new IOException();
@@ -88,16 +89,15 @@ public final class PersistenceXMLReaderWriter {
 
     /**
      * Marshall.
+     * 
      * @param persistence instance to write out
      * @param writer writer to use
      * @throws IOException if an error occurs
      */
-    public void write(final Persistence persistence, final Writer writer)
-            throws IOException {
+    public void write(final Persistence persistence, final Writer writer) throws IOException {
 
         try {
-            getMarshaller(persistence.getClass()).marshal(persistence,
-                    writer);
+            getMarshaller(persistence.getClass()).marshal(persistence, writer);
         } catch (JAXBException je) {
             je.printStackTrace();
             IOException ioe = new IOException();
@@ -108,22 +108,22 @@ public final class PersistenceXMLReaderWriter {
 
     /**
      * Get marshaller for a given class.
+     * 
      * @param clazz the class
      * @return Marshaller
      * @throws JAXBException if an error occurs
      */
-    private Marshaller getMarshaller(final Class<?> clazz)
-            throws JAXBException {
+    private Marshaller getMarshaller(final Class<?> clazz) throws JAXBException {
 
         JAXBContext jc = getJAXBContext();
         Marshaller marshaller = jc.createMarshaller();
-        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT,
-                Boolean.TRUE);
+        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
         return marshaller;
     }
 
     /**
      * Get unmarshaller
+     * 
      * @return Unmarshaller
      * @throws JAXBException if an error occurs
      */
@@ -134,6 +134,7 @@ public final class PersistenceXMLReaderWriter {
 
     /**
      * Get the JAXB context.
+     * 
      * @return JAXBContext
      * @throws JAXBException if an error occurs
      */
@@ -144,8 +145,7 @@ public final class PersistenceXMLReaderWriter {
         final Thread thread = Thread.currentThread();
         ClassLoader oldCL = thread.getContextClassLoader();
         try {
-            ClassLoader ccl = Globals.get(ClassLoaderHierarchy.class)
-                    .getCommonClassLoader();
+            ClassLoader ccl = Globals.get(ClassLoaderHierarchy.class).getCommonClassLoader();
             thread.setContextClassLoader(ccl);
             JAXBContext jc = JAXBContext.newInstance(ObjectFactory.class);
             return jc;

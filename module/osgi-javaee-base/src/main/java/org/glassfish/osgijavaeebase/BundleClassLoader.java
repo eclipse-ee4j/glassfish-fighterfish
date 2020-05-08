@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -23,13 +23,11 @@ import java.util.Enumeration;
 import java.util.NoSuchElementException;
 
 /**
- * This is a delegating class loader. It always delegates to OSGi bundle's class
- * loader. ClassLoader.defineClass() is never called in the context of this
- * class. There will never be a class for which getClassLoader() would return
- * this class loader. It overrides loadClass(), getResource() and getResources()
- * as opposed to their findXYZ() equivalents so that the OSGi export control
- * mechanism is enforced even for classes and resources available in the
- * system/boot class loader.
+ * This is a delegating class loader. It always delegates to OSGi bundle's class loader. ClassLoader.defineClass() is
+ * never called in the context of this class. There will never be a class for which getClassLoader() would return this
+ * class loader. It overrides loadClass(), getResource() and getResources() as opposed to their findXYZ() equivalents so
+ * that the OSGi export control mechanism is enforced even for classes and resources available in the system/boot class
+ * loader.
  */
 public final class BundleClassLoader extends ClassLoader {
 
@@ -40,6 +38,7 @@ public final class BundleClassLoader extends ClassLoader {
 
     /**
      * Create a new instance.
+     * 
      * @param bnd the bundle
      */
     public BundleClassLoader(final Bundle bnd) {
@@ -48,9 +47,7 @@ public final class BundleClassLoader extends ClassLoader {
     }
 
     @Override
-    public synchronized Class<?> loadClass(final String name,
-            final boolean resolve)
-            throws ClassNotFoundException {
+    public synchronized Class<?> loadClass(final String name, final boolean resolve) throws ClassNotFoundException {
 
         return bundle.loadClass(name);
     }
@@ -61,8 +58,7 @@ public final class BundleClassLoader extends ClassLoader {
     }
 
     @Override
-    public Enumeration<URL> getResources(final String name)
-            throws IOException {
+    public Enumeration<URL> getResources(final String name) throws IOException {
 
         Enumeration<URL> resources = bundle.getResources(name);
         if (resources == null) {

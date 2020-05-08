@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -29,12 +29,10 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * This is an implementation of {@link HttpService} per bundle. This is what a
- * bundle gets when they look up the service in OSGi service registry. This is
- * needed so that we can unregister all the servlets registered by a bundle when
- * that bundle goes down without unregistering the servlet or resource end
- * points. This delegates to {@link GlassFishHttpService} for implementing the
- * actual service.
+ * This is an implementation of {@link HttpService} per bundle. This is what a bundle gets when they look up the service
+ * in OSGi service registry. This is needed so that we can unregister all the servlets registered by a bundle when that
+ * bundle goes down without unregistering the servlet or resource end points. This delegates to
+ * {@link GlassFishHttpService} for implementing the actual service.
  */
 public final class HttpServiceWrapper implements HttpService {
 
@@ -55,11 +53,11 @@ public final class HttpServiceWrapper implements HttpService {
 
     /**
      * Create a new instance.
+     * 
      * @param gfHttpService the delegate HTTP service
      * @param bnd the registering bundle
      */
-    public HttpServiceWrapper(final GlassFishHttpService gfHttpService,
-            final Bundle bnd) {
+    public HttpServiceWrapper(final GlassFishHttpService gfHttpService, final Bundle bnd) {
 
         this.delegate = gfHttpService;
         this.registeringBundle = bnd;
@@ -71,8 +69,7 @@ public final class HttpServiceWrapper implements HttpService {
     }
 
     @Override
-    public void registerServlet(final String alias, final Servlet servlet,
-            final Dictionary initParams, final HttpContext httpContext)
+    public void registerServlet(final String alias, final Servlet servlet, final Dictionary initParams, final HttpContext httpContext)
             throws ServletException, NamespaceException {
 
         HttpContext ctx;
@@ -86,8 +83,7 @@ public final class HttpServiceWrapper implements HttpService {
     }
 
     @Override
-    public void registerResources(final String alias, final String name,
-            final HttpContext httpContext) throws NamespaceException {
+    public void registerResources(final String alias, final String name, final HttpContext httpContext) throws NamespaceException {
 
         HttpContext ctx;
         if (httpContext != null) {
@@ -106,6 +102,7 @@ public final class HttpServiceWrapper implements HttpService {
 
     /**
      * Unregister a given alias.
+     * 
      * @param alias the alias to unregister
      * @param callDestroy flag to indicate if servlet.destroy should be called
      */
@@ -126,14 +123,11 @@ public final class HttpServiceWrapper implements HttpService {
     }
 
     /**
-     * This service factory is needed, because the spec requires the following:
-     * If the bundle which performed the registration is stopped or otherwise
-     * "unget"s the Http Service without calling unregister(java.lang.String)
-     * then Http Service must automatically unregister the registration.
-     * However, if the registration was for a servlet, the destroy method of the
-     * servlet will not be called in this case since the bundle may be stopped.
-     * unregister(java.lang.String) must be explicitly called to cause the
-     * destroy method of the servlet to be called. This can be done in the
+     * This service factory is needed, because the spec requires the following: If the bundle which performed the
+     * registration is stopped or otherwise "unget"s the Http Service without calling unregister(java.lang.String) then Http
+     * Service must automatically unregister the registration. However, if the registration was for a servlet, the destroy
+     * method of the servlet will not be called in this case since the bundle may be stopped. unregister(java.lang.String)
+     * must be explicitly called to cause the destroy method of the servlet to be called. This can be done in the
      * BundleActivator.stop method of the bundle registering the servlet.
      */
     public static final class HttpServiceFactory implements ServiceFactory {
@@ -145,6 +139,7 @@ public final class HttpServiceWrapper implements HttpService {
 
         /**
          * Create a new instance.
+         * 
          * @param gfHttpService the delegate HTTP service
          */
         public HttpServiceFactory(final GlassFishHttpService gfHttpService) {
@@ -152,15 +147,13 @@ public final class HttpServiceWrapper implements HttpService {
         }
 
         @Override
-        public Object getService(final Bundle bnd,
-                final ServiceRegistration registration) {
+        public Object getService(final Bundle bnd, final ServiceRegistration registration) {
 
             return new HttpServiceWrapper(delegate, bnd);
         }
 
         @Override
-        public void ungetService(final Bundle bundle,
-                final ServiceRegistration registration, final Object service) {
+        public void ungetService(final Bundle bundle, final ServiceRegistration registration, final Object service) {
 
             HttpServiceWrapper.class.cast(service).unregisterAll();
         }

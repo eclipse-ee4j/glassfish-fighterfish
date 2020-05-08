@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -27,67 +27,55 @@ import java.lang.annotation.Target;
 import javax.inject.Qualifier;
 
 /**
- * A CDI (JSR-299) Qualifier that indicates a reference to a Service in the OSGi
- * service registry that needs to be injected into a Bean/Java EE Component.
+ * A CDI (JSR-299) Qualifier that indicates a reference to a Service in the OSGi service registry that needs to be
+ * injected into a Bean/Java EE Component.
  *
- * A Java EE component developer uses this annotation to indicate that the
- * injection point needs to be injected with an OSGi service and can also
- * provide additional meta-data to aid in service discovery.
+ * A Java EE component developer uses this annotation to indicate that the injection point needs to be injected with an
+ * OSGi service and can also provide additional meta-data to aid in service discovery.
  *
- * If this qualifier annotates an injection point, the
- * <code>OSGiServiceExtension</code> discovers and instantiates the service
- * implementing the service interface type of the injection point, and makes it
- * available for injection to that injection point.
+ * If this qualifier annotates an injection point, the <code>OSGiServiceExtension</code> discovers and instantiates the
+ * service implementing the service interface type of the injection point, and makes it available for injection to that
+ * injection point.
  */
 @Qualifier
-@Target({TYPE, METHOD, PARAMETER, FIELD})
+@Target({ TYPE, METHOD, PARAMETER, FIELD })
 @Retention(RetentionPolicy.RUNTIME)
 public @interface OSGiService {
 
     /**
-     * Determines if the OSGi service that is to be injected refers to a dynamic
-     * instance of the service or is statically bound to the service
-     * implementation discovered at the time of injection.If the value of this
-     * annotation element is true, a proxy to the service interface is returned
-     * to the client.
+     * Determines if the OSGi service that is to be injected refers to a dynamic instance of the service or is statically
+     * bound to the service implementation discovered at the time of injection.If the value of this annotation element is
+     * true, a proxy to the service interface is returned to the client.
      *
-     * When the service is used, an active instance of the service at that point
-     * in time is used. If a service instance that was obtained earlier has gone
-     * away (deregistered by the service provider or stopped), then a new
-     * instance of the service is obtained from the OSGi service registry. This
-     * is ideal for stateless and/or idempotent services or service
-     * implementations whose life-cycle may be shorter than the client's
-     * lifecycle.
+     * When the service is used, an active instance of the service at that point in time is used. If a service instance that
+     * was obtained earlier has gone away (deregistered by the service provider or stopped), then a new instance of the
+     * service is obtained from the OSGi service registry. This is ideal for stateless and/or idempotent services or service
+     * implementations whose life-cycle may be shorter than the client's lifecycle.
      *
-     * If the value of this annotation element is false, an instance of the
-     * service is obtained from the service registry at the time of injection
-     * and provided to the client. If the service implementation provider
-     * deregisters the obtained service or the service instance is stopped, no
-     * attempt is made to get another instance of the service and a
-     * <code>ServiceUnavailableException</code> is thrown on method invocation.
-     * This is ideal for stateful or contextual services and for references to
-     * service implementations whose life-cycle is well-known and is known to be
-     * greater than the life-cycle of the client.
+     * If the value of this annotation element is false, an instance of the service is obtained from the service registry at
+     * the time of injection and provided to the client. If the service implementation provider deregisters the obtained
+     * service or the service instance is stopped, no attempt is made to get another instance of the service and a
+     * <code>ServiceUnavailableException</code> is thrown on method invocation. This is ideal for stateful or contextual
+     * services and for references to service implementations whose life-cycle is well-known and is known to be greater than
+     * the life-cycle of the client.
      *
      * @return {@code true} if dynamic, {@code false} otherwise
      */
     boolean dynamic() default false;
 
     /**
-     * Service discovery criteria.The string provided must match the Filter
-     * syntax specified in the OSGi Core Specification.
+     * Service discovery criteria.The string provided must match the Filter syntax specified in the OSGi Core Specification.
      *
      * @return service criteria
      */
     String serviceCriteria() default "";
 
     /**
-     * Waits, for the specified milliseconds, for at least one service that
-     * matches the criteria specified to be available in the OSGi Service
-     * registry.
+     * Waits, for the specified milliseconds, for at least one service that matches the criteria specified to be available
+     * in the OSGi Service registry.
      *
-     * @return 0 indicates indefinite wait. -1 indicates that the service is
-     * returned immediately if available or a null is returned if not available.
+     * @return 0 indicates indefinite wait. -1 indicates that the service is returned immediately if available or a null is
+     * returned if not available.
      */
     int waitTimeout() default -1;
 }

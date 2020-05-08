@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Distribution License v. 1.0, which is available at
@@ -19,25 +19,21 @@ import org.osgi.framework.BundleContext;
 import javax.inject.Inject;
 
 /**
- * This sample test demonstrates use of a custom JUnit test runner called
- * {@link FighterFishJUnitRunner} to execute a JUnit test using maven surefire
- * plugin. The test name is suffixed with Test so as to be automatically
- * included by maven surefire plugin.
+ * This sample test demonstrates use of a custom JUnit test runner called {@link FighterFishJUnitRunner} to execute a
+ * JUnit test using maven surefire plugin. The test name is suffixed with Test so as to be automatically included by
+ * maven surefire plugin.
  *
- * The custom runner has the ability to provision GlassFish, which includes
- * downloading of the GlassFish bundles, installing the smae and bootstrapping
- * GlassFish inside or outside the current JVM. All these steps are pretty
- * configurable via various configuration options specified as system
- * properties. See the pom.xml to see various configuration options. If you
- * chose to control those options from code, then you can provide in a method in
- * test class annotated with @Configuration.
+ * The custom runner has the ability to provision GlassFish, which includes downloading of the GlassFish bundles,
+ * installing the smae and bootstrapping GlassFish inside or outside the current JVM. All these steps are pretty
+ * configurable via various configuration options specified as system properties. See the pom.xml to see various
+ * configuration options. If you chose to control those options from code, then you can provide in a method in test
+ * class annotated with @Configuration.
  */
 @RunWith(FighterFishJUnitRunner.class)
 public class FighterFishJUnitRunnerTest {
 
     /**
-     * This is how one can inject BundleContext. In fact, one can even inject
-     * provisioned services.
+     * This is how one can inject BundleContext. In fact, one can even inject provisioned services.
      */
     @Inject
     private BundleContext ctx;

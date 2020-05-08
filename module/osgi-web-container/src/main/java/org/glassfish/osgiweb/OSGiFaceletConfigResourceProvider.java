@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -25,28 +25,24 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Built-in provider can't discover resources named as xxx.taglib.xml. This
- * config resource provider knows how to iterate over bundle entries in order to
- * discover the resources. It is registered as a META-INF service so that
+ * Built-in provider can't discover resources named as xxx.taglib.xml. This config resource provider knows how to
+ * iterate over bundle entries in order to discover the resources. It is registered as a META-INF service so that
  * mojarra can discover it.
  *
  * @see org.glassfish.osgiweb.OSGiWebModuleDecorator#discoverJSFConfigs
  */
-public final class OSGiFaceletConfigResourceProvider implements
-        FaceletConfigResourceProvider, ConfigurationResourceProvider {
+public final class OSGiFaceletConfigResourceProvider implements FaceletConfigResourceProvider, ConfigurationResourceProvider {
 
     /**
      * Logger.
      */
-    private static final Logger LOGGER = Logger.getLogger(
-            OSGiFaceletConfigResourceProvider.class.getPackage().getName());
+    private static final Logger LOGGER = Logger.getLogger(OSGiFaceletConfigResourceProvider.class.getPackage().getName());
 
     @Override
     @SuppressWarnings("unchecked")
     public Collection<URI> getResources(final ServletContext context) {
 
-        Collection<URI> uris = (Collection<URI>) context
-                .getAttribute(Constants.FACELET_CONFIG_ATTR);
+        Collection<URI> uris = (Collection<URI>) context.getAttribute(Constants.FACELET_CONFIG_ATTR);
         if (uris == null) {
             return Collections.EMPTY_LIST;
         }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -19,8 +19,8 @@ import org.glassfish.embeddable.GlassFish;
 import org.glassfish.embeddable.GlassFishException;
 
 /**
- * Adapter for old Habitat's getComponent method We keep the class name same to
- * reduce the no of lines that we have to change.
+ * Adapter for old Habitat's getComponent method We keep the class name same to reduce the no of lines that we have to
+ * change.
  */
 public final class Habitat {
 
@@ -31,6 +31,7 @@ public final class Habitat {
 
     /**
      * Create a new instance.
+     * 
      * @param gf GlassFish service
      */
     Habitat(final GlassFish gf) {
@@ -39,6 +40,7 @@ public final class Habitat {
 
     /**
      * Lookup a component by type.
+     * 
      * @param <T> component type
      * @param type component class
      * @return T

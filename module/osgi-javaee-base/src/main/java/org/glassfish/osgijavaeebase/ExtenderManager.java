@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -31,17 +31,15 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * It is responsible for starting any registered {@link Extender} service after
- * GlassFish server is started and stopping them when server is shutdown. We use
- * GlassFish STARTED event to be notified of server startup and shutdown.
+ * It is responsible for starting any registered {@link Extender} service after GlassFish server is started and stopping
+ * them when server is shutdown. We use GlassFish STARTED event to be notified of server startup and shutdown.
  */
 class ExtenderManager {
 
     /**
      * Logger.
      */
-    private static final Logger LOGGER = Logger.getLogger(
-            ExtenderManager.class.getPackage().getName());
+    private static final Logger LOGGER = Logger.getLogger(ExtenderManager.class.getPackage().getName());
 
     /**
      * The bundle context.
@@ -70,6 +68,7 @@ class ExtenderManager {
 
     /**
      * Create a new instance.
+     * 
      * @param ctx the bundle context
      */
     ExtenderManager(final BundleContext ctx) {
@@ -78,22 +77,22 @@ class ExtenderManager {
 
     /**
      * Start the extender manager.
+     * 
      * @throws Exception if an error occurs
      */
     public final synchronized void start() throws Exception {
-        LOGGER.logp(Level.FINE, "ExtenderManager", "start",
-                "ExtenderManager starting");
+        LOGGER.logp(Level.FINE, "ExtenderManager", "start", "ExtenderManager starting");
         glassFishServerTracker = new GlassFishServerTracker(context);
         glassFishServerTracker.open();
     }
 
     /**
      * Stop the extender manager.
+     * 
      * @throws Exception if an error occurs
      */
     public final synchronized void stop() throws Exception {
-        LOGGER.logp(Level.FINE, "ExtenderManager", "start",
-                "ExtenderManager stopping");
+        LOGGER.logp(Level.FINE, "ExtenderManager", "start", "ExtenderManager stopping");
         unregisterGlassFishShutdownHook();
         if (glassFishServerTracker != null) {
             glassFishServerTracker.close();
@@ -156,6 +155,7 @@ class ExtenderManager {
 
         /**
          * Create a new instance.
+         * 
          * @param ctx the bundle context
          */
         @SuppressWarnings("unchecked")
@@ -167,36 +167,31 @@ class ExtenderManager {
         @SuppressWarnings("unchecked")
         public Object addingService(final ServiceReference reference) {
             Extender e = Extender.class.cast(context.getService(reference));
-            LOGGER.logp(Level.FINE, "ExtenderManager$ExtenderTracker",
-                    "addingService",
-                    "Starting extender called {0}", new Object[]{e});
+            LOGGER.logp(Level.FINE, "ExtenderManager$ExtenderTracker", "addingService", "Starting extender called {0}", new Object[] { e });
             e.start();
             return e;
         }
 
         @Override
         @SuppressWarnings("unchecked")
-        public void removedService(final ServiceReference reference,
-                final Object service) {
+        public void removedService(final ServiceReference reference, final Object service) {
 
             Extender e = Extender.class.cast(context.getService(reference));
-            LOGGER.logp(Level.FINE, "ExtenderManager$ExtenderTracker",
-                    "removedService",
-                    "Stopping extender called {0}", new Object[]{e});
+            LOGGER.logp(Level.FINE, "ExtenderManager$ExtenderTracker", "removedService", "Stopping extender called {0}", new Object[] { e });
             e.stop();
         }
     }
 
     /**
-     * Tracks GlassFish and obtains EVents service from it and registers a
-     * listener that takes care of actually starting and stopping other
-     * extenders.
+     * Tracks GlassFish and obtains EVents service from it and registers a listener that takes care of actually starting and
+     * stopping other extenders.
      */
     @SuppressWarnings("checkstyle:magicnumber")
     private class GlassFishServerTracker extends ServiceTracker {
 
         /**
          * Create a new instance.
+         * 
          * @param ctx the bundle context
          */
         @SuppressWarnings("unchecked")
@@ -207,12 +202,9 @@ class ExtenderManager {
         @Override
         @SuppressWarnings("unchecked")
         public Object addingService(final ServiceReference reference) {
-            LOGGER.logp(Level.FINE, "ExtenderManager$GlassFishServerTracker",
-                    "addingService", "GlassFish has been created");
-            final GlassFish gf = GlassFish.class.cast(context
-                    .getService(reference));
-            ExecutorService executorService = Executors
-                    .newSingleThreadExecutor();
+            LOGGER.logp(Level.FINE, "ExtenderManager$GlassFishServerTracker", "addingService", "GlassFish has been created");
+            final GlassFish gf = GlassFish.class.cast(context.getService(reference));
+            ExecutorService executorService = Executors.newSingleThreadExecutor();
             return executorService.submit(new Runnable() {
                 @Override
                 public void run() {
@@ -223,8 +215,7 @@ class ExtenderManager {
                         // be ready to use.
                         // This is the case for GlassFish < 4.0
                         GlassFish.Status status;
-                        while ((status = gf.getStatus())
-                                != GlassFish.Status.STARTED) {
+                        while ((status = gf.getStatus()) != GlassFish.Status.STARTED) {
                             if (status == GlassFish.Status.DISPOSED) {
                                 return;
                             }
@@ -243,8 +234,7 @@ class ExtenderManager {
                         listener = new EventListener() {
                             @Override
                             public void event(final Event event) {
-                                if (EventTypes.PREPARE_SHUTDOWN
-                                        .equals(event.type())) {
+                                if (EventTypes.PREPARE_SHUTDOWN.equals(event.type())) {
                                     stopExtenders();
                                 }
                             }
@@ -260,8 +250,7 @@ class ExtenderManager {
 
         @Override
         @SuppressWarnings("unchecked")
-        public void removedService(final ServiceReference reference,
-                final Object service) {
+        public void removedService(final ServiceReference reference, final Object service) {
 
             Future future = (Future) service;
             // interrupt if it is still waiting for gf to start or stop

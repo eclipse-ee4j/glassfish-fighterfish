@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -51,12 +51,12 @@ public final class OSGiResourceServlet extends HttpServlet {
 
     /**
      * Create a new instance.
+     * 
      * @param sAlias the servlet alias
      * @param sName the servlet name
      * @param sHttpCtx the OSGi HTTP context
      */
-    public OSGiResourceServlet(final String sAlias, final String sName,
-            final HttpContext sHttpCtx) {
+    public OSGiResourceServlet(final String sAlias, final String sName, final HttpContext sHttpCtx) {
 
         this.alias = sAlias;
         this.name = sName;
@@ -64,9 +64,7 @@ public final class OSGiResourceServlet extends HttpServlet {
     }
 
     @Override
-    protected void service(final HttpServletRequest req,
-            final HttpServletResponse resp)
-            throws ServletException, IOException {
+    protected void service(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException, IOException {
 
         final String resPath = getResourcePath(req);
         URL url = httpContext.getResource(resPath);
@@ -79,8 +77,7 @@ public final class OSGiResourceServlet extends HttpServlet {
         // writing everything.
         String mimeType = httpContext.getMimeType(resPath);
         if (mimeType == null) {
-            mimeType = getServletConfig().getServletContext()
-                    .getMimeType(resPath);
+            mimeType = getServletConfig().getServletContext().getMimeType(resPath);
         }
         resp.setContentType(mimeType);
         URLConnection conn = url.openConnection();
@@ -91,6 +88,7 @@ public final class OSGiResourceServlet extends HttpServlet {
 
     /**
      * Get the resource from the request URI.
+     * 
      * @param req the incoming request
      * @return mapped resource path
      */
@@ -119,15 +117,14 @@ public final class OSGiResourceServlet extends HttpServlet {
 
     /**
      * Write the connection input stream to the given output stream.
+     * 
      * @param connection the connection to use
      * @param os the output stream
      * @return number of byte written
      * @throws IOException if an error occurs
      */
     @SuppressWarnings("checkstyle:magicnumber")
-    private int writeToStream(final URLConnection connection,
-            final OutputStream os)
-            throws IOException {
+    private int writeToStream(final URLConnection connection, final OutputStream os) throws IOException {
 
         InputStream is = connection.getInputStream();
         try {

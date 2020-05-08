@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Distribution License v. 1.0, which is available at
@@ -23,7 +23,7 @@ import java.util.List;
  * Session Bean implementation class UserAuthServiceEJB.
  */
 @Stateless
-@Local({UserAuthService.class})
+@Local({ UserAuthService.class })
 public final class UserAuthServiceEJB implements UserAuthService {
 
     /**
@@ -86,9 +86,7 @@ public final class UserAuthServiceEJB implements UserAuthService {
     @Override
     public String getReport() {
         @SuppressWarnings("unchecked")
-        List<LoginAttempt> attempts = em
-                .createNamedQuery("LoginAttempt.findAll")
-                .getResultList();
+        List<LoginAttempt> attempts = em.createNamedQuery("LoginAttempt.findAll").getResultList();
         log("Number of entries found: " + attempts.size());
         StringBuilder report = new StringBuilder("Login Attempt Report:\n");
         for (LoginAttempt attempt : attempts) {
@@ -99,6 +97,7 @@ public final class UserAuthServiceEJB implements UserAuthService {
 
     /**
      * Log a message to the standard output.
+     * 
      * @param msg message to log
      */
     private void log(final String msg) {
