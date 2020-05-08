@@ -17,7 +17,8 @@
 Export-Package: org.osgi.service.http
 Private-Package: org.glassfish.osgihttp.*
 Bundle-Activator: org.glassfish.osgihttp.Activator
-Import-Package: com.sun.enterprise.web; version=${glassfish.version}, *
+Import-Package: !com.sun.grizzly.config.dom, !org.glassfish.grizzly.config.dom, com.sun.enterprise.web; version=${glassfish.version}, *
+
 DynamicImport-Package: com.sun.grizzly.config.dom; version=1.9, \
                        org.glassfish.grizzly.config.dom; version=2.0
 Bundle-ActivationPolicy: lazy; include="org.osgi.service.http"
