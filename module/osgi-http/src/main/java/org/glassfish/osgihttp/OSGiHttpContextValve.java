@@ -20,7 +20,7 @@ import static java.util.logging.Level.FINE;
 import java.io.IOException;
 import java.util.logging.Logger;
 
-import javax.servlet.ServletException;
+import jakarta.servlet.ServletException;
 
 import org.apache.catalina.Request;
 import org.apache.catalina.Response;

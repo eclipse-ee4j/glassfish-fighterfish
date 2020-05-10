@@ -61,33 +61,33 @@ public final class Constants {
     /**
      * Property name for JMS queue connection factory.
      */
-    public static final String QUEUE_CF = "javax.jms.QueueConnectionFactory";
+    public static final String QUEUE_CF = "jakarta.jms.QueueConnectionFactory";
 
     /**
      * Property name for JMS topic connection factory.
      */
-    public static final String TOPIC_CF = "javax.jms.TopicConnectionFactory";
+    public static final String TOPIC_CF = "jakarta.jms.TopicConnectionFactory";
 
     /**
      * Property name for JMS connection factory.
      */
-    public static final String UNIFIED_CF = "javax.jms.ConnectionFactory";
+    public static final String UNIFIED_CF = "jakarta.jms.ConnectionFactory";
 
     // Admin Object Resources - Destinations
 
     /**
      * Property name for JMS queue.
      */
-    public static final String QUEUE = "javax.jms.Queue";
+    public static final String QUEUE = "jakarta.jms.Queue";
 
     /**
      * Property name for JMS topic.
      */
-    public static final String TOPIC = "javax.jms.Topic";
+    public static final String TOPIC = "jakarta.jms.Topic";
 
     /**
      * Property name for JMS destination.
      */
-    public static final String DESTINATION = "javax.jms.Destination";
+    public static final String DESTINATION = "jakarta.jms.Destination";
 
 }

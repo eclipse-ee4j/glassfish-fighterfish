@@ -9,18 +9,19 @@
  */
 package org.glassfish.fighterfish.sample.uas.entities;
 
+import static jakarta.persistence.FetchType.LAZY;
+import static jakarta.persistence.TemporalType.TIMESTAMP;
+
 import java.io.Serializable;
 import java.util.Date;
 
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.NamedQueries;
+import jakarta.persistence.NamedQuery;
+import jakarta.persistence.Temporal;
 
 /**
  * Entity implementation class for Entity: LoginAttempt.
@@ -45,13 +46,13 @@ public class LoginAttempt implements Serializable {
     /**
      * User credentials.
      */
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = LAZY)
     private UserCredential userCredential;
 
     /**
      * Timestamp.
      */
-    @Temporal(TemporalType.TIMESTAMP)
+    @Temporal(TIMESTAMP)
     private Date timeStamp = new Date();
 
     /**
@@ -59,12 +60,6 @@ public class LoginAttempt implements Serializable {
      */
     private static final long serialVersionUID = 1L;
 
-    /**
-     * Create a new instance.
-     */
-    public LoginAttempt() {
-        super();
-    }
 
     /**
      * Get serial number.
@@ -89,7 +84,7 @@ public class LoginAttempt implements Serializable {
      *
      * @param isSuccessful login result
      */
-    public void setSuccessful(final boolean isSuccessful) {
+    public void setSuccessful(boolean isSuccessful) {
         this.successful = isSuccessful;
     }
 
@@ -107,7 +102,7 @@ public class LoginAttempt implements Serializable {
      *
      * @param creds new user credentials
      */
-    public void setUserCredential(final UserCredential creds) {
+    public void setUserCredential(UserCredential creds) {
         this.userCredential = creds;
     }
 
@@ -125,7 +120,7 @@ public class LoginAttempt implements Serializable {
      *
      * @param tstamp new timestamp
      */
-    public void setTimeStamp(final Date tstamp) {
+    public void setTimeStamp(Date tstamp) {
         this.timeStamp = tstamp;
     }
 

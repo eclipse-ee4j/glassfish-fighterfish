@@ -19,14 +19,17 @@ package org.glassfish.osgihttp;
 import java.io.IOException;
 import java.net.URL;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.osgi.framework.Bundle;
 import org.osgi.service.http.HttpContext;
 
 /**
- * Default implementation of {@link HttpContext}. As per the spec (OSGi R4 Compendium, section #102.4): 1. the default
+ * Default implementation of {@link HttpContext}. 
+ * 
+ * <p>
+ * As per the spec (OSGi R4 Compendium, section #102.4): 1. the default
  * implementation of getResource() must map the resource request to the Bundle.getResource(String). 2. the
  * getMime(String) implementation of the default HttpContext object should return a reasonable mapping. 3. Its
  * handleSecurity(HttpServlet Request,HttpServletResponse) may implement an authentication mecha-nism that is
@@ -48,13 +51,12 @@ public final class DefaultHttpContext implements HttpContext {
      *
      * @param bnd the registering bundle
      */
-    public DefaultHttpContext(final Bundle bnd) {
+    public DefaultHttpContext(Bundle bnd) {
         this.registeringBundle = bnd;
     }
 
     @Override
-    public boolean handleSecurity(final HttpServletRequest httpServletRequest, final HttpServletResponse httpServletResponse) throws IOException {
-
+    public boolean handleSecurity(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws IOException {
         // TODO(Sahoo):
         return true;
     }
@@ -64,7 +66,7 @@ public final class DefaultHttpContext implements HttpContext {
      * @return URL
      */
     @Override
-    public URL getResource(final String s) {
+    public URL getResource(String s) {
         /*
          * As per the spec (OSGi R4 Compendium, section #102.4): the default implementation must map the resource request to the
          * bundle's resource, using Bundle.getResource(String). The internal name must specify the full path to the directory

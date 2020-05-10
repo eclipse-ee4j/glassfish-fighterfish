@@ -12,16 +12,16 @@ package org.glassfish.fighterfish.sample.uas.simplewab;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-import javax.inject.Inject;
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.glassfish.fighterfish.sample.uas.api.UserAuthService;
 import org.glassfish.osgicdi.OSGiService;
 import org.osgi.framework.ServiceException;
+
+import jakarta.inject.Inject;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * Servlet implementation class LoginServlet.
@@ -39,33 +39,29 @@ public final class LoginServlet extends HttpServlet {
      */
     @Inject
     @OSGiService(dynamic = true)
-    private UserAuthService uas;
+    private UserAuthService userAuthService;
 
-    /**
-     * Create a new instance.
-     */
-    public LoginServlet() {
-        super();
-    }
 
     @Override
     protected void service(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
-
         response.setContentType("text/html");
         PrintWriter out = response.getWriter();
         out.println("<HTML> <HEAD> <TITLE> Login " + "</TITLE> </HEAD> <BODY BGCOLOR=white>");
 
         String name = request.getParameter("name");
         String password = request.getParameter("password");
+        
         try {
-            if (uas.login(name, password)) {
+            if (userAuthService.login(name, password)) {
                 out.println("Welcome " + name);
-            } else {
-                out.println("Incorrect user name or password. Try again");
-            }
+            } 
+            
+            out.println("Incorrect user name or password. Try again");
+            
         } catch (ServiceException e) {
             out.println("Service is not yet available");
         }
+        
         out.println("</BODY> </HTML> ");
     }
 }

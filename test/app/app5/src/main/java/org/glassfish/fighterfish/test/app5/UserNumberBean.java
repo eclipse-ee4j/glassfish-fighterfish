@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -16,9 +16,9 @@
 
 package org.glassfish.fighterfish.test.app5;
 
-import javax.faces.component.UIComponent;
-import javax.faces.context.FacesContext;
-import javax.faces.validator.ValidatorException;
+import jakarta.faces.component.UIComponent;
+import jakarta.faces.context.FacesContext;
+import jakarta.faces.validator.ValidatorException;
 
 import java.util.Random;
 
@@ -168,25 +168,25 @@ public final class UserNumberBean {
      * Message ID for not in range validation.
      */
     private static final String NOT_IN_RANGE =
-            "javax.faces.validator.LongRangeValidator.NOT_IN_RANGE";
+            "jakarta.faces.validator.LongRangeValidator.NOT_IN_RANGE";
 
     /**
      * Message id for maximum validation.
      */
     private static final String MAXIMUM =
-            "javax.faces.validator.LongRangeValidator.MAXIMUM";
+            "jakarta.faces.validator.LongRangeValidator.MAXIMUM";
 
     /**
      * Message id for minimum validation.
      */
     private static final String MINIMUM =
-            "javax.faces.validator.LongRangeValidator.MINIMUM";
+            "jakarta.faces.validator.LongRangeValidator.MINIMUM";
 
     /**
      * Message id for type validation.
      */
     private static final String TYPE =
-            "javax.faces.validator.LongRangeValidator.TYPE";
+            "jakarta.faces.validator.LongRangeValidator.TYPE";
 
     /**
      * Valid the UI component.

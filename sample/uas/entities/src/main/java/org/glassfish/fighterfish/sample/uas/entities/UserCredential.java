@@ -9,20 +9,26 @@
  */
 package org.glassfish.fighterfish.sample.uas.entities;
 
+import static jakarta.persistence.CascadeType.REMOVE;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 
 /**
  * Entity implementation class for Entity: UserCredential.
  */
 @Entity
 public class UserCredential implements Serializable {
+    
+    /**
+     * Serialization UID.
+     */
+    private static final long serialVersionUID = 1L;
 
     /**
      * User credential ID.
@@ -38,20 +44,9 @@ public class UserCredential implements Serializable {
     /**
      * Login attempts.
      */
-    @OneToMany(mappedBy = "userCredential", cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "userCredential", cascade = REMOVE)
     private List<LoginAttempt> loginAttempts = new ArrayList<>();
 
-    /**
-     * Serialization UID.
-     */
-    private static final long serialVersionUID = 1L;
-
-    /**
-     * Create a new instance.
-     */
-    public UserCredential() {
-        super();
-    }
 
     /**
      * Get the user name.
@@ -67,7 +62,7 @@ public class UserCredential implements Serializable {
      *
      * @param username new name
      */
-    public void setName(final String username) {
+    public void setName(String username) {
         this.name = username;
     }
 
@@ -85,7 +80,7 @@ public class UserCredential implements Serializable {
      *
      * @param passwd new password
      */
-    public void setPassword(final String passwd) {
+    public void setPassword(String passwd) {
         this.password = passwd;
     }
 
@@ -94,7 +89,7 @@ public class UserCredential implements Serializable {
      *
      * @param attemps new login attempts
      */
-    public void setLoginAttempts(final List<LoginAttempt> attemps) {
+    public void setLoginAttempts(List<LoginAttempt> attemps) {
         this.loginAttempts = attemps;
     }
 

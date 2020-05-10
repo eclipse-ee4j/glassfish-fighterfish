@@ -54,10 +54,9 @@ public final class OSGiEJBDeploymentContext extends OSGiDeploymentContext {
      * @param bundle application bundle
      * @throws Exception if an error occurs
      */
-    public OSGiEJBDeploymentContext(final ActionReport actionReport, final Logger logger, final ReadableArchive source, final OpsParams params,
-            final ServerEnvironment env, final Bundle bundle) throws Exception {
-
+    public OSGiEJBDeploymentContext(ActionReport actionReport, Logger logger, ReadableArchive source, OpsParams params, ServerEnvironment env, Bundle bundle) throws Exception {
         super(actionReport, logger, source, params, env, bundle);
+        
         // ArchiveHandler must correctly return the ArchiveType for DOL
         // processing to succeed,
         setArchiveHandler(new OSGiArchiveHandler() {
@@ -75,11 +74,12 @@ public final class OSGiEJBDeploymentContext extends OSGiDeploymentContext {
 
     @Override
     protected void setupClassLoader() throws Exception {
-        final BundleClassLoader delegate1 = new BundleClassLoader(getBundle());
-        final ClassLoader delegate2 = Globals.get(ClassLoaderHierarchy.class).getAPIClassLoader();
-        ClassLoader cl = new DelegatingInstrumentableClassLoader(delegate1, delegate2);
-        setShareableTempClassLoader(cl);
-        setFinalClassLoader(cl);
+        ClassLoader classLoader = new DelegatingInstrumentableClassLoader(
+                new BundleClassLoader(getBundle()), 
+                Globals.get(ClassLoaderHierarchy.class).getAPIClassLoader());
+        
+        setShareableTempClassLoader(classLoader);
+        setFinalClassLoader(classLoader);
     }
 
     /**
@@ -103,15 +103,15 @@ public final class OSGiEJBDeploymentContext extends OSGiDeploymentContext {
          * @param cl1 the first delegate class-loader
          * @param cl2 the second delegate class-loader
          */
-        private DelegatingInstrumentableClassLoader(final BundleClassLoader cl1, final ClassLoader cl2) {
+        private DelegatingInstrumentableClassLoader(BundleClassLoader cl1, ClassLoader cl2) {
             this.delegate1 = cl1;
             this.delegate2 = cl2;
         }
 
         @Override
-        protected synchronized Class<?> loadClass(final String name, final boolean resolve) throws ClassNotFoundException {
+        protected synchronized Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
 
-            Class c = findLoadedClass(name);
+            Class<?> c = findLoadedClass(name);
             if (c == null) {
                 try {
                     return delegate1.loadClass(name, resolve);
@@ -119,9 +119,11 @@ public final class OSGiEJBDeploymentContext extends OSGiDeploymentContext {
                     return delegate2.loadClass(name);
                 }
             }
+            
             if (resolve) {
                 resolveClass(c);
             }
+            
             return c;
         }
 
@@ -131,15 +133,16 @@ public final class OSGiEJBDeploymentContext extends OSGiDeploymentContext {
             if (url == null) {
                 url = delegate2.getResource(name);
             }
+            
             return url;
         }
 
         @Override
         public Enumeration<URL> getResources(final String name) throws IOException {
-
             List<Enumeration<URL>> enumerators = new ArrayList<>();
             enumerators.add(delegate1.getResources(name));
             enumerators.add(delegate2.getResources(name));
+            
             return new CompositeEnumeration(enumerators);
         }
 

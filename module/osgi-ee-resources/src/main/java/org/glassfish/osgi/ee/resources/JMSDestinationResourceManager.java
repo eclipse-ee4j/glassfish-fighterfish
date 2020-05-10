@@ -15,12 +15,13 @@
  */
 package org.glassfish.osgi.ee.resources;
 
+import static org.glassfish.osgi.ee.resources.Constants.JNDI_NAME;
+import static org.glassfish.osgi.ee.resources.Constants.QUEUE;
+import static org.glassfish.osgi.ee.resources.Constants.TOPIC;
+
 import java.util.Collection;
 import java.util.Dictionary;
-import java.util.Properties;
-
-import javax.jms.Queue;
-import javax.jms.Topic;
+import java.util.Hashtable;
 
 import org.glassfish.connectors.config.AdminObjectResource;
 import org.osgi.framework.BundleContext;
@@ -29,6 +30,9 @@ import com.sun.enterprise.config.serverbeans.BindableResource;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.ResourceRef;
 import com.sun.enterprise.config.serverbeans.Resources;
+
+import jakarta.jms.Queue;
+import jakarta.jms.Topic;
 
 /**
  * Resource-Manager to export jms-destinations (JMS-RA admin-object-resources) in GlassFish to OSGi's service-registry.
@@ -40,7 +44,7 @@ public final class JMSDestinationResourceManager extends BaseResourceManager imp
      *
      * @param habitat component locator
      */
-    public JMSDestinationResourceManager(final Habitat habitat) {
+    public JMSDestinationResourceManager(Habitat habitat) {
         super(habitat);
     }
 
@@ -66,29 +70,34 @@ public final class JMSDestinationResourceManager extends BaseResourceManager imp
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public void registerResource(final BindableResource resource, final ResourceRef resRef, final BundleContext bundleContext) {
-
         AdminObjectResource adminObjectResource = (AdminObjectResource) resource;
+
         if (adminObjectResource.getEnabled().equalsIgnoreCase("true")) {
             if (resRef != null && resRef.getEnabled().equalsIgnoreCase("true")) {
                 String defnName = adminObjectResource.getResType();
-                Class claz = null;
-                Class[] intf = null;
+                Class<?> claz = null;
+                Class<?>[] intf = null;
 
-                if (defnName.equals(Constants.QUEUE)) {
+                if (defnName.equals(QUEUE)) {
                     claz = Queue.class;
                     intf = new Class[] { Queue.class, Invalidate.class };
-                } else if (defnName.equals(Constants.TOPIC)) {
+                } else if (defnName.equals(TOPIC)) {
                     claz = Topic.class;
                     intf = new Class[] { Topic.class, Invalidate.class };
                 } else {
                     throw new RuntimeException("Invalid Destination [ " + defnName + " ]" + " for jms-resource [ " + resource.getJndiName() + " ]");
                 }
-                Dictionary properties = new Properties();
-                properties.put(Constants.JNDI_NAME, adminObjectResource.getJndiName());
-                Object proxy = getProxy(adminObjectResource.getJndiName(), intf, getClassLoader());
-                registerResourceAsService(bundleContext, adminObjectResource, claz.getName(), properties, proxy);
+
+                Dictionary<String, String> properties = new Hashtable<>();
+                properties.put(JNDI_NAME, adminObjectResource.getJndiName());
+                
+                registerResourceAsService(
+                    bundleContext, 
+                    adminObjectResource, 
+                    claz.getName(), 
+                    properties, 
+                    getProxy(adminObjectResource.getJndiName(), intf, getClassLoader()));
             }
         }
 
@@ -102,6 +111,7 @@ public final class JMSDestinationResourceManager extends BaseResourceManager imp
                 result = true;
             }
         }
+        
         return result;
     }
 
@@ -118,6 +128,7 @@ public final class JMSDestinationResourceManager extends BaseResourceManager imp
         if (raName.equals(Constants.DEFAULT_JMS_ADAPTER)) {
             result = true;
         }
+        
         return result;
     }
 }

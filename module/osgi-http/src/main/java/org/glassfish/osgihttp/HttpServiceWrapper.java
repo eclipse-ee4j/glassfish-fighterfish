@@ -19,8 +19,8 @@ import java.util.Dictionary;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.servlet.Servlet;
-import javax.servlet.ServletException;
+import jakarta.servlet.Servlet;
+import jakarta.servlet.ServletException;
 
 import org.osgi.framework.Bundle;
 import org.osgi.framework.ServiceFactory;

@@ -58,7 +58,6 @@ public class OSGiArchiveHandler extends AbstractArchiveHandler {
      */
     @Override
     public ClassLoader getClassLoader(final ClassLoader parent, final DeploymentContext context) {
-
         throw new RuntimeException("Assertion Failure: This method should not be called");
     }
 
@@ -75,6 +74,7 @@ public class OSGiArchiveHandler extends AbstractArchiveHandler {
         if (lastDot != -1) {
             appName = appName.substring(0, lastDot);
         }
+        
         return appName;
     }
 
@@ -87,7 +87,6 @@ public class OSGiArchiveHandler extends AbstractArchiveHandler {
      */
     @Override
     public String getDefaultApplicationName(final ReadableArchive archive, final DeploymentContext context) {
-
         return getDefaultApplicationName(archive);
     }
 }

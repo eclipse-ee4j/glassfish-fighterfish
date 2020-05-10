@@ -25,7 +25,7 @@ public final class SimpleActivator implements BundleActivator {
     }
 
     @Override
-    public void stop(final BundleContext context) throws Exception {
+    public void stop(BundleContext context) throws Exception {
         // No need to unregister, as the service gets unregistered
         // automatically when bundle stops.
     }
@@ -35,7 +35,7 @@ public final class SimpleActivator implements BundleActivator {
      *
      * @param msg message to log
      */
-    static void log(final String msg) {
+    static void log(String msg) {
         System.out.println("UserAuthService: " + msg);
     }
 

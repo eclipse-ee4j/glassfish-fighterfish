@@ -15,6 +15,10 @@
  */
 package org.glassfish.osgijpa.extension;
 
+import static java.lang.Thread.currentThread;
+import static java.util.logging.Level.FINE;
+import static java.util.logging.Level.WARNING;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -22,16 +26,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.ServiceConfigurationError;
 import java.util.WeakHashMap;
-import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import javax.persistence.spi.PersistenceProvider;
 
 import org.glassfish.hk2.osgiresourcelocator.ServiceLoader;
 
+import jakarta.persistence.spi.PersistenceProvider;
+import jakarta.persistence.spi.PersistenceProviderResolver;
+
 /**
- * This is a custom implementation of {@link javax.persistence.spi.PersistenceProviderResolver} which has the ability to
- * discover providers that are part of OSGi bundles. As you know, a thread's context loader (TCL) is very widely assumed
+ * This is a custom implementation of {@link jakarta.persistence.spi.PersistenceProviderResolver} which has the ability to
+ * discover providers that are part of OSGi bundles. 
+ * 
+ * <p>
+ * As you know, a thread's context loader (TCL) is very widely assumed
  * to represent what an application can see. This is no different in JPA as well. However, there exists some
  * technologies like OSGi, which do not want to rely on Thread's context loader to denote visibility scope of an
  * application. In order to accommodate these diverse technologies, it first attempts to discover providers using TCL.
@@ -39,25 +46,23 @@ import org.glassfish.hk2.osgiresourcelocator.ServiceLoader;
  * visible to the current thread and hence returns that list. If TCL can't find any providers, then it assumes that it
  * is invoked in a context which is not relying on TCL to limit visibility, hence it goes onto discover all providers
  * installed in the current framework. To discover providers installed by OSGi bundles, it currently relies on provider
- * bundles to have META-INF/services/javax.persistence.PersistenceProvider file as every JPA compliant provider bundles
+ * bundles to have META-INF/services/jakarta.persistence.PersistenceProvider file as every JPA compliant provider bundles
  * such a resource. In future, we can even enhance this class to discover PersistenceProvider service registered by
  * OSGi/JPA compliant bundles.
+ * 
  * <p/>
  * As per the requirement of JPA spec, this implementation is thread-safe. Please note, this class comes into picture
- * even in Java EE mode usage of JPA via {@link javax.persistence.spi.PersistenceProvider#getProviderUtil()}, which is
- * the only way to call methods like {@link javax.persistence.spi.ProviderUtil#isLoaded(Object)}. So, it is important
+ * even in Java EE mode usage of JPA via {@link jakarta.persistence.spi.PersistenceProvider#getProviderUtil()}, which is
+ * the only way to call methods like {@link jakarta.persistence.spi.ProviderUtil#isLoaded(Object)}. So, it is important
  * for this class to be performant. So, this class also supports caching mode which can be explicitly enabled at
  * construction time. Caching should only be enabled in environment where providers are not installed/uninstalled
  * dynamically.
  */
-public final class HybridPersistenceProviderResolver implements javax.persistence.spi.PersistenceProviderResolver {
+public final class HybridPersistenceProviderResolver implements PersistenceProviderResolver {
 
-    /**
-     * Logger.
-     */
     private static final Logger LOGGER = Logger.getLogger(HybridPersistenceProviderResolver.class.getPackage().getName());
 
-    // Yes, I am fully aware that eclipselink produced javax.persistence bundle
+    // Yes, I am fully aware that eclipselink produced jakarta.persistence bundle
     // also has an activator
     // which has code to set a custom resolver, but that resolver only works for
     // RFC#143 compliant OSGi JPA providers.
@@ -83,14 +88,13 @@ public final class HybridPersistenceProviderResolver implements javax.persistenc
      * @param caching caching enabled flag
      */
     public HybridPersistenceProviderResolver(final boolean caching) {
-        LOGGER.logp(Level.FINE, "HybridPersistenceProviderResolver", "HybridPersistenceProviderResolver", "cachingEnabled = {0}", new Object[] { caching });
+        LOGGER.logp(FINE, "HybridPersistenceProviderResolver", "HybridPersistenceProviderResolver", "cachingEnabled = {0}", new Object[] { caching });
         this.cachingEnabled = caching;
     }
 
     @Override
     public List<PersistenceProvider> getPersistenceProviders() {
-        ClassLoader cl = Thread.currentThread().getContextClassLoader();
-        return getPersistenceProviders(cl);
+        return getPersistenceProviders(currentThread().getContextClassLoader());
     }
 
     /**
@@ -111,33 +115,34 @@ public final class HybridPersistenceProviderResolver implements javax.persistenc
         } else {
             providers = discoverPersistenceProviders(cl);
         }
+        
         return providers;
     }
 
     /**
      * Populate the cache.
      *
-     * @param cl class-loader
+     * @param classLoader class-loader
      * @param providers list of providers
      */
-    private void populateCache(final ClassLoader cl, final List<PersistenceProvider> providers) {
-
+    private void populateCache(ClassLoader classLoader, List<PersistenceProvider> providers) {
         List<String> providerNames = new ArrayList<>(providers.size());
         providerNames.addAll(convert(providers));
-        cl2ProviderNames.put(cl, providerNames);
+        cl2ProviderNames.put(classLoader, providerNames);
     }
 
     /**
      * Read the providers from the cache for a given class-loader.
      *
-     * @param cl class-loader
+     * @param classLoader class-loader
      * @return list of providers
      */
-    private List<PersistenceProvider> readCache(final ClassLoader cl) {
-        List<String> providerNames = cl2ProviderNames.get(cl);
+    private List<PersistenceProvider> readCache(ClassLoader classLoader) {
+        List<String> providerNames = cl2ProviderNames.get(classLoader);
         if (providerNames != null) {
-            return convert(providerNames, cl);
+            return convert(providerNames, classLoader);
         }
+        
         return null;
     }
 
@@ -148,11 +153,11 @@ public final class HybridPersistenceProviderResolver implements javax.persistenc
      * @return list of class names
      */
     private List<String> convert(final Iterable<PersistenceProvider> providers) {
-
         List<String> result = new ArrayList<>();
-        for (PersistenceProvider p : providers) {
-            result.add(p.getClass().getName());
+        for (PersistenceProvider provider : providers) {
+            result.add(provider.getClass().getName());
         }
+        
         return result;
     }
 
@@ -164,46 +169,46 @@ public final class HybridPersistenceProviderResolver implements javax.persistenc
      * the same loader as well.
      *
      * @param providerNames list of provider class names.
-     * @param cl class loader to be used to load provider classes
+     * @param classLoader class loader to be used to load provider classes
      * @return list of provider objects.
      */
-    private List<PersistenceProvider> convert(final Iterable<String> providerNames, final ClassLoader cl) {
-
+    private List<PersistenceProvider> convert(Iterable<String> providerNames, ClassLoader classLoader) {
         List<PersistenceProvider> result = new ArrayList<>();
         for (String name : providerNames) {
             try {
-                result.add((PersistenceProvider) cl.loadClass(name).newInstance());
+                result.add((PersistenceProvider) classLoader.loadClass(name).newInstance());
             } catch (Exception e) {
-                LOGGER.logp(Level.WARNING, "HybridPersistenceProviderResolver", "convert",
+                LOGGER.logp(WARNING, "HybridPersistenceProviderResolver", "convert",
                         "Exception trying to instantiate cached provider by" + " name " + name, e);
             }
         }
+        
         return result;
     }
 
     /**
      * Discover the providers in the given class-loader.
      *
-     * @param cl class-loader
+     * @param classLoader class-loader
      * @return discovered list of providers
      */
-    private List<PersistenceProvider> discoverPersistenceProviders(final ClassLoader cl) {
-
+    private List<PersistenceProvider> discoverPersistenceProviders(ClassLoader classLoader) {
         List<PersistenceProvider> result = new ArrayList<>();
-        if (cl != null) {
-            Iterator<PersistenceProvider> services = java.util.ServiceLoader.load(PersistenceProvider.class, cl).iterator();
+        
+        if (classLoader != null) {
+            Iterator<PersistenceProvider> services = java.util.ServiceLoader.load(PersistenceProvider.class, classLoader).iterator();
             while (services.hasNext()) {
                 try {
-                    PersistenceProvider p = services.next();
-                    result.add(p);
+                    result.add(services.next());
                 } catch (ServiceConfigurationError e) {
                     // can happen if a cached provider has been uninstalled or
                     // something of that sort.
-                    LOGGER.logp(Level.FINE, "HybridPersistenceProviderResolver", "getPersistenceProviders",
-                            "Exception while discovering providers for class" + " loader " + cl, e);
+                    LOGGER.logp(FINE, "HybridPersistenceProviderResolver", "getPersistenceProviders",
+                            "Exception while discovering providers for class" + " loader " + classLoader, e);
                 }
             }
         }
+        
         if (result.isEmpty()) {
             // Ok, we are called in a context where TCL can't see any provider
             // . e.g.,
@@ -211,6 +216,7 @@ public final class HybridPersistenceProviderResolver implements javax.persistenc
             // discover all providers installed in the framework.
             result.addAll(discoverOSGiProviders());
         }
+        
         return result;
     }
 
@@ -221,9 +227,10 @@ public final class HybridPersistenceProviderResolver implements javax.persistenc
      */
     private List<PersistenceProvider> discoverOSGiProviders() {
         List<PersistenceProvider> result = new ArrayList<>();
-        for (PersistenceProvider p : ServiceLoader.lookupProviderInstances(PersistenceProvider.class)) {
-            result.add(p);
+        for (PersistenceProvider provider : ServiceLoader.lookupProviderInstances(PersistenceProvider.class)) {
+            result.add(provider);
         }
+        
         return result;
     }
 

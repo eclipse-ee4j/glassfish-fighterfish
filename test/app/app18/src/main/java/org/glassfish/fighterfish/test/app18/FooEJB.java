@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -15,8 +15,8 @@
  */
 package org.glassfish.fighterfish.test.app18;
 
-import javax.ejb.DependsOn;
-import javax.ejb.Singleton;
+import jakarta.ejb.DependsOn;
+import jakarta.ejb.Singleton;
 
 /**
  * Session Bean implementation class FooEJB.

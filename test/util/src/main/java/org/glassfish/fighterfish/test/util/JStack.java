@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -14,6 +14,8 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  */
 package org.glassfish.fighterfish.test.util;
+
+import static java.lang.management.ManagementFactory.getThreadMXBean;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -39,28 +41,30 @@ public final class JStack {
 
     @Override
     public String toString() {
-        ThreadMXBean threadMXBean = ManagementFactory.getThreadMXBean();
-        return getAllStack(threadMXBean.dumpAllThreads(true, true));
+        return getAllStack(getThreadMXBean().dumpAllThreads(true, true));
     }
 
     /**
      * Get all stack.
-     * @param tis thread infos
+     * @param threadInfos thread infos
      * @return stack descriptions
      */
-    private static String getAllStack(final ThreadInfo[] tis) {
-        if (tis == null) {
+    private static String getAllStack(ThreadInfo[] threadInfos) {
+        if (threadInfos == null) {
             return "null";
         }
-        StringBuilder b = new StringBuilder("[");
-        for (ThreadInfo ti : tis) {
-            b.append("\n [").append(getStack(ti)).append(" ]");
-            if (ti != tis[tis.length - 1]) {
-                b.append(",");
+        
+        StringBuilder stackBuilder = new StringBuilder("[");
+        for (ThreadInfo threadInfo : threadInfos) {
+            stackBuilder.append("\n [").append(getStack(threadInfo)).append(" ]");
+            if (threadInfo != threadInfos[threadInfos.length - 1]) {
+                stackBuilder.append(",");
             }
         }
-        b.append("\n]");
-        return b.toString();
+        
+        stackBuilder.append("\n]");
+        
+        return stackBuilder.toString();
     }
 
     /**

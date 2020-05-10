@@ -11,11 +11,11 @@ package org.glassfish.fighterfish.sample.uas.ejbservice2;
 
 import java.util.List;
 
-import javax.ejb.Local;
-import javax.ejb.Stateless;
-import javax.inject.Inject;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
+import jakarta.ejb.Local;
+import jakarta.ejb.Stateless;
+import jakarta.inject.Inject;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
 
 import org.glassfish.fighterfish.sample.uas.api.UserAuthService;
 import org.glassfish.fighterfish.sample.uas.entities.LoginAttempt;

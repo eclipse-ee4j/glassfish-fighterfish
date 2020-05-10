@@ -23,7 +23,7 @@ import java.lang.reflect.Type;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.enterprise.inject.spi.InjectionPoint;
+import jakarta.enterprise.inject.spi.InjectionPoint;
 
 import org.glassfish.osgicdi.OSGiService;
 import org.glassfish.osgicdi.ServiceUnavailableException;
@@ -62,11 +62,10 @@ final class OSGiServiceFactory {
      * @throws ServiceUnavailableException if an error occurs
      */
     public static Object getService(final InjectionPoint svcInjectionPoint) throws ServiceUnavailableException {
-
-        final OSGiService os = svcInjectionPoint.getAnnotated().getAnnotation(OSGiService.class);
+        OSGiService os = svcInjectionPoint.getAnnotated().getAnnotation(OSGiService.class);
         debug("getService " + svcInjectionPoint.getType() + " OS:" + os);
-        Object instance = createServiceProxy(svcInjectionPoint);
-        return instance;
+        
+        return createServiceProxy(svcInjectionPoint);
     }
 
     /**
@@ -77,8 +76,7 @@ final class OSGiServiceFactory {
      * @throws ServiceUnavailableException if the service is not available
      */
     public static boolean checkServiceAvailability(final InjectionPoint svcInjectionPoint) throws ServiceUnavailableException {
-
-        final OSGiService os = svcInjectionPoint.getAnnotated().getAnnotation(OSGiService.class);
+        OSGiService os = svcInjectionPoint.getAnnotated().getAnnotation(OSGiService.class);
         // attempt to resolve a service. Attempt to create a static invocation
         // handler while there is no active service, throws a
         // <code>ServiceUnavailableException</code>
@@ -94,7 +92,6 @@ final class OSGiServiceFactory {
      * @throws ServiceUnavailableException if the service is not available
      */
     private static Object createServiceProxy(final InjectionPoint svcInjectionPoint) throws ServiceUnavailableException {
-
         Type serviceType = svcInjectionPoint.getType();
         final OSGiService os = svcInjectionPoint.getAnnotated().getAnnotation(OSGiService.class);
 

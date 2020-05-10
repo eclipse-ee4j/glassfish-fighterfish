@@ -9,7 +9,7 @@
  */
 package org.glassfish.fighterfish.sample.testing.surefire;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import org.glassfish.fighterfish.test.util.FighterFishJUnitRunner;
 import org.glassfish.fighterfish.test.util.TestContext;

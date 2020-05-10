@@ -21,12 +21,6 @@ import org.glassfish.fighterfish.sample.uas.api.UserAuthService;
 final class UserAuthServiceImpl implements UserAuthService {
 
     /**
-     * Create a new instance.
-     */
-    UserAuthServiceImpl() {
-    }
-
-    /**
      * Users map.
      */
     private final Map<String, String> users = new HashMap<>();
@@ -37,24 +31,26 @@ final class UserAuthServiceImpl implements UserAuthService {
     private final StringBuilder report = new StringBuilder("Login Attempt Report:\n");
 
     @Override
-    public boolean login(final String name, final String password) {
+    public boolean login(String name, String password) {
         boolean result = name != null && name.trim().length() > 0 && password != null && password.trim().length() > 0 && password.equals(users.get(name));
         addReport(name, password, result);
+        
         return result;
     }
 
     @Override
-    public boolean register(final String name, final String password) {
+    public boolean register(String name, String password) {
         boolean result = name != null && name.trim().length() > 0 && password != null && password.trim().length() > 0 && !users.containsKey(name);
         if (result) {
             users.put(name, password);
         }
         addReport(name, password, result);
+        
         return result;
     }
 
     @Override
-    public boolean unregister(final String name) {
+    public boolean unregister(String name) {
         return name != null && users.remove(name) != null;
     }
 
@@ -70,10 +66,10 @@ final class UserAuthServiceImpl implements UserAuthService {
      * @param password user password
      * @param result authentication result
      */
-    private void addReport(final String name, final String password, final boolean result) {
-
+    private void addReport(String name, String password, boolean result) {
         String msg = new Date() + "LoginAttempt: (" + name + ", " + password + "): " + result;
         SimpleActivator.log(msg);
+        
         report.append(msg).append("\n");
     }
 }

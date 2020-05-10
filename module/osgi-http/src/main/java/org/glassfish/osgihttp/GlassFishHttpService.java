@@ -19,8 +19,8 @@ import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.servlet.Servlet;
-import javax.servlet.ServletException;
+import jakarta.servlet.Servlet;
+import jakarta.servlet.ServletException;
 
 import org.apache.catalina.Container;
 import org.glassfish.web.valve.GlassFishValve;

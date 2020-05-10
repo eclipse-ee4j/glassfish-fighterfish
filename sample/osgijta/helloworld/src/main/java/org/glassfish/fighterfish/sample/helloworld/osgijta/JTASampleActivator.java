@@ -9,9 +9,9 @@
  */
 package org.glassfish.fighterfish.sample.helloworld.osgijta;
 
-import javax.transaction.Synchronization;
-import javax.transaction.TransactionSynchronizationRegistry;
-import javax.transaction.UserTransaction;
+import jakarta.transaction.Synchronization;
+import jakarta.transaction.TransactionSynchronizationRegistry;
+import jakarta.transaction.UserTransaction;
 
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;

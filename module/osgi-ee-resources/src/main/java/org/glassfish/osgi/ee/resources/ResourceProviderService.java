@@ -55,9 +55,9 @@ import com.sun.enterprise.config.serverbeans.Servers;
  * JDBC Resources, JMS Connection Factories, JMS Destinations are exported with following <i>ServiceReference</i>
  * names<br>
  * For JDBC Resources : <i>javax.sql.DataSource</i> <br>
- * For JMS Resources : <i>javax.jms.ConnectionFactory / javax.jms.QueueConnectionFactory /
- * javax.jms.TopicConnectionFactory</i> <br>
- * For JMS Destinations : <i>javax.jms.Queue / javax.jms.Topic</i> <br>
+ * For JMS Resources : <i>jakarta.jms.ConnectionFactory / jakarta.jms.QueueConnectionFactory /
+ * jakarta.jms.TopicConnectionFactory</i> <br>
+ * For JMS Destinations : <i>jakarta.jms.Queue / jakarta.jms.Topic</i> <br>
  *
  */
 public final class ResourceProviderService implements ConfigListener {
@@ -473,7 +473,7 @@ public final class ResourceProviderService implements ConfigListener {
     private boolean runtimeSupportsJMS() {
         boolean supports = false;
         try {
-            Class.forName("javax.jms.QueueConnectionFactory");
+            Class.forName("jakarta.jms.QueueConnectionFactory");
             supports = true;
         } catch (Throwable e) {
             LOGGER.log(Level.FINEST, "Exception while loading JMS API {0}", e);

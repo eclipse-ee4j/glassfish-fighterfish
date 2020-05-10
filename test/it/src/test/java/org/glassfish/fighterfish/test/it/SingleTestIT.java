@@ -15,10 +15,10 @@
  */
 package org.glassfish.fighterfish.test.it;
 
+import static java.util.logging.Level.INFO;
 import static org.junit.Assert.assertNotNull;
 
 import java.io.IOException;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.glassfish.embeddable.GlassFish;
@@ -47,14 +47,11 @@ public class SingleTestIT extends AbstractTestObject {
      */
     @Test
     public void test() throws GlassFishException, InterruptedException, BundleException, IOException {
-        LOGGER.logp(Level.INFO, "SingleTest", "test", "ENTRY");
+        LOGGER.logp(INFO, "SingleTest", "test", "ENTRY");
         
-        TestContext testContext = TestContext.create(getClass());
-        try {
+        try (TestContext testContext = TestContext.create(getClass())) {
             GlassFish glassFish = testContext.getGlassFish();
             assertNotNull(glassFish);
-        } finally {
-            testContext.destroy();
-        }
+        } 
     }
 }

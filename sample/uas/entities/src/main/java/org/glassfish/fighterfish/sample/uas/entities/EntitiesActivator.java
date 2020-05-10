@@ -12,8 +12,8 @@ package org.glassfish.fighterfish.sample.uas.entities;
 import java.util.Dictionary;
 import java.util.Hashtable;
 
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.Persistence;
 
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;

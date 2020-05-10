@@ -29,12 +29,11 @@ public final class OSGiJTAActivator implements BundleActivator {
     /**
      * Service registration for the JTA extender service.
      */
-    private ServiceRegistration extenderReg;
+    private ServiceRegistration<?> extenderReg;
 
     @Override
-    public void start(final BundleContext context) throws Exception {
-        Extender extender = new JTAExtender(context);
-        extenderReg = context.registerService(Extender.class.getName(), extender, null);
+    public void start(BundleContext context) throws Exception {
+        extenderReg = context.registerService(Extender.class.getName(), new JTAExtender(context), null);
     }
 
     @Override

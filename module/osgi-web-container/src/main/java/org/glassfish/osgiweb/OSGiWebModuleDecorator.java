@@ -16,6 +16,7 @@
 package org.glassfish.osgiweb;
 
 import static com.sun.enterprise.web.Constants.DEFAULT_WEB_MODULE_PREFIX;
+import static org.glassfish.osgiweb.Constants.BUNDLE_CONTEXT_ATTR;
 
 import java.lang.annotation.Annotation;
 import java.net.URI;
@@ -29,7 +30,7 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.servlet.ServletContext;
+import jakarta.servlet.ServletContext;
 
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.hk2.classmodel.reflect.Types;
@@ -86,7 +87,8 @@ public final class OSGiWebModuleDecorator implements WebModuleDecorator {
     @Override
     public void decorate(final WebModule module) {
         if (isActive()) {
-            BundleContext bctx = OSGiWebDeploymentRequest.getCurrentBundleContext();
+            BundleContext bundleContext = OSGiWebDeploymentRequest.getCurrentBundleContext();
+            
             // We can be here when there are no web apps deployed and the first
             // webapp that gets deployed
             // is a WAB. In that case, the default_web_app gets loaded in the
@@ -98,11 +100,11 @@ public final class OSGiWebModuleDecorator implements WebModuleDecorator {
             // So, we need to make sure that we are not customizing the default
             // web modules.
             // Hence we are calling isDefaultWebModule()
-            if (bctx != null && !isDefaultWebModule(module)) {
-                final ServletContext sc = module.getServletContext();
-                sc.setAttribute(Constants.BUNDLE_CONTEXT_ATTR, bctx);
+            if (bundleContext != null && !isDefaultWebModule(module)) {
+                ServletContext servletContext = module.getServletContext();
+                servletContext.setAttribute(BUNDLE_CONTEXT_ATTR, bundleContext);
                 if (isMojarraPresent()) {
-                    populateFacesInformation(module, bctx, sc);
+                    populateFacesInformation(module, bundleContext, servletContext);
                 }
 
                 // For whatever reason, web container sets resources inside

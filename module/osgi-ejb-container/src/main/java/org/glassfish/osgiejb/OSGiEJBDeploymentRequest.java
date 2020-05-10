@@ -48,24 +48,20 @@ public final class OSGiEJBDeploymentRequest extends OSGiDeploymentRequest {
      * @param reporter GlassFish command reporter
      * @param bnd application bundle
      */
-    public OSGiEJBDeploymentRequest(final Deployment deployer, final ArchiveFactory archiveFactory, final ServerEnvironmentImpl env,
-            final ActionReport reporter, final Bundle bnd) {
-
+    public OSGiEJBDeploymentRequest(Deployment deployer, ArchiveFactory archiveFactory, ServerEnvironmentImpl env, ActionReport reporter, Bundle bnd) {
         super(deployer, archiveFactory, env, reporter, bnd);
     }
 
     @Override
-    protected OSGiDeploymentContext getDeploymentContextImpl(final ActionReport reporter, final Logger logger, final ReadableArchive archive,
-            final OpsParams opsParams, final ServerEnvironmentImpl env, final Bundle bnd) throws Exception {
-
+    protected OSGiDeploymentContext getDeploymentContextImpl(ActionReport reporter, Logger logger, ReadableArchive archive, OpsParams opsParams, ServerEnvironmentImpl env, final Bundle bnd) throws Exception {
         return new OSGiEJBDeploymentContext(reporter, logger, archive, opsParams, env, bnd);
     }
 
     @Override
     protected EJBBundle makeArchive() {
         Bundle host = getBundle();
-        Bundle[] fragments = getFragments(host);
-        return new EJBBundle(fragments, host);
+        
+        return new EJBBundle(getFragments(host), host);
     }
 
     /**
@@ -80,6 +76,7 @@ public final class OSGiEJBDeploymentRequest extends OSGiDeploymentRequest {
         for (BundleWire wire : hostWiring.getProvidedWires(HostNamespace.HOST_NAMESPACE)) {
             fragments.add(wire.getRequirerWiring().getBundle());
         }
+        
         return fragments.toArray(new Bundle[fragments.size()]);
     }
 }

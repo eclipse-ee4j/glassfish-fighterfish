@@ -19,9 +19,9 @@ import java.util.Collection;
 import java.util.Dictionary;
 import java.util.Properties;
 
-import javax.jms.ConnectionFactory;
-import javax.jms.QueueConnectionFactory;
-import javax.jms.TopicConnectionFactory;
+import jakarta.jms.ConnectionFactory;
+import jakarta.jms.QueueConnectionFactory;
+import jakarta.jms.TopicConnectionFactory;
 
 import org.glassfish.connectors.config.ConnectorConnectionPool;
 import org.glassfish.connectors.config.ConnectorResource;
@@ -53,9 +53,9 @@ public final class JMSResourceManager extends BaseResourceManager implements Res
     /**
      * Iterates through all of the configured connector-resources of jms-ra and exposes them as OSGi service. The service
      * contract can be one of the following :<br>
-     * <i>javax.jms.ConnectionFactory</i><br>
-     * <i>javax.jms.QueueConnectionFactory</i><br>
-     * <i>javax.jms.TopicConnectionFactory</i><br>
+     * <i>jakarta.jms.ConnectionFactory</i><br>
+     * <i>jakarta.jms.QueueConnectionFactory</i><br>
+     * <i>jakarta.jms.TopicConnectionFactory</i><br>
      * <br>
      *
      * @param context bundle-context

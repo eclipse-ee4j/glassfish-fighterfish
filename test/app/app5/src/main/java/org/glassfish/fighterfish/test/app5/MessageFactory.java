@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -15,13 +15,13 @@
  */
 package org.glassfish.fighterfish.test.app5;
 
-import javax.el.ValueExpression;
-import javax.faces.FactoryFinder;
-import javax.faces.application.Application;
-import javax.faces.application.ApplicationFactory;
-import javax.faces.application.FacesMessage;
-import javax.faces.component.UIComponent;
-import javax.faces.context.FacesContext;
+import jakarta.el.ValueExpression;
+import jakarta.faces.FactoryFinder;
+import jakarta.faces.application.Application;
+import jakarta.faces.application.ApplicationFactory;
+import jakarta.faces.application.FacesMessage;
+import jakarta.faces.component.UIComponent;
+import jakarta.faces.context.FacesContext;
 
 import java.text.MessageFormat;
 import java.util.Locale;
@@ -88,7 +88,7 @@ public final class MessageFactory {
         }
 
         if (summary == null) {
-            bundle = ResourceBundle.getBundle("javax.faces.Messages", locale,
+            bundle = ResourceBundle.getBundle("jakarta.faces.Messages", locale,
                     getCurrentLoader(bundleName));
             if (null == bundle) {
                 throw new NullPointerException();
@@ -245,7 +245,7 @@ public final class MessageFactory {
             return FacesContext.getCurrentInstance().getApplication();
         }
         ApplicationFactory afactory = (ApplicationFactory) FactoryFinder
-                .getFactory("javax.faces.application.ApplicationFactory");
+                .getFactory("jakarta.faces.application.ApplicationFactory");
         return afactory.getApplication();
     }
 

@@ -15,6 +15,11 @@
  */
 package org.glassfish.osgiweb;
 
+import static java.util.Arrays.asList;
+import static java.util.Collections.unmodifiableList;
+import static java.util.Collections.unmodifiableMap;
+import static java.util.logging.Level.INFO;
+
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
@@ -22,15 +27,12 @@ import java.io.InputStream;
 import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.jar.JarFile;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.naming.resources.WebDirContext;
@@ -95,10 +97,12 @@ class OSGiWebDeploymentContext extends OSGiDeploymentContext {
 
         // This is for our custom taglib.xml discoverer
         map.put("META-INF/services/com.sun.faces.spi.FaceletConfigResourceProvider", "META-INF/hiddenservices/com.sun.faces.spi.FaceletConfigResourceProvider");
-        HIDDEN_SERVICES_MAP = Collections.unmodifiableMap(map);
-
-        HIDDEN_SERVICES = Collections.unmodifiableList(Arrays.asList(OSGiFacesAnnotationScanner.class.getName(),
-                OSGiFaceletConfigResourceProvider.class.getName(), OSGiFacesConfigResourceProvider.class.getName()));
+        
+        HIDDEN_SERVICES_MAP = unmodifiableMap(map);
+        HIDDEN_SERVICES = unmodifiableList(asList(
+                OSGiFacesAnnotationScanner.class.getName(),
+                OSGiFaceletConfigResourceProvider.class.getName(), 
+                OSGiFacesConfigResourceProvider.class.getName()));
     }
     // CHECKSTYLE:ON
 
@@ -113,19 +117,20 @@ class OSGiWebDeploymentContext extends OSGiDeploymentContext {
      * @param bundle Application bundle
      * @throws Exception if an error occurs
      */
-    OSGiWebDeploymentContext(final ActionReport actionReport, final Logger logger, final ReadableArchive source, final OpsParams params,
-            final ServerEnvironment env, final Bundle bundle) throws Exception {
-
+    OSGiWebDeploymentContext(ActionReport actionReport, Logger logger, ReadableArchive source, OpsParams params, ServerEnvironment env, Bundle bundle) throws Exception {
         super(actionReport, logger, source, params, env, bundle);
+        
         // ArchiveHandler must correctly return the ArchiveType for DOL
         // processing to succeed,
         setArchiveHandler(new OSGiArchiveHandler() {
             @Override
-            public List<URI> getClassPathURIs(final ReadableArchive archive) {
-                final List<URI> uris = new ArrayList<>();
+            public List<URI> getClassPathURIs(ReadableArchive archive) {
+                List<URI> uris = new ArrayList<>();
                 File base = getSourceDir();
                 assert base != null && base.isDirectory();
+                
                 uris.add(new File(base, "WEB-INF/classes/").toURI());
+                
                 new File(base, "WEB-INF/lib/").listFiles(new FileFilter() {
                     @Override
                     public boolean accept(final File pathname) {
@@ -135,7 +140,8 @@ class OSGiWebDeploymentContext extends OSGiDeploymentContext {
                         return false;
                     }
                 });
-                OSGiWebDeploymentContext.LOGGER.logp(Level.INFO, "OSGiWebDeploymentContext", "getClassPathURIs", "uris = {0}", new Object[] { uris });
+                
+                OSGiWebDeploymentContext.LOGGER.logp(INFO, "OSGiWebDeploymentContext", "getClassPathURIs", "uris = {0}", new Object[] { uris });
                 return uris;
             }
 
@@ -152,10 +158,10 @@ class OSGiWebDeploymentContext extends OSGiDeploymentContext {
 
     @Override
     protected void setupClassLoader() throws Exception {
-        ClassLoader cl = new WABClassLoader(null);
-        setFinalClassLoader(cl);
-        setShareableTempClassLoader(cl);
-        WebappClassLoader.class.cast(cl).start();
+        ClassLoader classLoader = new WABClassLoader(null);
+        setFinalClassLoader(classLoader);
+        setShareableTempClassLoader(classLoader);
+        WebappClassLoader.class.cast(classLoader).start();
     }
 
     /**
@@ -219,19 +225,21 @@ class OSGiWebDeploymentContext extends OSGiDeploymentContext {
             if (url == null) {
                 url = delegate2.getResource(name);
             }
+            
             return url;
         }
 
         @Override
         public Enumeration<URL> getResources(final String name) throws IOException {
-
             List<Enumeration<URL>> enumerators = new ArrayList<>();
-            final String mappedResourcePath = HIDDEN_SERVICES_MAP.get(name);
+            String mappedResourcePath = HIDDEN_SERVICES_MAP.get(name);
             if (mappedResourcePath != null) {
                 return getClass().getClassLoader().getResources(mappedResourcePath);
             }
+            
             enumerators.add(delegate1.getResources(name));
             enumerators.add(delegate2.getResources(name));
+            
             return new CompositeEnumeration(enumerators);
         }
 
@@ -259,16 +267,18 @@ class OSGiWebDeploymentContext extends OSGiDeploymentContext {
          */
         WABClassLoader(final ClassLoader parent) {
             super(parent);
+            
             // we always delegate. The default is false in WebappClassLoader!
             setDelegate(true);
 
             File base = getSourceDir();
+            
             // Let's install a customized dir context that does not allow static
             // contents from OSGI-OPT and OSGI-INF directories as required by
             // the OSGi WAB spec.
-            WebDirContext r = new OSGiWebDirContext();
-            r.setDocBase(base.getAbsolutePath());
-            setResources(r);
+            WebDirContext webDirContext = new OSGiWebDirContext();
+            webDirContext.setDocBase(base.getAbsolutePath());
+            setResources(webDirContext);
 
             // add WEB-INF/classes/ and WEB-INF/lib/*.jar to repository list,
             // because many legacy code path like DefaultServlet, JSPC,
@@ -294,6 +304,7 @@ class OSGiWebDeploymentContext extends OSGiDeploymentContext {
                     }
                 }
             }
+            
             // We set the same working dir as set in WarHandler
             setWorkDir(getScratchDir("jsp"));
         }

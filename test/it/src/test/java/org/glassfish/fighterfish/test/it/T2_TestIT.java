@@ -70,7 +70,6 @@ import org.osgi.service.http.HttpService;
 public class T2_TestIT extends AbstractTestObject {
 
     private static final Logger LOGGER = Logger.getLogger(T2_TestIT.class.getPackage().getName());
-
     private static final String CLASS_NAME = T2_TestIT.class.getSimpleName();
 
     /**
@@ -173,9 +172,9 @@ public class T2_TestIT extends AbstractTestObject {
     public void testapp3() throws GlassFishException, InterruptedException, BundleException, IOException {
 
         LOGGER.logp(INFO, CLASS_NAME, "testapp3", "ENTRY");
-        TestContext tc = TestContext.create(getClass());
+        TestContext testContext = TestContext.create(getClass());
         try {
-            Bundle bundle = tc.installBundle(testAppLocation("test-app-3", "war"));
+            Bundle bundle = testContext.installBundle(testAppLocation("test-app-3", "war"));
             WebAppBundle wab = new WebAppBundle(ctx, bundle);
             wab.deploy(getTimeout(), MILLISECONDS);
             final String request = "/";
@@ -184,7 +183,7 @@ public class T2_TestIT extends AbstractTestObject {
             LOGGER.logp(INFO, CLASS_NAME, "testapp3", "response = {0}", new Object[] { response });
             assertThat(response, new StringPatternMatcher(expectedResponse));
         } finally {
-            tc.destroy();
+            testContext.destroy();
         }
     }
 
@@ -200,9 +199,9 @@ public class T2_TestIT extends AbstractTestObject {
     public void testapp4() throws GlassFishException, InterruptedException, BundleException, IOException {
         LOGGER.logp(INFO, CLASS_NAME, "testapp4", "ENTRY");
         
-        TestContext tc = TestContext.create(getClass());
+        TestContext testContext = TestContext.create(getClass());
         try {
-            Bundle bundle = tc.installBundle(testAppLocation("test-app-4", "war"));
+            Bundle bundle = testContext.installBundle(testAppLocation("test-app-4", "war"));
             WebAppBundle wab = new WebAppBundle(ctx, bundle);
             wab.deploy(getTimeout(), MILLISECONDS);
             final String request = "/?username=superman";
@@ -211,7 +210,7 @@ public class T2_TestIT extends AbstractTestObject {
             LOGGER.logp(INFO, CLASS_NAME, "testapp4", "response = {0}", new Object[] { response });
             assertThat(response, new StringPatternMatcher(expectedResponse));
         } finally {
-            tc.destroy();
+            testContext.destroy();
         }
     }
 
@@ -227,9 +226,9 @@ public class T2_TestIT extends AbstractTestObject {
     public void testapp5() throws GlassFishException, InterruptedException, BundleException, IOException {
         LOGGER.logp(INFO, CLASS_NAME, "testapp5", "ENTRY");
         
-        TestContext tc = TestContext.create(getClass());
+        TestContext testContext = TestContext.create(getClass());
         try {
-            Bundle bundle = tc.installBundle(testAppLocation("test-app-5", "war"));
+            Bundle bundle = testContext.installBundle(testAppLocation("test-app-5", "war"));
             WebAppBundle wab = new WebAppBundle(ctx, bundle);
             wab.deploy(getTimeout(), MILLISECONDS);
             final String request = "/";
@@ -238,7 +237,7 @@ public class T2_TestIT extends AbstractTestObject {
             LOGGER.logp(INFO, CLASS_NAME, "testapp5", "response = {0}", new Object[] { response });
             assertThat(response, new StringPatternMatcher(expectedResponse));
         } finally {
-            tc.destroy();
+            testContext.destroy();
         }
     }
 
@@ -257,11 +256,11 @@ public class T2_TestIT extends AbstractTestObject {
     public void testapp6() throws GlassFishException, InterruptedException, BundleException, IOException {
 
         LOGGER.logp(INFO, CLASS_NAME, "testapp6", "ENTRY");
-        TestContext tc = TestContext.create(getClass());
+        TestContext testContext = TestContext.create(getClass());
         try {
-            empDeptCrud(tc, testAppLocation("test-app-6", "war"), "testapp6");
+            empDeptCrud(testContext, testAppLocation("test-app-6", "war"), "testapp6");
         } finally {
-            tc.destroy();
+            testContext.destroy();
         }
     }
 
@@ -280,11 +279,11 @@ public class T2_TestIT extends AbstractTestObject {
     public void testapp7() throws GlassFishException, InterruptedException, BundleException, IOException {
         LOGGER.logp(INFO, CLASS_NAME, "testapp7", "ENTRY");
         
-        TestContext tc = TestContext.create(getClass());
+        TestContext testContext = TestContext.create(getClass());
         try {
-            empDeptCrud(tc, testAppLocation("test-app-7", "war"), "testapp7");
+            empDeptCrud(testContext, testAppLocation("test-app-7", "war"), "testapp7");
         } finally {
-            tc.destroy();
+            testContext.destroy();
         }
     }
 
@@ -300,11 +299,11 @@ public class T2_TestIT extends AbstractTestObject {
     public void testapp8() throws GlassFishException, InterruptedException, BundleException, IOException {
         LOGGER.logp(INFO, CLASS_NAME, "testapp8", "ENTRY");
         
-        TestContext tc = TestContext.create(getClass());
+        TestContext testContext = TestContext.create(getClass());
         try {
-            empDeptCrud(tc, testAppLocation("test-app-8", "war"), "testapp8");
+            empDeptCrud(testContext, testAppLocation("test-app-8", "war"), "testapp8");
         } finally {
-            tc.destroy();
+            testContext.destroy();
         }
     }
 
@@ -320,9 +319,9 @@ public class T2_TestIT extends AbstractTestObject {
     public void testapp9() throws GlassFishException, InterruptedException, BundleException, IOException {
         LOGGER.logp(INFO, CLASS_NAME, "testapp9", "ENTRY");
         
-        TestContext tc = TestContext.create(getClass());
+        TestContext testContext = TestContext.create(getClass());
         try {
-            Bundle bundle = tc.installBundle(testAppLocation("test-app-9", "war"));
+            Bundle bundle = testContext.installBundle(testAppLocation("test-app-9", "war"));
             WebAppBundle wab = new WebAppBundle(ctx, bundle);
             wab.deploy(getTimeout(), MILLISECONDS);
             final String request = "/";
@@ -331,7 +330,7 @@ public class T2_TestIT extends AbstractTestObject {
             LOGGER.logp(INFO, CLASS_NAME, "testapp9", "response = {0}", new Object[] { response });
             assertThat(response, new StringPatternMatcher(expectedResponse));
         } finally {
-            tc.destroy();
+            testContext.destroy();
         }
     }
 
@@ -402,14 +401,14 @@ public class T2_TestIT extends AbstractTestObject {
     public void testapp11_wab() throws GlassFishException, InterruptedException, BundleException, IOException {
         LOGGER.logp(INFO, CLASS_NAME, "testapp11_wab", "ENTRY");
         
-        TestContext tc = TestContext.create(getClass());
+        TestContext testContext = TestContext.create(getClass());
         try {
-            Bundle bundle_ejb = tc.installBundle(testAppLocation("test-app-11-ejb"));
+            Bundle bundle_ejb = testContext.installBundle(testAppLocation("test-app-11-ejb"));
             EjbBundle ejbBundle = new EjbBundle(ctx, bundle_ejb, new String[] { "org.glassfish.fighterfish.test.app11.ejb.TestLocal" });
             ejbBundle.deploy(getTimeout(), MILLISECONDS);
 
             // now let's deploy the war as a WAB
-            Bundle bundle_web = tc.installBundle(testAppLocation("test-app-11", "war"));
+            Bundle bundle_web = testContext.installBundle(testAppLocation("test-app-11", "war"));
             WebAppBundle wab = new WebAppBundle(ctx, bundle_web);
             wab.deploy(getTimeout(), MILLISECONDS);
             String request = "/TestServlet";
@@ -418,7 +417,7 @@ public class T2_TestIT extends AbstractTestObject {
             LOGGER.logp(INFO, CLASS_NAME, "testapp11_wab", "response = {0}", new Object[] { response });
             assertThat(response, new StringPatternMatcher(expectedResponse));
         } finally {
-            tc.destroy();
+            testContext.destroy();
         }
     }
 
@@ -437,15 +436,15 @@ public class T2_TestIT extends AbstractTestObject {
     public void testapp11_war() throws GlassFishException, InterruptedException, BundleException, IOException {
         LOGGER.logp(INFO, CLASS_NAME, "testapp11_war", "ENTRY");
         
-        TestContext tc = TestContext.create(getClass());
+        TestContext testContext = TestContext.create(getClass());
         String appName = null;
         try {
-            Bundle bundle_ejb = tc.installBundle(testAppLocation("test-app-11-ejb"));
+            Bundle bundle_ejb = testContext.installBundle(testAppLocation("test-app-11-ejb"));
             EjbBundle ejbBundle = new EjbBundle(ctx, bundle_ejb, new String[] { "org.glassfish.fighterfish.test.app11.ejb.TestLocal" });
             ejbBundle.deploy(getTimeout(), MILLISECONDS);
 
             // let's deploy a regular web app
-            appName = tc.getGlassFish().getDeployer().deploy(URI.create(testAppLocation("test-app-11", "war")), "--contextroot", "test.app11");
+            appName = testContext.getGlassFish().getDeployer().deploy(URI.create(testAppLocation("test-app-11", "war")), "--contextroot", "test.app11");
             final String request = "http://localhost:8080/test.app11/TestServlet";
             final String expectedResponse = "HELLO WORLD";
             String response = getResponse(new URL(request));
@@ -453,9 +452,9 @@ public class T2_TestIT extends AbstractTestObject {
             assertThat(response, new StringPatternMatcher(expectedResponse));
         } finally {
             if (appName != null) {
-                tc.getGlassFish().getDeployer().undeploy(appName);
+                testContext.getGlassFish().getDeployer().undeploy(appName);
             }
-            tc.destroy();
+            testContext.destroy();
         }
     }
 
@@ -471,9 +470,9 @@ public class T2_TestIT extends AbstractTestObject {
     public void testapp12() throws BundleException, GlassFishException, InterruptedException, IOException {
 
         LOGGER.logp(INFO, CLASS_NAME, "testapp12", "ENTRY");
-        TestContext tc = TestContext.create(getClass());
+        TestContext testContext = TestContext.create(getClass());
         try {
-            Bundle bundle_host = tc.installBundle(testAppLocation("test-app-12", "war"));
+            Bundle bundle_host = testContext.installBundle(testAppLocation("test-app-12", "war"));
             WebAppBundle wab = new WebAppBundle(ctx, bundle_host);
             wab.deploy(getTimeout(), MILLISECONDS);
 
@@ -493,7 +492,7 @@ public class T2_TestIT extends AbstractTestObject {
             }
 
             // now install the fragment and refresh the host
-            tc.installBundle(testAppLocation("test-app-12-fragment"));
+            testContext.installBundle(testAppLocation("test-app-12-fragment"));
             // This is needed so that the web app does not
             // get deployed upon update().
             bundle_host.stop();
@@ -505,7 +504,7 @@ public class T2_TestIT extends AbstractTestObject {
             assertThat(response, new StringPatternMatcher(expectedResponseFragment));
 
         } finally {
-            tc.destroy();
+            testContext.destroy();
         }
     }
 
@@ -513,14 +512,14 @@ public class T2_TestIT extends AbstractTestObject {
     public void testapp13() throws GlassFishException, InterruptedException, BundleException {
 
         LOGGER.logp(INFO, CLASS_NAME, "testapp13", "ENTRY");
-        TestContext tc = TestContext.create(getClass());
+        TestContext testContext = TestContext.create(getClass());
         try {
-            Bundle bundle = tc.installBundle(testAppLocation("test-app-13"));
+            Bundle bundle = testContext.installBundle(testAppLocation("test-app-13"));
             EjbBundle ejbBundle = new EjbBundle(ctx, bundle, new String[] { "org.glassfish.fighterfish.test.app13.DummySessionBeanLocal" });
             ejbBundle.deploy(getTimeout(), MILLISECONDS);
             // if deployment has been successful, then the test has passed
         } finally {
-            tc.destroy();
+            testContext.destroy();
         }
     }
 
@@ -528,14 +527,14 @@ public class T2_TestIT extends AbstractTestObject {
     public void testapp14() throws GlassFishException, InterruptedException, BundleException {
 
         LOGGER.logp(INFO, CLASS_NAME, "testapp14", "ENTRY");
-        TestContext tc = TestContext.create(getClass());
+        TestContext testContext = TestContext.create(getClass());
         try {
-            Bundle bundle = tc.installBundle(testAppLocation("test-app-14"));
+            Bundle bundle = testContext.installBundle(testAppLocation("test-app-14"));
             bundle.start();
             Object service = OSGiUtil.waitForService(ctx, bundle, "org.glassfish.fighterfish.test.app14.ConnectionFactory", getTimeout());
             Assert.assertNotNull(service);
         } finally {
-            tc.destroy();
+            testContext.destroy();
         }
     }
 
@@ -543,39 +542,40 @@ public class T2_TestIT extends AbstractTestObject {
     public void testapp15() throws GlassFishException, InterruptedException, BundleException {
 
         LOGGER.logp(INFO, CLASS_NAME, "testapp15", "ENTRY");
-        TestContext tc = TestContext.create(getClass());
+        TestContext testContext = TestContext.create(getClass());
         try {
-            Bundle bundle = tc.installBundle(testAppLocation("test-app-15"));
+            Bundle bundle = testContext.installBundle(testAppLocation("test-app-15"));
             bundle.start();
             Object service = OSGiUtil.waitForService(ctx, bundle, "org.glassfish.fighterfish.test.app15.ConnectionFactory", getTimeout());
             Assert.assertNotNull(service);
         } finally {
-            tc.destroy();
+            testContext.destroy();
         }
     }
 
     @Test
     @SuppressWarnings("unchecked")
     public void testapp16() throws GlassFishException, InterruptedException, BundleException, IOException {
-
         LOGGER.logp(INFO, CLASS_NAME, "testapp16", "ENTRY");
-        TestContext tc = TestContext.create(getClass());
-        final String cfName = "jms/fighterfish.TestApp16ConnectionFactory";
-        final String topicName = "jms/fighterfish.TestApp16Topic";
-        tc.createJmsCF(cfName);
-        tc.createJmsTopic(topicName);
+        TestContext testContext = TestContext.create(getClass());
+        String cfName = "jms/fighterfish.TestApp16ConnectionFactory";
+        String topicName = "jms/fighterfish.TestApp16Topic";
+        testContext.createJmsCF(cfName);
+        testContext.createJmsTopic(topicName);
+        
         try {
             String request = "/MessageReaderServlet";
-            Bundle bundle_entities = tc.installBundle(testAppLocation("test-app-16-entities"));
+            Bundle bundle_entities = testContext.installBundle(testAppLocation("test-app-16-entities"));
             bundle_entities.start();
-            Object service = OSGiUtil.waitForService(ctx, bundle_entities, "javax.persistence.EntityManagerFactory", getTimeout());
+            Object service = OSGiUtil.waitForService(ctx, bundle_entities, "jakarta.persistence.EntityManagerFactory", getTimeout());
             Assert.assertNotNull("Checking for EMF svc registered by entities bundle", service);
-            Bundle bundle_mdb = tc.installBundle(testAppLocation("test-app-16-mdb"));
+            Bundle bundle_mdb = testContext.installBundle(testAppLocation("test-app-16-mdb"));
             bundle_mdb.start();
-            Bundle bundle_msgproducer = tc.installBundle(testAppLocation("test-app-16-msgproducer"));
+            Bundle bundle_msgproducer = testContext.installBundle(testAppLocation("test-app-16-msgproducer"));
             bundle_msgproducer.start();
-            Bundle bundle_wab = tc.installBundle(testAppLocation("test-app-16", "war"));
+            Bundle bundle_wab = testContext.installBundle(testAppLocation("test-app-16", "war"));
             WebAppBundle wab = new WebAppBundle(ctx, bundle_wab);
+            
             // Note, bundle deployment happens in the same order as they are
             // started. Since we are not waiting for mdb deployment, let's wait
             // double time for this to deploy.
@@ -583,26 +583,28 @@ public class T2_TestIT extends AbstractTestObject {
             String response = wab.getHttpGetResponse(request);
             assertThat(response, new StringPatternMatcher("Total number of messages: 0"));
             ConfigurationAdmin ca = OSGiUtil.getService(ctx, ConfigurationAdmin.class, getTimeout());
-            final String pkgName = "org.glassfish.fighterfish.test.app16.msgproducer";
+            String pkgName = "org.glassfish.fighterfish.test.app16.msgproducer";
             Configuration config = ca.getConfiguration(pkgName, null);
             Properties props = new Properties();
             props.setProperty(pkgName + ".ConnectionFactory", cfName);
             props.setProperty(pkgName + ".Destination", topicName);
-            final Integer noOfMsgs = 2;
+            Integer noOfMsgs = 2;
             props.setProperty(pkgName + ".NoOfMsgs", noOfMsgs.toString());
             config.update((Dictionary) props);
             LOGGER.logp(INFO, CLASS_NAME, "testapp16", "Sleeping for {0} ms for config changes to be propagated and msgs to be delivered",
                     new Object[] { getTimeout() });
+            
             // Allow the config changes to be propagated and msg to reach
             // destination
             Thread.sleep(getTimeout());
             LOGGER.logp(INFO, CLASS_NAME, "testapp16", "Waking up from sleep");
             response = wab.getHttpGetResponse(request);
-            final int expectedNoOfMsgs = (noOfMsgs) * 2; // we have 2 MDBs
+            
+            int expectedNoOfMsgs = (noOfMsgs) * 2; // we have 2 MDBs
             LOGGER.logp(INFO, CLASS_NAME, "testapp16", "response = {0}", new Object[] { response });
             assertThat(response, new StringPatternMatcher("Total number of messages: " + expectedNoOfMsgs));
         } finally {
-            tc.destroy();
+            testContext.destroy();
         }
     }
 

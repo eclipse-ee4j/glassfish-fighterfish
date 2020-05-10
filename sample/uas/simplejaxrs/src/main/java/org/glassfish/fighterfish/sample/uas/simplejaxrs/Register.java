@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Distribution License v. 1.0, which is available at
@@ -9,29 +9,30 @@
  */
 package org.glassfish.fighterfish.sample.uas.simplejaxrs;
 
-import javax.enterprise.context.RequestScoped;
-import javax.inject.Inject;
-import javax.servlet.ServletException;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Request;
-import javax.ws.rs.core.UriInfo;
+import static jakarta.ws.rs.core.MediaType.TEXT_HTML;
+import static jakarta.ws.rs.core.MediaType.TEXT_PLAIN;
 
 import org.glassfish.fighterfish.sample.uas.api.UserAuthService;
 import org.glassfish.osgicdi.OSGiService;
 import org.osgi.framework.ServiceException;
+
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
+import jakarta.servlet.ServletException;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.Request;
+import jakarta.ws.rs.core.UriInfo;
 
 /**
  * Example resource class hosted at the URI path "/register".
  */
 @Path("/register")
 @RequestScoped
-@SuppressWarnings("checkstyle:DesignForExtension")
 public class Register {
 
     /**
@@ -51,7 +52,7 @@ public class Register {
      */
     @Inject
     @OSGiService(dynamic = true)
-    private UserAuthService uas;
+    private UserAuthService userAuthService;
 
     /**
      * Method processing HTTP GET requests, producing "text/plain" MIME media
@@ -74,21 +75,18 @@ public class Register {
      * @throws ServletException if an error occurs
      */
     @POST
-    @Produces(MediaType.TEXT_HTML)
-    @Consumes(MediaType.TEXT_PLAIN)
-    public String register(
-            @QueryParam("name") final String name,
-            @QueryParam("password") final String password)
-            throws ServletException {
-
+    @Produces(TEXT_HTML)
+    @Consumes(TEXT_PLAIN)
+    public String register(@QueryParam("name") String name, @QueryParam("password") String password) throws ServletException {
         try {
-            if (uas.register(name, password)) {
+            if (userAuthService.register(name, password)) {
                 return "Registered";
-            } else {
-                return "Failed";
             }
+                
+            return "Failed";
         } catch (ServiceException e) {
         }
+        
         return "none";
     }
 }

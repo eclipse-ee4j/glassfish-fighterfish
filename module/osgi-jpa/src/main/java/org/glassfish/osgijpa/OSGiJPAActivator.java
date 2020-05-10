@@ -29,16 +29,15 @@ public final class OSGiJPAActivator implements BundleActivator {
     /**
      * Service registration for the OSGi JPA extender.
      */
-    private ServiceRegistration extenderReg;
+    private ServiceRegistration<?> extenderReg;
 
     @Override
-    public void start(final BundleContext context) throws Exception {
-        JPAExtender extender = new JPAExtender(context);
-        extenderReg = context.registerService(Extender.class.getName(), extender, null);
+    public void start(BundleContext context) throws Exception {
+        extenderReg = context.registerService(Extender.class.getName(), new JPAExtender(context), null);
     }
 
     @Override
-    public void stop(final BundleContext context) throws Exception {
+    public void stop(BundleContext context) throws Exception {
         extenderReg.unregister();
     }
 }

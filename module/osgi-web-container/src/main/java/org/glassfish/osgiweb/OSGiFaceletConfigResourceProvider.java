@@ -21,7 +21,7 @@ import java.util.Collections;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.servlet.ServletContext;
+import jakarta.servlet.ServletContext;
 
 import com.sun.faces.spi.ConfigurationResourceProvider;
 import com.sun.faces.spi.FaceletConfigResourceProvider;

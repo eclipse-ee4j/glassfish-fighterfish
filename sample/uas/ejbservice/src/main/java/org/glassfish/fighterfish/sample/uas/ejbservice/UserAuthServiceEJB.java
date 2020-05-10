@@ -11,14 +11,14 @@ package org.glassfish.fighterfish.sample.uas.ejbservice;
 
 import java.util.List;
 
-import javax.ejb.Local;
-import javax.ejb.Stateless;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-
 import org.glassfish.fighterfish.sample.uas.api.UserAuthService;
 import org.glassfish.fighterfish.sample.uas.entities.LoginAttempt;
 import org.glassfish.fighterfish.sample.uas.entities.UserCredential;
+
+import jakarta.ejb.Local;
+import jakarta.ejb.Stateless;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 
 /**
  * Session Bean implementation class UserAuthServiceEJB.
@@ -31,7 +31,7 @@ public final class UserAuthServiceEJB implements UserAuthService {
      * Entity manager.
      */
     @PersistenceContext
-    private EntityManager em;
+    private EntityManager entityManager;
 
     /**
      * Create a new instance.
@@ -40,59 +40,69 @@ public final class UserAuthServiceEJB implements UserAuthService {
     }
 
     @Override
-    public boolean login(final String name, final String password) {
-
+    public boolean login(String name, String password) {
         log("Logging in (" + name + ", " + password + ")");
-        UserCredential uc = em.find(UserCredential.class, name);
-        boolean result = uc != null && password.equals(uc.getPassword());
-        if (uc != null) {
+        
+        UserCredential userCredential = entityManager.find(UserCredential.class, name);
+        boolean result = userCredential != null && password.equals(userCredential.getPassword());
+        if (userCredential != null) {
+            
             // Create a LoginAttempt only for existing users.
             LoginAttempt attempt = new LoginAttempt();
             attempt.setSuccessful(result);
-            attempt.setUserCredential(uc);
+            attempt.setUserCredential(userCredential);
+            
             // set both sides of relationships because stupid JPA providers
             // don't even update their second level cache
             // with relationships in database.
-            uc.getLoginAttempts().add(attempt);
-            em.persist(attempt);
+            userCredential.getLoginAttempts().add(attempt);
+            entityManager.persist(attempt);
         }
+        
         return result;
     }
 
     @Override
-    public boolean register(final String name, final String password) {
+    public boolean register(String name, String password) {
         log("Registering (" + name + ", " + password + ")");
-        UserCredential uc = em.find(UserCredential.class, name);
-        if (uc != null) {
+        
+        UserCredential userCredential = entityManager.find(UserCredential.class, name);
+        if (userCredential != null) {
             return false;
         }
-        uc = new UserCredential();
-        uc.setName(name);
-        uc.setPassword(password);
-        em.persist(uc);
+        
+        userCredential = new UserCredential();
+        userCredential.setName(name);
+        userCredential.setPassword(password);
+        entityManager.persist(userCredential);
+        
         return true;
     }
 
     @Override
     public boolean unregister(final String name) {
         log("Unregistering (" + name + ")");
-        UserCredential uc = em.find(UserCredential.class, name);
-        if (uc == null) {
+        
+        UserCredential userCredential = entityManager.find(UserCredential.class, name);
+        if (userCredential == null) {
             return false;
         }
-        em.remove(uc);
+        entityManager.remove(userCredential);
+        
         return true;
     }
 
     @Override
     public String getReport() {
         @SuppressWarnings("unchecked")
-        List<LoginAttempt> attempts = em.createNamedQuery("LoginAttempt.findAll").getResultList();
+        List<LoginAttempt> attempts = entityManager.createNamedQuery("LoginAttempt.findAll").getResultList();
         log("Number of entries found: " + attempts.size());
+        
         StringBuilder report = new StringBuilder("Login Attempt Report:\n");
         for (LoginAttempt attempt : attempts) {
             report.append(attempt).append("\n");
         }
+        
         return report.toString();
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1997-2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2020 Oracle and/or its affiliates. All rights reserved.
  * Copyright 2004 The Apache Software Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,7 +21,7 @@ import static org.junit.Assert.assertThat;
 
 import java.io.IOException;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import org.glassfish.embeddable.GlassFishException;
 import org.glassfish.fighterfish.test.util.StringPatternMatcher;

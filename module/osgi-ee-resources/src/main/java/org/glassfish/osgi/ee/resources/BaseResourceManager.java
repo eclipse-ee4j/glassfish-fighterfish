@@ -15,12 +15,13 @@
  */
 package org.glassfish.osgi.ee.resources;
 
+import static java.util.logging.Level.FINEST;
+
 import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.Dictionary;
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.osgi.framework.BundleContext;
@@ -164,9 +165,7 @@ public class BaseResourceManager {
      * @param obj resource instance to register as service
      */
     @SuppressWarnings("unchecked")
-    protected void registerResourceAsService(final BundleContext context, final BindableResource bindableResource, final String name,
-            final Dictionary properties, final Object obj) {
-
+    protected void registerResourceAsService(BundleContext context, BindableResource bindableResource, String name, Dictionary properties, Object obj) {
         ServiceRegistration service = context.registerService(name, obj, properties);
         debug("registering resource [" + bindableResource.getJndiName() + "]");
         services.add(service);
@@ -181,8 +180,8 @@ public class BaseResourceManager {
      * @return proxy object
      */
     protected Object getProxy(final String jndiName, final Class[] ifaces, final ClassLoader loader) {
-
         ResourceProxy proxy = new ResourceProxy(jndiName);
+        
         return Proxy.newProxyInstance(loader, ifaces, proxy);
     }
 
@@ -192,8 +191,8 @@ public class BaseResourceManager {
      * @param msg message to log
      */
     protected void debug(final String msg) {
-        if (LOGGER.isLoggable(Level.FINEST)) {
-            LOGGER.log(Level.FINEST, "[osgi-ee-resources] : {0}", msg);
+        if (LOGGER.isLoggable(FINEST)) {
+            LOGGER.log(FINEST, "[osgi-ee-resources] : {0}", msg);
         }
     }
 }

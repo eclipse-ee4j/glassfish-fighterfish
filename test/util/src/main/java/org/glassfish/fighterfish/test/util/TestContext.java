@@ -40,7 +40,7 @@ import java.util.logging.Logger;
  * the test method. When a test context is destroyed, all changes done so far will be rolled back. This includes any
  * bundles deployed. any domain configuration made, etc.
  */
-public final class TestContext {
+public final class TestContext implements AutoCloseable {
 
     /**
      * Logger.
@@ -119,6 +119,11 @@ public final class TestContext {
     private static String getNextTestId(Class<?> testClass) {
         // Don't use something : as that interefers with asadmin command syntax
         return testClass.getName() + "-" + String.valueOf(TEST_ID_GEN.incrementAndGet());
+    }
+    
+    @Override
+    public void close() throws BundleException, GlassFishException {
+        destroy();
     }
 
     /**

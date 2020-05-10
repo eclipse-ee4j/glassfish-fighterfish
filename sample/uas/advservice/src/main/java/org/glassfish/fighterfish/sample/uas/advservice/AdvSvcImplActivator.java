@@ -9,8 +9,8 @@
  */
 package org.glassfish.fighterfish.sample.uas.advservice;
 
-import javax.persistence.EntityManagerFactory;
-import javax.transaction.UserTransaction;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.transaction.UserTransaction;
 
 import org.glassfish.fighterfish.sample.uas.api.UserAuthService;
 import org.osgi.framework.BundleActivator;

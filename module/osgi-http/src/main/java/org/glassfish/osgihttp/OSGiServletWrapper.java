@@ -17,9 +17,9 @@ package org.glassfish.osgihttp;
 
 import java.util.Set;
 
-import javax.servlet.Servlet;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
+import jakarta.servlet.Servlet;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletException;
 
 import org.apache.catalina.Wrapper;
 import org.apache.catalina.core.StandardWrapper;

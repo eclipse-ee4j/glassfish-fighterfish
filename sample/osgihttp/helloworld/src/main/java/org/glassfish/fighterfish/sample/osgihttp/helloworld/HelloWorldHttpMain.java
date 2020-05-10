@@ -3,7 +3,7 @@
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Distribution License v. 1.0, which is available at
- * http://www.eclipse.org/org/documents/edl-v10.php.
+ * httpService://www.eclipse.org/org/documents/edl-v10.php.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -12,8 +12,8 @@ package org.glassfish.fighterfish.sample.osgihttp.helloworld;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServlet;
 
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.event.Event;
@@ -32,7 +32,7 @@ public class HelloWorldHttpMain {
     /**
      * OSGi HTTP service.
      */
-    private HttpService http; // Set and unset by setHttp() and unsetHttp()
+    private HttpService httpService; // Set and unset by setHttp() and unsetHttp()
 
     /**
      * OSGi event administration.
@@ -47,7 +47,7 @@ public class HelloWorldHttpMain {
      * @throws ServletException if an error occurs while registering the servlet
      * @throws NamespaceException if an error occurs
      */
-    protected final void activate(final ComponentContext ctx) throws ServletException, NamespaceException {
+    protected final void activate(ComponentContext ctx) throws ServletException, NamespaceException {
 
         // One HttpContext maps to one ServletContext.
         // To demonstrate this functionality, we shall do the following:
@@ -63,23 +63,24 @@ public class HelloWorldHttpMain {
         // ServletContext. We will also show that Servlet1 and Servlet2 share
         // the same HttpSession which is
         // different from Servlet3.
-        HttpContext httpCtx = http.createDefaultHttpContext();
+        HttpContext httpCtx = httpService.createDefaultHttpContext();
         HttpServlet servlet1 = new HelloWorldServlet1();
-        http.registerServlet("/hello1", servlet1, null, httpCtx);
+        httpService.registerServlet("/hello1", servlet1, null, httpCtx);
         System.out.println(servlet1.getServletContext());
         HttpServlet servlet2 = new HelloWorldServlet2();
-        http.registerServlet("/hello2", servlet2, null, httpCtx);
+        httpService.registerServlet("/hello2", servlet2, null, httpCtx);
         System.out.println(servlet2.getServletContext());
         servlet1.getServletContext().setAttribute(HelloWorldServlet1.ATTRIBUTE_NAME, new Integer(0));
 
         // Let's create another HttpContext and make sure that each context
         // has its own
         // ServletContext and HttpSession.
-        HttpContext httpCtx2 = http.createDefaultHttpContext();
+        HttpContext httpCtx2 = httpService.createDefaultHttpContext();
         HttpServlet servlet3 = new HelloWorldServlet3();
-        http.registerServlet("/hello3", servlet3, null, httpCtx2);
+        httpService.registerServlet("/hello3", servlet3, null, httpCtx2);
         System.out.println(servlet3.getServletContext());
         assert servlet3.getServletContext() != servlet1.getServletContext();
+        
         if (eventAdmin != null) {
             // raise an event so that our test framework can catch it to
             // proceed to test
@@ -97,12 +98,12 @@ public class HelloWorldHttpMain {
      */
     protected final void deactivate(final ComponentContext ctx) {
         try {
-            http.unregister("/hello1");
-            http.unregister("/hello2");
-            http.unregister("/hello3");
+            httpService.unregister("/hello1");
+            httpService.unregister("/hello2");
+            httpService.unregister("/hello3");
         } catch (Exception e) {
-            // This can happen if the HttpService has been undpeloyed in which
-            // case as part of its undepoyment,
+            // This can happen if the HttpService has been undeployed in which
+            // case as part of its undeployment,
             // it would have unregistered all aliases. So, we should protect
             // against such a case.
             System.out.println(e);
@@ -114,8 +115,8 @@ public class HelloWorldHttpMain {
      *
      * @param hs service instance
      */
-    protected final void setHttp(final HttpService hs) {
-        this.http = hs;
+    protected final void setHttp(HttpService hs) {
+        this.httpService = hs;
     }
 
     /**
@@ -123,8 +124,8 @@ public class HelloWorldHttpMain {
      *
      * @param hs service instance
      */
-    protected final void unsetHttp(final HttpService hs) {
-        this.http = null;
+    protected final void unsetHttp(HttpService hs) {
+        this.httpService = null;
     }
 
     /**

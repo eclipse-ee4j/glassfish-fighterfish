@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -225,7 +225,7 @@ public final class EnterpriseResourceProvisioner {
             throws GlassFishException {
 
         final RestorableDomainConfiguration rdc = createJmsResource(gf, cfName,
-                "javax.jms.ConnectionFactory");
+                "jakarta.jms.ConnectionFactory");
         rdcs.add(rdc);
         return rdc;
     }
@@ -242,7 +242,7 @@ public final class EnterpriseResourceProvisioner {
             throws GlassFishException {
 
         final RestorableDomainConfiguration rdc = createJmsResource(gf,
-                topicName, "javax.jms.Topic");
+                topicName, "jakarta.jms.Topic");
         rdcs.add(rdc);
         return rdc;
     }
@@ -259,7 +259,7 @@ public final class EnterpriseResourceProvisioner {
             throws GlassFishException {
 
         final RestorableDomainConfiguration rdc = createJmsResource(gf,
-                topicName, "javax.jms.Queue");
+                topicName, "jakarta.jms.Queue");
         rdcs.add(rdc);
         return rdc;
     }

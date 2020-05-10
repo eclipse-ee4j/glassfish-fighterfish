@@ -41,8 +41,8 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>javax.inject</groupId>
-            <artifactId>javax.inject</artifactId>
+            <groupId>jakarta.inject</groupId>
+            <artifactId>jakarta.inject-api</artifactId>
             <scope>provided</scope>
         </dependency>
     </dependencies>
@@ -107,7 +107,7 @@
                         <fighterfish.test.setup.timeout>200000</fighterfish.test.setup.timeout>
                     </systemPropertyVariables>
                     <classpathDependencyExcludes>
-                        <classpathDependencyExclude>javax.inject:javax.inject</classpathDependencyExclude>
+                        <classpathDependencyExclude>jakarta.inject:jakarta.inject</classpathDependencyExclude>
                     </classpathDependencyExcludes>
                 </configuration>
                 <executions>
