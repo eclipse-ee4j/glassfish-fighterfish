@@ -93,6 +93,7 @@
     </mailingLists>
 
     <modules>
+        <module>osgi-enterprise</module>
         <module>module</module>
         <module>sample</module>
         <module>test</module>
