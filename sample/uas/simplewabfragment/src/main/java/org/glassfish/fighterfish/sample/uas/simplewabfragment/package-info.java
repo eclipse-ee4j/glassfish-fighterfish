@@ -15,7 +15,6 @@
  */
 
 /**
- * Simple WAB fragment exposes the reporting of the user authentication service
- * with a servlet.
+ * Simple WAB fragment exposes the reporting of the user authentication service with a servlet.
  */
 package org.glassfish.fighterfish.sample.uas.simplewabfragment;

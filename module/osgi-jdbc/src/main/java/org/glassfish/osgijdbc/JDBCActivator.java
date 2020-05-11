@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -15,13 +15,13 @@
  */
 package org.glassfish.osgijdbc;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.glassfish.osgijavaeebase.Extender;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
-
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Bundle activator for the OSGi JDBC module.
@@ -31,8 +31,7 @@ public final class JDBCActivator implements BundleActivator {
     /**
      * Logger.
      */
-    private static final Logger LOGGER = Logger.getLogger(
-            JDBCActivator.class.getPackage().getName());
+    private static final Logger LOGGER = Logger.getLogger(JDBCActivator.class.getPackage().getName());
 
     /**
      * Service registration for the JDBC extender service.
@@ -42,8 +41,7 @@ public final class JDBCActivator implements BundleActivator {
     @Override
     public void start(final BundleContext bundleContext) throws Exception {
         JDBCExtender extender = new JDBCExtender(bundleContext);
-        extenderReg = bundleContext.registerService(
-                Extender.class.getName(), extender, null);
+        extenderReg = bundleContext.registerService(Extender.class.getName(), extender, null);
         debug("Bundle activated");
     }
 
@@ -55,6 +53,7 @@ public final class JDBCActivator implements BundleActivator {
 
     /**
      * Log a {@code FINE} message.
+     *
      * @param msg message to log
      */
     private void debug(final String msg) {

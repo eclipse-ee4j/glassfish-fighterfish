@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -39,8 +39,7 @@ public final class Constants {
     /**
      * Constant for {@code Web-JSPExtractLocation} manifest entry.
      */
-    public static final String WEB_JSP_EXTRACT_LOCATION =
-            "Web-JSPExtractLocation";
+    public static final String WEB_JSP_EXTRACT_LOCATION = "Web-JSPExtractLocation";
 
     /**
      * Constant for {@code osgi-bundlecontext}.
@@ -50,8 +49,7 @@ public final class Constants {
     /**
      * Constant for the property name of the osgi-web bundle symbolic name.
      */
-    public static final String OSGI_WEB_SYMBOLIC_NAME =
-            "osgi.web.symbolicname";
+    public static final String OSGI_WEB_SYMBOLIC_NAME = "osgi.web.symbolicname";
 
     /**
      * Constant for the property name of the osgi-web bundle version.
@@ -68,40 +66,34 @@ public final class Constants {
     /**
      * Constant for the {@code DEPLOYING} event topic.
      */
-    public static final String EVENT_TOPIC_DEPLOYING =
-            "org/osgi/service/web/DEPLOYING";
+    public static final String EVENT_TOPIC_DEPLOYING = "org/osgi/service/web/DEPLOYING";
 
     /**
      * Constant for the {@code DEPLOYED} event topic.
      */
-    public static final String EVENT_TOPIC_DEPLOYED =
-            "org/osgi/service/web/DEPLOYED";
+    public static final String EVENT_TOPIC_DEPLOYED = "org/osgi/service/web/DEPLOYED";
 
     /**
      * Constant for the {@code UNDEPLOYING} event topic.
      */
-    public static final String EVENT_TOPIC_UNDEPLOYING =
-            "org/osgi/service/web/UNDEPLOYING";
+    public static final String EVENT_TOPIC_UNDEPLOYING = "org/osgi/service/web/UNDEPLOYING";
 
     /**
      * Constant for the {@code UNDEPLOYED} event topic.
      */
-    public static final String EVENT_TOPIC_UNDEPLOYED =
-            "org/osgi/service/web/UNDEPLOYED";
+    public static final String EVENT_TOPIC_UNDEPLOYED = "org/osgi/service/web/UNDEPLOYED";
 
     /**
      * Constant for the {@code FAILED} event topic.
      */
-    public static final String EVENT_TOPIC_FAILED =
-            "org/osgi/service/web/FAILED";
+    public static final String EVENT_TOPIC_FAILED = "org/osgi/service/web/FAILED";
 
     // various properties published as part of the event data
 
     /**
      * Event property for bundle symbolic name.
      */
-    public static final String EVENT_PROPERTY_BUNDLE_SYMBOLICNAME =
-            "bundle.symbolicName";
+    public static final String EVENT_PROPERTY_BUNDLE_SYMBOLICNAME = "bundle.symbolicName";
 
     /**
      * Event property for bundle id.
@@ -116,8 +108,7 @@ public final class Constants {
     /**
      * Event property for bundle version.
      */
-    public static final String EVENT_PROPERTY_BUNDLE_VERSION =
-            "bundle.version";
+    public static final String EVENT_PROPERTY_BUNDLE_VERSION = "bundle.version";
 
     /**
      * Event property for context path.
@@ -132,26 +123,22 @@ public final class Constants {
     /**
      * Event property for extender.
      */
-    public static final String EVENT_PROPERTY_EXTENDER_BUNDLE =
-            "extender.bundle";
+    public static final String EVENT_PROPERTY_EXTENDER_BUNDLE = "extender.bundle";
 
     /**
      * Event property for extender bundle id.
      */
-    public static final String EVENT_PROPERTY_EXTENDER_BUNDLE_ID =
-            "extender.bundle.id";
+    public static final String EVENT_PROPERTY_EXTENDER_BUNDLE_ID = "extender.bundle.id";
 
     /**
      * Event property for bundle symbolic name.
      */
-    public static final String EVENT_PROPERTY_EXTENDER_BUNDLE_NAME =
-            "extender.bundle.symbolicName";
+    public static final String EVENT_PROPERTY_EXTENDER_BUNDLE_NAME = "extender.bundle.symbolicName";
 
     /**
      * Event property for extender bundle version.
      */
-    public static final String EVENT_PROPERTY_EXTENDER_BUNDLE_VERSION =
-            "extender.bundle.version";
+    public static final String EVENT_PROPERTY_EXTENDER_BUNDLE_VERSION = "extender.bundle.version";
 
     /**
      * Event property for exception.
@@ -166,28 +153,24 @@ public final class Constants {
     /**
      * Event property for collision bundles.
      */
-    public static final String EVENT_PROPERTY_COLLISION_BUNDLES =
-            "collision.bundles";
+    public static final String EVENT_PROPERTY_COLLISION_BUNDLES = "collision.bundles";
 
     // Below are GlassFish specific constants
 
     /**
      * Property name for custom faces config.
      */
-    public static final String FACES_CONFIG_ATTR =
-            "glassfish.osgi.web.facesconfigs";
+    public static final String FACES_CONFIG_ATTR = "glassfish.osgi.web.facesconfigs";
 
     /**
      * Property name for custom facelet config.
      */
-    public static final String FACELET_CONFIG_ATTR =
-            "glassfish.osgi.web.faceletconfigs";
+    public static final String FACELET_CONFIG_ATTR = "glassfish.osgi.web.faceletconfigs";
 
     /**
      * Property name for faces annotated classes.
      */
-    public static final String FACES_ANNOTATED_CLASSES =
-            "glassfish.osgi.web.facesannotatedclasses";
+    public static final String FACES_ANNOTATED_CLASSES = "glassfish.osgi.web.facesannotatedclasses";
 
     /**
      * Constant for the GlassFish domain config entry for virtual servers.

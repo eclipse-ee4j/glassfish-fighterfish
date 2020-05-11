@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -17,14 +17,14 @@ package org.glassfish.fighterfish.test.app16.mdb;
 
 import org.glassfish.osgicdi.OSGiService;
 
-import javax.ejb.ActivationConfigProperty;
-import javax.ejb.MessageDriven;
-import javax.ejb.TransactionManagement;
-import javax.ejb.TransactionManagementType;
-import javax.inject.Inject;
-import javax.interceptor.AroundInvoke;
-import javax.interceptor.InvocationContext;
-import javax.transaction.UserTransaction;
+import jakarta.ejb.ActivationConfigProperty;
+import jakarta.ejb.MessageDriven;
+import jakarta.ejb.TransactionManagement;
+import jakarta.ejb.TransactionManagementType;
+import jakarta.inject.Inject;
+import jakarta.interceptor.AroundInvoke;
+import jakarta.interceptor.InvocationContext;
+import jakarta.transaction.UserTransaction;
 
 /**
  * Message-Driven Bean implementation class for: TestApp16MDB_BMT.
@@ -33,7 +33,7 @@ import javax.transaction.UserTransaction;
         activationConfig = {
             @ActivationConfigProperty(
                     propertyName = "destinationType",
-                    propertyValue = "javax.jms.Topic"
+                    propertyValue = "jakarta.jms.Topic"
             )},
         mappedName = "jms/fighterfish.TestApp16Topic"
 )

@@ -15,7 +15,6 @@
  */
 
 /**
- * JPA entities for the EJB based implementation of the user authentication
- * service.
+ * JPA entities for the EJB based implementation of the user authentication service.
  */
 package org.glassfish.fighterfish.sample.uas.entities;

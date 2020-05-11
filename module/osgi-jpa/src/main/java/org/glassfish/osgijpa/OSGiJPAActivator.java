@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -16,10 +16,10 @@
 
 package org.glassfish.osgijpa;
 
+import org.glassfish.osgijavaeebase.Extender;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
-import org.glassfish.osgijavaeebase.Extender;
 
 /**
  * Bundle activator for the OSGi JPA module.
@@ -29,17 +29,15 @@ public final class OSGiJPAActivator implements BundleActivator {
     /**
      * Service registration for the OSGi JPA extender.
      */
-    private ServiceRegistration extenderReg;
+    private ServiceRegistration<?> extenderReg;
 
     @Override
-    public void start(final BundleContext context) throws Exception {
-        JPAExtender extender = new JPAExtender(context);
-        extenderReg = context.registerService(Extender.class.getName(),
-                extender, null);
+    public void start(BundleContext context) throws Exception {
+        extenderReg = context.registerService(Extender.class.getName(), new JPAExtender(context), null);
     }
 
     @Override
-    public void stop(final BundleContext context) throws Exception {
+    public void stop(BundleContext context) throws Exception {
         extenderReg.unregister();
     }
 }

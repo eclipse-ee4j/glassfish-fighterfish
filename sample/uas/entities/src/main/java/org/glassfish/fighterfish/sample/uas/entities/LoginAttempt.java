@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Distribution License v. 1.0, which is available at
@@ -9,27 +9,26 @@
  */
 package org.glassfish.fighterfish.sample.uas.entities;
 
+import static jakarta.persistence.FetchType.LAZY;
+import static jakarta.persistence.TemporalType.TIMESTAMP;
+
 import java.io.Serializable;
 import java.util.Date;
 
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.NamedQueries;
+import jakarta.persistence.NamedQuery;
+import jakarta.persistence.Temporal;
 
 /**
  * Entity implementation class for Entity: LoginAttempt.
  */
 @SuppressWarnings("checkstyle:DesignForExtension")
 @Entity
-@NamedQueries(
-        @NamedQuery(name = "LoginAttempt.findAll",
-                query = "select o from LoginAttempt o"))
+@NamedQueries(@NamedQuery(name = "LoginAttempt.findAll", query = "select o from LoginAttempt o"))
 public class LoginAttempt implements Serializable {
 
     /**
@@ -47,13 +46,13 @@ public class LoginAttempt implements Serializable {
     /**
      * User credentials.
      */
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = LAZY)
     private UserCredential userCredential;
 
     /**
      * Timestamp.
      */
-    @Temporal(TemporalType.TIMESTAMP)
+    @Temporal(TIMESTAMP)
     private Date timeStamp = new Date();
 
     /**
@@ -61,15 +60,10 @@ public class LoginAttempt implements Serializable {
      */
     private static final long serialVersionUID = 1L;
 
-    /**
-     * Create a new instance.
-     */
-    public LoginAttempt() {
-        super();
-    }
 
     /**
      * Get serial number.
+     *
      * @return serial numner
      */
     public long getSerialNumber() {
@@ -78,6 +72,7 @@ public class LoginAttempt implements Serializable {
 
     /**
      * Test if the login attempt is successful.
+     *
      * @return {@code true} if successful, {@code false} otherwise
      */
     public boolean isSuccessful() {
@@ -86,14 +81,16 @@ public class LoginAttempt implements Serializable {
 
     /**
      * Set the login result.
+     *
      * @param isSuccessful login result
      */
-    public void setSuccessful(final boolean isSuccessful) {
+    public void setSuccessful(boolean isSuccessful) {
         this.successful = isSuccessful;
     }
 
     /**
      * Get the user credentials.
+     *
      * @return UserCredential
      */
     public UserCredential getUserCredential() {
@@ -102,14 +99,16 @@ public class LoginAttempt implements Serializable {
 
     /**
      * Set the user credentials.
+     *
      * @param creds new user credentials
      */
-    public void setUserCredential(final UserCredential creds) {
+    public void setUserCredential(UserCredential creds) {
         this.userCredential = creds;
     }
 
     /**
      * Get the timestamp.
+     *
      * @return Date
      */
     public Date getTimeStamp() {
@@ -118,18 +117,15 @@ public class LoginAttempt implements Serializable {
 
     /**
      * Set the new timestamp.
+     *
      * @param tstamp new timestamp
      */
-    public void setTimeStamp(final Date tstamp) {
+    public void setTimeStamp(Date tstamp) {
         this.timeStamp = tstamp;
     }
 
     @Override
     public String toString() {
-        return "LoginAttempt: ("
-                + "serialNumber = " + serialNumber
-                + "user = " + getUserCredential().getName()
-                + "isSucecssful = " + isSuccessful()
-                + ")";
+        return "LoginAttempt: (" + "serialNumber = " + serialNumber + "user = " + getUserCredential().getName() + "isSucecssful = " + isSuccessful() + ")";
     }
 }

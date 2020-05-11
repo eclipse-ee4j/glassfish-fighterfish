@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -15,12 +15,13 @@
  */
 package org.glassfish.osgihttp;
 
-import com.sun.enterprise.web.WebModule;
-
-import javax.servlet.ServletContext;
 import java.lang.ref.WeakReference;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import jakarta.servlet.ServletContext;
+
+import com.sun.enterprise.web.WebModule;
 
 /**
  * Utility that holds an instance of {@link InvocationContext}.
@@ -36,11 +37,11 @@ public final class InvocationContextMgr {
     /**
      * The invocation context instance.
      */
-    private static final InvocationContext INVOCATION_CTX =
-            new InvocationContextImpl();
+    private static final InvocationContext INVOCATION_CTX = new InvocationContextImpl();
 
     /**
      * Get the invocation context.
+     *
      * @return InvocationContext
      */
     public static InvocationContext getInvocationContext() {
@@ -50,26 +51,22 @@ public final class InvocationContextMgr {
     /**
      * Implementation of {@link InvocationContext}.
      */
-    private static final class InvocationContextImpl
-            implements InvocationContext {
+    private static final class InvocationContextImpl implements InvocationContext {
 
         /**
          * Logger.
          */
-        private final Logger logger = Logger.getLogger(
-                InvocationContextImpl.class.getPackage().getName());
+        private final Logger logger = Logger.getLogger(InvocationContextImpl.class.getPackage().getName());
 
         /**
          * Thread local to access the current servlet context.
          */
-        private final ThreadLocal<WeakReference<ServletContext>> currentSC =
-                new InheritableThreadLocal<WeakReference<ServletContext>>();
+        private final ThreadLocal<WeakReference<ServletContext>> currentSC = new InheritableThreadLocal<>();
 
         /**
          * Thread local to access the current web module.
          */
-        private final ThreadLocal<WeakReference<WebModule>> currentWM =
-                new InheritableThreadLocal<WeakReference<WebModule>>();
+        private final ThreadLocal<WeakReference<WebModule>> currentWM = new InheritableThreadLocal<>();
 
         @Override
         public WebModule getWebModule() {
@@ -80,17 +77,15 @@ public final class InvocationContextMgr {
             } else {
                 result = null;
             }
-            logger.logp(Level.FINE, "InvocationContextMgr", "getWebModule",
-                    "result = {0}", new Object[]{result});
+            logger.logp(Level.FINE, "InvocationContextMgr", "getWebModule", "result = {0}", new Object[] { result });
             return result;
         }
 
         @Override
         public void setWebModule(final WebModule webModule) {
-            logger.logp(Level.FINE, "InvocationContextMgr", "setWebModule",
-                    "webModule = {0}", new Object[]{webModule});
+            logger.logp(Level.FINE, "InvocationContextMgr", "setWebModule", "webModule = {0}", new Object[] { webModule });
             if (webModule != null) {
-                currentWM.set(new WeakReference<WebModule>(webModule));
+                currentWM.set(new WeakReference<>(webModule));
             } else {
                 currentWM.set(null);
             }

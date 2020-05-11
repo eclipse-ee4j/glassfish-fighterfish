@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Distribution License v. 1.0, which is available at
@@ -9,20 +9,26 @@
  */
 package org.glassfish.fighterfish.sample.uas.entities;
 
+import static jakarta.persistence.CascadeType.REMOVE;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 
 /**
  * Entity implementation class for Entity: UserCredential.
  */
 @Entity
 public class UserCredential implements Serializable {
+    
+    /**
+     * Serialization UID.
+     */
+    private static final long serialVersionUID = 1L;
 
     /**
      * User credential ID.
@@ -38,23 +44,13 @@ public class UserCredential implements Serializable {
     /**
      * Login attempts.
      */
-    @OneToMany(mappedBy = "userCredential", cascade = CascadeType.REMOVE)
-    private List<LoginAttempt> loginAttempts = new ArrayList<LoginAttempt>();
+    @OneToMany(mappedBy = "userCredential", cascade = REMOVE)
+    private List<LoginAttempt> loginAttempts = new ArrayList<>();
 
-    /**
-     * Serialization UID.
-     */
-    private static final long serialVersionUID = 1L;
-
-    /**
-     * Create a new instance.
-     */
-    public UserCredential() {
-        super();
-    }
 
     /**
      * Get the user name.
+     *
      * @return user name
      */
     public String getName() {
@@ -63,14 +59,16 @@ public class UserCredential implements Serializable {
 
     /**
      * Set the user name.
+     *
      * @param username new name
      */
-    public void setName(final String username) {
+    public void setName(String username) {
         this.name = username;
     }
 
     /**
      * Get the user password.
+     *
      * @return password
      */
     public String getPassword() {
@@ -79,22 +77,25 @@ public class UserCredential implements Serializable {
 
     /**
      * Set the user password.
+     *
      * @param passwd new password
      */
-    public void setPassword(final String passwd) {
+    public void setPassword(String passwd) {
         this.password = passwd;
     }
 
     /**
      * Set the login attempts.
+     *
      * @param attemps new login attempts
      */
-    public void setLoginAttempts(final List<LoginAttempt> attemps) {
+    public void setLoginAttempts(List<LoginAttempt> attemps) {
         this.loginAttempts = attemps;
     }
 
     /**
      * Get the login attempts.
+     *
      * @return list of login attempts
      */
     public List<LoginAttempt> getLoginAttempts() {

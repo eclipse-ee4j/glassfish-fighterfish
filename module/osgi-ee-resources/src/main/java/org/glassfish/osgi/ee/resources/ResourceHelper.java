@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -15,12 +15,13 @@
  */
 package org.glassfish.osgi.ee.resources;
 
+import java.util.List;
+
+import org.glassfish.internal.api.ServerContext;
+
 import com.sun.enterprise.config.serverbeans.ResourceRef;
 import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.config.serverbeans.Servers;
-import org.glassfish.internal.api.ServerContext;
-
-import java.util.List;
 
 /**
  * Resource helper.
@@ -34,6 +35,7 @@ public final class ResourceHelper {
 
     /**
      * Create a new instance.
+     *
      * @param hab component locator
      */
     ResourceHelper(final Habitat hab) {
@@ -66,6 +68,7 @@ public final class ResourceHelper {
 
     /**
      * Get the habitat.
+     *
      * @return Habitat
      */
     private Habitat getHabitat() {

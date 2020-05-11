@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Distribution License v. 1.0, which is available at
@@ -9,16 +9,15 @@
  */
 package org.glassfish.fighterfish.sample.uas.advservice;
 
-import javax.persistence.EntityManagerFactory;
-import javax.transaction.UserTransaction;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.transaction.UserTransaction;
 
+import org.glassfish.fighterfish.sample.uas.api.UserAuthService;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
 import org.osgi.framework.Filter;
 import org.osgi.util.tracker.ServiceTracker;
-
-import org.glassfish.fighterfish.sample.uas.api.UserAuthService;
 
 /**
  * Bundle activator for the advanced user authentication service.
@@ -43,14 +42,10 @@ public final class AdvSvcImplActivator implements BundleActivator {
 
     @Override
     public void start(final BundleContext context) throws Exception {
-        txTracker = new ServiceTracker(context,
-                UserTransaction.class.getName(), null);
+        txTracker = new ServiceTracker(context, UserTransaction.class.getName(), null);
         txTracker.open();
-        Filter filter = context.createFilter("(&"
-                + "(" + Constants.OBJECTCLASS + "="
-                + EntityManagerFactory.class.getName() + ")"
-                + "(persistence-unit=" + PUNAME + ")"
-                + ")");
+        Filter filter = context.createFilter(
+                "(&" + "(" + Constants.OBJECTCLASS + "=" + EntityManagerFactory.class.getName() + ")" + "(persistence-unit=" + PUNAME + ")" + ")");
         emfTracker = new ServiceTracker(context, filter, null);
         emfTracker.open();
         AdvUserAuthServiceImpl uas = new AdvUserAuthServiceImpl(this);
@@ -65,6 +60,7 @@ public final class AdvSvcImplActivator implements BundleActivator {
 
     /**
      * Get the user transaction.
+     *
      * @return UserTransaction
      */
     public UserTransaction getUTX() {
@@ -73,6 +69,7 @@ public final class AdvSvcImplActivator implements BundleActivator {
 
     /**
      * Get the EntityManagerFactory.
+     *
      * @return EntityManagerFactory
      */
     public EntityManagerFactory getEMF() {

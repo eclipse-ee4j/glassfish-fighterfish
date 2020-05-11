@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Distribution License v. 1.0, which is available at
@@ -12,20 +12,19 @@ package org.glassfish.fighterfish.sample.osgihttp.helloworld;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.ServletConfig;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 /**
- * This servlet is very similar to {@link HelloWorldServlet2} except that it
- * uses {@link HttpServlet#getServletConfig()#getServletContext()} to retrieve
- * the ServletContext and from there it reads the attribute values to
- * demonstrate that it does not mater how you retrieve the ServletContext, they
- * are all functionally equivalent.
+ * This servlet is very similar to {@link HelloWorldServlet2} except that it uses
+ * {@link HttpServlet#getServletConfig()#getServletContext()} to retrieve the ServletContext and from there it reads the
+ * attribute values to demonstrate that it does not mater how you retrieve the ServletContext, they are all functionally
+ * equivalent.
  */
 public final class HelloWorldServlet1 extends HttpServlet {
 
@@ -46,9 +45,7 @@ public final class HelloWorldServlet1 extends HttpServlet {
     }
 
     @Override
-    protected void service(final HttpServletRequest req,
-            final HttpServletResponse resp)
-            throws ServletException, IOException {
+    protected void service(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException, IOException {
 
         resp.setContentType("text/html");
         PrintWriter writer = resp.getWriter();

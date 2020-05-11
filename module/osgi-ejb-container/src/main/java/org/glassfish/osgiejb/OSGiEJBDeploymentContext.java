@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -16,25 +16,26 @@
 
 package org.glassfish.osgiejb;
 
-import org.glassfish.osgijavaeebase.OSGiArchiveHandler;
-import org.glassfish.osgijavaeebase.OSGiDeploymentContext;
-import org.glassfish.osgijavaeebase.BundleClassLoader;
-import org.glassfish.internal.api.Globals;
-import org.glassfish.internal.api.ClassLoaderHierarchy;
-import org.glassfish.api.ActionReport;
-import org.glassfish.api.admin.ServerEnvironment;
-import org.glassfish.api.deployment.archive.ReadableArchive;
-import org.glassfish.api.deployment.OpsParams;
-import org.glassfish.api.deployment.InstrumentableClassLoader;
-import org.osgi.framework.Bundle;
-
-import java.net.URL;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.logging.Logger;
 import java.io.IOException;
 import java.lang.instrument.ClassFileTransformer;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.logging.Logger;
+
+import org.glassfish.api.ActionReport;
+import org.glassfish.api.admin.ServerEnvironment;
+import org.glassfish.api.deployment.InstrumentableClassLoader;
+import org.glassfish.api.deployment.OpsParams;
+import org.glassfish.api.deployment.archive.ReadableArchive;
+import org.glassfish.ejb.deployment.archive.EjbType;
+import org.glassfish.internal.api.ClassLoaderHierarchy;
+import org.glassfish.internal.api.Globals;
+import org.glassfish.osgijavaeebase.BundleClassLoader;
+import org.glassfish.osgijavaeebase.OSGiArchiveHandler;
+import org.glassfish.osgijavaeebase.OSGiDeploymentContext;
+import org.osgi.framework.Bundle;
 
 import com.sun.enterprise.module.common_impl.CompositeEnumeration;
 
@@ -45,6 +46,7 @@ public final class OSGiEJBDeploymentContext extends OSGiDeploymentContext {
 
     /**
      * Create a new instance.
+     *
      * @param actionReport GlassFish command reporter
      * @param logger logger
      * @param source application archive
@@ -53,23 +55,15 @@ public final class OSGiEJBDeploymentContext extends OSGiDeploymentContext {
      * @param bundle application bundle
      * @throws Exception if an error occurs
      */
-    public OSGiEJBDeploymentContext(final ActionReport actionReport,
-            final Logger logger, final ReadableArchive source,
-            final OpsParams params, final ServerEnvironment env,
-            final Bundle bundle) throws Exception {
-
+    public OSGiEJBDeploymentContext(ActionReport actionReport, Logger logger, ReadableArchive source, OpsParams params, ServerEnvironment env, Bundle bundle) throws Exception {
         super(actionReport, logger, source, params, env, bundle);
+        
         // ArchiveHandler must correctly return the ArchiveType for DOL
         // processing to succeed,
         setArchiveHandler(new OSGiArchiveHandler() {
             @Override
             public String getArchiveType() {
-                // Since I am not able to reference GF 4.0 APIs as they are not
-                // yet staged in a maven repo,
-                // I am accessing the value in a round about way.
-                // EjbType.ARCHIVE_TYPE;
-                return javax.enterprise.deploy.shared.ModuleType.EJB
-                        .toString();
+                return EjbType.ARCHIVE_TYPE;
             }
         });
 
@@ -77,20 +71,18 @@ public final class OSGiEJBDeploymentContext extends OSGiDeploymentContext {
 
     @Override
     protected void setupClassLoader() throws Exception {
-        final BundleClassLoader delegate1 = new BundleClassLoader(getBundle());
-        final ClassLoader delegate2 =
-                Globals.get(ClassLoaderHierarchy.class).getAPIClassLoader();
-        ClassLoader cl = new DelegatingInstrumentableClassLoader(delegate1,
-                delegate2);
-        setShareableTempClassLoader(cl);
-        setFinalClassLoader(cl);
+        ClassLoader classLoader = new DelegatingInstrumentableClassLoader(
+                new BundleClassLoader(getBundle()), 
+                Globals.get(ClassLoaderHierarchy.class).getAPIClassLoader());
+        
+        setShareableTempClassLoader(classLoader);
+        setFinalClassLoader(classLoader);
     }
 
     /**
      * Custom class-loader.
      */
-    private static final class DelegatingInstrumentableClassLoader
-            extends ClassLoader implements InstrumentableClassLoader {
+    private static final class DelegatingInstrumentableClassLoader extends ClassLoader implements InstrumentableClassLoader {
 
         /**
          * First delegate class-loader.
@@ -104,20 +96,19 @@ public final class OSGiEJBDeploymentContext extends OSGiDeploymentContext {
 
         /**
          * Create a new instance.
+         *
          * @param cl1 the first delegate class-loader
          * @param cl2 the second delegate class-loader
          */
-        private DelegatingInstrumentableClassLoader(final BundleClassLoader cl1,
-                final ClassLoader cl2) {
+        private DelegatingInstrumentableClassLoader(BundleClassLoader cl1, ClassLoader cl2) {
             this.delegate1 = cl1;
             this.delegate2 = cl2;
         }
 
         @Override
-        protected synchronized Class<?> loadClass(final String name,
-                final boolean resolve) throws ClassNotFoundException {
+        protected synchronized Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
 
-            Class c = findLoadedClass(name);
+            Class<?> c = findLoadedClass(name);
             if (c == null) {
                 try {
                     return delegate1.loadClass(name, resolve);
@@ -125,9 +116,11 @@ public final class OSGiEJBDeploymentContext extends OSGiDeploymentContext {
                     return delegate2.loadClass(name);
                 }
             }
+            
             if (resolve) {
                 resolveClass(c);
             }
+            
             return c;
         }
 
@@ -137,17 +130,16 @@ public final class OSGiEJBDeploymentContext extends OSGiDeploymentContext {
             if (url == null) {
                 url = delegate2.getResource(name);
             }
+            
             return url;
         }
 
         @Override
-        public Enumeration<URL> getResources(final String name)
-                throws IOException {
-
-            List<Enumeration<URL>> enumerators =
-                    new ArrayList<Enumeration<URL>>();
+        public Enumeration<URL> getResources(final String name) throws IOException {
+            List<Enumeration<URL>> enumerators = new ArrayList<>();
             enumerators.add(delegate1.getResources(name));
             enumerators.add(delegate2.getResources(name));
+            
             return new CompositeEnumeration(enumerators);
         }
 

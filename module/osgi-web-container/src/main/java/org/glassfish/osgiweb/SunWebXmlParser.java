@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -15,17 +15,18 @@
  */
 package org.glassfish.osgiweb;
 
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamReader;
-import javax.xml.stream.XMLStreamException;
-import java.io.InputStream;
-
 import static javax.xml.stream.XMLStreamConstants.END_DOCUMENT;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
 
+import java.io.InputStream;
+
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+
 /**
- * A mini parser to parse sun-web.xml and glassfish-web.xml for entries of
- * interest to us. Currently, we only read context-root value.
+ * A mini parser to parse sun-web.xml and glassfish-web.xml for entries of interest to us. Currently, we only read
+ * context-root value.
  */
 final class SunWebXmlParser {
 
@@ -46,6 +47,7 @@ final class SunWebXmlParser {
 
     /**
      * The caller should close the input stream.
+     *
      * @param in InputStream for sun-web.xml or glassfish-web.xml
      * @throws XMLStreamException if a parsing error occurs
      */
@@ -54,8 +56,7 @@ final class SunWebXmlParser {
         XMLStreamReader reader = XMLIF.createXMLStreamReader(in);
         try {
             int event;
-            while (reader.hasNext() && (event = reader.next())
-                    != END_DOCUMENT) {
+            while (reader.hasNext() && (event = reader.next()) != END_DOCUMENT) {
                 if (event == START_ELEMENT) {
                     String element = reader.getLocalName();
                     if (element.equals("context-root")) {
@@ -71,6 +72,7 @@ final class SunWebXmlParser {
 
     /**
      * Get the context root.
+     *
      * @return context root
      */
     public String getContextRoot() {

@@ -15,7 +15,6 @@
  */
 
 /**
- * EJB based implementation of the user authentication service.
- * This implementation embeds the JPA entities.
+ * EJB based implementation of the user authentication service. This implementation embeds the JPA entities.
  */
 package org.glassfish.fighterfish.sample.uas.ejbservice;

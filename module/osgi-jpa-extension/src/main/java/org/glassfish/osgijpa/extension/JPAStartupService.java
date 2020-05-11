@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -20,10 +20,8 @@ import org.glassfish.hk2.runlevel.RunLevel;
 import org.jvnet.hk2.annotations.Service;
 
 /**
- * This is a dummy startup service. This is only present to ensure that
- * jpa-connector bundle is activated when server starts up so that jpa-connector
- * bundle's activator can do some initialization that's only needed in OSGi
- * environment.
+ * This is a dummy startup service. This is only present to ensure that jpa-connector bundle is activated when server
+ * starts up so that jpa-connector bundle's activator can do some initialization that's only needed in OSGi environment.
  *
  * @see OSGiJPAExtnBundleActivator
  */

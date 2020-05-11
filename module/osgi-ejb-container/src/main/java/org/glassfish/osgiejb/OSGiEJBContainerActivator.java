@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -15,9 +15,9 @@
  */
 package org.glassfish.osgiejb;
 
+import org.glassfish.osgijavaeebase.Extender;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
-import org.glassfish.osgijavaeebase.Extender;
 import org.osgi.framework.ServiceRegistration;
 
 /**
@@ -33,8 +33,7 @@ public final class OSGiEJBContainerActivator implements BundleActivator {
     @Override
     public void start(final BundleContext context) throws Exception {
         EJBExtender ejbExtender = new EJBExtender(context);
-        ejbExtenderReg = context.registerService(Extender.class.getName(),
-                ejbExtender, null);
+        ejbExtenderReg = context.registerService(Extender.class.getName(), ejbExtender, null);
     }
 
     @Override

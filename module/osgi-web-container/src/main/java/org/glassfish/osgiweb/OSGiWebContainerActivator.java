@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -15,9 +15,9 @@
  */
 package org.glassfish.osgiweb;
 
+import org.glassfish.osgijavaeebase.Extender;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
-import org.glassfish.osgijavaeebase.Extender;
 import org.osgi.framework.ServiceRegistration;
 
 /**
@@ -33,8 +33,7 @@ public final class OSGiWebContainerActivator implements BundleActivator {
     @Override
     public void start(final BundleContext context) throws Exception {
         WebExtender webExtender = new WebExtender(context);
-        extenderReg = context.registerService(Extender.class.getName(),
-                webExtender, null);
+        extenderReg = context.registerService(Extender.class.getName(), webExtender, null);
     }
 
     @Override

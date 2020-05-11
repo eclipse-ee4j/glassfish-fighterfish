@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -40,9 +40,7 @@ public final class OSGiUtil {
      */
     // TODO(Sahoo): Move the functionality to TestContext so that the service
     // references can be closed upon end of test
-    @SuppressWarnings({"unchecked", "checkstyle:EmptyBlock"})
-    public static <T> T getService(final BundleContext ctx,
-            final Class<T> type) {
+    public static <T> T getService(BundleContext ctx, Class<T> type) {
 
         ServiceTracker st = new ServiceTracker(ctx, type.getName(), null);
         st.open();
@@ -62,15 +60,11 @@ public final class OSGiUtil {
      * @return T
      * @throws InterruptedException if an error occurs while waiting
      */
-    @SuppressWarnings({"unchecked", "checkstyle:EmptyBlock"})
-    public static <T> T getService(final BundleContext ctx,
-            final Class<T> type, final long timeout)
-            throws InterruptedException {
-
-        ServiceTracker<T, T> st = new ServiceTracker(ctx, type.getName(), null);
-        st.open();
+    public static <T> T getService(BundleContext ctx, Class<T> type, long timeout) throws InterruptedException {
+        ServiceTracker<T, T> serviceTracker = new ServiceTracker<>(ctx, type.getName(), null);
+        serviceTracker.open();
         try {
-            return type.cast(st.waitForService(timeout));
+            return type.cast(serviceTracker.waitForService(timeout));
         } finally {
             // st.close();
         }
@@ -82,42 +76,39 @@ public final class OSGiUtil {
      *
      * @param ctx BundleContext that should be used to track the service
      * @param bnd Bundle registering the service
-     * @param service FQN of the service type
+     * @param serviceClass FQN of the service type
      * @param timeout no of milliseconds to wait for the service to be available
      * before returning null
      * @return a reference to the service being tracked
      * @throws InterruptedException if an error occurs while waiting
      */
-    @SuppressWarnings({"unchecked", "checkstyle:EmptyBlock"})
-    public static Object waitForService(final BundleContext ctx,
-            final Bundle bnd, final String service, final long timeout)
-            throws InterruptedException {
+    public static Object waitForService(BundleContext ctx, Bundle bnd, String serviceClass, long timeout) throws InterruptedException {
 
-        ServiceTracker st = new ServiceTracker(ctx, service, null) {
+        ServiceTracker<?, ?> serviceTracker = new ServiceTracker<Object, Object>(ctx, serviceClass, null) {
             @Override
-            public Object addingService(final ServiceReference reference) {
+            public Object addingService(ServiceReference<Object> reference) {
                 if (reference.getBundle() == bnd) {
                     return reference;
-                } else {
-                    return null;
-                }
+                } 
+                
+                return null;
             }
 
             @Override
-            public void removedService(final ServiceReference reference,
-                    final Object service) {
+            public void removedService(ServiceReference<Object> reference, Object service) {
 
                 // no need to unget, as we don't get the service
                 // in addingService
             }
         };
-        st.open(false);
-        Object s;
+        serviceTracker.open(false);
+        Object serviceInstance;
         try {
-            s = st.waitForService(timeout);
+            serviceInstance = serviceTracker.waitForService(timeout);
         } finally {
             // st.close();
         }
-        return s;
+        
+        return serviceInstance;
     }
 }

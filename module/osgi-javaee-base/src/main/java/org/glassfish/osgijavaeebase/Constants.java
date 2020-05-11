@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -27,9 +27,8 @@ public final class Constants {
     }
 
     /**
-     * Protocol used both in Felix and Equinox to read content of a bundle
-     * directly from a jar or directory as opposed to first copying it to
-     * bundle cache and then reading from there.
+     * Protocol used both in Felix and Equinox to read content of a bundle directly from a jar or directory as opposed to
+     * first copying it to bundle cache and then reading from there.
      */
     public static final String REFERENCE_PROTOCOL = "reference:";
 

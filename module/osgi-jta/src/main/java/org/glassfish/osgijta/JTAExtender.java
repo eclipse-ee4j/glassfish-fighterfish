@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -15,18 +15,19 @@
  */
 package org.glassfish.osgijta;
 
-import org.glassfish.osgijavaeebase.Extender;
-import org.osgi.framework.BundleContext;
-
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-import javax.transaction.TransactionManager;
-import javax.transaction.TransactionSynchronizationRegistry;
-import javax.transaction.UserTransaction;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import jakarta.transaction.TransactionManager;
+import jakarta.transaction.TransactionSynchronizationRegistry;
+import jakarta.transaction.UserTransaction;
+
+import org.glassfish.osgijavaeebase.Extender;
+import org.osgi.framework.BundleContext;
 
 /**
  * JTA extender.
@@ -36,20 +37,18 @@ public final class JTAExtender implements Extender {
     /**
      * JTA classes.
      */
-    private static final Class[] JTA_CLASSES = {
-        UserTransaction.class,
-        TransactionManager.class,
-        TransactionSynchronizationRegistry.class
-    };
+    private static final Class<?>[] JTA_CLASSES = { 
+            UserTransaction.class, 
+            TransactionManager.class, 
+            TransactionSynchronizationRegistry.class };
 
     /**
      * JNDI names for the JTA classes.
      */
-    private static final String[] JTA_JDNI_NAMES = {
-        "java:comp/UserTransaction",
-        "java:appserver/TransactionManager",
-        "java:appserver/TransactionSynchronizationRegistry"
-    };
+    private static final String[] JTA_JDNI_NAMES = { 
+            "java:comp/UserTransaction", 
+            "java:appserver/TransactionManager",
+            "java:appserver/TransactionSynchronizationRegistry" };
 
     /**
      * Bundle context.
@@ -58,6 +57,7 @@ public final class JTAExtender implements Extender {
 
     /**
      * Create a new instance.
+     *
      * @param bndCtx bundle context
      */
     public JTAExtender(final BundleContext bndCtx) {
@@ -73,14 +73,18 @@ public final class JTAExtender implements Extender {
 
     /**
      * Register a proxy service for the given class and JNDI name.
+     *
      * @param zeClass the class to proxy
      * @param zeJndiName the JNDI name to use
      */
-    private void registerProxy(final Class zeClass, final String zeJndiName) {
-        InvocationHandler ih = new MyInvocationHandler(zeClass, zeJndiName);
-        Object proxy = Proxy.newProxyInstance(getClass().getClassLoader(),
-                new Class[]{zeClass}, ih);
-        ctx.registerService(zeClass.getName(), proxy, null);
+    private void registerProxy(Class<?> zeClass, String zeJndiName) {
+        ctx.registerService(
+            zeClass.getName(), 
+            Proxy.newProxyInstance(
+                getClass().getClassLoader(), 
+                new Class[] { zeClass }, 
+                new MyInvocationHandler(zeClass, zeJndiName)), 
+            null);
     }
 
     @Override
@@ -93,32 +97,25 @@ public final class JTAExtender implements Extender {
     private class MyInvocationHandler implements InvocationHandler {
 
         /**
-         * The class to proxy.
-         */
-        private final Class<?> clazz;
-
-        /**
          * The JNDI name.
          */
         private final String jndiName;
 
         /**
          * Create a new instance.
+         *
          * @param zeClass the class to proxy
          * @param zeJndiName the JNDI name to use
          */
-        MyInvocationHandler(final Class<?> zeClass, final String zeJndiName) {
-            this.clazz = zeClass;
+        MyInvocationHandler(Class<?> zeClass, String zeJndiName) {
             this.jndiName = zeJndiName;
         }
 
         @Override
-        public Object invoke(final Object proxy, final Method method,
-                final Object[] args) throws Throwable {
+        public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 
             try {
-                InitialContext ic = getInitialContext();
-                Object target = ic.lookup(jndiName);
+                Object target = getInitialContext().lookup(jndiName);
                 try {
                     return method.invoke(target, args);
                 } catch (InvocationTargetException e) {
@@ -133,6 +130,7 @@ public final class JTAExtender implements Extender {
 
     /**
      * Create the JNDI initial context.
+     *
      * @return InitialContext
      * @throws NamingException if an error occurs
      */

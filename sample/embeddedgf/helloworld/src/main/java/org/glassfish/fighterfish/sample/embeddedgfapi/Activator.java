@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Distribution License v. 1.0, which is available at
@@ -20,16 +20,15 @@ import org.osgi.util.tracker.ServiceTracker;
 public final class Activator implements BundleActivator {
 
     @Override
-    @SuppressWarnings("unchecked")
-    public void start(final BundleContext context) throws Exception {
-        ServiceTracker st = new ServiceTracker(context,
-                GlassFish.class.getName(), null);
-        GlassFish gf = (GlassFish) st.waitForService(0);
-        System.out.println(gf.getStatus());
-        st.close();
+    public void start(BundleContext context) throws Exception {
+        ServiceTracker<?, GlassFish> serviceTracker = new ServiceTracker<>(context, GlassFish.class.getName(), null);
+        GlassFish glassFish = serviceTracker.waitForService(0);
+        
+        System.out.println(glassFish.getStatus());
+        serviceTracker.close();
     }
 
     @Override
-    public void stop(final BundleContext context) throws Exception {
+    public void stop(BundleContext context) throws Exception {
     }
 }

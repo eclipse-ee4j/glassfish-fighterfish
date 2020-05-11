@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -15,11 +15,6 @@
  */
 package org.glassfish.osgihttp;
 
-import com.sun.enterprise.web.ContextFacade;
-import com.sun.enterprise.web.WebModule;
-import org.apache.catalina.session.StandardManager;
-import org.osgi.service.http.HttpContext;
-
 import java.io.File;
 import java.io.InputStream;
 import java.net.MalformedURLException;
@@ -29,17 +24,20 @@ import java.util.Enumeration;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.catalina.session.StandardManager;
+import org.osgi.service.http.HttpContext;
+
+import com.sun.enterprise.web.ContextFacade;
+import com.sun.enterprise.web.WebModule;
+
 /**
- * Unlike Java EE Web Application model, there is no notion of "context path" in
- * OSGi HTTP service spec. Here the servlets can specify which context they
- * belong to by passing a {@link org.osgi.service.http.HttpContext} object.
- * Those HttpContext objects don't have any "path" attribute. As a result, all
- * the OSGi/HTTP servlets belonging to the same servlet context may not have any
- * of the path common to them. Internally, we register all the OSGi servlets
- * (actually we register {@link OSGiServletWrapper} with the same
- * {@link org.apache.catalina.Context} object. So we need a way to demultiplex
- * the OSGi servlet context. This class also delegates to {@link HttpContext}
- * for resource resolutions and security.
+ * Unlike Java EE Web Application model, there is no notion of "context path" in OSGi HTTP service spec. Here the
+ * servlets can specify which context they belong to by passing a {@link org.osgi.service.http.HttpContext} object.
+ * Those HttpContext objects don't have any "path" attribute. As a result, all the OSGi/HTTP servlets belonging to the
+ * same servlet context may not have any of the path common to them. Internally, we register all the OSGi servlets
+ * (actually we register {@link OSGiServletWrapper} with the same {@link org.apache.catalina.Context} object. So we need
+ * a way to demultiplex the OSGi servlet context. This class also delegates to {@link HttpContext} for resource
+ * resolutions and security.
  */
 public final class OSGiServletContext extends ContextFacade {
 
@@ -51,19 +49,17 @@ public final class OSGiServletContext extends ContextFacade {
     /**
      * Context attributes.
      */
-    private final Map<String, Object> attributes =
-            new ConcurrentHashMap<String, Object>();
+    private final Map<String, Object> attributes = new ConcurrentHashMap<>();
 
     /**
      * Create a new instance.
+     *
      * @param webModule the delegate web module
      * @param ctx the OSGi HTTP context
      */
-    public OSGiServletContext(final WebModule webModule,
-            final HttpContext ctx) {
-
-        super(new File(webModule.getDocBase()), webModule.getContextPath(),
-                webModule.getClassLoader());
+    public OSGiServletContext(final WebModule webModule, final HttpContext ctx) {
+        super(new File(webModule.getDocBase()), webModule.getContextPath(), webModule.getClassLoader());
+        
         setUnwrappedContext(webModule);
         setName(webModule.getName());
         setPath(webModule.getPath());
@@ -73,12 +69,13 @@ public final class OSGiServletContext extends ContextFacade {
         setParentClassLoader(webModule.getParentClassLoader());
         setRealm(webModule.getRealm());
         setParent(webModule.getParent());
+        
         // Set a new manager to have a different HttpSession for this context
         StandardManager mgr = new StandardManager();
+        
         // we switch off Session Persistence due to issues in deserialization
         mgr.setPathname(null);
         setManager(mgr);
-//        mgr.setMaxActiveSessions(100);
         this.httpContext = ctx;
     }
 
@@ -108,6 +105,7 @@ public final class OSGiServletContext extends ContextFacade {
         if (mimeType != null) {
             return mimeType;
         }
+        
         return super.getMimeType(file);
     }
 
@@ -126,6 +124,7 @@ public final class OSGiServletContext extends ContextFacade {
             return null;
         } catch (Exception e) {
         }
+        
         return null;
     }
 }
