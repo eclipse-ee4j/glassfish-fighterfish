@@ -255,6 +255,11 @@
                 <version>${glassfish.version}</version>
             </dependency>
             <dependency>
+                <groupId>org.glassfish.main.ejb</groupId>
+                <artifactId>gf-ejb-connector</artifactId>
+                <version>${glassfish.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.glassfish.main.deployment</groupId>
                 <artifactId>dol</artifactId>
                 <version>${glassfish.version}</version>

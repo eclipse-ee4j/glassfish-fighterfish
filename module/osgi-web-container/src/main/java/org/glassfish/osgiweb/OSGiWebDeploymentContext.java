@@ -45,6 +45,7 @@ import org.glassfish.internal.api.Globals;
 import org.glassfish.osgijavaeebase.BundleClassLoader;
 import org.glassfish.osgijavaeebase.OSGiArchiveHandler;
 import org.glassfish.osgijavaeebase.OSGiDeploymentContext;
+import org.glassfish.web.WarType;
 import org.glassfish.web.loader.WebappClassLoader;
 import org.osgi.framework.Bundle;
 
@@ -147,11 +148,7 @@ class OSGiWebDeploymentContext extends OSGiDeploymentContext {
 
             @Override
             public String getArchiveType() {
-                // Since I am not able to reference GF 4.0 APIs as they are not
-                // yet staged in a maven repo,
-                // I am accessing the value in a round about way.
-                // WarType.ARCHIVE_TYPE;
-                return javax.enterprise.deploy.shared.ModuleType.WAR.toString();
+                return WarType.ARCHIVE_TYPE;
             }
         });
     }

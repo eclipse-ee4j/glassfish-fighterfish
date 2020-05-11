@@ -29,6 +29,7 @@ import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.api.deployment.InstrumentableClassLoader;
 import org.glassfish.api.deployment.OpsParams;
 import org.glassfish.api.deployment.archive.ReadableArchive;
+import org.glassfish.ejb.deployment.archive.EjbType;
 import org.glassfish.internal.api.ClassLoaderHierarchy;
 import org.glassfish.internal.api.Globals;
 import org.glassfish.osgijavaeebase.BundleClassLoader;
@@ -62,11 +63,7 @@ public final class OSGiEJBDeploymentContext extends OSGiDeploymentContext {
         setArchiveHandler(new OSGiArchiveHandler() {
             @Override
             public String getArchiveType() {
-                // Since I am not able to reference GF 4.0 APIs as they are not
-                // yet staged in a maven repo,
-                // I am accessing the value in a round about way.
-                // EjbType.ARCHIVE_TYPE;
-                return javax.enterprise.deploy.shared.ModuleType.EJB.toString();
+                return EjbType.ARCHIVE_TYPE;
             }
         });
 
