@@ -49,7 +49,7 @@
         <glassfish.version>5.1.0</glassfish.version>
         <hk2.osgi-resource-locator.version>1.0.1</hk2.osgi-resource-locator.version>
         <hk2.version>2.5.0</hk2.version>
-        <httpclient-osgi.version>4.5.5</httpclient-osgi.version>
+        <httpclient-osgi.version>4.5.13</httpclient-osgi.version>
         <httpcore-osgi.version>4.4.15</httpcore-osgi.version>
         <jakarta.ejb-api.version>3.2.5</jakarta.ejb-api.version>
         <jakarta.el-api.version>3.0.3</jakarta.el-api.version>
