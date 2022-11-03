@@ -43,7 +43,7 @@
         <eclipselink.version>2.7.4</eclipselink.version>
         <felix.bundlerepository.version>2.0.10</felix.bundlerepository.version>
         <felix.gogo.command.version>1.0.2</felix.gogo.command.version>
-        <felix.gogo.runtime.version>1.0.10</felix.gogo.runtime.version>
+        <felix.gogo.runtime.version>1.1.6</felix.gogo.runtime.version>
         <felix.gogo.shell.version>1.0.0</felix.gogo.shell.version>
         <felix.version>5.6.10</felix.version>
         <glassfish.version>5.1.0</glassfish.version>
