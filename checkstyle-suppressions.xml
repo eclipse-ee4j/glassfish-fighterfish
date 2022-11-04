@@ -1,6 +1,7 @@
 <?xml version="1.0"?>
 <!--
 
+    Copyright (c) 2022 Contributors to the Eclipse Foundation. All rights reserved.
     Copyright (c) 2019 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
@@ -27,4 +28,6 @@
     <suppress checks="." files="test/app/app19/src/main/java/sahoo/metainfservicetest/ObjectFactory.java"/>
     <suppress checks="." files="test/app/app19/src/main/java/sahoo/metainfservicetest/package-info.java"/>
     <suppress checks="." files="experimental/glassfish-obr-builder/src/main/java/org/glassfish/obrbuilder/xmlentities/*"/>
+    <suppress checks="JavadocMethod" files="src/main/java/org/glassfish/osgihttp/GlassFishHttpService.java"/>
+    <suppress checks="JavadocMethod" files="src/main/java/org/glassfish/fighterfish/test/util/EnterpriseResourceProvisioner.java"/>
 </suppressions>
