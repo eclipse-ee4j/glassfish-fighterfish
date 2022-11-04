@@ -35,7 +35,7 @@ pipeline {
         maven 'apache-maven-latest'
       }
       steps {
-        sh 'mvn clean install -Pcopyright,checkstyle,spotbugs'
+        sh 'mvn clean install -Pcopyright,checkstyle,spotbugs -DskipTests'
         junit testResults: '**/target/*-reports/*.xml', allowEmptyResults: true
       }
     }
