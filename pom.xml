@@ -52,7 +52,7 @@
         <httpclient-osgi.version>4.5.13</httpclient-osgi.version>
         <httpcore-osgi.version>4.4.15</httpcore-osgi.version>
         <jakarta.ejb-api.version>3.2.5</jakarta.ejb-api.version>
-        <jakarta.el-api.version>3.0.3</jakarta.el-api.version>
+        <jakarta.el-api.version>5.0.1</jakarta.el-api.version>
         <jakarta.el-impl.version>3.0.3</jakarta.el-impl.version>
         <jakarta.enterprise.cdi-api.version>2.0.2</jakarta.enterprise.cdi-api.version>
         <jakarta.faces-api.version>2.3.1</jakarta.faces-api.version>
