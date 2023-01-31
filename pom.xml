@@ -46,7 +46,7 @@
         <felix.gogo.runtime.version>1.1.6</felix.gogo.runtime.version>
         <felix.gogo.shell.version>1.1.4</felix.gogo.shell.version>
         <felix.version>5.6.10</felix.version>
-        <glassfish.version>5.1.0</glassfish.version>
+        <glassfish.version>7.0.1</glassfish.version>
         <hk2.osgi-resource-locator.version>1.0.1</hk2.osgi-resource-locator.version>
         <hk2.version>2.5.0</hk2.version>
         <httpclient-osgi.version>4.5.14</httpclient-osgi.version>
