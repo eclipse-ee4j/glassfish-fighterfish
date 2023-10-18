@@ -99,8 +99,10 @@ public final class ZipUtil {
             LOGGER.logp(Level.FINER, "ZipUtil", "extractZip",
                     "ZipEntry name = {0}, size = {1}",
                     new Object[]{ze.getName(), ze.getSize()});
-            java.io.File f = new java.io.File(destDir + java.io.File.separator
-                    + ze.getName());
+            java.io.File f = new File(destDir, ze.getName());
+            if (!f.toPath().normalize().startsWith(destDir.toPath().normalize())) {
+                throw new IOException("Bad zip entry");
+            }
             if (ze.isDirectory()) {
                 if (!f.exists()) {
                     if (!f.mkdirs()) {
