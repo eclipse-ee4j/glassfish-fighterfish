@@ -33,6 +33,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
+import java.nio.file.Files;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 import java.util.logging.Level;
@@ -197,7 +198,7 @@ final class EclipseLinkEnhancer implements JPAEnhancer {
      * @throws IOException if it fails to create the directory
      */
     public static File makeTmpDir(final String prefix) throws IOException {
-        File tmpDir = File.createTempFile(prefix, "");
+        File tmpDir = Files.createTempFile(prefix, "").toFile();
 
         // create a directory in place of the tmp file.
         tmpDir.delete();
