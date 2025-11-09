@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation. All rights reserved.
+    Copyright (c) 2022, 2025 Contributors to the Eclipse Foundation. All rights reserved.
     Copyright (c) 2018, 2019 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
@@ -70,7 +70,7 @@
         <osgi.version>6.0.0</osgi.version>
         <pax-exam.version>4.13.1</pax-exam.version>
         <pax-url.version>2.6.1</pax-url.version>
-        <slf4j.version>1.7.26</slf4j.version>
+        <slf4j.version>1.7.36</slf4j.version>
         <spotbugs-annotations.version>4.7.3</spotbugs-annotations.version>
     </properties>
 
