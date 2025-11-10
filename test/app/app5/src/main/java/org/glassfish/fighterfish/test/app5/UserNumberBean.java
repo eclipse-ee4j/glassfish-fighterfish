@@ -20,6 +20,7 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.validator.ValidatorException;
 
+import java.security.SecureRandom;
 import java.util.Random;
 
 /**
@@ -67,7 +68,7 @@ public final class UserNumberBean {
      */
     @SuppressWarnings("checkstyle:MagicNumber")
     public UserNumberBean() {
-        Random randomGR = new Random();
+        Random randomGR = new SecureRandom();
         do {
             this.randomInt = randomGR.nextInt(10);
         } while (this.randomInt == 0);

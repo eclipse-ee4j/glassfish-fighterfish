@@ -37,6 +37,7 @@ final class SunWebXmlParser {
     static {
         XMLIF = XMLInputFactory.newInstance();
         XMLIF.setProperty(XMLInputFactory.SUPPORT_DTD, false);
+        XMLIF.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, false);
     }
 
     /**
