@@ -104,7 +104,10 @@ public class Activator implements BundleActivator {
         int size = 0;
         while ((ze = zis.getNextEntry()) != null) {
             logger.logp(Level.FINER, "Activator", "extractZip", "ZipEntry name = {0}, size = {1}", new Object[]{ze.getName(), ze.getSize()});
-            java.io.File f = new java.io.File(dest + java.io.File.separator + ze.getName());
+            java.io.File f = new File(dest, ze.getName());
+            if (!f.toPath().normalize().startsWith(dest.toPath().normalize())) {
+                throw new IOException("Bad zip entry");
+            }
             if (ze.isDirectory()) {
                 if (!f.exists()) {
                     if (!f.mkdirs()) {
